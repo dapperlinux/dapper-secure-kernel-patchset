@@ -56,16 +56,16 @@ index fdf8da9..d3fefc5 100644
  	resp.hdr.size = sizeof(struct dm_unballoon_response);
  
  	vmbus_sendpacket(dm_device.dev->channel, &resp,
-@@ -1363,7 +1363,7 @@ static void version_resp(struct hv_dynmem_device *dm,
+@@ -1387,7 +1387,7 @@ static void version_resp(struct hv_dynmem_device *dm,
  	memset(&version_req, 0, sizeof(struct dm_version_request));
  	version_req.hdr.type = DM_VERSION_REQUEST;
  	version_req.hdr.size = sizeof(struct dm_version_request);
 -	version_req.hdr.trans_id = atomic_inc_return(&trans_id);
 +	version_req.hdr.trans_id = atomic_inc_return_unchecked(&trans_id);
  	version_req.version.version = dm->next_version;
+ 	dm->version = version_req.version.version;
  
- 	/*
-@@ -1550,7 +1550,7 @@ static int balloon_probe(struct hv_device *dev,
+@@ -1579,7 +1579,7 @@ static int balloon_probe(struct hv_device *dev,
  	memset(&version_req, 0, sizeof(struct dm_version_request));
  	version_req.hdr.type = DM_VERSION_REQUEST;
  	version_req.hdr.size = sizeof(struct dm_version_request);
@@ -73,7 +73,7 @@ index fdf8da9..d3fefc5 100644
 +	version_req.hdr.trans_id = atomic_inc_return_unchecked(&trans_id);
  	version_req.version.version = DYNMEM_PROTOCOL_VERSION_WIN10;
  	version_req.is_last_attempt = 0;
- 
+ 	dm_device.version = version_req.version.version;
 @@ -1581,7 +1581,7 @@ static int balloon_probe(struct hv_device *dev,
  	memset(&cap_msg, 0, sizeof(struct dm_capabilities));
  	cap_msg.hdr.type = DM_CAPABILITIES_REPORT;

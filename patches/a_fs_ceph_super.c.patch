@@ -11,8 +11,8 @@ index b382e59..e12e43f 100644
  
  static int ceph_register_bdi(struct super_block *sb,
  			     struct ceph_fs_client *fsc)
-@@ -943,7 +943,7 @@ static int ceph_register_bdi(struct super_block *sb,
- 			VM_MAX_READAHEAD * 1024 / PAGE_SIZE;
+@@ -960,7 +960,7 @@ static int ceph_register_bdi(struct super_block *sb,
+ 		fsc->backing_dev_info.io_pages = ULONG_MAX;
  
  	err = bdi_register(&fsc->backing_dev_info, NULL, "ceph-%ld",
 -			   atomic_long_inc_return(&bdi_seq));

@@ -2,14 +2,14 @@ diff --git a/drivers/media/v4l2-core/v4l2-compat-ioctl32.c b/drivers/media/v4l2-
 index bacecbd..277d1f8 100644
 --- a/drivers/media/v4l2-core/v4l2-compat-ioctl32.c
 +++ b/drivers/media/v4l2-core/v4l2-compat-ioctl32.c
-@@ -449,7 +449,7 @@ static int get_v4l2_buffer32(struct v4l2_buffer *kp, struct v4l2_buffer32 __user
+@@ -451,7 +451,7 @@ static int get_v4l2_buffer32(struct v4l2_buffer *kp, struct v4l2_buffer32 __user
  		 * by passing a very big num_planes value */
- 		uplane = compat_alloc_user_space(num_planes *
- 						sizeof(struct v4l2_plane));
+ 		uplane = compat_alloc_user_space(kp->length *
+ 						 sizeof(struct v4l2_plane));
 -		kp->m.planes = (__force struct v4l2_plane *)uplane;
 +		kp->m.planes = (__force_kernel struct v4l2_plane *)uplane;
  
- 		while (--num_planes >= 0) {
+ 		for (num_planes = 0; num_planes < kp->length; num_planes++) {
  			ret = get_v4l2_plane32(uplane, uplane32, kp->memory);
 @@ -519,7 +519,7 @@ static int put_v4l2_buffer32(struct v4l2_buffer *kp, struct v4l2_buffer32 __user
  		if (num_planes == 0)
@@ -29,13 +29,13 @@ index bacecbd..277d1f8 100644
  	return 0;
  }
  
-@@ -687,7 +687,7 @@ static int get_v4l2_ext_controls32(struct v4l2_ext_controls *kp, struct v4l2_ext
- 			n * sizeof(struct v4l2_ext_control32)))
+@@ -691,7 +691,7 @@ static int get_v4l2_ext_controls32(struct v4l2_ext_controls *kp, struct v4l2_ext
  		return -EFAULT;
- 	kcontrols = compat_alloc_user_space(n * sizeof(struct v4l2_ext_control));
+ 	kcontrols = compat_alloc_user_space(kp->count *
+ 					    sizeof(struct v4l2_ext_control));
 -	kp->controls = (__force struct v4l2_ext_control *)kcontrols;
 +	kp->controls = (__force_kernel struct v4l2_ext_control *)kcontrols;
- 	while (--n >= 0) {
+ 	for (n = 0; n < kp->count; n++) {
  		u32 id;
  
 @@ -714,7 +714,7 @@ static int put_v4l2_ext_controls32(struct v4l2_ext_controls *kp, struct v4l2_ext

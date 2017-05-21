@@ -14,7 +14,7 @@ index ceb7d70..99ab7d7 100644
  	void (*ctor)(void *);	/* Called on object slot creation */
  	struct list_head list;	/* List of all slab caches on the system */
  };
-@@ -71,6 +73,35 @@ extern struct list_head slab_caches;
+@@ -71,6 +71,35 @@ extern struct list_head slab_caches;
  /* The slab cache that manages slab cache information */
  extern struct kmem_cache *kmem_cache;
  
@@ -47,9 +47,9 @@ index ceb7d70..99ab7d7 100644
 +}
 +#endif
 +
- unsigned long calculate_alignment(unsigned long flags,
- 		unsigned long align, unsigned long size);
- 
+ /* A table of kmalloc cache names and sizes */
+ extern const struct kmalloc_info_struct {
+ 	const char *name;
 @@ -89,8 +120,11 @@ extern int __kmem_cache_create(struct kmem_cache *, unsigned long flags);
  
  extern struct kmem_cache *create_kmalloc_cache(const char *name, size_t size,

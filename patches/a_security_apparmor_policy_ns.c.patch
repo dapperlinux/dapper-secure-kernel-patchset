@@ -1,0 +1,13 @@
+diff --git a/security/apparmor/policy_ns.c b/security/apparmor/policy_ns.c
+index 93d1826..07a4a79 100644
+--- a/security/apparmor/policy_ns.c
++++ b/security/apparmor/policy_ns.c
+@@ -113,7 +113,7 @@ static struct aa_ns *alloc_ns(const char *prefix, const char *name)
+ 	/* ns and ns->unconfined share ns->unconfined refcount */
+ 	ns->unconfined->ns = ns;
+ 
+-	atomic_set(&ns->uniq_null, 0);
++	atomic_set_unchecked(&ns->uniq_null, 0);
+ 
+ 	return ns;
+ 

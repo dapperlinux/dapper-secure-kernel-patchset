@@ -1,0 +1,31 @@
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 8bef70e..1bcd60a 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -102,6 +102,8 @@ static void *hypercall_pg;
+ struct clocksource *hyperv_cs;
+ EXPORT_SYMBOL_GPL(hyperv_cs);
+ 
++static char hv_hypercall_page[PAGE_SIZE] __aligned(PAGE_SIZE) __used __section(".text");
++
+ /*
+  * This function is to be invoked early in the boot sequence after the
+  * hypervisor has been detected.
+@@ -143,16 +145,12 @@ void hyperv_init(void)
+ 	if (ms_hyperv.features & HV_X64_MSR_REFERENCE_TSC_AVAILABLE) {
+ 		union hv_x64_msr_hypercall_contents tsc_msr;
+ 
+-		tsc_pg = __vmalloc(PAGE_SIZE, GFP_KERNEL, PAGE_KERNEL);
+-		if (!tsc_pg)
+-			goto register_msr_cs;
+-
+ 		hyperv_cs = &hyperv_cs_tsc;
+ 
+ 		rdmsrl(HV_X64_MSR_REFERENCE_TSC, tsc_msr.as_uint64);
+ 
+ 		tsc_msr.enable = 1;
+-		tsc_msr.guest_physical_address = vmalloc_to_pfn(tsc_pg);
++		tsc_msr.guest_physical_address = __phys_to_pfn(slow_virt_to_phys((void *)(ktla_ktva((unsigned long)hv_hypercall_page))));
+ 
+ 		wrmsrl(HV_X64_MSR_REFERENCE_TSC, tsc_msr.as_uint64);
+ 		clocksource_register_hz(&hyperv_cs_tsc, NSEC_PER_SEC/100);

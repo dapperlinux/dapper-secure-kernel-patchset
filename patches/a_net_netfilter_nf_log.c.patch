@@ -2,15 +2,15 @@ diff --git a/net/netfilter/nf_log.c b/net/netfilter/nf_log.c
 index 3dca90d..29b498f 100644
 --- a/net/netfilter/nf_log.c
 +++ b/net/netfilter/nf_log.c
-@@ -413,7 +413,7 @@ static const struct file_operations nflog_file_ops = {
+@@ -415,7 +415,7 @@ static const struct file_operations nflog_file_ops = {
  
  #ifdef CONFIG_SYSCTL
  static char nf_log_sysctl_fnames[NFPROTO_NUMPROTO-NFPROTO_UNSPEC][3];
 -static struct ctl_table nf_log_sysctl_table[NFPROTO_NUMPROTO+1];
 +static ctl_table_no_const nf_log_sysctl_table[NFPROTO_NUMPROTO+1] __read_only;
+ static struct ctl_table_header *nf_log_sysctl_fhdr;
  
- static int nf_log_proc_dostring(struct ctl_table *table, int write,
- 			 void __user *buffer, size_t *lenp, loff_t *ppos)
+ static struct ctl_table nf_log_sysctl_ftable[] = {
 @@ -425,7 +425,7 @@ static int nf_log_proc_dostring(struct ctl_table *table, int write,
  	struct net *net = table->extra2;
  

@@ -19,7 +19,7 @@ index cdaa58c..ae30f0d 100644
  }
  
  /*
-@@ -116,9 +120,12 @@ static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
+@@ -116,9 +116,12 @@ static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
  static inline void native_pmd_clear(pmd_t *pmd)
  {
  	u32 *tmp = (u32 *)pmd;
@@ -31,4 +31,4 @@ index cdaa58c..ae30f0d 100644
 +	pax_close_kernel();
  }
  
- static inline void pud_clear(pud_t *pudp)
+ static inline void native_pud_clear(pud_t *pudp)

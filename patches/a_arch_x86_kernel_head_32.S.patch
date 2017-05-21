@@ -2,11 +2,12 @@ diff --git a/arch/x86/kernel/head_32.S b/arch/x86/kernel/head_32.S
 index 2dabea4..e97ebe8 100644
 --- a/arch/x86/kernel/head_32.S
 +++ b/arch/x86/kernel/head_32.S
-@@ -24,10 +24,17 @@
+@@ -24,11 +24,18 @@
  #include <asm/nops.h>
  #include <asm/bootparam.h>
  #include <asm/export.h>
 +#include <asm/alternative-asm.h>
+ #include <asm/pgtable_32.h>
  
  /* Physical address */
  #define pa(X) ((X) - __PAGE_OFFSET)
@@ -20,19 +21,6 @@ index 2dabea4..e97ebe8 100644
  /*
   * References to members of the new_cpu_data structure.
   */
-@@ -57,11 +64,7 @@
-  * and small than max_low_pfn, otherwise will waste some page table entries
-  */
- 
--#if PTRS_PER_PMD > 1
--#define PAGE_TABLE_SIZE(pages) (((pages) / PTRS_PER_PMD) + PTRS_PER_PGD)
--#else
--#define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PGD)
--#endif
-+#define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PTE)
- 
- /*
-  * Number of possible pages in the lowmem region.
 @@ -87,6 +90,12 @@ INIT_MAP_SIZE = PAGE_TABLE_SIZE(KERNEL_PAGES) * PAGE_SIZE
  RESERVE_BRK(pagetables, INIT_MAP_SIZE)
  
@@ -127,7 +115,7 @@ index 2dabea4..e97ebe8 100644
  /*
   * Clear BSS first so that there are no surprises...
   */
-@@ -155,7 +231,7 @@ ENTRY(startup_32)
+@@ -124,7 +124,7 @@ ENTRY(startup_32)
  
  #ifdef CONFIG_MICROCODE
  	/* Early load ucode on BSP. */
@@ -135,27 +123,22 @@ index 2dabea4..e97ebe8 100644
 +	pax_direct_call load_ucode_bsp
  #endif
  
- /*
-@@ -210,8 +286,11 @@ ENTRY(startup_32)
- 	movl %eax, pa(max_pfn_mapped)
+ 	/* Create early pagetables. */
+@@ -131,12 +131,19 @@ ENTRY(startup_32)
+ 	call  mk_early_pgtbl_32
  
  	/* Do early initialization of the fixmap area */
 -	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,%eax
+ #ifdef  CONFIG_X86_PAE
+ #define KPMDS (((-__PAGE_OFFSET) >> 30) & 3) /* Number of kernel PMDs */
 -	movl %eax,pa(initial_pg_pmd+0x1000*KPMDS-8)
 +#ifdef CONFIG_COMPAT_VDSO
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR+_PAGE_USER,pa(initial_pg_pmd+0x1000*KPMDS-8)
-+#else
+ #else
+-	movl %eax,pa(initial_page_table+0xffc)
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,pa(initial_pg_pmd+0x1000*KPMDS-8)
 +#endif
- #else	/* Not PAE */
- 
- page_pde_offset = (__PAGE_OFFSET >> 20);
-@@ -241,8 +320,11 @@ page_pde_offset = (__PAGE_OFFSET >> 20);
- 	movl %eax, pa(max_pfn_mapped)
- 
- 	/* Do early initialization of the fixmap area */
--	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,%eax
--	movl %eax,pa(initial_page_table+0xffc)
++#else
 +#ifdef CONFIG_COMPAT_VDSO
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR+_PAGE_USER,pa(initial_page_table+0xffc)
 +#else
@@ -164,33 +147,33 @@ index 2dabea4..e97ebe8 100644
  #endif
  
  #ifdef CONFIG_PARAVIRT
-@@ -256,9 +338,7 @@ page_pde_offset = (__PAGE_OFFSET >> 20);
+@@ -150,9 +150,7 @@ ENTRY(startup_32)
  	cmpl $num_subarch_entries, %eax
- 	jae bad_subarch
+ 	jae .Lbad_subarch
  
 -	movl pa(subarch_entries)(,%eax,4), %eax
 -	subl $__PAGE_OFFSET, %eax
 -	jmp *%eax
 +	jmp *pa(subarch_entries)(,%eax,4)
  
- bad_subarch:
+ .Lbad_subarch:
  WEAK(lguest_entry)
-@@ -270,10 +350,10 @@ WEAK(xen_entry)
+@@ -164,10 +171,10 @@ WEAK(xen_entry)
  	__INITDATA
  
  subarch_entries:
--	.long default_entry		/* normal x86/PC */
+-	.long .Ldefault_entry		/* normal x86/PC */
 -	.long lguest_entry		/* lguest hypervisor */
 -	.long xen_entry			/* Xen hypervisor */
--	.long default_entry		/* Moorestown MID */
-+	.long ta(default_entry)		/* normal x86/PC */
+-	.long .Ldefault_entry		/* Moorestown MID */
++	.long ta(.Ldefault_entry)		/* normal x86/PC */
 +	.long ta(lguest_entry)		/* lguest hypervisor */
-+	.long ta(xen_entry)		/* Xen hypervisor */
-+	.long ta(default_entry)		/* Moorestown MID */
++	.long ta(xen_entry)			/* Xen hypervisor */
++	.long ta(.Ldefault_entry)		/* Moorestown MID */
  num_subarch_entries = (. - subarch_entries) / 4
  .previous
  #else
-@@ -314,7 +394,7 @@ ENTRY(startup_32_smp)
+@@ -209,7 +207,7 @@ ENTRY(startup_32_smp)
  
  #ifdef CONFIG_MICROCODE
  	/* Early load ucode on AP. */
@@ -198,23 +181,23 @@ index 2dabea4..e97ebe8 100644
 +	pax_direct_call load_ucode_ap
  #endif
  
- default_entry:
-@@ -362,6 +442,7 @@ default_entry:
+ .Ldefault_entry:
+@@ -257,6 +255,7 @@ ENTRY(startup_32_smp)
  	movl pa(mmu_cr4_features),%eax
  	movl %eax,%cr4
  
 +#ifdef CONFIG_X86_PAE
  	testb $X86_CR4_PAE, %al		# check if PAE is enabled
- 	jz enable_paging
+ 	jz .Lenable_paging
  
-@@ -390,6 +471,9 @@ default_entry:
+@@ -285,6 +292,9 @@ ENTRY(startup_32_smp)
  	/* Make changes effective */
  	wrmsr
  
 +	btsl $_PAGE_BIT_NX-32,pa(__supported_pte_mask+4)
 +#endif
 +
- enable_paging:
+ .Lenable_paging:
  
  /*
 @@ -457,14 +541,20 @@ is486:
@@ -294,7 +277,7 @@ index 2dabea4..e97ebe8 100644
  
  	addl $(5*4),%esp
  	popl %ds
-@@ -656,11 +749,8 @@ ENTRY(initial_code)
+@@ -552,11 +551,8 @@ ENTRY(initial_code)
  ENTRY(setup_once_ref)
  	.long setup_once
  
@@ -306,8 +289,8 @@ index 2dabea4..e97ebe8 100644
 +__READ_ONLY
 +	.balign	PAGE_SIZE
  #ifdef CONFIG_X86_PAE
+ .globl initial_pg_pmd
  initial_pg_pmd:
- 	.fill 1024*KPMDS,4,0
 @@ -676,16 +766,19 @@ empty_zero_page:
  	.fill 4096,1,0
  .globl swapper_pg_dir
@@ -332,7 +315,7 @@ index 2dabea4..e97ebe8 100644
  ENTRY(initial_page_table)
  	.long	pa(initial_pg_pmd+PGD_IDENT_ATTR),0	/* low identity map */
  # if KPMDS == 3
-@@ -703,13 +796,22 @@ ENTRY(initial_page_table)
+@@ -600,7 +610,16 @@ ENTRY(initial_page_table)
  # else
  #  error "Kernel PMDs should be 1, 2 or 3"
  # endif
@@ -350,13 +333,15 @@ index 2dabea4..e97ebe8 100644
  #endif
  
  .data
- .balign 4
- ENTRY(initial_stack)
--	.long init_thread_union+THREAD_SIZE
-+	.long init_thread_union+THREAD_SIZE-8
+@@ -610,7 +629,7 @@ ENTRY(initial_stack)
+ 	 * The SIZEOF_PTREGS gap is a convention which helps the in-kernel
+ 	 * unwinder reliably detect the end of the stack.
+ 	 */
+-	.long init_thread_union + THREAD_SIZE - SIZEOF_PTREGS - \
++	.long init_thread_union + THREAD_SIZE - 8 - SIZEOF_PTREGS - \
+ 	      TOP_OF_KERNEL_STACK_PADDING;
  
  __INITRODATA
- int_msg:
 @@ -724,7 +826,7 @@ int_msg:
   * segment size, and 32-bit linear address value:
   */

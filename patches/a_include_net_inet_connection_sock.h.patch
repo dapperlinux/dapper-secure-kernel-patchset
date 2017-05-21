@@ -2,9 +2,9 @@ diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_so
 index 197a30d..677cd909 100644
 --- a/include/net/inet_connection_sock.h
 +++ b/include/net/inet_connection_sock.h
-@@ -65,7 +65,7 @@ struct inet_connection_sock_af_ops {
- 	int	    (*bind_conflict)(const struct sock *sk,
- 				     const struct inet_bind_bucket *tb, bool relax);
+@@ -63,7 +63,7 @@ struct inet_connection_sock_af_ops {
+ #endif
+ 	void	    (*addr2sockaddr)(struct sock *sk, struct sockaddr *);
  	void	    (*mtu_reduced)(struct sock *sk);
 -};
 +} __do_const;

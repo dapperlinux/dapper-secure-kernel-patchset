@@ -69,14 +69,14 @@ index bd4e3d4..4cff0f1 100644
  	long error_code, siginfo_t *info)
  {
  	struct task_struct *tsk = current;
-@@ -252,7 +274,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
+@@ -253,7 +253,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
  	if (show_unhandled_signals && unhandled_signal(tsk, signr) &&
  	    printk_ratelimit()) {
  		pr_info("%s[%d] trap %s ip:%lx sp:%lx error:%lx",
 -			tsk->comm, tsk->pid, str,
 +			tsk->comm, task_pid_nr(tsk), str,
  			regs->ip, regs->sp, error_code);
- 		print_vma_addr(" in ", regs->ip);
+ 		print_vma_addr(KERN_CONT " in ", regs->ip);
  		pr_cont("\n");
 @@ -262,7 +284,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
  }

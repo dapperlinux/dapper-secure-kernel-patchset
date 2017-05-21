@@ -20,9 +20,9 @@ index dbafc5d..819bd5d 100644
  	return 0;
  }
  
-@@ -485,7 +485,7 @@ int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+@@ -477,7 +477,7 @@ static int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+ 		goto err;
  
- 	bt->dir = dir;
  	bt->dev = dev;
 -	atomic_set(&bt->dropped, 0);
 +	atomic_set_unchecked(&bt->dropped, 0);

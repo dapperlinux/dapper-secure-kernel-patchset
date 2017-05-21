@@ -13,7 +13,7 @@ index 1193652..5a4f86e 100644
 +#include <linux/binfmts.h>
 +#endif
 +
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/pgtable.h>
  #include <asm/cacheflush.h>
 @@ -259,6 +266,48 @@ unsigned long change_protection(struct vm_area_struct *vma, unsigned long start,

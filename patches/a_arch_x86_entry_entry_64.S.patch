@@ -2,16 +2,16 @@ diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
 index ef766a3..d3f0e59 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -37,6 +37,9 @@
- #include <asm/pgtable_types.h>
+@@ -38,6 +38,9 @@
  #include <asm/export.h>
+ #include <asm/frame.h>
  #include <linux/err.h>
 +#include <asm/pgtable.h>
 +#include <asm/alternative-asm.h>
 +#include <asm/current.h>
  
- /* Avoid __ASSEMBLER__'ifying <linux/audit.h> just for this.  */
- #include <linux/elf-em.h>
+ .code64
+ .section .entry.text, "ax"
 @@ -54,6 +57,392 @@ ENTRY(native_usergs_sysret64)
  ENDPROC(native_usergs_sysret64)
  #endif /* CONFIG_PARAVIRT */
@@ -548,7 +548,7 @@ index ef766a3..d3f0e59 100644
  	pushq	%r13
  	pushq	%r14
  	pushq	%r15
-@@ -399,38 +809,49 @@ ENTRY(__switch_to_asm)
+@@ -394,31 +394,42 @@ ENTRY(__switch_to_asm)
  	popq	%r15
  	popq	%r14
  	popq	%r13
@@ -578,22 +578,24 @@ index ef766a3..d3f0e59 100644
 +#else
  ENTRY(ret_from_fork)
 +#endif
+ 	FRAME_BEGIN			/* help unwinder find end of stack */
  	movq	%rax, %rdi
--	call	schedule_tail			/* rdi: 'prev' task parameter */
+-	call	schedule_tail		/* rdi: 'prev' task parameter */
 +	pax_direct_call schedule_tail		/* rdi: 'prev' task parameter */
  
- 	testq	%rbx, %rbx			/* from kernel_thread? */
- 	jnz	1f				/* kernel threads are uncommon */
+ 	testq	%rbx, %rbx		/* from kernel_thread? */
+ 	jnz	1f			/* kernel threads are uncommon */
  
  2:
- 	movq	%rsp, %rdi
+ 	leaq	FRAME_OFFSET(%rsp),%rdi	/* pt_regs pointer */
 -	call	syscall_return_slowpath	/* returns with IRQs disabled */
 +	pax_direct_call syscall_return_slowpath	/* returns with IRQs disabled */
 +	pax_exit_kernel_user
 +	pax_erase_kstack
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	SWAPGS
- 	jmp	restore_regs_and_iret
+ 	FRAME_END
+@@ -426,8 +437,8 @@ ENTRY(ret_from_fork)
  
  1:
  	/* kernel thread */
@@ -895,9 +897,9 @@ index ef766a3..d3f0e59 100644
  
  /*
   * Hypervisor uses this for application faults while it executes.
-@@ -986,7 +1461,7 @@ ENTRY(xen_failsafe_callback)
- 	SAVE_C_REGS
+@@ -985,7 +988,7 @@ ENTRY(xen_failsafe_callback)
  	SAVE_EXTRA_REGS
+ 	ENCODE_FRAME_POINTER
  	jmp	error_exit
 -END(xen_failsafe_callback)
 +ENDPROC(xen_failsafe_callback)
@@ -1080,9 +1082,9 @@ index ef766a3..d3f0e59 100644
  	/* Use %rdx as our temp variable throughout */
  	pushq	%rdx
  
-@@ -1258,6 +1779,12 @@ ENTRY(nmi)
- 	pushq	%r14		/* pt_regs->r14 */
+@@ -1260,6 +1263,12 @@ ENTRY(nmi)
  	pushq	%r15		/* pt_regs->r15 */
+ 	ENCODE_FRAME_POINTER
  
 +#if defined(CONFIG_PAX_KERNEXEC) || defined(CONFIG_PAX_MEMORY_UDEREF)
 +	xorl	%ebx, %ebx
@@ -1104,8 +1106,8 @@ index ef766a3..d3f0e59 100644
  
  	/*
  	 * Return back to user mode.  We must *not* do the normal exit
-@@ -1274,6 +1803,11 @@ ENTRY(nmi)
- 	 * do_nmi doesn't modify pt_regs.
+@@ -1275,6 +1286,11 @@ ENTRY(nmi)
+ 	 * work, because we don't want to enable interrupts.
  	 */
  	SWAPGS
 +
@@ -1113,7 +1115,7 @@ index ef766a3..d3f0e59 100644
 +	movq	RBX(%rsp), %rbx
 +#endif
 +
- 	jmp	restore_c_regs_and_iret
+ 	jmp	restore_regs_and_iret
  
  .Lnmi_from_kernel:
 @@ -1395,6 +1929,7 @@ nested_nmi_out:

@@ -104,40 +104,18 @@ index b4421cc..8326c69 100644
  1:	wrmsr				/* Make changes effective */
  
  	/* Setup cr0 */
-@@ -295,10 +343,10 @@ ENTRY(secondary_startup_64)
- 	 *	REX.W + FF /5 JMP m16:64 Jump far, absolute indirect,
- 	 *		address given in m16:64.
+@@ -300,9 +300,9 @@ ENTRY(start_cpu)
  	 */
--	movq	initial_code(%rip),%rax
+ 	pushq	$.Lafter_lret	# put return address on stack for unwinder
+ 	xorq	%rbp, %rbp	# clear frame pointer
+-	movq	initial_code(%rip), %rax
 +	pax_set_fptr_mask
- 	pushq	$0		# fake return address to stop unwinder
  	pushq	$__KERNEL_CS	# set correct cs
 -	pushq	%rax		# target address in negative space
 +	pushq	initial_code(%rip) # target address in negative space
  	lretq
- ENDPROC(secondary_startup_64)
- 
-@@ -312,10 +360,9 @@ ENDPROC(secondary_startup_64)
-  */
- ENTRY(start_cpu0)
- 	movq initial_stack(%rip),%rsp
--	movq	initial_code(%rip),%rax
- 	pushq	$0		# fake return address to stop unwinder
- 	pushq	$__KERNEL_CS	# set correct cs
--	pushq	%rax		# target address in negative space
-+	pushq	initial_code(%rip) # target address in negative space
- 	lretq
- ENDPROC(start_cpu0)
- #endif
-@@ -328,7 +375,7 @@ ENDPROC(start_cpu0)
- 	GLOBAL(initial_gs)
- 	.quad	INIT_PER_CPU_VAR(irq_stack_union)
- 	GLOBAL(initial_stack)
--	.quad  init_thread_union+THREAD_SIZE-8
-+	.quad  init_thread_union+THREAD_SIZE-16
- 	__FINITDATA
- 
- bad_address:
+ .Lafter_lret:
+ ENDPROC(start_cpu)
 @@ -382,13 +429,13 @@ early_idt_handler_common:
  	cmpq $14,%rsi		/* Page fault? */
  	jnz 10f

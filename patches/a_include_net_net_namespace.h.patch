@@ -34,9 +34,9 @@ index 0940598..e69bc18 100644
  #endif
  
  int peernet2id_alloc(struct net *net, struct net *peer);
-@@ -293,7 +297,7 @@ struct pernet_operations {
+@@ -293,7 +293,7 @@ struct pernet_operations {
  	void (*exit_batch)(struct list_head *net_exit_list);
- 	int *id;
+ 	unsigned int *id;
  	size_t size;
 -};
 +} __do_const;

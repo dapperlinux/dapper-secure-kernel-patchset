@@ -1,13 +1,13 @@
-diff --git a/kernel/cgroup_pids.c b/kernel/cgroup_pids.c
-index a57242e..da67bb2 100644
---- a/kernel/cgroup_pids.c
-+++ b/kernel/cgroup_pids.c
+diff --git a/kernel/cgroup/pids.c b/kernel/cgroup/pids.c
+index 2237201..2d53e46 100644
+--- a/kernel/cgroup/pids.c
++++ b/kernel/cgroup/pids.c
 @@ -54,7 +54,7 @@ struct pids_cgroup {
  	struct cgroup_file		events_file;
  
  	/* Number of times fork failed because limit was hit. */
 -	atomic64_t			events_limit;
-+	atomic64_unchecked_t		events_limit;
++	atomic64_unchecked_t			events_limit;
  };
  
  static struct pids_cgroup *css_pids(struct cgroup_subsys_state *css)

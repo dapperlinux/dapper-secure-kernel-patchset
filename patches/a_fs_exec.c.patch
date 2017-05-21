@@ -2,7 +2,7 @@ diff --git a/fs/exec.c b/fs/exec.c
 index 67e8657..4368e21 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -57,8 +57,20 @@
+@@ -62,8 +62,20 @@
  #include <linux/oom.h>
  #include <linux/compat.h>
  #include <linux/vmalloc.h>
@@ -18,7 +18,7 @@ index 67e8657..4368e21 100644
 +
 +#include <trace/events/fs.h>
  
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
 +#include <asm/sections.h>
  #include <asm/mmu_context.h>
  #include <asm/tlb.h>
@@ -88,15 +88,15 @@ index 67e8657..4368e21 100644
  
  	if (write)
  		gup_flags |= FOLL_WRITE;
-@@ -208,9 +229,8 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
+@@ -213,9 +225,8 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
  	 * We are doing an exec().  'current' is the process
  	 * doing the exec and bprm->mm is the new process's mm.
  	 */
 -	ret = get_user_pages_remote(current, bprm->mm, pos, 1, gup_flags,
--			&page, NULL);
+-			&page, NULL, NULL);
 -	if (ret <= 0)
 +	if (0 >= get_user_pages_remote(current, bprm->mm, pos, 1, gup_flags,
-+			&page, NULL))
++			&page, NULL, NULL))
  		return NULL;
  
  	if (write) {

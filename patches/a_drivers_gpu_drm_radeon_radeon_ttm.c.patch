@@ -2,7 +2,7 @@ diff --git a/drivers/gpu/drm/radeon/radeon_ttm.c b/drivers/gpu/drm/radeon/radeon
 index 4ce04e0..db71634 100644
 --- a/drivers/gpu/drm/radeon/radeon_ttm.c
 +++ b/drivers/gpu/drm/radeon/radeon_ttm.c
-@@ -975,7 +975,7 @@ void radeon_ttm_set_active_vram_size(struct radeon_device *rdev, u64 size)
+@@ -976,7 +976,7 @@ void radeon_ttm_set_active_vram_size(struct radeon_device *rdev, u64 size)
  	man->size = size >> PAGE_SHIFT;
  }
  
@@ -10,7 +10,7 @@ index 4ce04e0..db71634 100644
 +static vm_operations_struct_no_const radeon_ttm_vm_ops __read_only;
  static const struct vm_operations_struct *ttm_vm_ops = NULL;
  
- static int radeon_ttm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
+ static int radeon_ttm_fault(struct vm_fault *vmf)
 @@ -1016,8 +1016,10 @@ int radeon_mmap(struct file *filp, struct vm_area_struct *vma)
  	}
  	if (unlikely(ttm_vm_ops == NULL)) {

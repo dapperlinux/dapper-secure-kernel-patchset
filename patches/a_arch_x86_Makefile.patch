@@ -12,8 +12,8 @@ index 2d44933..86ecceb 100644
  else
          BITS := 64
          UTS_MACHINE := x86_64
-@@ -126,6 +123,9 @@ else
-         KBUILD_CFLAGS += $(call cc-option,-maccumulate-outgoing-args)
+@@ -122,6 +122,9 @@ else
+         KBUILD_CFLAGS += $(call cc-option,-funit-at-a-time)
  endif
  
 +# temporary until string.h is fixed

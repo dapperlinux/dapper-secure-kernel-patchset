@@ -17,7 +17,7 @@ index cf0fa5d..a7444a7 100644
  # define __must_hold(x)	__attribute__((context(x,1,1)))
  # define __acquires(x)	__attribute__((context(x,0,1)))
  # define __releases(x)	__attribute__((context(x,1,0)))
-@@ -17,33 +20,76 @@
+@@ -17,37 +17,76 @@
  # define __release(x)	__context__(x,-1)
  # define __cond_lock(x,c)	((c) ? ({ __acquire(x); 1; }) : 0)
  # define __percpu	__attribute__((noderef, address_space(3)))
@@ -34,8 +34,9 @@ index cf0fa5d..a7444a7 100644
  extern void __chk_io_ptr(const volatile void __iomem *);
  # define ACCESS_PRIVATE(p, member) (*((typeof((p)->member) __force *) &(p)->member))
  #else /* __CHECKER__ */
--# define __user
--# define __kernel
+-# ifdef STRUCTLEAK_PLUGIN
+-#  define __user __attribute__((user))
+-# else
 +# ifdef CHECKER_PLUGIN
 +#  ifdef CHECKER_PLUGIN_USER
 +//#  define __user
@@ -43,7 +44,7 @@ index cf0fa5d..a7444a7 100644
 +//#  define __kernel
 +//#  define __force_kernel
 +#  else
-+#  define __user
+ #  define __user
 +#  define __force_user
 +#  define __kernel
 +#  define __force_kernel
@@ -80,7 +81,8 @@ index cf0fa5d..a7444a7 100644
 +#  define __acquire(x) (void)0
 +#  define __release(x) (void)0
 +#  define __cond_lock(x,c) (c)
-+# endif
+ # endif
+-# define __kernel
  # define __safe
  # define __force
  # define __nocast

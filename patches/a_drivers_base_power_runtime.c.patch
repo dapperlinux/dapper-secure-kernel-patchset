@@ -64,7 +64,7 @@ index 23f3b95..875d17f 100644
  
  static int rpm_resume(struct device *dev, int rpmflags);
  static int rpm_suspend(struct device *dev, int rpmflags);
-@@ -263,8 +260,8 @@ static int rpm_check_suspend_allowed(struct device *dev)
+@@ -302,8 +302,8 @@ static void rpm_put_suppliers(struct device *dev)
   * @cb: Runtime PM callback to run.
   * @dev: Device to run the callback for.
   */
@@ -72,8 +72,8 @@ index 23f3b95..875d17f 100644
  static int __rpm_callback(int (*cb)(struct device *), struct device *dev)
 -	__releases(&dev->power.lock) __acquires(&dev->power.lock)
  {
- 	int retval;
- 
+ 	int retval, idx;
+ 	bool use_links = dev->power.links_count > 0;
 @@ -412,8 +409,8 @@ static int rpm_callback(int (*cb)(struct device *), struct device *dev)
   *
   * This function must be called under dev->power.lock with interrupts disabled.

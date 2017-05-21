@@ -2,10 +2,10 @@ diff --git a/kernel/module.c b/kernel/module.c
 index 0e54d5b..f9d983b 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -61,6 +61,7 @@
- #include <linux/pfn.h>
+@@ -63,6 +63,7 @@
  #include <linux/bsearch.h>
  #include <linux/dynamic_debug.h>
+ #include <linux/audit.h>
 +#include <linux/grsecurity.h>
  #include <uapi/linux/module.h>
  #include "module-internal.h"

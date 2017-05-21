@@ -9,8 +9,8 @@ index 83db0ea..0ad5d22 100644
 -};
 +} __randomize_layout;
  
- #define X86_VENDOR_INTEL	0
- #define X86_VENDOR_CYRIX	1
+ struct cpuid_regs {
+ 	u32 eax, ebx, ecx, edx;
 @@ -160,7 +160,7 @@ extern __u32			cpu_caps_cleared[NCAPINTS];
  extern __u32			cpu_caps_set[NCAPINTS];
  
@@ -20,13 +20,13 @@ index 83db0ea..0ad5d22 100644
  #define cpu_data(cpu)		per_cpu(cpu_info, cpu)
  #else
  #define cpu_info		boot_cpu_data
-@@ -206,9 +206,13 @@ static inline void native_cpuid(unsigned int *eax, unsigned int *ebx,
- 	    : "memory");
- }
+@@ -238,9 +238,13 @@ native_cpuid_reg(ebx)
+ native_cpuid_reg(ecx)
+ native_cpuid_reg(edx)
  
 +#define PCID_KERNEL		0UL
 +#define PCID_USER		1UL
-+#define PCID_NOFLUSH		(1UL << 63)
++#define PCID_NOFLUSH	(1UL << 63)
 +
  static inline void load_cr3(pgd_t *pgdir)
  {
@@ -35,12 +35,18 @@ index 83db0ea..0ad5d22 100644
  }
  
  #ifdef CONFIG_X86_32
-@@ -308,11 +312,9 @@ struct tss_struct {
+@@ -340,7 +340,7 @@ struct tss_struct {
  
  } ____cacheline_aligned;
  
 -DECLARE_PER_CPU_SHARED_ALIGNED(struct tss_struct, cpu_tss);
 +extern struct tss_struct cpu_tss[NR_CPUS];
+ 
+ /*
+  * sizeof(unsigned long) coming from an extra "long" at the end
+@@ -352,9 +352,7 @@ DECLARE_PER_CPU_SHARED_ALIGNED(struct tss_struct, cpu_tss);
+ #define __KERNEL_TSS_LIMIT	\
+ 	(IO_BITMAP_OFFSET + IO_BITMAP_BYTES + sizeof(unsigned long) - 1)
  
 -#ifdef CONFIG_X86_32
  DECLARE_PER_CPU(unsigned long, cpu_current_top_of_stack);

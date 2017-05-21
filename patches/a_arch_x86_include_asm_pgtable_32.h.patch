@@ -1,18 +1,19 @@
 diff --git a/arch/x86/include/asm/pgtable_32.h b/arch/x86/include/asm/pgtable_32.h
-index b6c0b40..3535d47 100644
+index fbc7336..1530a23 100644
 --- a/arch/x86/include/asm/pgtable_32.h
 +++ b/arch/x86/include/asm/pgtable_32.h
-@@ -25,9 +25,6 @@
+@@ -25,10 +25,6 @@
  struct mm_struct;
  struct vm_area_struct;
  
 -extern pgd_t swapper_pg_dir[1024];
 -extern pgd_t initial_page_table[1024];
+-extern pmd_t initial_pg_pmd[];
 -
  static inline void pgtable_cache_init(void) { }
  static inline void check_pgt_cache(void) { }
  void paging_init(void);
-@@ -45,6 +42,12 @@ void paging_init(void);
+@@ -46,6 +42,12 @@ void paging_init(void);
  # include <asm/pgtable-2level.h>
  #endif
  
@@ -25,7 +26,7 @@ index b6c0b40..3535d47 100644
  #if defined(CONFIG_HIGHPTE)
  #define pte_offset_map(dir, address)					\
  	((pte_t *)kmap_atomic(pmd_page(*(dir))) +		\
-@@ -59,12 +62,17 @@ void paging_init(void);
+@@ -60,12 +62,17 @@ void paging_init(void);
  /* Clear a kernel PTE and flush it from the TLB */
  #define kpte_clear_flush(ptep, vaddr)		\
  do {						\
@@ -43,3 +44,16 @@ index b6c0b40..3535d47 100644
  /*
   * kern_addr_valid() is (1) for FLATMEM and (0) for
   * SPARSEMEM and DISCONTIGMEM
+@@ -91,11 +98,7 @@ do {						\
+  * KERNEL_IMAGE_SIZE should be greater than pa(_end)
+  * and small than max_low_pfn, otherwise will waste some page table entries
+  */
+-#if PTRS_PER_PMD > 1
+-#define PAGE_TABLE_SIZE(pages) (((pages) / PTRS_PER_PMD) + PTRS_PER_PGD)
+-#else
+-#define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PGD)
+-#endif
++#define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PTE)
+ 
+ /*
+  * Number of possible pages in the lowmem region.

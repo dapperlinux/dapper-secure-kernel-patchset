@@ -18,15 +18,6 @@ index 67eec55..1a5c1ab 100644
  	select X86_PTDUMP_CORE
  	---help---
  	  Generate a warning if any W+X mappings are found at boot.
-@@ -111,7 +113,7 @@ config DEBUG_WX
- 
- config DEBUG_SET_MODULE_RONX
- 	bool "Set loadable kernel module data as NX and text as RO"
--	depends on MODULES
-+	depends on MODULES && BROKEN
- 	---help---
- 	  This option helps catch unintended modifications to loadable
- 	  kernel module's text and read-only data. It also prevents execution
 @@ -353,6 +355,7 @@ config X86_DEBUG_FPU
  config PUNIT_ATOM_DEBUG
  	tristate "ATOM Punit debug driver"

@@ -1,13 +1,13 @@
 diff --git a/net/core/datagram.c b/net/core/datagram.c
-index 963732e..999ed39 100644
+index f4947e7..5e402a7 100644
 --- a/net/core/datagram.c
 +++ b/net/core/datagram.c
-@@ -360,7 +360,7 @@ int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags)
+@@ -351,7 +351,7 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff *skb,
+ 		spin_unlock_bh(&sk->sk_receive_queue.lock);
  	}
  
- 	kfree_skb(skb);
 -	atomic_inc(&sk->sk_drops);
 +	atomic_inc_unchecked(&sk->sk_drops);
- 	sk_mem_reclaim_partial(sk);
- 
  	return err;
+ }
+ EXPORT_SYMBOL(__sk_queue_drop_skb);

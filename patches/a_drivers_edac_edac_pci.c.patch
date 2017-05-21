@@ -2,17 +2,17 @@ diff --git a/drivers/edac/edac_pci.c b/drivers/edac/edac_pci.c
 index 8f2f289..cbb0d7c 100644
 --- a/drivers/edac/edac_pci.c
 +++ b/drivers/edac/edac_pci.c
-@@ -29,7 +29,7 @@
+@@ -26,7 +26,7 @@
  
  static DEFINE_MUTEX(edac_pci_ctls_mutex);
  static LIST_HEAD(edac_pci_list);
 -static atomic_t pci_indexes = ATOMIC_INIT(0);
 +static atomic_unchecked_t pci_indexes = ATOMIC_INIT(0);
  
- /*
-  * edac_pci_alloc_ctl_info
-@@ -224,7 +224,7 @@ static void edac_pci_workq_function(struct work_struct *work_req)
-  */
+ struct edac_pci_ctl_info *edac_pci_alloc_ctl_info(unsigned int sz_pvt,
+ 						const char *edac_pci_name)
+@@ -197,7 +197,7 @@ static void edac_pci_workq_function(struct work_struct *work_req)
+ 
  int edac_pci_alloc_index(void)
  {
 -	return atomic_inc_return(&pci_indexes) - 1;

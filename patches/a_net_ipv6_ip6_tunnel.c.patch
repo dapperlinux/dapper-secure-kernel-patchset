@@ -9,7 +9,7 @@ index f6ba452..b04707b 100644
 -static struct rtnl_link_ops ip6_link_ops __read_mostly;
 +static struct rtnl_link_ops ip6_link_ops;
  
- static int ip6_tnl_net_id __read_mostly;
+ static unsigned int ip6_tnl_net_id __read_mostly;
  struct ip6_tnl_net {
 @@ -2103,7 +2103,7 @@ static const struct nla_policy ip6_tnl_policy[IFLA_IPTUN_MAX + 1] = {
  	[IFLA_IPTUN_COLLECT_METADATA]	= { .type = NLA_FLAG },

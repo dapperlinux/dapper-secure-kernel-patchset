@@ -9,5 +9,5 @@ index da5722d..d405030 100644
 -static struct dmi_system_id kempld_dmi_table[] __initdata = {
 +static const struct dmi_system_id kempld_dmi_table[] __initconst = {
  	{
- 		.ident = "BBL6",
+ 		.ident = "BBD6",
  		.matches = {

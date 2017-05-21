@@ -11,19 +11,3 @@ index 2478ccd..1194b50 100644
  mwifiex_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
  	struct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);
-@@ -1539,14 +1539,10 @@ mwifiex_reinit_sw(struct mwifiex_adapter *adapter, struct semaphore *sem,
-  */
- void mwifiex_do_flr(struct mwifiex_adapter *adapter, bool prepare)
- {
--	struct mwifiex_if_ops if_ops;
--
- 	if (!prepare) {
--		mwifiex_reinit_sw(adapter, adapter->card_sem, &if_ops,
-+		mwifiex_reinit_sw(adapter, adapter->card_sem, NULL,
- 				  adapter->iface_type);
- 	} else {
--		memcpy(&if_ops, &adapter->if_ops,
--		       sizeof(struct mwifiex_if_ops));
- 		mwifiex_shutdown_sw(adapter, adapter->card_sem);
- 	}
- }

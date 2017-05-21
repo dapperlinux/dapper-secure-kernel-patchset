@@ -2,9 +2,9 @@ diff --git a/include/net/tcp.h b/include/net/tcp.h
 index 123979f..7bd48e9 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -544,7 +544,7 @@ void tcp_retransmit_timer(struct sock *sk);
- void tcp_xmit_retransmit_queue(struct sock *);
+@@ -548,7 +548,7 @@ void tcp_xmit_retransmit_queue(struct sock *);
  void tcp_simple_retransmit(struct sock *);
+ void tcp_enter_recovery(struct sock *sk, bool ece_ack);
  int tcp_trim_head(struct sock *, struct sk_buff *, u32);
 -int tcp_fragment(struct sock *, struct sk_buff *, u32, unsigned int, gfp_t);
 +int tcp_fragment(struct sock *, struct sk_buff *, u32, unsigned int, gfp_t) __intentional_overflow(3);

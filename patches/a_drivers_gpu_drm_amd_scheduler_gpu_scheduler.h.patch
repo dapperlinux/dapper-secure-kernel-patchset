@@ -10,4 +10,4 @@ index 51068e6..35b4c71 100644
 +	atomic_unchecked_t		fence_seq;
  	uint64_t                        fence_context;
  
- 	struct fence			*dependency;
+ 	struct dma_fence		*dependency;

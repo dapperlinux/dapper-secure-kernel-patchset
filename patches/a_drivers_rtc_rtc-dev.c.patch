@@ -5,7 +5,7 @@ index a6d9434..dc26b71 100644
 @@ -16,6 +16,7 @@
  #include <linux/module.h>
  #include <linux/rtc.h>
- #include <linux/sched.h>
+ #include <linux/sched/signal.h>
 +#include <linux/grsecurity.h>
  #include "rtc-core.h"
  

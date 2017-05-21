@@ -12,7 +12,7 @@ index ec14954..dff184d 100644
  		off += sizeof(uint32_t);
  	}
 @@ -369,7 +369,7 @@ static void make_fdt_header(struct fdt_header *fdt,
- void dt_to_blob(FILE *f, struct boot_info *bi, int version)
+ void dt_to_blob(FILE *f, struct dt_info *dti, int version)
  {
  	struct version_info *vi = NULL;
 -	int i;
@@ -20,8 +20,8 @@ index ec14954..dff184d 100644
  	struct data blob       = empty_data;
  	struct data reservebuf = empty_data;
  	struct data dtbuf      = empty_data;
-@@ -463,7 +463,7 @@ static void dump_stringtable_asm(FILE *f, struct data strbuf)
- void dt_to_asm(FILE *f, struct boot_info *bi, int version)
+@@ -470,7 +470,7 @@ static void dump_stringtable_asm(FILE *f, struct data strbuf)
+ void dt_to_asm(FILE *f, struct dt_info *dti, int version)
  {
  	struct version_info *vi = NULL;
 -	int i;

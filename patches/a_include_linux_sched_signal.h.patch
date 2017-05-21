@@ -1,0 +1,40 @@
+diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
+index 2cf4467..0aa5f8f 100644
+--- a/include/linux/sched/signal.h
++++ b/include/linux/sched/signal.h
+@@ -203,6 +203,17 @@ struct signal_struct {
+ #ifdef CONFIG_TASKSTATS
+ 	struct taskstats *stats;
+ #endif
++
++#ifdef CONFIG_GRKERNSEC
++	u32 curr_ip;
++	u32 saved_ip;
++	u32 gr_saddr;
++	u32 gr_daddr;
++	u16 gr_sport;
++	u16 gr_dport;
++	u8 used_accept:1;
++#endif
++
+ #ifdef CONFIG_AUDIT
+ 	unsigned audit_tty;
+ 	struct tty_audit_buf *tty_audit_buf;
+@@ -222,7 +233,7 @@ struct signal_struct {
+ 	struct mutex cred_guard_mutex;	/* guard against foreign influences on
+ 					 * credential calculations
+ 					 * (notably. ptrace) */
+-};
++} __randomize_layout;
+ 
+ /*
+  * Bits in flags field of signal_struct.
+@@ -260,7 +271,7 @@ static inline int signal_group_exit(const struct signal_struct *sig)
+ extern void flush_signals(struct task_struct *);
+ extern void ignore_signals(struct task_struct *);
+ extern void flush_signal_handlers(struct task_struct *, int force_default);
+-extern int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info);
++extern int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info) __must_hold(&tsk->sighand->siglock);
+ 
+ static inline int kernel_dequeue_signal(siginfo_t *info)
+ {

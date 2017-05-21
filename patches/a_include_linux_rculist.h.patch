@@ -2,12 +2,13 @@ diff --git a/include/linux/rculist.h b/include/linux/rculist.h
 index 8beb98d..c515d45 100644
 --- a/include/linux/rculist.h
 +++ b/include/linux/rculist.h
-@@ -59,6 +59,9 @@ void __list_add_rcu(struct list_head *new,
- 		    struct list_head *prev, struct list_head *next);
- #endif
+@@ -57,6 +57,10 @@ static inline void __list_add_rcu(struct list_head *new,
+ 	next->prev = new;
+ }
  
 +void __pax_list_add_rcu(struct list_head *new,
 +			struct list_head *prev, struct list_head *next);
++
 +
  /**
   * list_add_rcu - add a new entry to rcu-protected list

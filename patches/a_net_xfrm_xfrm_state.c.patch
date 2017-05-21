@@ -19,7 +19,7 @@ index 419bf5d..cb5cc3a 100644
 +	} else
  		err = -EEXIST;
  	spin_unlock_bh(&xfrm_type_lock);
- 	xfrm_state_put_afinfo(afinfo);
+ 	rcu_read_unlock();
 @@ -205,13 +207,16 @@ int xfrm_unregister_type(const struct xfrm_type *type, unsigned short family)
  
  	if (unlikely(afinfo == NULL))
@@ -37,7 +37,7 @@ index 419bf5d..cb5cc3a 100644
 +		pax_close_kernel();
 +	}
  	spin_unlock_bh(&xfrm_type_lock);
- 	xfrm_state_put_afinfo(afinfo);
+ 	rcu_read_unlock();
  	return err;
 @@ -221,7 +226,6 @@ EXPORT_SYMBOL(xfrm_unregister_type);
  static const struct xfrm_type *xfrm_get_type(u8 proto, unsigned short family)
@@ -47,17 +47,17 @@ index 419bf5d..cb5cc3a 100644
  	const struct xfrm_type *type;
  	int modload_attempted = 0;
  
-@@ -229,9 +233,8 @@ static const struct xfrm_type *xfrm_get_type(u8 proto, unsigned short family)
+@@ -229,9 +229,8 @@ static const struct xfrm_type *xfrm_get_type(u8 proto, unsigned short family)
  	afinfo = xfrm_state_get_afinfo(family);
  	if (unlikely(afinfo == NULL))
  		return NULL;
 -	typemap = afinfo->type_map;
  
--	type = typemap[proto];
+-	type = READ_ONCE(typemap[proto]);
 +	type = afinfo->type_map[proto];
  	if (unlikely(type && !try_module_get(type->owner)))
  		type = NULL;
- 	if (!type && !modload_attempted) {
+ 
 @@ -265,7 +268,7 @@ int xfrm_register_mode(struct xfrm_mode *mode, int family)
  		return -EAFNOSUPPORT;
  

@@ -19,7 +19,7 @@ index 748cdf2..cd2180d 100644
  
  	shl		$6, NUM_BLKS		/*  convert to bytes */
  	jz		.Ldone_hash
-@@ -326,7 +327,7 @@ ENTRY(sha256_ni_transform)
+@@ -326,7 +326,7 @@ ENTRY(sha256_ni_transform)
  
  .Ldone_hash:
  
@@ -27,4 +27,4 @@ index 748cdf2..cd2180d 100644
 +	pax_ret sha256_ni_transform
  ENDPROC(sha256_ni_transform)
  
- .data
+ .section	.rodata.cst256.K256, "aM", @progbits, 256

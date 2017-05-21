@@ -2,15 +2,6 @@ diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_conte
 index 8e0a9fe..2473467 100644
 --- a/arch/x86/include/asm/mmu_context.h
 +++ b/arch/x86/include/asm/mmu_context.h
-@@ -47,7 +47,7 @@ struct ldt_struct {
- 	 * allocations, but it's not worth trying to optimize.
- 	 */
- 	struct desc_struct *entries;
--	int size;
-+	unsigned int size;
- };
- 
- /*
 @@ -59,6 +59,23 @@ void destroy_context_ldt(struct mm_struct *mm);
  static inline int init_new_context_ldt(struct task_struct *tsk,
  				       struct mm_struct *mm)

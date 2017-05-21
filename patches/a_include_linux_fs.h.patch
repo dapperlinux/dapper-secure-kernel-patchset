@@ -29,14 +29,14 @@ index dc0478c..473e4cd 100644
  
  /*
   * Radix-tree tags, for tagging dirty and writeback pages within the pagecache
-@@ -703,7 +703,7 @@ struct inode {
+@@ -653,7 +653,7 @@ struct inode {
  #endif
  
  	void			*i_private; /* fs or device private pointer */
 -};
 +} __randomize_layout;
  
- static inline int inode_unhashed(struct inode *inode)
+ static inline unsigned int i_blocksize(const struct inode *node)
  {
 @@ -913,7 +913,7 @@ struct file {
  	struct list_head	f_tfile_llink;

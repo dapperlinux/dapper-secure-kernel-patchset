@@ -28,4 +28,4 @@ index 92b3b5d..47aadd7 100644
 +	pax_ret sha256_transform_avx
  ENDPROC(sha256_transform_avx)
  
- .data
+ .section	.rodata.cst256.K256, "aM", @progbits, 256

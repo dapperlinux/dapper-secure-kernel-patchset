@@ -2,15 +2,6 @@ diff --git a/fs/compat.c b/fs/compat.c
 index bd064a2..8280c0f 100644
 --- a/fs/compat.c
 +++ b/fs/compat.c
-@@ -498,7 +498,7 @@ COMPAT_SYSCALL_DEFINE2(io_setup, unsigned, nr_reqs, u32 __user *, ctx32p)
- 
- 	set_fs(KERNEL_DS);
- 	/* The __user pointer cast is valid because of the set_fs() */
--	ret = sys_io_setup(nr_reqs, (aio_context_t __user *) &ctx64);
-+	ret = sys_io_setup(nr_reqs, (aio_context_t __force_user *) &ctx64);
- 	set_fs(oldfs);
- 	/* truncating is ok because it's a user address */
- 	if (!ret)
 @@ -829,6 +829,7 @@ struct compat_old_linux_dirent {
  struct compat_readdir_callback {
  	struct dir_context ctx;

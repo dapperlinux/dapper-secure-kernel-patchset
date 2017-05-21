@@ -21,7 +21,7 @@ index 2cedc44..35ed999 100644
  	pushq   %rbx
  	pushq   %rbp
  	pushq   %r13
-@@ -471,7 +470,7 @@ done_hash:
+@@ -471,7 +471,7 @@ done_hash:
  	popq    %rbp
  	popq    %rbx
  
@@ -29,4 +29,4 @@ index 2cedc44..35ed999 100644
 +	pax_ret sha256_transform_ssse3
  ENDPROC(sha256_transform_ssse3)
  
- .data
+ .section	.rodata.cst256.K256, "aM", @progbits, 256

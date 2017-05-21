@@ -2,8 +2,8 @@ diff --git a/include/linux/tty.h b/include/linux/tty.h
 index 40144f3..610732a 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -225,7 +225,7 @@ struct tty_port {
- 	const struct tty_port_operations *ops;	/* Port operations */
+@@ -231,7 +231,7 @@ struct tty_port {
+ 	const struct tty_port_client_operations *client_ops; /* Port client operations */
  	spinlock_t		lock;		/* Lock protecting tty field */
  	int			blocked_open;	/* Waiting to open */
 -	int			count;		/* Usage count */

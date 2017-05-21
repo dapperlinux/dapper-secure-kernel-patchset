@@ -99,18 +99,19 @@ index bd83497..73da4a1 100644
  		goto close_write;
  
  	tmp = NOFAIL(malloc(b->pos));
-@@ -2496,6 +2516,14 @@ int main(int argc, char **argv)
+@@ -2514,6 +2514,15 @@ int main(int argc, char **argv)
  			      "Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.\n");
  		}
  	}
 +	if (writable_fptr_count) {
 +		if (!sec_mismatch_verbose) {
 +			warn("modpost: Found %d writable function pointer(s).\n"
-+			     "To see full details build your kernel with:\n"
-+			     "'make CONFIG_DEBUG_SECTION_MISMATCH=y'\n",
-+			     writable_fptr_count);
++				"To see full details build your kernel with:\n"
++				"'make CONFIG_DEBUG_SECTION_MISMATCH=y'\n",
++				writable_fptr_count);
 +		}
 +	}
++
+ 	free(buf.p);
  
  	return err;
- }

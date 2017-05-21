@@ -23,8 +23,8 @@ index 8717685..8f066ed 100644
  	__swab32s(&b->pb_type);
  	__swab32s(&b->pb_version);
  	__swab32s(&b->pb_opc);
-@@ -1466,8 +1468,10 @@ void lustre_swab_ptlrpc_body(struct ptlrpc_body *b)
- 	CLASSERT(offsetof(typeof(*b), pb_jobid) != 0);
+@@ -1540,8 +1540,10 @@ void lustre_swab_ptlrpc_body(struct ptlrpc_body *b)
+ 	BUILD_BUG_ON(offsetof(typeof(*b), pb_jobid) == 0);
  }
  
 -void lustre_swab_connect(struct obd_connect_data *ocd)
@@ -35,8 +35,8 @@ index 8717685..8f066ed 100644
  	__swab64s(&ocd->ocd_connect_flags);
  	__swab32s(&ocd->ocd_version);
  	__swab32s(&ocd->ocd_grant);
-@@ -1541,8 +1545,10 @@ static void lustre_swab_obdo(struct obdo *o)
- 	CLASSERT(offsetof(typeof(*o), o_padding_6) != 0);
+@@ -1619,8 +1621,10 @@ static void lustre_swab_obdo(struct obdo *o)
+ 	BUILD_BUG_ON(offsetof(typeof(*o), o_padding_6) == 0);
  }
  
 -void lustre_swab_obd_statfs(struct obd_statfs *os)
@@ -47,8 +47,8 @@ index 8717685..8f066ed 100644
  	__swab64s(&os->os_type);
  	__swab64s(&os->os_blocks);
  	__swab64s(&os->os_bfree);
-@@ -1565,37 +1571,49 @@ void lustre_swab_obd_statfs(struct obd_statfs *os)
- 	CLASSERT(offsetof(typeof(*os), os_spare9) != 0);
+@@ -1643,37 +1647,49 @@ void lustre_swab_obd_statfs(struct obd_statfs *os)
+ 	BUILD_BUG_ON(offsetof(typeof(*os), os_spare9) == 0);
  }
  
 -void lustre_swab_obd_ioobj(struct obd_ioobj *ioo)
@@ -98,7 +98,7 @@ index 8717685..8f066ed 100644
 -void lustre_swab_gl_desc(union ldlm_gl_desc *desc)
 +void lustre_swab_gl_desc(void *_desc)
  {
-+	union ldlm_gl_desc *desc = _desc;
++	struct obd_quotactl *q = _q;
 +
  	lustre_swab_lu_fid(&desc->lquota_desc.gl_id.qid_fid);
  	__swab64s(&desc->lquota_desc.gl_flags);
@@ -115,8 +115,8 @@ index 8717685..8f066ed 100644
  	lustre_swab_lu_fid(&b->mbo_fid1);
  	lustre_swab_lu_fid(&b->mbo_fid2);
  	/* handle is opaque */
-@@ -1672,16 +1692,19 @@ void lustre_swab_mdt_body(struct mdt_body *b)
- 	CLASSERT(offsetof(typeof(*b), mbo_padding_5) != 0);
+@@ -1750,8 +1750,10 @@ void lustre_swab_mdt_body(struct mdt_body *b)
+ 	BUILD_BUG_ON(offsetof(typeof(*b), mbo_padding_5) == 0);
  }
  
 -void lustre_swab_mdt_ioepoch(struct mdt_ioepoch *b)
@@ -125,9 +125,10 @@ index 8717685..8f066ed 100644
 +	struct mdt_ioepoch *b = _b;
 +
  	/* handle is opaque */
- 	 __swab64s(&b->ioepoch);
- 	 __swab32s(&b->flags);
- 	 CLASSERT(offsetof(typeof(*b), padding) != 0);
+ 	/* mio_handle is opaque */
+ 	BUILD_BUG_ON(!offsetof(typeof(*b), mio_unused1));
+@@ -1759,8 +1761,9 @@ void lustre_swab_mdt_ioepoch(struct mdt_ioepoch *b)
+ 	BUILD_BUG_ON(!offsetof(typeof(*b), mio_padding));
  }
  
 -void lustre_swab_mgs_target_info(struct mgs_target_info *mti)
@@ -159,8 +160,8 @@ index 8717685..8f066ed 100644
  	__swab64s(&body->mcr_offset);
  	__swab64s(&body->mcr_size);
  }
-@@ -1753,8 +1780,10 @@ static void lustre_swab_obd_dqblk(struct obd_dqblk *b)
- 	CLASSERT(offsetof(typeof(*b), dqb_padding) != 0);
+@@ -1832,8 +1832,10 @@ static void lustre_swab_obd_dqblk(struct obd_dqblk *b)
+ 	BUILD_BUG_ON(offsetof(typeof(*b), dqb_padding) == 0);
  }
  
 -void lustre_swab_obd_quotactl(struct obd_quotactl *q)
@@ -171,14 +172,14 @@ index 8717685..8f066ed 100644
  	__swab32s(&q->qc_cmd);
  	__swab32s(&q->qc_type);
  	__swab32s(&q->qc_id);
-@@ -1781,8 +1810,9 @@ static void lustre_swab_fiemap_extent(struct ll_fiemap_extent *fm_extent)
+@@ -1860,8 +1863,9 @@ static void lustre_swab_fiemap_extent(struct fiemap_extent *fm_extent)
  	__swab32s(&fm_extent->fe_device);
  }
  
--void lustre_swab_fiemap(struct ll_user_fiemap *fiemap)
+-void lustre_swab_fiemap(struct fiemap *fiemap)
 +void lustre_swab_fiemap(void *_fiemap)
  {
-+	struct ll_user_fiemap *fiemap = _fiemap;
++	struct fiemap *fiemap = _fiemap;
  	__u32 i;
  
  	__swab64s(&fiemap->fm_start);
@@ -206,7 +207,7 @@ index 8717685..8f066ed 100644
  	__swab64s(&i->opc);
  }
  
-@@ -1971,16 +2005,20 @@ static void lustre_swab_ldlm_lock_desc(struct ldlm_lock_desc *l)
+@@ -2050,16 +2066,20 @@ static void lustre_swab_ldlm_lock_desc(struct ldlm_lock_desc *l)
  	lustre_swab_ldlm_policy_data(&l->l_policy_data);
  }
  
@@ -227,7 +228,7 @@ index 8717685..8f066ed 100644
 +	struct ldlm_reply *r = _r;
 +
  	__swab32s(&r->lock_flags);
- 	CLASSERT(offsetof(typeof(*r), lock_padding) != 0);
+ 	BUILD_BUG_ON(offsetof(typeof(*r), lock_padding) == 0);
  	lustre_swab_ldlm_lock_desc(&r->lock_desc);
 @@ -1990,16 +2028,20 @@ void lustre_swab_ldlm_reply(struct ldlm_reply *r)
  }
@@ -252,8 +253,8 @@ index 8717685..8f066ed 100644
  	CDEBUG(D_RPCTRACE, "niobuf_remote: offset=%llu, len=%d, flags=%x\n",
  	       nb->rnb_offset, nb->rnb_len, nb->rnb_flags);
  }
-@@ -2066,13 +2108,17 @@ static void dump_obdo(struct obdo *oa)
- 		CDEBUG(D_RPCTRACE, "obdo: o_lcookie = (llog_cookie dumping not yet implemented)\n");
+@@ -2143,13 +2163,17 @@ static void dump_obdo(struct obdo *oa)
+ 		       oa->o_handle.cookie);
  }
  
 -void dump_ost_body(struct ost_body *ob)

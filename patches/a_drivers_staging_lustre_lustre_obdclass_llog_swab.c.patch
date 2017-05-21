@@ -61,8 +61,8 @@ index 8c4c1b3..630be46 100644
  	__swab64s(&range->lsr_start);
  	__swab64s(&range->lsr_end);
  	__swab32s(&range->lsr_index);
-@@ -294,8 +304,10 @@ static void print_llog_hdr(struct llog_log_hdr *h)
- 	CDEBUG(D_OTHER, "\tllh_tail.lrt_len: %#x\n", h->llh_tail.lrt_len);
+@@ -297,8 +297,10 @@ static void print_llog_hdr(struct llog_log_hdr *h)
+ 	       LLOG_HDR_TAIL(h)->lrt_len);
  }
  
 -void lustre_swab_llog_hdr(struct llog_log_hdr *h)

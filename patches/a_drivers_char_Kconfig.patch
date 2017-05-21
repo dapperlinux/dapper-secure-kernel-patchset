@@ -2,11 +2,10 @@ diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
 index 8453a49..aaea2ac 100644
 --- a/drivers/char/Kconfig
 +++ b/drivers/char/Kconfig
-@@ -17,7 +17,8 @@ config DEVMEM
+@@ -17,6 +17,8 @@ config DEVMEM
  
  config DEVKMEM
  	bool "/dev/kmem virtual device support"
--	default y
 +	default n
 +	depends on !GRKERNSEC_KMEM
  	help

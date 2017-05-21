@@ -88,14 +88,14 @@ index fafd1a3..316983e 100644
  	sprint_symbol(buffer, address);
  
  	printk(fmt, buffer);
-@@ -505,7 +545,6 @@ static unsigned long get_ksymbol_core(struct kallsym_iter *iter)
+@@ -528,7 +528,6 @@ static unsigned long get_ksymbol_core(struct kallsym_iter *iter)
  
  static void reset_iter(struct kallsym_iter *iter, loff_t new_pos)
  {
 -	iter->name[0] = '\0';
  	iter->nameoff = get_symbol_offset(new_pos);
  	iter->pos = new_pos;
- }
+ 	if (new_pos == 0)
 @@ -553,6 +592,11 @@ static int s_show(struct seq_file *m, void *p)
  {
  	struct kallsym_iter *iter = m->private;

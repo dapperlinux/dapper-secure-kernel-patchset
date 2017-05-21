@@ -235,9 +235,9 @@ index cf80590..de69971 100644
  		((unsigned long)&_etext - (unsigned long)&_text) >> 10);
  
  	/*
-@@ -867,7 +870,7 @@ static noinline int do_test_wp_bit(void)
- const int rodata_test_data = 0xC3;
- EXPORT_SYMBOL_GPL(rodata_test_data);
+@@ -864,7 +864,7 @@ static noinline int do_test_wp_bit(void)
+ 	return flag;
+ }
  
 -int kernel_set_to_readonly __read_mostly;
 +int kernel_set_to_readonly __read_only;
@@ -269,7 +269,7 @@ index cf80590..de69971 100644
  	/*
  	 * This comes from is_kernel_text upper limit. Also HPAGE where used:
  	 */
-@@ -919,26 +924,52 @@ void mark_rodata_ro(void)
+@@ -916,26 +916,53 @@ void mark_rodata_ro(void)
  	unsigned long start = PFN_ALIGN(_text);
  	unsigned long size = PFN_ALIGN(_etext) - start;
  
@@ -281,7 +281,7 @@ index cf80590..de69971 100644
 +	unsigned long limit;
 +	struct desc_struct d;
 +	int cpu;
- 
++
 +	limit = get_kernel_rpl() ? ktva_ktla(0xffffffff) : (unsigned long)&_etext;
 +	limit = (limit - 1UL) >> PAGE_SHIFT;
 +
@@ -302,6 +302,7 @@ index cf80590..de69971 100644
 +	/* PaX: make KERNEL_CS read-only */
 +	if (!get_kernel_rpl()) {
 +#endif
+ 
  	kernel_set_to_readonly = 1;
  
 +	set_pages_ro(virt_to_page(start), size >> PAGE_SHIFT);
@@ -327,9 +328,9 @@ index cf80590..de69971 100644
 -	printk(KERN_INFO "Write protecting the kernel read-only data: %luk\n",
 -		size >> 10);
 +	printk(KERN_INFO "Write protecting the kernel read-only data: %luk\n", size >> 10);
- 	rodata_test();
  
  #ifdef CONFIG_CPA_DEBUG
+ 	printk(KERN_INFO "Testing CPA: undo %lx-%lx\n", start, start + size);
 @@ -952,3 +983,7 @@ void mark_rodata_ro(void)
  	if (__supported_pte_mask & _PAGE_NX)
  		debug_checkwx();

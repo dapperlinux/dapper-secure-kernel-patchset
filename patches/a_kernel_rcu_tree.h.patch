@@ -16,7 +16,7 @@ index e99a523..08cba8b 100644
  				    /*  "Idle" excludes userspace execution. */
  	unsigned long dynticks_idle_jiffies;
  				    /* End of last non-NMI non-idle period. */
-@@ -400,10 +400,10 @@ struct rcu_data {
+@@ -401,10 +401,10 @@ struct rcu_data {
  #ifdef CONFIG_RCU_FAST_NO_HZ
  	struct rcu_head oom_head;
  #endif /* #ifdef CONFIG_RCU_FAST_NO_HZ */
@@ -28,17 +28,15 @@ index e99a523..08cba8b 100644
 +	atomic_long_unchecked_t exp_workdone1;	/* # done by others #1. */
 +	atomic_long_unchecked_t exp_workdone2;	/* # done by others #2. */
 +	atomic_long_unchecked_t exp_workdone3;	/* # done by others #3. */
+ 	int exp_dynticks_snap;		/* Double-check need for IPI. */
  
  	/* 7) Callback offloading. */
- #ifdef CONFIG_RCU_NOCB_CPU
-@@ -520,8 +520,8 @@ struct rcu_state {
+@@ -522,7 +522,7 @@ struct rcu_state {
  	struct mutex exp_mutex;			/* Serialize expedited GP. */
  	struct mutex exp_wake_mutex;		/* Serialize wakeup. */
  	unsigned long expedited_sequence;	/* Take a ticket. */
--	atomic_long_t expedited_normal;		/* # fallbacks to normal. */
 -	atomic_t expedited_need_qs;		/* # CPUs left to check in. */
-+	atomic_long_unchecked_t expedited_normal;/* # fallbacks to normal. */
-+	atomic_unchecked_t expedited_need_qs;	/* # CPUs left to check in. */
++	atomic_unchecked_t expedited_need_qs;		/* # CPUs left to check in. */
  	struct swait_queue_head expedited_wq;	/* Wait for check-ins. */
  	int ncpus_snap;				/* # CPUs seen last time. */
  

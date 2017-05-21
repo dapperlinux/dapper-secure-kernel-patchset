@@ -10,4 +10,4 @@ index 9c5d414..c7900ce 100644
 +	device_attribute_no_const *pin_dev_attr;
  	struct attribute **pin_attr;
  	struct attribute_group pin_attr_group;
- };
+ 	/* 1st entry is a pointer to the real group, 2nd is NULL terminator */

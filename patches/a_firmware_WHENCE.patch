@@ -23,18 +23,15 @@ index de6f22e..51fbae7 100644
 - accompanying it.
 -
 -Found in hex form in kernel source.
-+ 
-+ This file contains firmware data derived from proprietary unpublished 
-+ source code, Copyright (c) 2004 - 2010 Broadcom Corporation. 
-+ 
-+ Permission is hereby granted for the distribution of this firmware data 
-+ in hexadecimal or equivalent format, provided this copyright notice is 
-+ accompanying it. 
-+ 
-+Found in hex form in kernel source. 
++
++ This file contains firmware data derived from proprietary unpublished
++ source code, Copyright (c) 2004 - 2010 Broadcom Corporation.
++
++ Permission is hereby granted for the distribution of this firmware data
++ in hexadecimal or equivalent format, provided this copyright notice is
++ accompanying it.
++
++Found in hex form in kernel source.
  
  --------------------------------------------------------------------------
  
-diff --git a/firmware/bnx2/bnx2-mips-06-6.2.3.fw.ihex b/firmware/bnx2/bnx2-mips-06-6.2.3.fw.ihex
-new file mode 100644
-index 0000000..da72bf1

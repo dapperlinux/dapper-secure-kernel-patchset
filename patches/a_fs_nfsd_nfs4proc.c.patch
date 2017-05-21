@@ -359,13 +359,15 @@ index abb09b5..973ae5f 100644
  	struct nfsd4_op	*op;
  	struct nfsd4_operation *opdesc;
  	struct nfsd4_compound_state *cstate = &resp->cstate;
-@@ -2060,344 +2097,344 @@ static inline u32 nfsd4_layoutreturn_rsize(struct svc_rqst *rqstp, struct nfsd4_
+@@ -2093,358 +2093,358 @@ static inline u32 nfsd4_seek_rsize(struct svc_rqst *rqstp, struct nfsd4_op *op)
  
  static struct nfsd4_operation nfsd4_ops[] = {
  	[OP_ACCESS] = {
 -		.op_func = (nfsd4op_func)nfsd4_access,
 +		.op_func = nfsd4_access,
  		.op_name = "OP_ACCESS",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_access_rsize,
++		.op_rsize_bop = nfsd4_access_rsize,
  	},
  	[OP_CLOSE] = {
 -		.op_func = (nfsd4op_func)nfsd4_close,
@@ -415,6 +417,8 @@ index abb09b5..973ae5f 100644
 -		.op_func = (nfsd4op_func)nfsd4_getfh,
 +		.op_func = nfsd4_getfh,
  		.op_name = "OP_GETFH",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_getfh_rsize,
++		.op_rsize_bop = nfsd4_getfh_rsize,
  	},
  	[OP_LINK] = {
 -		.op_func = (nfsd4op_func)nfsd4_link,
@@ -439,6 +443,8 @@ index abb09b5..973ae5f 100644
 -		.op_func = (nfsd4op_func)nfsd4_lockt,
 +		.op_func = nfsd4_lockt,
  		.op_name = "OP_LOCKT",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_lock_rsize,
++		.op_rsize_bop = nfsd4_lock_rsize,
  	},
  	[OP_LOCKU] = {
 -		.op_func = (nfsd4op_func)nfsd4_locku,
@@ -455,17 +461,23 @@ index abb09b5..973ae5f 100644
 +		.op_func = nfsd4_lookup,
  		.op_flags = OP_HANDLES_WRONGSEC | OP_CLEAR_STATEID,
  		.op_name = "OP_LOOKUP",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_only_status_rsize,
++		.op_rsize_bop = nfsd4_only_status_rsize,
  	},
  	[OP_LOOKUPP] = {
 -		.op_func = (nfsd4op_func)nfsd4_lookupp,
 +		.op_func = nfsd4_lookupp,
  		.op_flags = OP_HANDLES_WRONGSEC | OP_CLEAR_STATEID,
  		.op_name = "OP_LOOKUPP",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_only_status_rsize,
++		.op_rsize_bop = nfsd4_only_status_rsize,
  	},
  	[OP_NVERIFY] = {
 -		.op_func = (nfsd4op_func)nfsd4_nverify,
 +		.op_func = nfsd4_nverify,
  		.op_name = "OP_NVERIFY",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_only_status_rsize,
++		.op_rsize_bop = nfsd4_only_status_rsize,
  	},
  	[OP_OPEN] = {
 -		.op_func = (nfsd4op_func)nfsd4_open,
@@ -544,6 +556,8 @@ index abb09b5..973ae5f 100644
 -		.op_func = (nfsd4op_func)nfsd4_readlink,
 +		.op_func = nfsd4_readlink,
  		.op_name = "OP_READLINK",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_readlink_rsize,
++		.op_rsize_bop = nfsd4_readlink_rsize,
  	},
  	[OP_REMOVE] = {
 -		.op_func = (nfsd4op_func)nfsd4_remove,
@@ -593,6 +607,8 @@ index abb09b5..973ae5f 100644
 +		.op_func = nfsd4_secinfo,
  		.op_flags = OP_HANDLES_WRONGSEC,
  		.op_name = "OP_SECINFO",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_secinfo_rsize,
++		.op_rsize_bop = nfsd4_secinfo_rsize,
  	},
  	[OP_SETATTR] = {
 -		.op_func = (nfsd4op_func)nfsd4_setattr,
@@ -626,6 +642,8 @@ index abb09b5..973ae5f 100644
 -		.op_func = (nfsd4op_func)nfsd4_verify,
 +		.op_func = nfsd4_verify,
  		.op_name = "OP_VERIFY",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_only_status_rsize,
++		.op_rsize_bop = nfsd4_only_status_rsize,
  	},
  	[OP_WRITE] = {
 -		.op_func = (nfsd4op_func)nfsd4_write,
@@ -722,12 +740,16 @@ index abb09b5..973ae5f 100644
 +		.op_func = nfsd4_secinfo_no_name,
  		.op_flags = OP_HANDLES_WRONGSEC,
  		.op_name = "OP_SECINFO_NO_NAME",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_secinfo_rsize,
++		.op_rsize_bop = nfsd4_secinfo_rsize,
  	},
  	[OP_TEST_STATEID] = {
 -		.op_func = (nfsd4op_func)nfsd4_test_stateid,
 +		.op_func = nfsd4_test_stateid,
  		.op_flags = ALLOWED_WITHOUT_FH,
  		.op_name = "OP_TEST_STATEID",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_test_stateid_rsize,
++		.op_rsize_bop = nfsd4_test_stateid_rsize,
  	},
  	[OP_FREE_STATEID] = {
 -		.op_func = (nfsd4op_func)nfsd4_free_stateid,
@@ -745,6 +767,8 @@ index abb09b5..973ae5f 100644
 +		.op_func = nfsd4_getdeviceinfo,
  		.op_flags = ALLOWED_WITHOUT_FH,
  		.op_name = "OP_GETDEVICEINFO",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_getdeviceinfo_rsize,
++		.op_rsize_bop = nfsd4_getdeviceinfo_rsize,
  	},
  	[OP_LAYOUTGET] = {
 -		.op_func = (nfsd4op_func)nfsd4_layoutget,
@@ -809,8 +833,11 @@ index abb09b5..973ae5f 100644
 -		.op_func = (nfsd4op_func)nfsd4_seek,
 +		.op_func = nfsd4_seek,
  		.op_name = "OP_SEEK",
+-		.op_rsize_bop = (nfsd4op_rsize)nfsd4_seek_rsize,
++		.op_rsize_bop = nfsd4_seek_rsize,
  	},
  };
+ 
 @@ -2474,17 +2511,17 @@ struct nfsd4_voidargs { int dummy; };
  
  static struct svc_procedure		nfsd_procedures4[2] = {

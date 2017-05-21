@@ -50,16 +50,16 @@ index 5bab6c3..f5f5d03 100644
  		daddr = inet->inet_daddr;
  		dport = inet->inet_dport;
  		/* Open fast path for connected socket.
-@@ -1194,7 +1211,7 @@ static int first_packet_length(struct sock *sk)
+@@ -1359,7 +1359,7 @@ static int first_packet_length(struct sock *sk)
  				IS_UDPLITE(sk));
  		__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
  				IS_UDPLITE(sk));
 -		atomic_inc(&sk->sk_drops);
 +		atomic_inc_unchecked(&sk->sk_drops);
  		__skb_unlink(skb, rcvq);
- 		__skb_queue_tail(&list_kill, skb);
- 	}
-@@ -1296,10 +1313,13 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 		total += skb->truesize;
+ 		kfree_skb(skb);
+@@ -1455,9 +1455,12 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
  			goto csum_copy_err;
  	}
  
@@ -67,7 +67,6 @@ index 5bab6c3..f5f5d03 100644
 +		err = gr_search_udp_recvmsg(sk, skb);
 +
  	if (unlikely(err)) {
- 		trace_kfree_skb(skb, udp_recvmsg);
  		if (!peeked) {
 -			atomic_inc(&sk->sk_drops);
 +			atomic_inc_unchecked(&sk->sk_drops);

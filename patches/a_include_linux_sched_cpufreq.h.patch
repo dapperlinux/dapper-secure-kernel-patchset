@@ -1,0 +1,13 @@
+diff --git a/include/linux/sched/cpufreq.h b/include/linux/sched/cpufreq.h
+index d2be2cc..9f046f5 100644
+--- a/include/linux/sched/cpufreq.h
++++ b/include/linux/sched/cpufreq.h
+@@ -16,7 +16,7 @@
+ #ifdef CONFIG_CPU_FREQ
+ struct update_util_data {
+        void (*func)(struct update_util_data *data, u64 time, unsigned int flags);
+-};
++} __no_const;
+ 
+ void cpufreq_add_update_util_hook(int cpu, struct update_util_data *data,
+                        void (*func)(struct update_util_data *data, u64 time,

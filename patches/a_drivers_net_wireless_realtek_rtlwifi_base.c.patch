@@ -2,7 +2,7 @@ diff --git a/drivers/net/wireless/realtek/rtlwifi/base.c b/drivers/net/wireless/
 index 4ac928b..9832ba8 100644
 --- a/drivers/net/wireless/realtek/rtlwifi/base.c
 +++ b/drivers/net/wireless/realtek/rtlwifi/base.c
-@@ -467,15 +467,15 @@ static void _rtl_init_deferred_work(struct ieee80211_hw *hw)
+@@ -466,17 +466,17 @@ static void _rtl_init_deferred_work(struct ieee80211_hw *hw)
  	rtlpriv->works.hw = hw;
  	rtlpriv->works.rtl_wq = alloc_workqueue("%s", 0, 0, rtlpriv->cfg->name);
  	INIT_DELAYED_WORK(&rtlpriv->works.watchdog_wq,
@@ -20,6 +20,9 @@ index 4ac928b..9832ba8 100644
  	INIT_DELAYED_WORK(&rtlpriv->works.fwevt_wq,
 -			  (void *)rtl_fwevt_wq_callback);
 +			  rtl_fwevt_wq_callback);
+ 	INIT_DELAYED_WORK(&rtlpriv->works.c2hcmd_wq,
+-			  (void *)rtl_c2hcmd_wq_callback);
++			  rtl_c2hcmd_wq_callback);
  
  }
  

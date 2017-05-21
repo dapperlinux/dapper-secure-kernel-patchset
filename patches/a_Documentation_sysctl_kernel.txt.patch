@@ -2,9 +2,9 @@ diff --git a/Documentation/sysctl/kernel.txt b/Documentation/sysctl/kernel.txt
 index ffab8b5..b8fcd61 100644
 --- a/Documentation/sysctl/kernel.txt
 +++ b/Documentation/sysctl/kernel.txt
-@@ -42,6 +42,7 @@ show up in /proc/sys/kernel:
+@@ -41,6 +41,7 @@ show up in /proc/sys/kernel:
+ - kexec_load_disabled
  - kptr_restrict
- - kstack_depth_to_print       [ X86 only ]
  - l2cr                        [ PPC only ]
 +- modify_ldt                  [ X86 only ]
  - modprobe                    ==> Documentation/debugging-modules.txt

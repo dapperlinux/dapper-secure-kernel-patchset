@@ -4,7 +4,7 @@ index 3c4d7c2..3410b86 100644
 +++ b/drivers/tty/hvc/hvcs.c
 @@ -83,6 +83,7 @@
  #include <asm/hvcserver.h>
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/vio.h>
 +#include <asm/local.h>
  

@@ -2,8 +2,8 @@ diff --git a/arch/x86/kernel/ioport.c b/arch/x86/kernel/ioport.c
 index 589b319..367e6ce 100644
 --- a/arch/x86/kernel/ioport.c
 +++ b/arch/x86/kernel/ioport.c
-@@ -6,6 +6,7 @@
- #include <linux/sched.h>
+@@ -7,6 +7,7 @@
+ #include <linux/sched/task_stack.h>
  #include <linux/kernel.h>
  #include <linux/capability.h>
 +#include <linux/security.h>

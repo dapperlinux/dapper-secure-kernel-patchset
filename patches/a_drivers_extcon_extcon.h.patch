@@ -1,0 +1,13 @@
+diff --git a/drivers/extcon/extcon.h b/drivers/extcon/extcon.h
+index 993ddcc..29f8002 100644
+--- a/drivers/extcon/extcon.h
++++ b/drivers/extcon/extcon.h
+@@ -56,7 +56,7 @@ struct extcon_dev {
+ 	/* /sys/class/extcon/.../mutually_exclusive/... */
+ 	struct attribute_group attr_g_muex;
+ 	struct attribute **attrs_muex;
+-	struct device_attribute *d_attrs_muex;
++	device_attribute_no_const *d_attrs_muex;
+ };
+ 
+ #endif /* __LINUX_EXTCON_INTERNAL_H__ */

@@ -2,8 +2,8 @@ diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
 index 6988566..2b781b3 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -87,6 +87,10 @@
- int sysctl_tcp_tw_reuse __read_mostly;
+@@ -86,6 +86,10 @@
+ 
  int sysctl_tcp_low_latency __read_mostly;
  
 +#ifdef CONFIG_GRKERNSEC_BLACKHOLE
@@ -57,8 +57,8 @@ index 6988566..2b781b3 100644
  		tcp_v4_send_reset(NULL, skb);
  	}
  
-@@ -2469,7 +2487,7 @@ static void __net_exit tcp_sk_exit_batch(struct list_head *net_exit_list)
- 	inet_twsk_purge(&tcp_hashinfo, &tcp_death_row, AF_INET);
+@@ -2484,7 +2488,7 @@ static void __net_exit tcp_sk_exit_batch(struct list_head *net_exit_list)
+ 	inet_twsk_purge(&tcp_hashinfo, AF_INET);
  }
  
 -static struct pernet_operations __net_initdata tcp_sk_ops = {

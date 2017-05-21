@@ -9,7 +9,7 @@ index 368bfb9..5b43f37 100644
 +#include <linux/sched.h>
 +#include <linux/grsecurity.h>
  
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/page.h>
 @@ -26,7 +28,7 @@ static void seq_set_overflow(struct seq_file *m)
  static void *seq_buf_alloc(unsigned long size)

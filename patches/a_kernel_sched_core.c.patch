@@ -38,8 +38,8 @@ index 154fd68..f95f804 100644
  		next = head->next;
  		head->next = NULL;
  		head = next;
-@@ -3795,6 +3795,8 @@ int can_nice(const struct task_struct *p, const int nice)
- 	/* convert nice value [19,-20] to rlimit style value [1,40] */
+@@ -3841,6 +3841,8 @@ int can_nice(const struct task_struct *p, const int nice)
+ 	/* Convert nice value [19,-20] to rlimit style value [1,40]: */
  	int nice_rlim = nice_to_rlimit(nice);
  
 +	gr_learn_resource(p, RLIMIT_NICE, nice_rlim, 1);
@@ -57,12 +57,12 @@ index 154fd68..f95f804 100644
  		return -EPERM;
  
  	retval = security_task_setnice(current, nice);
-@@ -4131,6 +4134,7 @@ static int __sched_setscheduler(struct task_struct *p,
+@@ -4176,6 +4176,7 @@ static int __sched_setscheduler(struct task_struct *p,
  			if (policy != p->policy && !rlim_rtprio)
  				return -EPERM;
  
 +			gr_learn_resource(p, RLIMIT_RTPRIO, attr->sched_priority, 1);
- 			/* can't increase priority */
+ 			/* Can't increase priority: */
  			if (attr->sched_priority > p->rt_priority &&
  			    attr->sched_priority > rlim_rtprio)
 @@ -7591,6 +7595,30 @@ void __init sched_init(void)

@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/amd/scheduler/sched_fence.c b/drivers/gpu/drm/amd/scheduler/sched_fence.c
-index 88fc2d6..22aa584 100644
+index 33f54d0..20d084c 100644
 --- a/drivers/gpu/drm/amd/scheduler/sched_fence.c
 +++ b/drivers/gpu/drm/amd/scheduler/sched_fence.c
 @@ -60,7 +60,7 @@ struct amd_sched_fence *amd_sched_fence_create(struct amd_sched_entity *entity,
@@ -8,6 +8,6 @@ index 88fc2d6..22aa584 100644
  
 -	seq = atomic_inc_return(&entity->fence_seq);
 +	seq = atomic_inc_return_unchecked(&entity->fence_seq);
- 	fence_init(&fence->scheduled, &amd_sched_fence_ops_scheduled,
- 		   &fence->lock, entity->fence_context, seq);
- 	fence_init(&fence->finished, &amd_sched_fence_ops_finished,
+ 	dma_fence_init(&fence->scheduled, &amd_sched_fence_ops_scheduled,
+ 		       &fence->lock, entity->fence_context, seq);
+ 	dma_fence_init(&fence->finished, &amd_sched_fence_ops_finished,

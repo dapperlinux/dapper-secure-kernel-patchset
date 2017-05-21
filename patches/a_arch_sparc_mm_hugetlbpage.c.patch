@@ -2,7 +2,7 @@ diff --git a/arch/sparc/mm/hugetlbpage.c b/arch/sparc/mm/hugetlbpage.c
 index 988acc8b..f26345c 100644
 --- a/arch/sparc/mm/hugetlbpage.c
 +++ b/arch/sparc/mm/hugetlbpage.c
-@@ -26,8 +26,10 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
+@@ -27,8 +27,10 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
  							unsigned long addr,
  							unsigned long len,
  							unsigned long pgoff,
@@ -11,17 +11,17 @@ index 988acc8b..f26345c 100644
 +							unsigned long offset)
  {
 +	struct mm_struct *mm = current->mm;
+ 	struct hstate *h = hstate_file(filp);
  	unsigned long task_size = TASK_SIZE;
  	struct vm_unmapped_area_info info;
- 
-@@ -36,15 +38,22 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
+@@ -38,15 +40,22 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
  
  	info.flags = 0;
  	info.length = len;
 -	info.low_limit = TASK_UNMAPPED_BASE;
 +	info.low_limit = mm->mmap_base;
  	info.high_limit = min(task_size, VA_EXCLUDE_START);
- 	info.align_mask = PAGE_MASK & ~HPAGE_MASK;
+ 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
  	info.align_offset = 0;
 +	info.threadstack_offset = offset;
  	addr = vm_unmapped_area(&info);
@@ -38,7 +38,7 @@ index 988acc8b..f26345c 100644
  		info.high_limit = task_size;
  		addr = vm_unmapped_area(&info);
  	}
-@@ -53,10 +62,11 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
+@@ -55,10 +55,11 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
  }
  
  static unsigned long
@@ -52,11 +52,11 @@ index 988acc8b..f26345c 100644
 +				  unsigned long flags,
 +				  unsigned long offset)
  {
+ 	struct hstate *h = hstate_file(filp);
  	struct mm_struct *mm = current->mm;
- 	unsigned long addr = addr0;
-@@ -71,6 +81,7 @@ hugetlb_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
+@@ -74,6 +75,7 @@ hugetlb_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
  	info.high_limit = mm->mmap_base;
- 	info.align_mask = PAGE_MASK & ~HPAGE_MASK;
+ 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
  	info.align_offset = 0;
 +	info.threadstack_offset = offset;
  	addr = vm_unmapped_area(&info);
@@ -83,7 +83,7 @@ index 988acc8b..f26345c 100644
  
  	if (test_thread_flag(TIF_32BIT))
  		task_size = STACK_TOP32;
-@@ -112,19 +130,22 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+@@ -116,19 +125,22 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
  		return addr;
  	}
  
@@ -92,7 +92,7 @@ index 988acc8b..f26345c 100644
 +#endif
 +
  	if (addr) {
- 		addr = ALIGN(addr, HPAGE_SIZE);
+ 		addr = ALIGN(addr, huge_page_size(h));
  		vma = find_vma(mm, addr);
 -		if (task_size - len >= addr &&
 -		    (!vma || addr + len <= vma->vm_start))
@@ -109,4 +109,4 @@ index 988acc8b..f26345c 100644
 +				pgoff, flags, offset);
  }
  
- pte_t *huge_pte_alloc(struct mm_struct *mm,
+ static pte_t sun4u_hugepage_shift_to_tte(pte_t entry, unsigned int shift)

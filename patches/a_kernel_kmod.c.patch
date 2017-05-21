@@ -179,19 +179,25 @@ index 0277d12..2d2899c 100644
  
  		/*
  		 * If ret is 0, either call_usermodehelper_exec_async failed and
-@@ -528,7 +601,12 @@ struct subprocess_info *call_usermodehelper_setup(char *path, char **argv,
+@@ -530,11 +530,15 @@ struct subprocess_info *call_usermodehelper_setup(const char *path, char **argv,
  		goto out;
  
  	INIT_WORK(&sub_info->work, call_usermodehelper_exec_work);
+-
+-#ifdef CONFIG_STATIC_USERMODEHELPER
+-	sub_info->path = CONFIG_STATIC_USERMODEHELPER_PATH;
 +#ifdef CONFIG_GRKERNSEC
 +	sub_info->origpath = path;
 +	sub_info->path = kstrdup(path, gfp_mask);
-+#else
+ #else
++ #ifdef CONFIG_STATIC_USERMODEHELPER
++	sub_info->path = CONFIG_STATIC_USERMODEHELPER_PATH;
++ #else
  	sub_info->path = path;
-+#endif
++ #endif
+ #endif
  	sub_info->argv = argv;
  	sub_info->envp = envp;
- 
 @@ -630,7 +708,7 @@ EXPORT_SYMBOL(call_usermodehelper);
  static int proc_cap_handler(struct ctl_table *table, int write,
  			 void __user *buffer, size_t *lenp, loff_t *ppos)

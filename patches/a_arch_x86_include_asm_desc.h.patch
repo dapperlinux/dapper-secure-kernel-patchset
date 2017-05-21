@@ -86,7 +86,7 @@ index 12080d8..7319a47 100644
  }
  
  static inline void pack_descriptor(struct desc_struct *desc, unsigned long base,
-@@ -210,7 +219,9 @@ static inline void native_set_ldt(const void *addr, unsigned int entries)
+@@ -202,7 +202,9 @@ static inline void native_set_ldt(const void *addr, unsigned int entries)
  
  static inline void native_load_tr_desc(void)
  {
@@ -95,7 +95,19 @@ index 12080d8..7319a47 100644
 +	pax_close_kernel();
  }
  
- static inline void native_load_gdt(const struct desc_ptr *dtr)
+ DECLARE_PER_CPU(bool, __tss_limit_invalid);
+@@ -219,7 +219,11 @@ static inline void force_reload_TR(void)
+ 	 * busy.  Make it be available so that LTR will work.
+ 	 */
+ 	tss.type = DESC_TSS;
++
++	pax_open_kernel();
+ 	write_gdt_entry(d, GDT_ENTRY_TSS, &tss, DESC_TSS);
++	pax_close_kernel();
++
+ 
+ 	load_TR_desc();
+ 	this_cpu_write(__tss_limit_invalid, false);
 @@ -247,8 +258,10 @@ static inline void native_load_tls(struct thread_struct *t, unsigned int cpu)
  	struct desc_struct *gdt = get_cpu_gdt_table(cpu);
  	unsigned int i;

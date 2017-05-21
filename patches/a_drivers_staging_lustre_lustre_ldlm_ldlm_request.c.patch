@@ -13,8 +13,8 @@ index 35ba6f1..75c9cdd 100644
  	struct ldlm_lock     *lock;
  	struct ldlm_reply    *reply;
  	struct obd_export    *exp;
-@@ -1978,7 +1979,7 @@ static int replay_one_lock(struct obd_import *imp, struct ldlm_lock *lock)
- 	CLASSERT(sizeof(*aa) <= sizeof(req->rq_async_args));
+@@ -1975,7 +1975,7 @@ static int replay_one_lock(struct obd_import *imp, struct ldlm_lock *lock)
+ 	BUILD_BUG_ON(sizeof(*aa) > sizeof(req->rq_async_args));
  	aa = ptlrpc_req_async_args(req);
  	aa->lock_handle = body->lock_handle[0];
 -	req->rq_interpret_reply = (ptlrpc_interpterer_t)replay_lock_interpret;

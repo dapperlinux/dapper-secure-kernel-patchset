@@ -11,15 +11,6 @@ index 56583e7..e84c7ad 100644
  	.store			= &rcu_cpu_kthread_task,
  	.thread_should_run	= rcu_cpu_kthread_should_run,
  	.thread_fn		= rcu_cpu_kthread,
-@@ -1643,7 +1643,7 @@ static void print_cpu_stall_info(struct rcu_state *rsp, int cpu)
- 	       "o."[!!(rdp->grpmask & rdp->mynode->qsmaskinit)],
- 	       "N."[!!(rdp->grpmask & rdp->mynode->qsmaskinitnext)],
- 	       ticks_value, ticks_title,
--	       atomic_read(&rdtp->dynticks) & 0xfff,
-+	       atomic_read_unchecked(&rdtp->dynticks) & 0xfff,
- 	       rdtp->dynticks_nesting, rdtp->dynticks_nmi_nesting,
- 	       rdp->softirq_snap, kstat_softirqs_cpu(RCU_SOFTIRQ, cpu),
- 	       READ_ONCE(rsp->n_force_qs) - rsp->n_force_qs_gpstart,
 @@ -2178,8 +2178,8 @@ static int rcu_nocb_kthread(void *arg)
  		}
  		trace_rcu_batch_end(rdp->rsp->name, c, !!list, 0, 0, 1);

@@ -10,9 +10,9 @@ index b2e61a0..bf47484 100644
 +extern int grsec_enable_blackhole;
 +#endif
 +
- static __u32 tcp_v6_init_sequence(const struct sk_buff *skb)
+ static u32 tcp_v6_init_seq(const struct sk_buff *skb)
  {
- 	return secure_tcpv6_sequence_number(ipv6_hdr(skb)->daddr.s6_addr32,
+ 	return secure_tcpv6_seq(ipv6_hdr(skb)->daddr.s6_addr32,
 @@ -1304,6 +1308,9 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
  	return 0;
  

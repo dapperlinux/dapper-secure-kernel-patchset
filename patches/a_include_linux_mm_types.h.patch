@@ -13,7 +13,7 @@ index 08d947f..ceb5da6 100644
  
  struct core_thread {
  	struct task_struct *task;
-@@ -517,7 +519,25 @@ struct mm_struct {
+@@ -495,7 +495,25 @@ struct mm_struct {
  	atomic_long_t hugetlb_usage;
  #endif
  	struct work_struct async_put_work;
@@ -38,5 +38,5 @@ index 08d947f..ceb5da6 100644
 +
 +} __randomize_layout;
  
- static inline void mm_init_cpumask(struct mm_struct *mm)
- {
+ extern struct mm_struct init_mm;
+ 

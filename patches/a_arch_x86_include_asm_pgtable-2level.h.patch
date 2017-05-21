@@ -11,4 +11,4 @@ index fd74a11..35fd5af 100644
 +	pax_close_kernel();
  }
  
- static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
+ static inline void native_set_pud(pud_t *pudp, pud_t pud)

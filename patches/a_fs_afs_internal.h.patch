@@ -11,12 +11,12 @@ index 535a38d..c62717d 100644
  #include <linux/workqueue.h>
  #include <linux/sched.h>
  #include <linux/fscache.h>
-@@ -493,7 +493,7 @@ extern const struct file_operations afs_file_operations;
+@@ -477,7 +477,7 @@ extern const struct file_operations afs_file_operations;
  
  extern int afs_open(struct inode *, struct file *);
  extern int afs_release(struct inode *, struct file *);
 -extern int afs_page_filler(void *, struct page *);
 +extern int afs_page_filler(struct file *, struct page *);
+ extern void afs_put_read(struct afs_read *);
  
  /*
-  * flock.c

@@ -6,7 +6,7 @@ index ac1d5da..6c4be50 100644
  #ifndef _SETUP
  
  #include <asm/espfix.h>
-+#include <asm/uaccess.h>
++#include <linux/uaccess.h>
  #include <linux/kernel.h>
  
  /*

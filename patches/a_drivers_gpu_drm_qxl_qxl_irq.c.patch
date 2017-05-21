@@ -39,5 +39,5 @@ index 0bf1e20..42a7310 100644
 +	atomic_set_unchecked(&qdev->irq_received_cursor, 0);
 +	atomic_set_unchecked(&qdev->irq_received_io_cmd, 0);
  	qdev->irq_received_error = 0;
- 	ret = drm_irq_install(qdev->ddev, qdev->ddev->pdev->irq);
+ 	ret = drm_irq_install(&qdev->ddev, qdev->ddev.pdev->irq);
  	qdev->ram_header->int_mask = QXL_INTERRUPT_MASK;

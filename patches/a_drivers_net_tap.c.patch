@@ -1,0 +1,24 @@
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index 4d4173d..4533c0e 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -1009,7 +1009,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+ 
+ 		ret = 0;
+ 		u = q->flags;
+-		if (copy_to_user(&ifr->ifr_name, tap->dev->name, IFNAMSIZ) ||
++		if (copy_to_user(ifr->ifr_name, tap->dev->name, IFNAMSIZ) ||
+ 		    put_user(u, &ifr->ifr_flags))
+ 			ret = -EFAULT;
+ 		tap_put_tap_dev(tap);
+@@ -1092,8 +1092,8 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+ 		}
+ 		ret = 0;
+ 		u = tap->dev->type;
+-		if (copy_to_user(&ifr->ifr_name, tap->dev->name, IFNAMSIZ) ||
+-		    copy_to_user(&ifr->ifr_hwaddr.sa_data, tap->dev->dev_addr, ETH_ALEN) ||
++		if (copy_to_user(ifr->ifr_name, tap->dev->name, IFNAMSIZ) ||
++		    copy_to_user(ifr->ifr_hwaddr.sa_data, tap->dev->dev_addr, ETH_ALEN) ||
+ 		    put_user(u, &ifr->ifr_hwaddr.sa_family))
+ 			ret = -EFAULT;
+ 		tap_put_tap_dev(tap);

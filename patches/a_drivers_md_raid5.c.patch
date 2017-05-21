@@ -55,7 +55,7 @@ index cce6057..2c080d8 100644
  	sprintf(conf->cache_name[1], "%s-alt", conf->cache_name[0]);
  
  	conf->active_name = 0;
-@@ -2354,21 +2362,21 @@ static void raid5_end_read_request(struct bio * bi)
+@@ -2422,7 +2422,7 @@ static void raid5_end_read_request(struct bio * bi)
  				mdname(conf->mddev), STRIPE_SECTORS,
  				(unsigned long long)s,
  				bdevname(rdev->bdev, b));
@@ -64,7 +64,9 @@ index cce6057..2c080d8 100644
  			clear_bit(R5_ReadError, &sh->dev[i].flags);
  			clear_bit(R5_ReWrite, &sh->dev[i].flags);
  		} else if (test_bit(R5_ReadNoMerge, &sh->dev[i].flags))
- 			clear_bit(R5_ReadNoMerge, &sh->dev[i].flags);
+@@ -2435,15 +2435,15 @@ static void raid5_end_read_request(struct bio * bi)
+ 			 */
+ 			set_bit(R5_OrigPageUPTDODATE, &sh->dev[i].flags);
  
 -		if (atomic_read(&rdev->read_errors))
 -			atomic_set(&rdev->read_errors, 0);
@@ -79,17 +81,17 @@ index cce6057..2c080d8 100644
 -		atomic_inc(&rdev->read_errors);
 +		atomic_inc_unchecked(&rdev->read_errors);
  		if (test_bit(R5_ReadRepl, &sh->dev[i].flags))
- 			printk_ratelimited(
- 				KERN_WARNING
-@@ -2396,7 +2404,7 @@ static void raid5_end_read_request(struct bio * bi)
+ 			pr_warn_ratelimited(
+ 				"md/raid:%s: read error on replacement device (sector %llu on %s).\n",
+@@ -2465,7 +2465,7 @@ static void raid5_end_read_request(struct bio * bi)
  				mdname(conf->mddev),
  				(unsigned long long)s,
  				bdn);
 -		} else if (atomic_read(&rdev->read_errors)
 +		} else if (atomic_read_unchecked(&rdev->read_errors)
  			 > conf->max_nr_stripes)
- 			printk(KERN_WARNING
- 			       "md/raid:%s: Too many read errors, failing device %s.\n",
+ 			pr_warn("md/raid:%s: Too many read errors, failing device %s.\n",
+ 			       mdname(conf->mddev), bdn);
 @@ -3763,7 +3771,7 @@ static void handle_parity_checks5(struct r5conf *conf, struct stripe_head *sh,
  			 */
  			set_bit(STRIPE_INSYNC, &sh->state);

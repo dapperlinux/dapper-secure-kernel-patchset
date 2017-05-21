@@ -2,16 +2,17 @@ diff --git a/arch/arm/kernel/entry-common.S b/arch/arm/kernel/entry-common.S
 index 10c3283..c47cdf5 100644
 --- a/arch/arm/kernel/entry-common.S
 +++ b/arch/arm/kernel/entry-common.S
-@@ -11,18 +11,46 @@
- #include <asm/assembler.h>
+@@ -12,6 +12,9 @@
  #include <asm/unistd.h>
  #include <asm/ftrace.h>
-+#include <asm/domain.h>
  #include <asm/unwind.h>
- 
++
 +#include "entry-header.S"
 +
- #ifdef CONFIG_NEED_RET_TO_USER
+ #ifdef CONFIG_AEABI
+ #include <asm/unistd-oabi.h>
+ #endif
+@@ -22,11 +25,37 @@
  #include <mach/entry-macro.S>
  #else
  	.macro  arch_ret_to_user, tmp1, tmp2
@@ -48,10 +49,9 @@ index 10c3283..c47cdf5 100644
  
 -#include "entry-header.S"
 -
--
+ 
  	.align	5
  #if !(IS_ENABLED(CONFIG_TRACE_IRQFLAGS) || IS_ENABLED(CONFIG_CONTEXT_TRACKING))
- /*
 @@ -36,7 +64,9 @@ ret_fast_syscall:
   UNWIND(.cantunwind	)
  	disable_irq_notrace			@ disable interrupts

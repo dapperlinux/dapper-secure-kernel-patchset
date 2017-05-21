@@ -2,7 +2,7 @@ diff --git a/arch/x86/kernel/process_32.c b/arch/x86/kernel/process_32.c
 index bd7be8e..631798b 100644
 --- a/arch/x86/kernel/process_32.c
 +++ b/arch/x86/kernel/process_32.c
-@@ -65,16 +65,15 @@ void __show_regs(struct pt_regs *regs, int all)
+@@ -67,16 +67,15 @@ void __show_regs(struct pt_regs *regs, int all)
  	if (user_mode(regs)) {
  		sp = regs->sp;
  		ss = regs->ss & 0xffff;
@@ -14,13 +14,13 @@ index bd7be8e..631798b 100644
  	}
 +	gs = get_user_gs(regs);
  
- 	printk(KERN_DEFAULT "EIP: %04x:[<%08lx>] EFLAGS: %08lx CPU: %d\n",
- 			(u16)regs->cs, regs->ip, regs->flags,
--			smp_processor_id());
-+			raw_smp_processor_id());
- 	print_symbol("EIP is at %s\n", regs->ip);
+ 	printk(KERN_DEFAULT "EIP: %pS\n", (void *)regs->ip);
+ 	printk(KERN_DEFAULT "EFLAGS: %08lx CPU: %d\n", regs->flags,
+-		smp_processor_id());
++		raw_smp_processor_id());
  
  	printk(KERN_DEFAULT "EAX: %08lx EBX: %08lx ECX: %08lx EDX: %08lx\n",
+ 		regs->ax, regs->bx, regs->cx, regs->dx);
 @@ -121,7 +120,7 @@ void release_thread(struct task_struct *dead_task)
  int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
  	unsigned long arg, struct task_struct *p, unsigned long tls)
@@ -38,15 +38,15 @@ index bd7be8e..631798b 100644
  	memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
  
  	if (unlikely(p->flags & PF_KTHREAD)) {
-@@ -231,7 +231,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+@@ -232,7 +231,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
  	struct fpu *prev_fpu = &prev->fpu;
  	struct fpu *next_fpu = &next->fpu;
  	int cpu = smp_processor_id();
 -	struct tss_struct *tss = &per_cpu(cpu_tss, cpu);
 +	struct tss_struct *tss = cpu_tss + cpu;
- 	fpu_switch_t fpu_switch;
  
  	/* never put a printk in __switch_to... printk() calls wake_up*() indirectly */
+ 
 @@ -250,6 +250,10 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
  	 */
  	lazy_save_gs(prev->gs);
@@ -70,11 +70,12 @@ index bd7be8e..631798b 100644
  
  	/*
  	 * Restore %gs if needed (which is common)
-@@ -297,7 +300,5 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+@@ -297,8 +296,6 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
  
- 	switch_fpu_finish(next_fpu, fpu_switch);
+ 	switch_fpu_finish(next_fpu, cpu);
  
 -	this_cpu_write(current_task, next_p);
 -
- 	return prev_p;
- }
+ 	/* Load the Intel cache allocation PQR MSR. */
+ 	intel_rdt_sched_in();
+ 

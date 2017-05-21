@@ -11,8 +11,8 @@ index ffbafbf..71d037fb 100644
  
  /* bytes per L1 cache line */
  #if defined(CONFIG_8xx) || defined(CONFIG_403GCX)
-@@ -22,7 +24,7 @@
- #define L1_CACHE_SHIFT		7
+@@ -23,7 +23,7 @@
+ #define IFETCH_ALIGN_SHIFT	4 /* POWER8,9 */
  #endif
  
 -#define	L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)

@@ -1,108 +1,65 @@
 diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 10f62c6..2040149 100644
+index 50fee76..f71f17e 100644
 --- a/kernel/rcu/tree.c
 +++ b/kernel/rcu/tree.c
-@@ -329,7 +329,7 @@ static void rcu_momentary_dyntick_idle(void)
- 		 */
- 		rdtp = this_cpu_ptr(&rcu_dynticks);
- 		smp_mb__before_atomic(); /* Earlier stuff before QS. */
--		atomic_add(2, &rdtp->dynticks);  /* QS. */
-+		atomic_add_unchecked(2, &rdtp->dynticks);  /* QS. */
- 		smp_mb__after_atomic(); /* Later stuff after QS. */
- 		break;
- 	}
-@@ -694,10 +694,10 @@ static void rcu_eqs_enter_common(long long oldval, bool user)
- 	rcu_prepare_for_idle();
- 	/* CPUs seeing atomic_inc() must see prior RCU read-side crit sects */
- 	smp_mb__before_atomic();  /* See above. */
--	atomic_inc(&rdtp->dynticks);
-+	atomic_inc_unchecked(&rdtp->dynticks);
- 	smp_mb__after_atomic();  /* Force ordering with next sojourn. */
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
--		     atomic_read(&rdtp->dynticks) & 0x1);
-+		     atomic_read_unchecked(&rdtp->dynticks) & 0x1);
- 	rcu_dynticks_task_enter();
- 
- 	/*
-@@ -830,11 +830,11 @@ static void rcu_eqs_exit_common(long long oldval, int user)
- 
- 	rcu_dynticks_task_exit();
- 	smp_mb__before_atomic();  /* Force ordering w/previous sojourn. */
--	atomic_inc(&rdtp->dynticks);
-+	atomic_inc_unchecked(&rdtp->dynticks);
- 	/* CPUs seeing atomic_inc() must see later RCU read-side crit sects */
- 	smp_mb__after_atomic();  /* See above. */
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
--		     !(atomic_read(&rdtp->dynticks) & 0x1));
-+		     !(atomic_read_unchecked(&rdtp->dynticks) & 0x1));
- 	rcu_cleanup_after_idle();
- 	trace_rcu_dyntick(TPS("End"), oldval, rdtp->dynticks_nesting);
- 	if (IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
-@@ -980,12 +980,12 @@ void rcu_nmi_enter(void)
- 	 * to be in the outermost NMI handler that interrupted an RCU-idle
- 	 * period (observation due to Andy Lutomirski).
+@@ -297,7 +297,7 @@ static void rcu_dynticks_eqs_enter(void)
+ 	 * critical sections, and we also must force ordering with the
+ 	 * next idle sojourn.
  	 */
--	if (!(atomic_read(&rdtp->dynticks) & 0x1)) {
-+	if (!(atomic_read_unchecked(&rdtp->dynticks) & 0x1)) {
- 		smp_mb__before_atomic();  /* Force delay from prior write. */
--		atomic_inc(&rdtp->dynticks);
-+		atomic_inc_unchecked(&rdtp->dynticks);
- 		/* atomic_inc() before later RCU read-side crit sects */
- 		smp_mb__after_atomic();  /* See above. */
--		WARN_ON_ONCE(!(atomic_read(&rdtp->dynticks) & 0x1));
-+		WARN_ON_ONCE(!(atomic_read_unchecked(&rdtp->dynticks) & 0x1));
- 		incby = 1;
- 	}
- 	rdtp->dynticks_nmi_nesting += incby;
-@@ -1010,7 +1010,7 @@ void rcu_nmi_exit(void)
- 	 * to us!)
- 	 */
- 	WARN_ON_ONCE(rdtp->dynticks_nmi_nesting <= 0);
--	WARN_ON_ONCE(!(atomic_read(&rdtp->dynticks) & 0x1));
-+	WARN_ON_ONCE(!(atomic_read_unchecked(&rdtp->dynticks) & 0x1));
- 
- 	/*
- 	 * If the nesting level is not 1, the CPU wasn't RCU-idle, so
-@@ -1025,9 +1025,9 @@ void rcu_nmi_exit(void)
- 	rdtp->dynticks_nmi_nesting = 0;
- 	/* CPUs seeing atomic_inc() must see prior RCU read-side crit sects */
- 	smp_mb__before_atomic();  /* See above. */
--	atomic_inc(&rdtp->dynticks);
-+	atomic_inc_unchecked(&rdtp->dynticks);
- 	smp_mb__after_atomic();  /* Force delay to next write. */
--	WARN_ON_ONCE(atomic_read(&rdtp->dynticks) & 0x1);
-+	WARN_ON_ONCE(atomic_read_unchecked(&rdtp->dynticks) & 0x1);
+-	special = atomic_inc_return(&rdtp->dynticks);
++	special = atomic_inc_return_unchecked(&rdtp->dynticks);
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && special & 0x1);
  }
  
- /**
-@@ -1040,7 +1040,7 @@ void rcu_nmi_exit(void)
+@@ -315,7 +315,7 @@ static void rcu_dynticks_eqs_exit(void)
+ 	 * and we also must force ordering with the next RCU read-side
+ 	 * critical section.
+ 	 */
+-	special = atomic_inc_return(&rdtp->dynticks);
++	special = atomic_inc_return_unchecked(&rdtp->dynticks);
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !(special & 0x1));
+ }
+ 
+@@ -333,9 +333,9 @@ static void rcu_dynticks_eqs_online(void)
+ {
+ 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
+ 
+-	if (atomic_read(&rdtp->dynticks) & 0x1)
++	if (atomic_read_unchecked(&rdtp->dynticks) & 0x1)
+ 		return;
+-	atomic_add(0x1, &rdtp->dynticks);
++	atomic_add_unchecked(0x1, &rdtp->dynticks);
+ }
+ 
+ /*
+@@ -347,7 +347,7 @@ bool rcu_dynticks_curr_cpu_in_eqs(void)
+ {
+ 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
+ 
+-	return !(atomic_read(&rdtp->dynticks) & 0x1);
++	return !(atomic_read_unchecked(&rdtp->dynticks) & 0x1);
+ }
+ 
+ /*
+@@ -356,7 +356,7 @@ bool rcu_dynticks_curr_cpu_in_eqs(void)
   */
- bool notrace __rcu_is_watching(void)
+ int rcu_dynticks_snap(struct rcu_dynticks *rdtp)
  {
--	return atomic_read(this_cpu_ptr(&rcu_dynticks.dynticks)) & 0x1;
-+	return atomic_read_unchecked(this_cpu_ptr(&rcu_dynticks.dynticks)) & 0x1;
+-	int snap = atomic_add_return(0, &rdtp->dynticks);
++	int snap = atomic_add_return_unchecked(0, &rdtp->dynticks);
+ 
+ 	return snap;
  }
- 
- /**
-@@ -1123,7 +1123,7 @@ static int rcu_is_cpu_rrupt_from_idle(void)
- static int dyntick_save_progress_counter(struct rcu_data *rdp,
- 					 bool *isidle, unsigned long *maxj)
+@@ -387,7 +387,7 @@ static bool rcu_dynticks_in_eqs_since(struct rcu_dynticks *rdtp, int snap)
+ static void rcu_dynticks_momentary_idle(void)
  {
--	rdp->dynticks_snap = atomic_add_return(0, &rdp->dynticks->dynticks);
-+	rdp->dynticks_snap = atomic_add_return_unchecked(0, &rdp->dynticks->dynticks);
- 	rcu_sysidle_check_cpu(rdp, isidle, maxj);
- 	if ((rdp->dynticks_snap & 0x1) == 0) {
- 		trace_rcu_fqs(rdp->rsp->name, rdp->gpnum, rdp->cpu, TPS("dti"));
-@@ -1148,7 +1148,7 @@ static int rcu_implicit_dynticks_qs(struct rcu_data *rdp,
- 	int *rcrmp;
- 	unsigned int snap;
+ 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
+-	int special = atomic_add_return(2, &rdtp->dynticks);
++	int special = atomic_add_return_unchecked(2, &rdtp->dynticks);
  
--	curr = (unsigned int)atomic_add_return(0, &rdp->dynticks->dynticks);
-+	curr = (unsigned int)atomic_add_return_unchecked(0, &rdp->dynticks->dynticks);
- 	snap = (unsigned int)rdp->dynticks_snap;
- 
- 	/*
-@@ -3016,7 +3016,7 @@ __rcu_process_callbacks(struct rcu_state *rsp)
+ 	/* It is illegal to call this from idle state. */
+ 	WARN_ON_ONCE(!(special & 0x1));
+@@ -3115,7 +3115,7 @@ __rcu_process_callbacks(struct rcu_state *rsp)
  /*
   * Do RCU core processing for the current CPU.
   */
@@ -111,23 +68,39 @@ index 10f62c6..2040149 100644
  {
  	struct rcu_state *rsp;
  
-@@ -3753,7 +3753,7 @@ rcu_boot_init_percpu_data(int cpu, struct rcu_state *rsp)
- 	rdp->grpmask = leaf_node_cpu_bit(rdp->mynode, cpu);
- 	rdp->dynticks = &per_cpu(rcu_dynticks, cpu);
- 	WARN_ON_ONCE(rdp->dynticks->dynticks_nesting != DYNTICK_TASK_EXIT_IDLE);
--	WARN_ON_ONCE(atomic_read(&rdp->dynticks->dynticks) != 1);
-+	WARN_ON_ONCE(atomic_read_unchecked(&rdp->dynticks->dynticks) != 1);
- 	rdp->cpu = cpu;
- 	rdp->rsp = rsp;
- 	rcu_boot_init_nocb_percpu_data(rdp);
-@@ -3783,8 +3783,8 @@ rcu_init_percpu_data(int cpu, struct rcu_state *rsp)
- 		init_callback_list(rdp);  /* Re-enable callbacks on this CPU. */
- 	rdp->dynticks->dynticks_nesting = DYNTICK_TASK_EXIT_IDLE;
- 	rcu_sysidle_init_percpu_data(rdp->dynticks);
--	atomic_set(&rdp->dynticks->dynticks,
--		   (atomic_read(&rdp->dynticks->dynticks) & ~0x1) + 1);
-+	atomic_set_unchecked(&rdp->dynticks->dynticks,
-+		   (atomic_read_unchecked(&rdp->dynticks->dynticks) & ~0x1) + 1);
- 	raw_spin_unlock_rcu_node(rnp);		/* irqs remain disabled. */
+@@ -3670,7 +3670,7 @@ static void _rcu_barrier_trace(struct rcu_state *rsp, const char *s,
+ 			       int cpu, unsigned long done)
+ {
+ 	trace_rcu_barrier(rsp->name, s, cpu,
+-			  atomic_read(&rsp->barrier_cpu_count), done);
++			  atomic_read_unchecked(&rsp->barrier_cpu_count), done);
+ }
+ 
+ /*
+@@ -3699,7 +3699,7 @@ static void rcu_barrier_func(void *type)
+ 	struct rcu_data *rdp = raw_cpu_ptr(rsp->rda);
+ 
+ 	_rcu_barrier_trace(rsp, "IRQ", -1, rsp->barrier_sequence);
+-	atomic_inc(&rsp->barrier_cpu_count);
++	atomic_inc_unchecked(&rsp->barrier_cpu_count);
+ 	rsp->call(&rdp->barrier_head, rcu_barrier_callback);
+ }
+ 
+@@ -3737,7 +3737,7 @@ static void _rcu_barrier(struct rcu_state *rsp)
+ 	 * to ensure that no offline CPU has callbacks queued.
+ 	 */
+ 	init_completion(&rsp->barrier_completion);
+-	atomic_set(&rsp->barrier_cpu_count, 1);
++	atomic_set_unchecked(&rsp->barrier_cpu_count, 1);
+ 	get_online_cpus();
  
  	/*
+@@ -3757,7 +3757,7 @@ static void _rcu_barrier(struct rcu_state *rsp)
+ 				_rcu_barrier_trace(rsp, "OnlineNoCB", cpu,
+ 						   rsp->barrier_sequence);
+ 				smp_mb__before_atomic();
+-				atomic_inc(&rsp->barrier_cpu_count);
++				atomic_inc_unchecked(&rsp->barrier_cpu_count);
+ 				__call_rcu(&rdp->barrier_head,
+ 					   rcu_barrier_callback, rsp, cpu, 0);
+ 			}

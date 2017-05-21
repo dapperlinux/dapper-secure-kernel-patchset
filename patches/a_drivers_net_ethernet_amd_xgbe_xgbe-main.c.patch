@@ -1,8 +1,8 @@
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-main.c b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-index 4f76351..96d3fb1 100644
+index 17ac8f9..7387ffd 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-main.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-@@ -202,13 +202,6 @@ static void xgbe_default_config(struct xgbe_prv_data *pdata)
+@@ -157,16 +157,6 @@ static void xgbe_default_config(struct xgbe_prv_data *pdata)
  	DBGPR("<--xgbe_default_config\n");
  }
  
@@ -10,33 +10,41 @@ index 4f76351..96d3fb1 100644
 -{
 -	xgbe_init_function_ptrs_dev(&pdata->hw_if);
 -	xgbe_init_function_ptrs_phy(&pdata->phy_if);
+-	xgbe_init_function_ptrs_i2c(&pdata->i2c_if);
 -	xgbe_init_function_ptrs_desc(&pdata->desc_if);
+-
+-	pdata->vdata->init_function_ptrs_phy_impl(&pdata->phy_if);
 -}
 -
- #ifdef CONFIG_ACPI
- static int xgbe_acpi_support(struct xgbe_prv_data *pdata)
+ struct xgbe_prv_data *xgbe_alloc_pdata(struct device *dev)
  {
-@@ -647,10 +640,12 @@ static int xgbe_probe(struct platform_device *pdev)
- 	memcpy(netdev->dev_addr, pdata->mac_addr, netdev->addr_len);
- 
+ 	struct xgbe_prv_data *pdata;
+@@ -209,7 +199,9 @@ void xgbe_free_pdata(struct xgbe_prv_data *pdata)
+ void xgbe_set_counts(struct xgbe_prv_data *pdata)
+ {
  	/* Set all the function pointers */
 -	xgbe_init_all_fptrs(pdata);
 +	pdata->hw_if = &default_xgbe_hw_if;
 +	pdata->phy_if = &default_xgbe_phy_if;
 +	pdata->desc_if = &default_xgbe_desc_if;
  
+ 	/* Populate the hardware features */
+ 	xgbe_get_all_hw_features(pdata);
+@@ -277,7 +269,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
+ 	pdata->desc_ded_period = jiffies;
+ 
  	/* Issue software reset to device */
 -	pdata->hw_if.exit(pdata);
 +	pdata->hw_if->exit(pdata);
  
- 	/* Populate the hardware features */
- 	xgbe_get_all_hw_features(pdata);
-@@ -704,7 +699,7 @@ static int xgbe_probe(struct platform_device *pdev)
+ 	/* Set default configuration data */
+ 	xgbe_default_config(pdata);
+@@ -341,7 +333,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
  	XGMAC_SET_BITS(pdata->rss_options, MAC_RSSCR, UDP4TE, 1);
  
  	/* Call MDIO/PHY initialization routine */
--	pdata->phy_if.phy_init(pdata);
-+	pdata->phy_if->phy_init(pdata);
+-	ret = pdata->phy_if.phy_init(pdata);
++	ret = pdata->phy_if->phy_init(pdata);
+ 	if (ret)
+ 		return ret;
  
- 	/* Set device operations */
- 	netdev->netdev_ops = xgbe_get_netdev_ops();

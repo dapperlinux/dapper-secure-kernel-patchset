@@ -11,7 +11,7 @@ index 49e16b6..da957f1 100644
  			       struct net_device *soft_iface)
  {
  	struct ethhdr *ethhdr;
-@@ -333,7 +333,7 @@ static int batadv_interface_tx(struct sk_buff *skb,
+@@ -355,7 +355,7 @@ static int batadv_interface_tx(struct sk_buff *skb,
  				primary_if->net_dev->dev_addr);
  
  		/* set broadcast sequence number */
@@ -19,7 +19,7 @@ index 49e16b6..da957f1 100644
 +		seqno = atomic_inc_return_unchecked(&bat_priv->bcast_seqno);
  		bcast_packet->seqno = htonl(seqno);
  
- 		batadv_add_bcast_packet_to_list(bat_priv, skb, brd_delay);
+ 		batadv_add_bcast_packet_to_list(bat_priv, skb, brd_delay, true);
 @@ -813,8 +813,8 @@ static int batadv_softif_init_late(struct net_device *dev)
  	atomic_set(&bat_priv->batman_queue_left, BATADV_BATMAN_QUEUE_LEN);
  

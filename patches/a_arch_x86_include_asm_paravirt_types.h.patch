@@ -152,7 +152,7 @@ index 0f400c0..3e5329e 100644
  
  struct arch_spinlock;
  #ifdef CONFIG_SMP
-@@ -306,15 +329,18 @@ struct qspinlock;
+@@ -306,17 +306,20 @@ struct qspinlock;
  
  struct pv_lock_ops {
  	void (*queued_spin_lock_slowpath)(struct qspinlock *lock, u32 val);
@@ -161,6 +161,8 @@ index 0f400c0..3e5329e 100644
  
  	void (*wait)(u8 *ptr, u8 val);
  	void (*kick)(int cpu);
+ 
+ 	struct paravirt_callee_save vcpu_is_preempted;
 -};
 +} __rap_hash __no_randomize_layout;
  

@@ -78,14 +78,7 @@ index f5c90e1..90a737c 100644
  
  	return data;
  }
-@@ -916,15 +915,15 @@ static void dummy_tlb_sync(void *cookie)
- 	WARN_ON(cookie != cfg_cookie);
- }
- 
--static struct iommu_gather_ops dummy_tlb_ops __initdata = {
-+static const struct iommu_gather_ops dummy_tlb_ops __initconst = {
- 	.tlb_flush_all	= dummy_tlb_flush_all,
- 	.tlb_add_flush	= dummy_tlb_add_flush,
+@@ -929,9 +929,9 @@ static const struct iommu_gather_ops dummy_tlb_ops __initconst = {
  	.tlb_sync	= dummy_tlb_sync,
  };
  
@@ -151,8 +144,8 @@ index f5c90e1..90a737c 100644
  
  		/*
  		 * Distinct mappings of different granule sizes.
-@@ -984,19 +985,19 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 		while (j != BITS_PER_LONG) {
+@@ -990,19 +990,19 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
  			size = 1UL << j;
  
 -			if (ops->map(ops, iova, iova, size, IOMMU_READ |
@@ -176,7 +169,7 @@ index f5c90e1..90a737c 100644
 +				return __FAIL(iop, i);
  
  			iova += SZ_1G;
- 			j++;
+ 		}
 @@ -1005,15 +1006,15 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
  
  		/* Partial unmap */

@@ -11,25 +11,25 @@ index 0f0f3014..882be95 100644
  
  		return NETDEV_TX_BUSY;
  	}
-@@ -273,7 +273,7 @@ static int xgbe_calc_rx_buf_size(struct net_device *netdev, unsigned int mtu)
- 
- static void xgbe_enable_rx_tx_ints(struct xgbe_prv_data *pdata)
+@@ -283,7 +283,7 @@ static int xgbe_calc_rx_buf_size(struct net_device *netdev, unsigned int mtu)
+ static void xgbe_enable_rx_tx_int(struct xgbe_prv_data *pdata,
+ 				  struct xgbe_channel *channel)
  {
 -	struct xgbe_hw_if *hw_if = &pdata->hw_if;
 +	struct xgbe_hw_if *hw_if = pdata->hw_if;
- 	struct xgbe_channel *channel;
  	enum xgbe_int int_id;
- 	unsigned int i;
-@@ -295,7 +295,7 @@ static void xgbe_enable_rx_tx_ints(struct xgbe_prv_data *pdata)
  
- static void xgbe_disable_rx_tx_ints(struct xgbe_prv_data *pdata)
+ 	if (channel->tx_ring && channel->rx_ring)
+@@ -311,7 +311,7 @@ static void xgbe_enable_rx_tx_ints(struct xgbe_prv_data *pdata)
+ static void xgbe_disable_rx_tx_int(struct xgbe_prv_data *pdata,
+ 				   struct xgbe_channel *channel)
  {
 -	struct xgbe_hw_if *hw_if = &pdata->hw_if;
 +	struct xgbe_hw_if *hw_if = pdata->hw_if;
- 	struct xgbe_channel *channel;
  	enum xgbe_int int_id;
- 	unsigned int i;
-@@ -318,7 +318,7 @@ static void xgbe_disable_rx_tx_ints(struct xgbe_prv_data *pdata)
+ 
+ 	if (channel->tx_ring && channel->rx_ring)
+@@ -440,7 +440,7 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
  static irqreturn_t xgbe_isr(int irq, void *data)
  {
  	struct xgbe_prv_data *pdata = data;
@@ -37,7 +37,7 @@ index 0f0f3014..882be95 100644
 +	struct xgbe_hw_if *hw_if = pdata->hw_if;
  	struct xgbe_channel *channel;
  	unsigned int dma_isr, dma_ch_isr;
- 	unsigned int mac_isr, mac_tssr;
+ 	unsigned int mac_isr, mac_tssr, mac_mdioisr;
 @@ -447,7 +447,7 @@ static void xgbe_service(struct work_struct *work)
  						   struct xgbe_prv_data,
  						   service_work);

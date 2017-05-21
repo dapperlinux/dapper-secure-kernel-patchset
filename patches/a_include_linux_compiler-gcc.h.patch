@@ -2,10 +2,10 @@ diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
 index 928e5ca..dc13b5a 100644
 --- a/include/linux/compiler-gcc.h
 +++ b/include/linux/compiler-gcc.h
-@@ -116,9 +116,9 @@
-  */
+@@ -117,9 +117,9 @@
  #define __pure			__attribute__((pure))
  #define __aligned(x)		__attribute__((aligned(x)))
+ #define __aligned_largest	__attribute__((aligned))
 -#define __printf(a, b)		__attribute__((format(printf, a, b)))
 -#define __scanf(a, b)		__attribute__((format(scanf, a, b)))
 -#define __attribute_const__	__attribute__((__const__))
@@ -14,8 +14,8 @@ index 928e5ca..dc13b5a 100644
 +#define __attribute_const__	__attribute__((const))
  #define __maybe_unused		__attribute__((unused))
  #define __always_unused		__attribute__((unused))
- 
-@@ -185,16 +185,60 @@
+ #define __mode(x)               __attribute__((mode(x)))
+@@ -187,16 +187,60 @@
  # define __compiletime_warning(message) __attribute__((warning(message)))
  # define __compiletime_error(message) __attribute__((error(message)))
  #endif /* __CHECKER__ */
@@ -73,6 +73,6 @@ index 928e5ca..dc13b5a 100644
 +#define __rap_hash __attribute__((rap_hash))
 +#endif
 +
- /*
-  * Mark a position in code as unreachable.  This can be used to
-  * suppress control flow warnings after asm blocks that transfer
+ #ifdef CONFIG_STACK_VALIDATION
+ #define annotate_unreachable() ({					\
+ 	asm("%c0:\t\n"							\

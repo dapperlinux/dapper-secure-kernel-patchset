@@ -20,25 +20,12 @@ index afc6f9dc..da49fa1 100644
  {
  	struct lio *lio;
  	struct octnet_buf_free_info *finfo;
-@@ -3567,7 +3567,7 @@ static void liquidio_del_vxlan_port(struct net_device *netdev,
- 				    OCTNET_CMD_VXLAN_PORT_DEL);
+@@ -3719,7 +3719,7 @@ static int liquidio_set_vf_link_state(struct net_device *netdev, int vfidx,
+ 	return 0;
  }
  
--static struct net_device_ops lionetdevops = {
-+static net_device_ops_no_const lionetdevops __read_only = {
+-static const struct net_device_ops lionetdevops = {
++static const struct net_device_ops lionetdevops __read_only = {
  	.ndo_open		= liquidio_open,
  	.ndo_stop		= liquidio_stop,
  	.ndo_start_xmit		= liquidio_xmit,
-@@ -3816,8 +3816,11 @@ static int setup_nic_devices(struct octeon_device *octeon_dev)
- 
- 		SET_NETDEV_DEV(netdev, &octeon_dev->pci_dev->dev);
- 
--		if (num_iqueues > 1)
-+		if (num_iqueues > 1) {
-+			pax_open_kernel();
- 			lionetdevops.ndo_select_queue = select_q;
-+			pax_close_kernel();
-+		}
- 
- 		/* Associate the routines that will handle different
- 		 * netdev tasks.

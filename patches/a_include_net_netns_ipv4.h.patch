@@ -11,10 +11,10 @@ index 7adf438..4080f91 100644
  
  #ifdef CONFIG_SYSCTL
  	unsigned long *sysctl_local_reserved_ports;
-@@ -135,6 +135,6 @@ struct netns_ipv4 {
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- 	int sysctl_fib_multipath_use_neigh;
- #endif
+@@ -156,6 +156,6 @@ struct netns_ipv4 {
+ 
+ 	unsigned int	fib_seq;	/* protected by rtnl_mutex */
+ 
 -	atomic_t	rt_genid;
 +	atomic_unchecked_t	rt_genid;
  };

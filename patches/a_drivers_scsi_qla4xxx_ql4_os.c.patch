@@ -55,8 +55,8 @@ index 01c3610..f287da9 100644
  	def_timeout = le16_to_cpu(ddb_entry->fw_ddb_entry.def_timeout);
  	ddb_entry->default_relogin_timeout =
  		(def_timeout > LOGIN_TOV) && (def_timeout < LOGIN_TOV * 10) ?
-@@ -9557,7 +9558,7 @@ static int qla4xxx_host_reset(struct Scsi_Host *shost, int reset_type)
-  * RECOVERED - driver's pci_resume()
+@@ -9550,7 +9550,7 @@ static int qla4xxx_host_reset(struct Scsi_Host *shost, int reset_type)
+  * RECOVERED - driver's resume()
   */
  static pci_ers_result_t
 -qla4xxx_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)

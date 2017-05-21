@@ -1,0 +1,23 @@
+diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+index 830953e..ee9a612 100644
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -111,6 +111,18 @@ static inline void mm_update_next_owner(struct mm_struct *mm)
+ #endif /* CONFIG_MEMCG */
+ 
+ #ifdef CONFIG_MMU
++
++#ifdef CONFIG_GRKERNSEC_RAND_THREADSTACK
++extern unsigned long gr_rand_threadstack_offset(const struct mm_struct *mm, const struct file *filp, unsigned long flags);
++#else
++static inline unsigned long gr_rand_threadstack_offset(const struct mm_struct *mm, const struct file *filp, unsigned long flags)
++{
++	return 0;
++}
++#endif
++
++extern bool check_heap_stack_gap(const struct vm_area_struct *vma, unsigned long addr, unsigned long len, unsigned long offset);
++
+ extern void arch_pick_mmap_layout(struct mm_struct *mm);
+ extern unsigned long
+ arch_get_unmapped_area(struct file *, unsigned long, unsigned long,

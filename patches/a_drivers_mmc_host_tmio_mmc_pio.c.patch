@@ -2,9 +2,9 @@ diff --git a/drivers/mmc/host/tmio_mmc_pio.c b/drivers/mmc/host/tmio_mmc_pio.c
 index 7005676..f431ee3 100644
 --- a/drivers/mmc/host/tmio_mmc_pio.c
 +++ b/drivers/mmc/host/tmio_mmc_pio.c
-@@ -1069,8 +1069,10 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host,
- 		goto host_free;
- 	}
+@@ -1174,8 +1174,10 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host,
+ 	if (!_host->ctl)
+ 		return -ENOMEM;
  
 -	tmio_mmc_ops.card_busy = _host->card_busy;
 -	tmio_mmc_ops.start_signal_voltage_switch = _host->start_signal_voltage_switch;

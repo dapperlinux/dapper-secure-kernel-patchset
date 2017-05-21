@@ -8,7 +8,7 @@ index 1af87c1..72d400b 100644
  #include <linux/pkeys.h>
 +#include <linux/random.h>
  
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/cacheflush.h>
 @@ -70,6 +71,16 @@ int mmap_rnd_compat_bits __read_mostly = CONFIG_ARCH_MMAP_RND_COMPAT_BITS;
  static bool ignore_rlimit_data;
@@ -271,14 +271,14 @@ index 1af87c1..72d400b 100644
  	if (flags & MAP_LOCKED)
  		if (!can_do_mlock())
  			return -EPERM;
-@@ -1447,6 +1573,9 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
+@@ -1450,6 +1450,9 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
  			vm_flags |= VM_NORESERVE;
  	}
  
 +	if (!gr_acl_handle_mmap(file, prot))
 +		return -EACCES;
-+	
- 	addr = mmap_region(file, addr, len, vm_flags, pgoff);
++
+ 	addr = mmap_region(file, addr, len, vm_flags, pgoff, uf);
  	if (!IS_ERR_VALUE(addr) &&
  	    ((vm_flags & VM_LOCKED) ||
 @@ -1540,7 +1669,7 @@ int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot)
@@ -313,9 +313,9 @@ index 1af87c1..72d400b 100644
  	if (!may_expand_vm(mm, vm_flags, len >> PAGE_SHIFT)) {
  		unsigned long nr_pages;
  
-@@ -1611,6 +1755,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+@@ -1615,6 +1615,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
  			      &rb_parent)) {
- 		if (do_munmap(mm, addr, len))
+ 		if (do_munmap(mm, addr, len, uf))
  			return -ENOMEM;
 +		BUG_ON(find_vma_links(mm, addr, addr + len, &prev, &rb_link, &rb_parent));
  	}
@@ -908,12 +908,13 @@ index 1af87c1..72d400b 100644
  	if (mm->map_count >= sysctl_max_map_count)
  		return -ENOMEM;
  
-@@ -2579,11 +3011,30 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
+@@ -2583,12 +2586,31 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
   * work.  This now handles partial unmappings.
   * Jeremy Fitzhardinge <jeremy@goop.org>
   */
 +#ifdef CONFIG_PAX_SEGMEXEC
- int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
+ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
+ 	      struct list_head *uf)
  {
 +	int ret = __do_munmap(mm, start, len);
 +	if (ret || !(mm->pax_flags & MF_PAX_SEGMEXEC))
@@ -948,9 +949,9 @@ index 1af87c1..72d400b 100644
  	return 0;
  }
  
-@@ -2669,6 +3122,12 @@ int vm_munmap(unsigned long start, size_t len)
- 	int ret;
+@@ -2682,6 +2682,12 @@ int vm_munmap(unsigned long start, size_t len)
  	struct mm_struct *mm = current->mm;
+ 	LIST_HEAD(uf);
  
 +#ifdef CONFIG_PAX_SEGMEXEC
 +	if ((mm->pax_flags & MF_PAX_SEGMEXEC) &&
@@ -998,9 +999,9 @@ index 1af87c1..72d400b 100644
  
  	len = PAGE_ALIGN(request);
  	if (len < request)
-@@ -2823,10 +3278,24 @@ static int do_brk(unsigned long addr, unsigned long request)
- 
- 	flags = VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
+@@ -2833,10 +2834,24 @@ static int do_brk_flags(unsigned long addr, unsigned long request, unsigned long
+ 		return -EINVAL;
+ 	flags |= VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
  
 +#if defined(CONFIG_PAX_PAGEEXEC) || defined(CONFIG_PAX_SEGMEXEC)
 +	if (mm->pax_flags & (MF_PAX_PAGEEXEC | MF_PAX_SEGMEXEC)) {
@@ -1023,9 +1024,9 @@ index 1af87c1..72d400b 100644
  	error = mlock_future_check(mm, mm->def_flags, len);
  	if (error)
  		return error;
-@@ -2844,16 +3313,17 @@ static int do_brk(unsigned long addr, unsigned long request)
+@@ -2854,16 +2869,17 @@ static int do_brk_flags(unsigned long addr, unsigned long request, unsigned long
  			      &rb_parent)) {
- 		if (do_munmap(mm, addr, len))
+ 		if (do_munmap(mm, addr, len, uf))
  			return -ENOMEM;
 +		BUG_ON(find_vma_links(mm, addr, addr + len, &prev, &rb_link, &rb_parent));
  	}

@@ -46,7 +46,7 @@ index a78a069..3919641 100644
  	push	%rbx
  
  	## if bit 32+3 is set, then all lanes are empty
-@@ -276,12 +277,12 @@ ENTRY(sha256_mb_mgr_get_comp_job_avx2)
+@@ -276,12 +276,12 @@ ENTRY(sha256_mb_mgr_get_comp_job_avx2)
  
  	pop	%rbx
  
@@ -60,4 +60,4 @@ index a78a069..3919641 100644
 +	pax_ret sha256_mb_mgr_get_comp_job_avx2
  ENDPROC(sha256_mb_mgr_get_comp_job_avx2)
  
- .data
+ .section	.rodata.cst16.clear_low_nibble, "aM", @progbits, 16

@@ -8,7 +8,7 @@ index 338c748..497359c 100644
  #include <linux/linkage.h>
 +#include <asm/alternative-asm.h>
  
- .data
+ .section	.rodata.cst16.ANMASK, "aM", @progbits, 16
  .align 16
 @@ -273,7 +274,7 @@ ENTRY(poly1305_block_sse2)
  	add		$0x10,%rsp

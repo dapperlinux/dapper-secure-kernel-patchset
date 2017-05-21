@@ -48,14 +48,15 @@ index 30d7d24..65b49cb 100644
  		goto out;
  
  	/* Ensure the old/new locations do not overlap */
-@@ -497,6 +516,7 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+@@ -513,6 +513,8 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
  	unsigned long ret = -EINVAL;
  	unsigned long charged = 0;
  	bool locked = false;
 +	unsigned long pax_task_size = TASK_SIZE;
++
+ 	struct vm_userfaultfd_ctx uf = NULL_VM_UFFD_CTX;
+ 	LIST_HEAD(uf_unmap);
  
- 	if (flags & ~(MREMAP_FIXED | MREMAP_MAYMOVE))
- 		return ret;
 @@ -518,6 +538,17 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
  	if (!new_len)
  		return ret;
@@ -82,12 +83,13 @@ index 30d7d24..65b49cb 100644
  			goto out;
  		}
  	}
-@@ -592,7 +624,12 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+@@ -610,8 +612,13 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
  			goto out;
  		}
  
 +		map_flags = vma->vm_flags;
- 		ret = move_vma(vma, addr, old_len, new_len, new_addr, &locked);
+ 		ret = move_vma(vma, addr, old_len, new_len, new_addr,
+ 			       &locked, &uf, &uf_unmap);
 +		if (!(ret & ~PAGE_MASK)) {
 +			track_exec_limit(current->mm, addr, addr + old_len, 0UL);
 +			track_exec_limit(current->mm, new_addr, new_addr + new_len, map_flags);

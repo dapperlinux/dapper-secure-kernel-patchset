@@ -20,19 +20,19 @@ index a47c9bd..e1287f0 100644
  	return ret;
   err:
  	svc_rdma_put_context(ctxt, 0);
-@@ -610,7 +610,7 @@ int svc_rdma_recvfrom(struct svc_rqst *rqstp)
- 				  dto_q);
- 		list_del_init(&ctxt->dto_q);
+@@ -619,7 +619,7 @@ int svc_rdma_recvfrom(struct svc_rqst *rqstp)
+ 					struct svc_rdma_op_ctxt, list);
+ 		list_del(&ctxt->list);
  	} else {
 -		atomic_inc(&rdma_stat_rq_starve);
 +		atomic_inc_unchecked(&rdma_stat_rq_starve);
  		clear_bit(XPT_DATA, &xprt->xpt_flags);
  		ctxt = NULL;
  	}
-@@ -627,7 +627,7 @@ int svc_rdma_recvfrom(struct svc_rqst *rqstp)
+@@ -636,7 +636,7 @@ int svc_rdma_recvfrom(struct svc_rqst *rqstp)
  	}
- 	dprintk("svcrdma: processing ctxt=%p on xprt=%p, rqstp=%p, status=%d\n",
- 		ctxt, rdma_xprt, rqstp, ctxt->wc_status);
+ 	dprintk("svcrdma: processing ctxt=%p on xprt=%p, rqstp=%p\n",
+ 		ctxt, rdma_xprt, rqstp);
 -	atomic_inc(&rdma_stat_recv);
 +	atomic_inc_unchecked(&rdma_stat_recv);
  

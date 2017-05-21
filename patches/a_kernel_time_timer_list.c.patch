@@ -19,7 +19,7 @@ index ba7d8b2..aa301b0 100644
  }
  
  static void
-@@ -124,11 +128,14 @@ print_active_timers(struct seq_file *m, struct hrtimer_clock_base *base,
+@@ -114,7 +114,11 @@ print_active_timers(struct seq_file *m, struct hrtimer_clock_base *base,
  static void
  print_base(struct seq_file *m, struct hrtimer_clock_base *base, u64 now)
  {
@@ -30,11 +30,7 @@ index ba7d8b2..aa301b0 100644
 +#endif
  	SEQ_printf(m, "  .index:      %d\n", base->index);
  
- 	SEQ_printf(m, "  .resolution: %u nsecs\n", (unsigned) hrtimer_resolution);
--
- 	SEQ_printf(m,   "  .get_time:   ");
- 	print_name_offset(m, base->get_time);
- 	SEQ_printf(m,   "\n");
+ 	SEQ_printf(m, "  .resolution: %u nsecs\n", hrtimer_resolution);
 @@ -393,7 +400,11 @@ static int __init init_timer_list_procfs(void)
  {
  	struct proc_dir_entry *pe;

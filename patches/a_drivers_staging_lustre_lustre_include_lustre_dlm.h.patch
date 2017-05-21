@@ -2,10 +2,10 @@ diff --git a/drivers/staging/lustre/lustre/include/lustre_dlm.h b/drivers/stagin
 index d035344..b81bfb6 100644
 --- a/drivers/staging/lustre/lustre/include/lustre_dlm.h
 +++ b/drivers/staging/lustre/lustre/include/lustre_dlm.h
-@@ -969,9 +969,9 @@ struct ldlm_ast_work {
+@@ -967,9 +967,9 @@ struct ldlm_ast_work {
  struct ldlm_enqueue_info {
- 	__u32 ei_type;   /** Type of the lock being enqueued. */
- 	__u32 ei_mode;   /** Mode of the lock being enqueued. */
+ 	enum ldlm_type	ei_type;  /** Type of the lock being enqueued. */
+ 	enum ldlm_mode	ei_mode;  /** Mode of the lock being enqueued. */
 -	void *ei_cb_bl;  /** blocking lock callback */
 -	void *ei_cb_cp;  /** lock completion callback */
 -	void *ei_cb_gl;  /** lock glimpse callback */

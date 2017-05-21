@@ -11,8 +11,8 @@ index 37fcaad..e2be8ad 100644
  
  	return &rrpc->luns[next % rrpc->nr_luns];
  }
-@@ -1389,7 +1389,7 @@ static void *rrpc_init(struct nvm_dev *dev, struct gendisk *tdisk,
- 	rrpc->nr_sects = (unsigned long long)dev->sec_per_lun * rrpc->nr_luns;
+@@ -1544,7 +1544,7 @@ static void *rrpc_init(struct nvm_tgt_dev *dev, struct gendisk *tdisk)
+ 	rrpc->nr_sects = (unsigned long long)geo->sec_per_lun * rrpc->nr_luns;
  
  	/* simple round-robin strategy */
 -	atomic_set(&rrpc->next_lun, -1);

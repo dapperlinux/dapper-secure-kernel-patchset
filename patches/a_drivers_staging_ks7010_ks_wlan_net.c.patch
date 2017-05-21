@@ -176,11 +176,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -835,9 +850,10 @@ static int ks_wlan_get_frag(struct net_device *dev,
+@@ -828,9 +830,10 @@ static int ks_wlan_get_frag(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Wireless Handler : set Mode of Operation */
  static int ks_wlan_set_mode(struct net_device *dev,
--			    struct iw_request_info *info, __u32 * uwrq,
+-			    struct iw_request_info *info, __u32 *uwrq,
 +			    struct iw_request_info *info, union iwreq_data *_uwrq,
  			    char *extra)
  {
@@ -188,11 +188,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -871,9 +887,10 @@ static int ks_wlan_set_mode(struct net_device *dev,
+@@ -864,9 +867,10 @@ static int ks_wlan_set_mode(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Wireless Handler : get Mode of Operation */
  static int ks_wlan_get_mode(struct net_device *dev,
--			    struct iw_request_info *info, __u32 * uwrq,
+-			    struct iw_request_info *info, __u32 *uwrq,
 +			    struct iw_request_info *info, union iwreq_data *_uwrq,
  			    char *extra)
  {
@@ -231,7 +231,7 @@ index b2b4fa4..3120edc 100644
  {
  	return -EOPNOTSUPP;	/* Not Support */
  }
-@@ -1084,8 +1103,10 @@ static int ks_wlan_set_txpow(struct net_device *dev,
+@@ -1074,8 +1079,9 @@ static int ks_wlan_set_txpow(struct net_device *dev,
  /* Wireless Handler : get Tx-Power */
  static int ks_wlan_get_txpow(struct net_device *dev,
  			     struct iw_request_info *info,
@@ -239,10 +239,9 @@ index b2b4fa4..3120edc 100644
 +			     union iwreq_data *_vwrq, char *extra)
  {
 +	struct iw_param *vwrq = &_vwrq->txpower;
-+
- 	if (priv->sleep_mode == SLP_SLEEP) {
+ 	if (priv->sleep_mode == SLP_SLEEP)
  		return -EPERM;
- 	}
+ 
 @@ -1102,7 +1123,7 @@ static int ks_wlan_get_txpow(struct net_device *dev,
  /* Wireless Handler : set Retry limits */
  static int ks_wlan_set_retry(struct net_device *dev,
@@ -252,18 +251,17 @@ index b2b4fa4..3120edc 100644
  {
  	return -EOPNOTSUPP;	/* Not Support */
  }
-@@ -1111,8 +1132,10 @@ static int ks_wlan_set_retry(struct net_device *dev,
+@@ -1100,8 +1107,9 @@ static int ks_wlan_set_retry(struct net_device *dev,
  /* Wireless Handler : get Retry limits */
  static int ks_wlan_get_retry(struct net_device *dev,
  			     struct iw_request_info *info,
 -			     struct iw_param *vwrq, char *extra)
 +			     union iwreq_data *_vwrq, char *extra)
  {
-+	struct iw_param *vwrq =&_vwrq->retry;
-+
- 	if (priv->sleep_mode == SLP_SLEEP) {
++	struct iw_param *vwrq = &_vwrq->txpower;
+ 	if (priv->sleep_mode == SLP_SLEEP)
  		return -EPERM;
- 	}
+ 
 @@ -1130,8 +1153,9 @@ static int ks_wlan_get_retry(struct net_device *dev,
  /* Wireless Handler : get range info */
  static int ks_wlan_get_range(struct net_device *dev,
@@ -451,11 +449,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  	strcpy(extra, &(priv->firmware_version[0]));
-@@ -2265,9 +2304,10 @@ static int ks_wlan_get_connect(struct net_device *dev,
+@@ -2242,9 +2258,10 @@ static int ks_wlan_get_connect(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set preamble */
  static int ks_wlan_set_preamble(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -463,11 +461,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2290,9 +2330,10 @@ static int ks_wlan_set_preamble(struct net_device *dev,
+@@ -2266,9 +2283,10 @@ static int ks_wlan_set_preamble(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get preamble */
  static int ks_wlan_get_preamble(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -475,11 +473,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2307,9 +2348,10 @@ static int ks_wlan_get_preamble(struct net_device *dev,
+@@ -2283,9 +2301,10 @@ static int ks_wlan_get_preamble(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set power save mode */
  static int ks_wlan_set_powermgt(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -487,11 +485,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2340,9 +2382,10 @@ static int ks_wlan_set_powermgt(struct net_device *dev,
+@@ -2316,9 +2335,10 @@ static int ks_wlan_set_powermgt(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get power save made */
  static int ks_wlan_get_powermgt(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -499,11 +497,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2357,9 +2400,10 @@ static int ks_wlan_get_powermgt(struct net_device *dev,
+@@ -2333,9 +2353,10 @@ static int ks_wlan_get_powermgt(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set scan type */
  static int ks_wlan_set_scan_type(struct net_device *dev,
--				 struct iw_request_info *info, __u32 * uwrq,
+-				 struct iw_request_info *info, __u32 *uwrq,
 +				 struct iw_request_info *info, union iwreq_data *_uwrq,
  				 char *extra)
  {
@@ -511,11 +509,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2380,9 +2424,10 @@ static int ks_wlan_set_scan_type(struct net_device *dev,
+@@ -2355,9 +2376,10 @@ static int ks_wlan_set_scan_type(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get scan type */
  static int ks_wlan_get_scan_type(struct net_device *dev,
--				 struct iw_request_info *info, __u32 * uwrq,
+-				 struct iw_request_info *info, __u32 *uwrq,
 +				 struct iw_request_info *info, union iwreq_data *_uwrq,
  				 char *extra)
  {
@@ -523,11 +521,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2531,9 +2576,10 @@ static int ks_wlan_get_wep_ascii(struct net_device *dev,
+@@ -2502,9 +2524,10 @@ static int ks_wlan_get_wep_ascii(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set beacon lost count */
  static int ks_wlan_set_beacon_lost(struct net_device *dev,
--				   struct iw_request_info *info, __u32 * uwrq,
+-				   struct iw_request_info *info, __u32 *uwrq,
 +				   struct iw_request_info *info, union iwreq_data *_uwrq,
  				   char *extra)
  {
@@ -535,11 +533,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2556,9 +2602,10 @@ static int ks_wlan_set_beacon_lost(struct net_device *dev,
+@@ -2526,9 +2549,10 @@ static int ks_wlan_set_beacon_lost(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get beacon lost count */
  static int ks_wlan_get_beacon_lost(struct net_device *dev,
--				   struct iw_request_info *info, __u32 * uwrq,
+-				   struct iw_request_info *info, __u32 *uwrq,
 +				   struct iw_request_info *info, union iwreq_data *_uwrq,
  				   char *extra)
  {
@@ -547,11 +545,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2573,9 +2620,10 @@ static int ks_wlan_get_beacon_lost(struct net_device *dev,
+@@ -2542,9 +2566,10 @@ static int ks_wlan_get_beacon_lost(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set phy type */
  static int ks_wlan_set_phy_type(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -559,11 +557,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2599,9 +2647,10 @@ static int ks_wlan_set_phy_type(struct net_device *dev,
+@@ -2567,9 +2592,10 @@ static int ks_wlan_set_phy_type(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get phy type */
  static int ks_wlan_get_phy_type(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -571,11 +569,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2616,9 +2665,10 @@ static int ks_wlan_get_phy_type(struct net_device *dev,
+@@ -2583,9 +2609,10 @@ static int ks_wlan_get_phy_type(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set cts mode */
  static int ks_wlan_set_cts_mode(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -583,11 +581,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2644,9 +2694,10 @@ static int ks_wlan_set_cts_mode(struct net_device *dev,
+@@ -2610,9 +2637,10 @@ static int ks_wlan_set_cts_mode(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get cts mode */
  static int ks_wlan_get_cts_mode(struct net_device *dev,
--				struct iw_request_info *info, __u32 * uwrq,
+-				struct iw_request_info *info, __u32 *uwrq,
 +				struct iw_request_info *info, union iwreq_data *_uwrq,
  				char *extra)
  {
@@ -595,33 +593,33 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2662,8 +2713,9 @@ static int ks_wlan_get_cts_mode(struct net_device *dev,
+@@ -2627,8 +2627,9 @@ static int ks_wlan_get_cts_mode(struct net_device *dev,
  /* Private handler : set sleep mode */
  static int ks_wlan_set_sleep_mode(struct net_device *dev,
  				  struct iw_request_info *info,
--				  __u32 * uwrq, char *extra)
+-				  __u32 *uwrq, char *extra)
 +				  union iwreq_data *_uwrq, char *extra)
  {
 +	__u32 *uwrq = &_uwrq->mode;
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2692,8 +2744,9 @@ static int ks_wlan_set_sleep_mode(struct net_device *dev,
+@@ -2657,8 +2658,9 @@ static int ks_wlan_set_sleep_mode(struct net_device *dev,
  /* Private handler : get sleep mode */
  static int ks_wlan_get_sleep_mode(struct net_device *dev,
  				  struct iw_request_info *info,
--				  __u32 * uwrq, char *extra)
+-				  __u32 *uwrq, char *extra)
 +				  union iwreq_data *_uwrq, char *extra)
  {
 +	__u32 *uwrq = &_uwrq->mode;
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2747,9 +2800,10 @@ static int ks_wlan_get_phy_information_timer(struct net_device *dev,
+@@ -2710,9 +2738,10 @@ static int ks_wlan_get_phy_information_timer(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set WPS enable */
  static int ks_wlan_set_wps_enable(struct net_device *dev,
--				  struct iw_request_info *info, __u32 * uwrq,
+-				  struct iw_request_info *info, __u32 *uwrq,
 +				  struct iw_request_info *info, union iwreq_data *_uwrq,
  				  char *extra)
  {
@@ -629,11 +627,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  	DPRINTK(2, "\n");
-@@ -2771,9 +2825,10 @@ static int ks_wlan_set_wps_enable(struct net_device *dev,
+@@ -2733,9 +2762,10 @@ static int ks_wlan_set_wps_enable(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get WPS enable */
  static int ks_wlan_get_wps_enable(struct net_device *dev,
--				  struct iw_request_info *info, __u32 * uwrq,
+-				  struct iw_request_info *info, __u32 *uwrq,
 +				  struct iw_request_info *info, union iwreq_data *_uwrq,
  				  char *extra)
  {
@@ -652,11 +650,11 @@ index b2b4fa4..3120edc 100644
  	uint8_t *p = extra;
  	unsigned char len;
  	struct ks_wlan_private *priv =
-@@ -2850,9 +2906,10 @@ static int ks_wlan_get_wps_probe_req(struct net_device *dev,
+@@ -2809,9 +2839,10 @@ static int ks_wlan_get_wps_probe_req(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set tx gain control value */
  static int ks_wlan_set_tx_gain(struct net_device *dev,
--			       struct iw_request_info *info, __u32 * uwrq,
+-			       struct iw_request_info *info, __u32 *uwrq,
 +			       struct iw_request_info *info, union iwreq_data *_uwrq,
  			       char *extra)
  {
@@ -664,11 +662,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2877,9 +2934,10 @@ static int ks_wlan_set_tx_gain(struct net_device *dev,
+@@ -2835,9 +2866,10 @@ static int ks_wlan_set_tx_gain(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get tx gain control value */
  static int ks_wlan_get_tx_gain(struct net_device *dev,
--			       struct iw_request_info *info, __u32 * uwrq,
+-			       struct iw_request_info *info, __u32 *uwrq,
 +			       struct iw_request_info *info, union iwreq_data *_uwrq,
  			       char *extra)
  {
@@ -676,11 +674,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2895,9 +2953,10 @@ static int ks_wlan_get_tx_gain(struct net_device *dev,
+@@ -2852,9 +2884,10 @@ static int ks_wlan_get_tx_gain(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : set rx gain control value */
  static int ks_wlan_set_rx_gain(struct net_device *dev,
--			       struct iw_request_info *info, __u32 * uwrq,
+-			       struct iw_request_info *info, __u32 *uwrq,
 +			       struct iw_request_info *info, union iwreq_data *_uwrq,
  			       char *extra)
  {
@@ -688,11 +686,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2922,9 +2981,10 @@ static int ks_wlan_set_rx_gain(struct net_device *dev,
+@@ -2878,9 +2911,10 @@ static int ks_wlan_set_rx_gain(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get rx gain control value */
  static int ks_wlan_get_rx_gain(struct net_device *dev,
--			       struct iw_request_info *info, __u32 * uwrq,
+-			       struct iw_request_info *info, __u32 *uwrq,
 +			       struct iw_request_info *info, union iwreq_data *_uwrq,
  			       char *extra)
  {
@@ -700,11 +698,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -2963,9 +3023,10 @@ static int ks_wlan_set_region(struct net_device *dev,
+@@ -2917,9 +2952,10 @@ static int ks_wlan_set_region(struct net_device *dev,
  /*------------------------------------------------------------------*/
  /* Private handler : get eeprom checksum result */
  static int ks_wlan_get_eeprom_cksum(struct net_device *dev,
--				    struct iw_request_info *info, __u32 * uwrq,
+-				    struct iw_request_info *info, __u32 *uwrq,
 +				    struct iw_request_info *info, union iwreq_data *_uwrq,
  				    char *extra)
  {
@@ -712,11 +710,11 @@ index b2b4fa4..3120edc 100644
  	struct ks_wlan_private *priv =
  	    (struct ks_wlan_private *)netdev_priv(dev);
  
-@@ -3090,8 +3151,9 @@ static void print_hif_event(struct net_device *dev, int event)
+@@ -3043,8 +3045,9 @@ static void print_hif_event(struct net_device *dev, int event)
  /*------------------------------------------------------------------*/
  /* Private handler : get host command history */
  static int ks_wlan_hostt(struct net_device *dev, struct iw_request_info *info,
--			 __u32 * uwrq, char *extra)
+-			 __u32 *uwrq, char *extra)
 +			 union iwreq_data *_uwrq, char *extra)
  {
 +	__u32 *uwrq = &_uwrq->mode;

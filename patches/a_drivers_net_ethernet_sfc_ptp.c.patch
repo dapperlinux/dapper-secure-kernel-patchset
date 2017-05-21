@@ -10,4 +10,4 @@ index 77a5364..4a8d1f8 100644
 +	ACCESS_ONCE_RW(*start) = 0;
  	rc = efx_mcdi_rpc_start(efx, MC_CMD_PTP, synch_buf,
  				MC_CMD_PTP_IN_SYNCHRONIZE_LEN);
- 	EFX_BUG_ON_PARANOID(rc);
+ 	EFX_WARN_ON_ONCE_PARANOID(rc);

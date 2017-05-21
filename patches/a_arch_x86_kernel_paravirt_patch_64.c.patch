@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/paravirt_patch_64.c b/arch/x86/kernel/paravirt_patch_64.c
-index bb3840c..2fe40f3 100644
+index 11aaf1e..0023981 100644
 --- a/arch/x86/kernel/paravirt_patch_64.c
 +++ b/arch/x86/kernel/paravirt_patch_64.c
 @@ -9,7 +9,11 @@ DEF_NATIVE(pv_irq_ops, save_fl, "pushfq; popq %rax");
@@ -11,13 +11,13 @@ index bb3840c..2fe40f3 100644
  DEF_NATIVE(pv_mmu_ops, flush_tlb_single, "invlpg (%rdi)");
 +#endif
 +
- DEF_NATIVE(pv_cpu_ops, clts, "clts");
  DEF_NATIVE(pv_cpu_ops, wbinvd, "wbinvd");
  
+ DEF_NATIVE(pv_cpu_ops, usergs_sysret64, "swapgs; sysretq");
 @@ -59,7 +63,11 @@ unsigned native_patch(u8 type, u16 clobbers, void *ibuf,
+ 		PATCH_SITE(pv_mmu_ops, read_cr2);
  		PATCH_SITE(pv_mmu_ops, read_cr3);
  		PATCH_SITE(pv_mmu_ops, write_cr3);
- 		PATCH_SITE(pv_cpu_ops, clts);
 +
 +#ifndef CONFIG_PAX_MEMORY_UDEREF
  		PATCH_SITE(pv_mmu_ops, flush_tlb_single);

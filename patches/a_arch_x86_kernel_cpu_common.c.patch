@@ -288,9 +288,9 @@ index 4eece91..9eeb03b 100644
  /*
   * Clear all 6 debug registers:
   */
-@@ -1490,7 +1565,7 @@ void cpu_init(void)
- 	 */
- 	load_ucode_ap();
+@@ -1450,7 +1450,7 @@ void cpu_init(void)
+ 	if (cpu)
+ 		load_ucode_ap();
  
 -	t = &per_cpu(cpu_tss, cpu);
 +	t = cpu_tss + cpu;

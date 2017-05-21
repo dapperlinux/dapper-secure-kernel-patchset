@@ -125,8 +125,8 @@ index 470a204..f5adedf 100644
  		return -EFAULT;
  lenout:
  	if (put_user(len, optlen))
-@@ -1522,7 +1525,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
- 		newsk->sk_dst_cache	= NULL;
+@@ -1528,7 +1528,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 		newsk->sk_dst_pending_confirm = 0;
  		newsk->sk_wmem_queued	= 0;
  		newsk->sk_forward_alloc = 0;
 -		atomic_set(&newsk->sk_drops, 0);

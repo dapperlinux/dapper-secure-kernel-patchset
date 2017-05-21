@@ -33,7 +33,7 @@ index fa37fe9..867d3cf 100644
  	bne-		1b\n"
  	PPC_ACQUIRE_BARRIER
 -"2:"	: "=&r" (tmp)
-+"4:"	
++"4:"
 +
 +#ifdef CONFIG_PAX_REFCOUNT
 +	_ASM_EXTABLE(2b,4b)

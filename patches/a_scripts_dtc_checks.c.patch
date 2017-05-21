@@ -1,9 +1,9 @@
 diff --git a/scripts/dtc/checks.c b/scripts/dtc/checks.c
-index 386f956..a3b3365 100644
+index 3d18e45..3551829 100644
 --- a/scripts/dtc/checks.c
 +++ b/scripts/dtc/checks.c
-@@ -277,7 +277,7 @@ NODE_ERROR(duplicate_property_names, NULL);
- static void check_node_name_chars(struct check *c, struct node *dt,
+@@ -243,7 +243,7 @@ ERROR(duplicate_property_names, check_duplicate_property_names, NULL);
+ static void check_node_name_chars(struct check *c, struct dt_info *dti,
  				  struct node *node)
  {
 -	int n = strspn(node->name, c->data);
@@ -11,16 +11,16 @@ index 386f956..a3b3365 100644
  
  	if (n < strlen(node->name))
  		FAIL(c, "Bad character '%c' in node %s",
-@@ -321,7 +321,7 @@ NODE_WARNING(unit_address_vs_reg, NULL);
- static void check_property_name_chars(struct check *c, struct node *dt,
- 				      struct node *node, struct property *prop)
- {
--	int n = strspn(prop->name, c->data);
-+	size_t n = strspn(prop->name, c->data);
+@@ -290,7 +290,7 @@ static void check_property_name_chars(struct check *c, struct dt_info *dti,
+ 	struct property *prop;
  
- 	if (n < strlen(prop->name))
- 		FAIL(c, "Bad character '%c' in property name \"%s\", node %s",
-@@ -423,7 +423,7 @@ static void check_explicit_phandles(struct check *c, struct node *root,
+ 	for_each_property(node, prop) {
+-		int n = strspn(prop->name, c->data);
++		size_t n = strspn(prop->name, c->data);
+ 
+ 		if (n < strlen(prop->name))
+ 			FAIL(c, "Bad character '%c' in property name \"%s\", node %s",
+@@ -392,7 +392,7 @@ static cell_t check_phandle_prop(struct check *c, struct dt_info *dti,
  
  	phandle = propval_cell(prop);
  
@@ -28,17 +28,17 @@ index 386f956..a3b3365 100644
 +	if ((phandle == 0) || (phandle == ~0U)) {
  		FAIL(c, "%s has bad value (0x%x) in %s property",
  		     node->fullpath, phandle, prop->name);
- 		return;
-@@ -486,7 +486,7 @@ static void fixup_phandle_references(struct check *c, struct node *dt,
- 	cell_t phandle;
+ 		return 0;
+@@ -483,7 +483,7 @@ static void fixup_phandle_references(struct check *c, struct dt_info *dti,
+ 		cell_t phandle;
  
- 	for_each_marker_of_type(m, REF_PHANDLE) {
--		assert(m->offset + sizeof(cell_t) <= prop->val.len);
-+		assert(m->offset + (int)sizeof(cell_t) <= prop->val.len);
+ 		for_each_marker_of_type(m, REF_PHANDLE) {
+-			assert(m->offset + sizeof(cell_t) <= prop->val.len);
++			assert(m->offset + (int)sizeof(cell_t) <= prop->val.len);
  
- 		refnode = get_node_by_ref(dt, m->ref);
- 		if (! refnode) {
-@@ -714,7 +714,7 @@ static void enable_warning_error(struct check *c, bool warn, bool error)
+ 			refnode = get_node_by_ref(dt, m->ref);
+ 			if (! refnode) {
+@@ -728,7 +728,7 @@ static void enable_warning_error(struct check *c, bool warn, bool error)
  
  static void disable_warning_error(struct check *c, bool warn, bool error)
  {
@@ -47,7 +47,7 @@ index 386f956..a3b3365 100644
  
  	/* Lowering level, also lower it for things this is the prereq
  	 * for */
-@@ -735,7 +735,7 @@ static void disable_warning_error(struct check *c, bool warn, bool error)
+@@ -749,7 +749,7 @@ static void disable_warning_error(struct check *c, bool warn, bool error)
  
  void parse_checks_option(bool warn, bool error, const char *arg)
  {
@@ -56,10 +56,10 @@ index 386f956..a3b3365 100644
  	const char *name = arg;
  	bool enable = true;
  
-@@ -763,7 +763,7 @@ void parse_checks_option(bool warn, bool error, const char *arg)
- void process_checks(bool force, struct boot_info *bi)
+@@ -776,7 +776,7 @@ void parse_checks_option(bool warn, bool error, const char *arg)
+ 
+ void process_checks(bool force, struct dt_info *dti)
  {
- 	struct node *dt = bi->dt;
 -	int i;
 +	size_t i;
  	int error = 0;

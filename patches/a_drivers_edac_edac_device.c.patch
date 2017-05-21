@@ -2,8 +2,8 @@ diff --git a/drivers/edac/edac_device.c b/drivers/edac/edac_device.c
 index a979003..773b7f0 100644
 --- a/drivers/edac/edac_device.c
 +++ b/drivers/edac/edac_device.c
-@@ -468,9 +468,9 @@ void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
-  */
+@@ -439,9 +439,9 @@ void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
+ 
  int edac_device_alloc_index(void)
  {
 -	static atomic_t device_indexes = ATOMIC_INIT(0);

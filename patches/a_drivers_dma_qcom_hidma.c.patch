@@ -2,9 +2,9 @@ diff --git a/drivers/dma/qcom/hidma.c b/drivers/dma/qcom/hidma.c
 index e244e10..b7799ec 100644
 --- a/drivers/dma/qcom/hidma.c
 +++ b/drivers/dma/qcom/hidma.c
-@@ -570,7 +570,7 @@ static ssize_t hidma_show_values(struct device *dev,
- static int hidma_create_sysfs_entry(struct hidma_dev *dev, char *name,
- 				    int mode)
+@@ -588,7 +588,7 @@ static inline void  hidma_sysfs_uninit(struct hidma_dev *dev)
+ static struct device_attribute*
+ hidma_create_sysfs_entry(struct hidma_dev *dev, char *name, int mode)
  {
 -	struct device_attribute *attrs;
 +	device_attribute_no_const *attrs;

@@ -2,9 +2,9 @@ diff --git a/include/linux/module.h b/include/linux/module.h
 index 0c3207d..18808a5 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -20,9 +20,11 @@
+@@ -19,9 +19,11 @@
+ #include <linux/jump_label.h>
  #include <linux/export.h>
- #include <linux/extable.h>	/* only as arch move module.h -> extable.h */
  #include <linux/rbtree_latch.h>
 +#include <linux/fs.h>
  

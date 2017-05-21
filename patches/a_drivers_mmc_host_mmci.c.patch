@@ -1,15 +1,15 @@
 diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
-index df990bb..e647253 100644
+index 0c6420b..252d67b 100644
 --- a/drivers/mmc/host/mmci.c
 +++ b/drivers/mmc/host/mmci.c
-@@ -1613,7 +1613,9 @@ static int mmci_probe(struct amba_device *dev,
- 	mmc->caps |= MMC_CAP_CMD23;
- 
+@@ -1684,7 +1684,9 @@ static int mmci_probe(struct amba_device *dev,
+ 	 * Enable busy detection.
+ 	 */
  	if (variant->busy_detect) {
 -		mmci_ops.card_busy = mmci_card_busy;
 +		pax_open_kernel();
 +		const_cast(mmci_ops.card_busy) = mmci_card_busy;
 +		pax_close_kernel();
- 		mmci_write_datactrlreg(host, MCI_ST_DPSM_BUSYMODE);
- 		mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY;
- 		mmc->max_busy_timeout = 0;
+ 		/*
+ 		 * Not all variants have a flag to enable busy detection
+ 		 * in the DPSM, but if they do, set it here.

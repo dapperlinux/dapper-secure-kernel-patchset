@@ -125,14 +125,14 @@ index ca651ac..a433237 100644
  	if (pid->hide_pid < hide_pid_min)
  		return true;
  	if (in_group_p(pid->pid_gid))
-@@ -730,7 +776,11 @@ static int proc_pid_permission(struct inode *inode, int mask)
+@@ -706,7 +706,11 @@ static int proc_pid_permission(struct inode *inode, int mask)
  	put_task_struct(task);
  
  	if (!has_perms) {
 +#if defined(CONFIG_GRKERNSEC_PROC_USER) || defined(CONFIG_GRKERNSEC_PROC_USERGROUP)
 +		{
 +#else
- 		if (pid->hide_pid == 2) {
+ 		if (pid->hide_pid == HIDEPID_INVISIBLE) {
 +#endif
  			/*
  			 * Let's make getdents(), stat(), and open()
@@ -298,59 +298,18 @@ index ca651ac..a433237 100644
  
  	error = PROC_I(inode)->op.proc_get_link(dentry, &path);
  	if (error)
-@@ -1693,7 +1814,11 @@ struct inode *proc_pid_make_inode(struct super_block * sb, struct task_struct *t
- 		rcu_read_lock();
- 		cred = __task_cred(task);
- 		inode->i_uid = cred->euid;
+@@ -1654,7 +1658,11 @@ void task_dump_owner(struct task_struct *task, mode_t mode,
+ 	rcu_read_lock();
+ 	cred = __task_cred(task);
+ 	uid = cred->euid;
 +#ifdef CONFIG_GRKERNSEC_PROC_USERGROUP
-+		inode->i_gid = grsec_proc_gid;
++	gid = grsec_proc_gid;
 +#else
- 		inode->i_gid = cred->egid;
+ 	gid = cred->egid;
 +#endif
- 		rcu_read_unlock();
- 	}
- 	security_task_to_inode(task, inode);
-@@ -1729,10 +1854,19 @@ int pid_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
- 			return -ENOENT;
- 		}
- 		if ((inode->i_mode == (S_IFDIR|S_IRUGO|S_IXUGO)) ||
-+#ifdef CONFIG_GRKERNSEC_PROC_USER
-+		    (inode->i_mode == (S_IFDIR|S_IRUSR|S_IXUSR)) ||
-+#elif defined(CONFIG_GRKERNSEC_PROC_USERGROUP)
-+		    (inode->i_mode == (S_IFDIR|S_IRUSR|S_IRGRP|S_IXUSR|S_IXGRP)) ||
-+#endif
- 		    task_dumpable(task)) {
- 			cred = __task_cred(task);
- 			stat->uid = cred->euid;
-+#ifdef CONFIG_GRKERNSEC_PROC_USERGROUP
-+			stat->gid = grsec_proc_gid;
-+#else
- 			stat->gid = cred->egid;
-+#endif
- 		}
- 	}
  	rcu_read_unlock();
-@@ -1770,11 +1904,20 @@ int pid_revalidate(struct dentry *dentry, unsigned int flags)
  
- 	if (task) {
- 		if ((inode->i_mode == (S_IFDIR|S_IRUGO|S_IXUGO)) ||
-+#ifdef CONFIG_GRKERNSEC_PROC_USER
-+		    (inode->i_mode == (S_IFDIR|S_IRUSR|S_IXUSR)) ||
-+#elif defined(CONFIG_GRKERNSEC_PROC_USERGROUP)
-+		    (inode->i_mode == (S_IFDIR|S_IRUSR|S_IRGRP|S_IXUSR|S_IXGRP)) ||
-+#endif
- 		    task_dumpable(task)) {
- 			rcu_read_lock();
- 			cred = __task_cred(task);
- 			inode->i_uid = cred->euid;
-+#ifdef CONFIG_GRKERNSEC_PROC_USERGROUP
-+			inode->i_gid = grsec_proc_gid;
-+#else
- 			inode->i_gid = cred->egid;
-+#endif
- 			rcu_read_unlock();
- 		} else {
- 			inode->i_uid = GLOBAL_ROOT_UID;
+ 	/*
 @@ -2408,6 +2551,9 @@ static struct dentry *proc_pident_lookup(struct inode *dir,
  	if (!task)
  		goto out_no_task;
@@ -413,21 +372,21 @@ index ca651ac..a433237 100644
  #ifdef CONFIG_USER_NS
  	REG("uid_map",    S_IRUGO|S_IWUSR, proc_uid_map_operations),
  	REG("gid_map",    S_IRUGO|S_IWUSR, proc_gid_map_operations),
-@@ -3063,7 +3217,14 @@ static int proc_pid_instantiate(struct inode *dir,
+@@ -3052,7 +3060,14 @@ static int proc_pid_instantiate(struct inode *dir,
+ {
+ 	struct inode *inode;
+ 
++#ifdef CONFIG_GRKERNSEC_PROC_USER
++	inode = proc_pid_make_inode(dir->i_sb, task, S_IFDIR|S_IRUSR|S_IXUSR);
++#elif defined(CONFIG_GRKERNSEC_PROC_USERGROUP)
++	inode = proc_pid_make_inode(dir->i_sb, task, S_IFDIR|S_IRUSR|S_IRGRP|S_IXUSR|S_IXGRP);
++	inode->i_gid = grsec_proc_gid;
++#else
+ 	inode = proc_pid_make_inode(dir->i_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
++#endif
  	if (!inode)
  		goto out;
  
-+#ifdef CONFIG_GRKERNSEC_PROC_USER
-+	inode->i_mode = S_IFDIR|S_IRUSR|S_IXUSR;
-+#elif defined(CONFIG_GRKERNSEC_PROC_USERGROUP)
-+	inode->i_gid = grsec_proc_gid;
-+	inode->i_mode = S_IFDIR|S_IRUSR|S_IRGRP|S_IXUSR|S_IXGRP;
-+#else
- 	inode->i_mode = S_IFDIR|S_IRUGO|S_IXUGO;
-+#endif
- 	inode->i_op = &proc_tgid_base_inode_operations;
- 	inode->i_fop = &proc_tgid_base_operations;
- 	inode->i_flags|=S_IMMUTABLE;
 @@ -3101,7 +3262,11 @@ struct dentry *proc_pid_lookup(struct inode *dir, struct dentry * dentry, unsign
  	if (!task)
  		goto out;

@@ -65,14 +65,14 @@ index 3076f30..28d8eb4 100644
  	ptrace_event(PTRACE_EVENT_EXIT, code);
  
  	validate_creds_for_do_exit(tsk);
-@@ -812,6 +817,9 @@ void __noreturn do_exit(long code)
+@@ -862,6 +862,9 @@ void __noreturn do_exit(long code)
  	tsk->exit_code = code;
  	taskstats_exit(tsk, group_dead);
  
 +	gr_acl_handle_psacct(tsk, code);
 +	gr_acl_handle_exit();
 +
- 	exit_mm(tsk);
+ 	exit_mm();
  
  	if (group_dead)
 @@ -905,7 +913,7 @@ SYSCALL_DEFINE1(exit, int, error_code)
@@ -141,8 +141,8 @@ index 3076f30..28d8eb4 100644
  	sched_annotate_sleep();
  
  	if (!wo->wo_info) {
-@@ -1352,6 +1368,8 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
-  * or another error from security_task_wait(), or still -ECHILD.
+@@ -1402,6 +1402,8 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
+  * or still -ECHILD.
   */
  static int wait_consider_task(struct wait_opts *wo, int ptrace,
 +				struct task_struct *p) __must_hold(&tasklist_lock);
@@ -150,9 +150,9 @@ index 3076f30..28d8eb4 100644
  				struct task_struct *p)
  {
  	/*
-@@ -1477,6 +1495,7 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
+@@ -1513,6 +1515,7 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
   * ->notask_error is 0 if there were any eligible children,
-  * or another error from security_task_wait(), or still -ECHILD.
+  * or still -ECHILD.
   */
 +static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk) __must_hold(&tasklist_lock);
  static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)

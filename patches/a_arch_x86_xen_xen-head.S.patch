@@ -29,12 +29,3 @@ index 7f8d8ab..3032b77 100644
  	jmp xen_start_kernel
  
  	__FINIT
-@@ -85,7 +98,7 @@ ENTRY(xen_pvh_early_cpu_init)
- 	cmp     $0, %r11b
- 	jne     cpu_bringup_and_idle
- #endif
--	ret
-+	pax_ret xen_pvh_early_cpu_init
- 
- #endif /* CONFIG_XEN_PVH */
- 

@@ -50,35 +50,17 @@ index c6bfb349..89b08e1 100644
  	struct rproc_mem_entry *carveout, *mapping;
  	struct device *dev = &rproc->dev;
  	dma_addr_t dma;
-@@ -673,9 +677,11 @@ static int rproc_handle_carveout(struct rproc *rproc,
- 	return ret;
- }
- 
--static int rproc_count_vrings(struct rproc *rproc, struct fw_rsc_vdev *rsc,
-+static int rproc_count_vrings(struct rproc *rproc, void *_rsc,
- 			      int offset, int avail)
- {
-+	struct fw_rsc_vdev *rsc = _rsc;
-+
- 	/* Summarize the number of notification IDs */
- 	rproc->max_notifyid += rsc->num_of_vrings;
- 
-@@ -687,14 +693,14 @@ static int rproc_count_vrings(struct rproc *rproc, struct fw_rsc_vdev *rsc,
+@@ -725,10 +725,10 @@ static int rproc_handle_carveout(struct rproc *rproc,
   * enum fw_resource_type.
   */
  static rproc_handle_resource_t rproc_loading_handlers[RSC_LAST] = {
 -	[RSC_CARVEOUT] = (rproc_handle_resource_t)rproc_handle_carveout,
 -	[RSC_DEVMEM] = (rproc_handle_resource_t)rproc_handle_devmem,
 -	[RSC_TRACE] = (rproc_handle_resource_t)rproc_handle_trace,
--	[RSC_VDEV] = (rproc_handle_resource_t)rproc_count_vrings,
+-	[RSC_VDEV] = (rproc_handle_resource_t)rproc_handle_vdev,
 +	[RSC_CARVEOUT] = rproc_handle_carveout,
 +	[RSC_DEVMEM] = rproc_handle_devmem,
 +	[RSC_TRACE] = rproc_handle_trace,
-+	[RSC_VDEV] = rproc_count_vrings,
- };
- 
- static rproc_handle_resource_t rproc_vdev_handler[RSC_LAST] = {
--	[RSC_VDEV] = (rproc_handle_resource_t)rproc_handle_vdev,
 +	[RSC_VDEV] = rproc_handle_vdev,
  };
  

@@ -71,13 +71,14 @@ index 8aa6bea..1181e44 100644
  				note_page(m, st, __pgprot(prot), 3);
  			} else {
  				walk_pte_level(m, st, *start,
-@@ -338,9 +358,10 @@ static void walk_pud_level(struct seq_file *m, struct pg_state *st, pgd_t addr,
+@@ -359,10 +359,11 @@ static void walk_pud_level(struct seq_file *m, struct pg_state *st, pgd_t addr,
  
  	for (i = 0; i < PTRS_PER_PUD; i++) {
  		st->current_address = normalize_addr(P + i * PUD_LEVEL_MULT);
 +		prot = pud_flags(*start);
 +		st->current_prots[2] = merge_prot(st->current_prots[1], __pgprot(start->pud));
- 		if (!pud_none(*start)) {
+ 		if (!pud_none(*start) &&
+ 		    !pud_already_checked(prev_pud, start, st->check_wx)) {
  			if (pud_large(*start) || !pud_present(*start)) {
 -				prot = pud_flags(*start);
  				note_page(m, st, __pgprot(prot), 2);

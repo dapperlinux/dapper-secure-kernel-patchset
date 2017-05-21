@@ -12,7 +12,7 @@ index 8615a6b..772fcdb 100644
 +
  int sysctl_tcp_abort_on_overflow __read_mostly;
  
- struct inet_timewait_death_row tcp_death_row = {
+ static bool tcp_in_window(u32 seq, u32 end_seq, u32 s_win, u32 e_win)
 @@ -787,7 +791,10 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
  		 * avoid becoming vulnerable to outside attack aiming at
  		 * resetting legit local connections.

@@ -2,9 +2,9 @@ diff --git a/arch/x86/platform/intel-mid/mfld.c b/arch/x86/platform/intel-mid/mf
 index 1eb47b6..dadfb57 100644
 --- a/arch/x86/platform/intel-mid/mfld.c
 +++ b/arch/x86/platform/intel-mid/mfld.c
-@@ -61,12 +61,12 @@ static void __init penwell_arch_setup(void)
- 	pm_power_off = mfld_power_off;
- }
+@@ -59,12 +59,12 @@ static struct intel_mid_ops penwell_ops = {
+ 	.arch_setup = penwell_arch_setup,
+ };
  
 -void *get_penwell_ops(void)
 +const void *get_penwell_ops(void)

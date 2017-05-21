@@ -2,45 +2,14 @@ diff --git a/arch/x86/lib/copy_user_64.S b/arch/x86/lib/copy_user_64.S
 index d376e4b..8e52373 100644
 --- a/arch/x86/lib/copy_user_64.S
 +++ b/arch/x86/lib/copy_user_64.S
-@@ -15,54 +15,35 @@
+@@ -15,6 +15,35 @@
  #include <asm/asm.h>
  #include <asm/smap.h>
  #include <asm/export.h>
 +#include <asm/pgtable.h>
 +#include <asm/frame.h>
- 
--/* Standard copy_to_user with segment limit checking */
--ENTRY(_copy_to_user)
--	mov PER_CPU_VAR(current_task), %rax
--	movq %rdi,%rcx
--	addq %rdx,%rcx
--	jc bad_to_user
--	cmpq TASK_addr_limit(%rax),%rcx
--	ja bad_to_user
--	ALTERNATIVE_2 "jmp copy_user_generic_unrolled",		\
--		      "jmp copy_user_generic_string",		\
--		      X86_FEATURE_REP_GOOD,			\
--		      "jmp copy_user_enhanced_fast_string",	\
--		      X86_FEATURE_ERMS
--ENDPROC(_copy_to_user)
--EXPORT_SYMBOL(_copy_to_user)
--
--/* Standard copy_from_user with segment limit checking */
--ENTRY(_copy_from_user)
--	mov PER_CPU_VAR(current_task), %rax
--	movq %rsi,%rcx
--	addq %rdx,%rcx
--	jc bad_from_user
--	cmpq TASK_addr_limit(%rax),%rcx
--	ja bad_from_user
--	ALTERNATIVE_2 "jmp copy_user_generic_unrolled",		\
--		      "jmp copy_user_generic_string",		\
--		      X86_FEATURE_REP_GOOD,			\
--		      "jmp copy_user_enhanced_fast_string",	\
--		      X86_FEATURE_ERMS
--ENDPROC(_copy_from_user)
--EXPORT_SYMBOL(_copy_from_user)
--
++
++
 +.macro ALIGN_DESTINATION
 +	/* check for bad alignment of destination */
 +	movl %edi,%ecx
@@ -56,31 +25,19 @@ index d376e4b..8e52373 100644
 +	decl %ecx
 +	jnz 100b
 +102:
- 
- 	.section .fixup,"ax"
--	/* must zero dest */
--ENTRY(bad_from_user)
--bad_from_user:
--	movl %edx,%ecx
--	xorl %eax,%eax
--	rep
--	stosb
--bad_to_user:
--	movl %edx,%eax
--	ret
--ENDPROC(bad_from_user)
++	.section .fixup,"ax"
 +103:	addl %ecx,%edx			/* ecx is zerorest also */
 +	FRAME_END
 +	jmp copy_user_handle_tail
- 	.previous
- 
++	.previous
++
 +	_ASM_EXTABLE(100b,103b)
 +	_ASM_EXTABLE(101b,103b)
 +.endm
 +
+ 
  /*
   * copy_user_generic_unrolled - memory copy with exception handling.
-  * This version is for CPUs like P4 that don't have efficient micro
 @@ -77,7 +58,8 @@ ENDPROC(bad_from_user)
   * eax uncopied bytes or 0 if successful.
   */

@@ -7,7 +7,7 @@ index 5f2dc20..2ae2720 100644
  #include <linux/spinlock.h>
  #include <linux/completion.h>
 +#include <linux/grsecurity.h>
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  
  #include "internal.h"
 @@ -253,6 +254,15 @@ struct dentry *proc_lookup(struct inode *dir, struct dentry *dentry,

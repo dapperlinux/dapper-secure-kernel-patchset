@@ -11,12 +11,15 @@ index 2cd5256..a930e72 100644
  
  static int audit_set_loginuid_perm(kuid_t loginuid)
  {
-@@ -2026,7 +2026,7 @@ int audit_set_loginuid(kuid_t loginuid)
+@@ -2036,9 +2036,9 @@ int audit_set_loginuid(kuid_t loginuid)
  
  	/* are we setting or clearing? */
- 	if (uid_valid(loginuid))
+ 	if (uid_valid(loginuid)) {
 -		sessionid = (unsigned int)atomic_inc_return(&session_id);
 +		sessionid = (unsigned int)atomic_inc_return_unchecked(&session_id);
+ 		if (unlikely(sessionid == (unsigned int)-1))
+-			sessionid = (unsigned int)atomic_inc_return(&session_id);
++			sessionid = (unsigned int)atomic_inc_return_unchecked(&session_id);
+ 	}
  
  	task->sessionid = sessionid;
- 	task->loginuid = loginuid;

@@ -2,7 +2,7 @@ diff --git a/drivers/cpufreq/intel_pstate.c b/drivers/cpufreq/intel_pstate.c
 index 80fa656..fe05593 100644
 --- a/drivers/cpufreq/intel_pstate.c
 +++ b/drivers/cpufreq/intel_pstate.c
-@@ -283,13 +283,13 @@ struct pstate_funcs {
+@@ -348,13 +348,13 @@ struct pstate_funcs {
  struct cpu_defaults {
  	struct pstate_adjust_policy pid_policy;
  	struct pstate_funcs funcs;
@@ -16,17 +16,19 @@ index 80fa656..fe05593 100644
 -static struct pstate_funcs pstate_funcs __read_mostly;
 +static struct pstate_funcs *pstate_funcs __read_mostly;
  static int hwp_active __read_mostly;
+ static bool per_cpu_limits __read_mostly;
  
- #ifdef CONFIG_ACPI
-@@ -658,13 +658,13 @@ static void __init intel_pstate_debug_expose_params(void)
+@@ -1042,7 +1042,7 @@ static void intel_pstate_debug_hide_params(void)
  /************************** sysfs begin ************************/
  #define show_one(file_name, object)					\
  	static ssize_t show_##file_name					\
 -	(struct kobject *kobj, struct attribute *attr, char *buf)	\
 +	(struct kobject *kobj, struct kobj_attribute *attr, char *buf)	\
  	{								\
- 		return sprintf(buf, "%u\n", limits->object);		\
+ 		return sprintf(buf, "%u\n", global.object);		\
  	}
+@@ -1076,7 +1076,7 @@ static ssize_t store_status(struct kobject *a, struct attribute *b,
+ }
  
  static ssize_t show_turbo_pct(struct kobject *kobj,
 -				struct attribute *attr, char *buf)
@@ -88,7 +90,7 @@ index 80fa656..fe05593 100644
  }
  
  static void intel_pstate_set_min_pstate(struct cpudata *cpu)
-@@ -1192,14 +1192,14 @@ static void intel_pstate_max_within_limits(struct cpudata *cpu)
+@@ -1711,16 +1711,16 @@ static void intel_pstate_max_within_limits(struct cpudata *cpu)
  
  static void intel_pstate_get_cpu_pstates(struct cpudata *cpu)
  {
@@ -97,11 +99,15 @@ index 80fa656..fe05593 100644
 -	cpu->pstate.max_pstate_physical = pstate_funcs.get_max_physical();
 -	cpu->pstate.turbo_pstate = pstate_funcs.get_turbo();
 -	cpu->pstate.scaling = pstate_funcs.get_scaling();
+-	cpu->pstate.max_freq = cpu->pstate.max_pstate * cpu->pstate.scaling;
+-	cpu->pstate.turbo_freq = cpu->pstate.turbo_pstate * cpu->pstate.scaling;
 +	cpu->pstate.min_pstate = pstate_funcs->get_min();
 +	cpu->pstate.max_pstate = pstate_funcs->get_max();
 +	cpu->pstate.max_pstate_physical = pstate_funcs->get_max_physical();
 +	cpu->pstate.turbo_pstate = pstate_funcs->get_turbo();
 +	cpu->pstate.scaling = pstate_funcs->get_scaling();
++	cpu->pstate.max_freq = cpu->pstate->max_pstate * cpu->pstate.scaling;
++	cpu->pstate.turbo_freq = cpu->pstate->turbo_pstate * cpu->pstate.scaling;
  
 -	if (pstate_funcs.get_vid)
 -		pstate_funcs.get_vid(cpu);
@@ -119,14 +125,14 @@ index 80fa656..fe05593 100644
  }
  
  static inline void intel_pstate_adjust_busy_pstate(struct cpudata *cpu)
-@@ -1359,7 +1359,7 @@ static inline void intel_pstate_adjust_busy_pstate(struct cpudata *cpu)
+@@ -1882,7 +1882,7 @@ static inline void intel_pstate_adjust_busy_pstate(struct cpudata *cpu)
  	from = cpu->pstate.current_pstate;
  
  	target_pstate = cpu->policy == CPUFREQ_POLICY_PERFORMANCE ?
 -		cpu->pstate.turbo_pstate : pstate_funcs.get_target_pstate(cpu);
 +		cpu->pstate.turbo_pstate : pstate_funcs->get_target_pstate(cpu);
  
- 	intel_pstate_update_pstate(cpu, target_pstate);
+ 	update_turbo_state();
  
 @@ -1683,15 +1683,15 @@ static unsigned int force_load __initdata;
  
@@ -148,7 +154,7 @@ index 80fa656..fe05593 100644
  {
  	pid_params.sample_rate_ms = policy->sample_rate_ms;
  	pid_params.sample_rate_ns = pid_params.sample_rate_ms * NSEC_PER_MSEC;
-@@ -1704,15 +1704,7 @@ static void __init copy_pid_params(struct pstate_adjust_policy *policy)
+@@ -2491,14 +2491,7 @@ static void intel_pstate_use_acpi_profile(void)
  
  static void __init copy_cpu_funcs(struct pstate_funcs *funcs)
  {
@@ -160,8 +166,7 @@ index 80fa656..fe05593 100644
 -	pstate_funcs.get_val   = funcs->get_val;
 -	pstate_funcs.get_vid   = funcs->get_vid;
 -	pstate_funcs.get_target_pstate = funcs->get_target_pstate;
--
 +	pstate_funcs = funcs;
- }
  
- #ifdef CONFIG_ACPI
+ 	intel_pstate_use_acpi_profile();
+ }

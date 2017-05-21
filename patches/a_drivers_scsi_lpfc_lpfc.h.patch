@@ -2,8 +2,8 @@ diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
 index b484859..1ea4db4 100644
 --- a/drivers/scsi/lpfc/lpfc.h
 +++ b/drivers/scsi/lpfc/lpfc.h
-@@ -430,7 +430,7 @@ struct lpfc_vport {
- 	struct dentry *debug_nodelist;
+@@ -466,7 +466,7 @@ struct lpfc_vport {
+ 	struct dentry *debug_cpucheck;
  	struct dentry *vport_debugfs_root;
  	struct lpfc_debugfs_trc *disc_trc;
 -	atomic_t disc_trc_cnt;

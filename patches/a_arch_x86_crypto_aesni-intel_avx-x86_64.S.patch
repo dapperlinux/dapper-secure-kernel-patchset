@@ -8,8 +8,8 @@ index 522ab68..782ae42 100644
  #include <asm/inst.h>
 +#include <asm/alternative-asm.h>
  
- .data
- .align 16
+ # constants in mergeable sections, linker can reorder and merge
+ .section	.rodata.cst16.POLY, "aM", @progbits, 16
 @@ -1486,7 +1487,7 @@ ENTRY(aesni_gcm_precomp_avx_gen2)
          pop     %r14
          pop     %r13

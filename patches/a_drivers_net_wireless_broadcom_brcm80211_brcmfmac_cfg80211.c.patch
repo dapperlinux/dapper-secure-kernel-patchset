@@ -2,8 +2,8 @@ diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drive
 index 78d9966..2808cb5 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -5229,6 +5229,50 @@ static struct cfg80211_ops brcmf_cfg80211_ops = {
- 	.tdls_oper = brcmf_cfg80211_tdls_oper,
+@@ -5160,6 +5160,50 @@ static struct cfg80211_ops brcmf_cfg80211_ops = {
+ 	.update_connect_params = brcmf_cfg80211_update_conn_params,
  };
  
 +static struct cfg80211_ops brcmf_cfg80211_ops2 = {

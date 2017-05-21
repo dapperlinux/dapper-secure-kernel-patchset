@@ -203,7 +203,7 @@ index 5cb272a..5b3aa20 100644
  #endif
  
  	apply_paravirt(__parainstructions, __parainstructions_end);
-@@ -661,13 +721,17 @@ void __init alternative_instructions(void)
+@@ -667,12 +667,16 @@ void __init alternative_instructions(void)
   * instructions. And on the local CPU you need to be protected again NMI or MCE
   * handlers seeing an inconsistent instruction while you patch.
   */
@@ -217,7 +217,6 @@ index 5cb272a..5b3aa20 100644
 +
 +	pax_open_kernel();
 +	memcpy((void *)ktla_ktva((unsigned long)addr), opcode, len);
- 	sync_core();
 +	pax_close_kernel();
 +
  	local_irq_restore(flags);

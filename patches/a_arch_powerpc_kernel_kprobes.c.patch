@@ -10,13 +10,13 @@ index e785cc9..514488c 100644
  void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
  				      struct pt_regs *regs)
  {
-@@ -139,6 +140,7 @@ void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
+@@ -139,6 +139,7 @@ void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
  	/* Replace the return addr with trampoline addr */
  	regs->link = (unsigned long)kretprobe_trampoline;
  }
 +#endif
  
- static int __kprobes kprobe_handler(struct pt_regs *regs)
+ int __kprobes kprobe_handler(struct pt_regs *regs)
  {
 @@ -547,6 +549,7 @@ int __init arch_init_kprobes(void)
  	return register_kprobe(&trampoline_p);

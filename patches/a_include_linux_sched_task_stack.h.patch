@@ -1,0 +1,40 @@
+diff --git a/include/linux/sched/task_stack.h b/include/linux/sched/task_stack.h
+index df6ea66..ce76c1e 100644
+--- a/include/linux/sched/task_stack.h
++++ b/include/linux/sched/task_stack.h
+@@ -24,7 +24,7 @@ static inline void *task_stack_page(const struct task_struct *task)
+ 
+ static inline unsigned long *end_of_stack(const struct task_struct *task)
+ {
+-	return task->stack;
++	return (unsigned long *)task->stack + 1;
+ }
+ 
+ #elif !defined(__HAVE_THREAD_FUNCTIONS)
+@@ -77,13 +77,24 @@ static inline void put_task_stack(struct task_struct *tsk) {}
+ #define task_stack_end_corrupted(task) \
+ 		(*(end_of_stack(task)) != STACK_END_MAGIC)
+ 
+-static inline int object_is_on_stack(void *obj)
++static inline int object_starts_on_stack(const void *obj)
+ {
+-	void *stack = task_stack_page(current);
++	const void *stack = task_stack_page(current);
+ 
+ 	return (obj >= stack) && (obj < (stack + THREAD_SIZE));
+ }
+ 
++#if defined(CONFIG_GRKERNSEC_KSTACKOVERFLOW) && defined(CONFIG_X86_64)
++static inline int object_starts_on_irq_stack(const void *obj)
++{
++	const void *stack = this_cpu_read(irq_stack_ptr);
++
++	return (obj >= stack) && (obj < (stack + IRQ_STACK_SIZE));
++}
++#else
++static inline int object_starts_on_irq_stack(const void *obj) { return 0; }
++#endif
++
+ extern void thread_stack_cache_init(void);
+ 
+ #ifdef CONFIG_DEBUG_STACK_USAGE

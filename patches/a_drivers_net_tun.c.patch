@@ -29,14 +29,14 @@ index a931b73..a07f1cb 100644
  {
  	struct tun_file *tfile = file->private_data;
  	struct tun_struct *tun;
-@@ -2005,6 +2005,9 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+@@ -2031,6 +2031,9 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
  	int le;
  	int ret;
  
 +	if (ifreq_len > sizeof ifr)
 +		return -EFAULT;
 +
- 	if (cmd == TUNSETIFF || cmd == TUNSETQUEUE || _IOC_TYPE(cmd) == 0x89) {
+ 	if (cmd == TUNSETIFF || cmd == TUNSETQUEUE || _IOC_TYPE(cmd) == SOCK_IOC_TYPE) {
  		if (copy_from_user(&ifr, argp, ifreq_len))
  			return -EFAULT;
 @@ -2520,7 +2523,7 @@ static int tun_device_event(struct notifier_block *unused,

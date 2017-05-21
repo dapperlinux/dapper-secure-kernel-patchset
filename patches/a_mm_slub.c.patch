@@ -377,9 +377,9 @@ index 58c7526..5566ff1 100644
  static int sysfs_slab_add(struct kmem_cache *s)
  {
  	int err;
-@@ -5634,6 +5733,7 @@ void sysfs_slab_remove(struct kmem_cache *s)
- 	kobject_del(&s->kobj);
- 	kobject_put(&s->kobj);
+@@ -5714,6 +5714,7 @@ void sysfs_slab_release(struct kmem_cache *s)
+ 	if (slab_state >= FULL)
+ 		kobject_put(&s->kobj);
  }
 +#endif
  

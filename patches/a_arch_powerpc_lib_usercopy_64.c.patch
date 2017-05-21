@@ -4,7 +4,7 @@ index 5eea6f3..5d10396 100644
 +++ b/arch/powerpc/lib/usercopy_64.c
 @@ -9,22 +9,6 @@
  #include <linux/module.h>
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  
 -unsigned long copy_from_user(void *to, const void __user *from, unsigned long n)
 -{

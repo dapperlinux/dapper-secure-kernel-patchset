@@ -2,20 +2,20 @@ diff --git a/include/linux/thread_info.h b/include/linux/thread_info.h
 index 2873baf..19e866c 100644
 --- a/include/linux/thread_info.h
 +++ b/include/linux/thread_info.h
-@@ -14,7 +14,9 @@ struct timespec;
- struct compat_timespec;
- 
- #ifdef CONFIG_THREAD_INFO_IN_TASK
+@@ -18,7 +18,9 @@
+  * including <asm/current.h> can cause a circular dependency on some platforms.
+  */
+ #include <asm/current.h>
 -#define current_thread_info() ((struct thread_info *)current)
 +#ifndef current_thread_info
 +struct thread_info *current_thread_info(void);
 +#endif
  #endif
  
- /*
-@@ -54,6 +56,13 @@ struct restart_block {
- 
- extern long do_no_restart_syscall(struct restart_block *parm);
+ #include <linux/bitops.h>
+@@ -21,6 +21,13 @@
+ #define current_thread_info() ((struct thread_info *)current)
+ #endif
  
 +enum {
 +	BAD_STACK = -1,

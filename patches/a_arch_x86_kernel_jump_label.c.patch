@@ -2,15 +2,6 @@ diff --git a/arch/x86/kernel/jump_label.c b/arch/x86/kernel/jump_label.c
 index fc25f69..d31d60c 100644
 --- a/arch/x86/kernel/jump_label.c
 +++ b/arch/x86/kernel/jump_label.c
-@@ -32,6 +32,8 @@ static void bug_at(unsigned char *ip, int line)
- 	 * Something went wrong. Crash the box, as something could be
- 	 * corrupting the kernel.
- 	 */
-+	ip = (unsigned char *)ktla_ktva((unsigned long)ip);
-+	pr_warning("Unexpected op at %pS [%p] %s:%d\n", ip, ip, __FILE__, line);
- 	pr_warning("Unexpected op at %pS [%p] (%02x %02x %02x %02x %02x) %s:%d\n",
- 	       ip, ip, ip[0], ip[1], ip[2], ip[3], ip[4], __FILE__, line);
- 	BUG();
 @@ -52,7 +54,7 @@ static void __jump_label_transform(struct jump_entry *entry,
  			 * Jump label is enabled for the first time.
  			 * So we expect a default_nop...

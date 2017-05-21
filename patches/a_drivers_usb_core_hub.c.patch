@@ -8,7 +8,7 @@ index 35fb2bef..301257b 100644
  #include <linux/pm_qos.h>
 +#include <linux/grsecurity.h>
  
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/byteorder.h>
 @@ -4760,6 +4761,10 @@ static void hub_port_connect(struct usb_hub *hub, int port1, u16 portstatus,
  			goto done;

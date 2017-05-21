@@ -157,7 +157,7 @@ index f30847a..9e62b08 100644
  		if (index == old_index) {
  			/* update counters */
  			local_sub(event_length, &cpu_buffer->entries_bytes);
-@@ -2383,7 +2383,7 @@ rb_try_to_discard(struct ring_buffer_per_cpu *cpu_buffer,
+@@ -2353,7 +2353,7 @@ rb_try_to_discard(struct ring_buffer_per_cpu *cpu_buffer,
  static void rb_start_commit(struct ring_buffer_per_cpu *cpu_buffer)
  {
  	local_inc(&cpu_buffer->committing);
@@ -165,7 +165,7 @@ index f30847a..9e62b08 100644
 +	local_inc_unchecked(&cpu_buffer->commits);
  }
  
- static void
+ static __always_inline void
 @@ -2450,7 +2450,7 @@ static inline void rb_end_commit(struct ring_buffer_per_cpu *cpu_buffer)
  		return;
  

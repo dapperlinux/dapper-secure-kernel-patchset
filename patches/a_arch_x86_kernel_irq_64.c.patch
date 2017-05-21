@@ -3,7 +3,7 @@ index 9ebd0b0..685de4a 100644
 --- a/arch/x86/kernel/irq_64.c
 +++ b/arch/x86/kernel/irq_64.c
 @@ -19,6 +19,8 @@
- #include <asm/idle.h>
+ #include <asm/io_apic.h>
  #include <asm/apic.h>
  
 +extern void gr_handle_kernel_exploit(void);

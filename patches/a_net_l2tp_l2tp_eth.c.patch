@@ -44,7 +44,7 @@ index 965f7e3..daa74100 100644
  	}
  	return NETDEV_TX_OK;
  }
-@@ -111,12 +111,12 @@ static struct rtnl_link_stats64 *l2tp_eth_get_stats64(struct net_device *dev,
+@@ -111,12 +111,12 @@ static void l2tp_eth_get_stats64(struct net_device *dev,
  {
  	struct l2tp_eth *priv = netdev_priv(dev);
  
@@ -60,9 +60,9 @@ index 965f7e3..daa74100 100644
 +	stats->rx_bytes   = atomic_long_read_unchecked(&priv->rx_bytes);
 +	stats->rx_packets = atomic_long_read_unchecked(&priv->rx_packets);
 +	stats->rx_errors  = atomic_long_read_unchecked(&priv->rx_errors);
- 	return stats;
  }
  
+ static const struct net_device_ops l2tp_eth_netdev_ops = {
 @@ -167,15 +167,15 @@ static void l2tp_eth_dev_recv(struct l2tp_session *session, struct sk_buff *skb,
  	nf_reset(skb);
  

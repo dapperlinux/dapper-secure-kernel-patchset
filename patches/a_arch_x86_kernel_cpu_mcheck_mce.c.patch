@@ -10,15 +10,37 @@ index a7fdf45..87c1a31 100644
  
  #include "mce-internal.h"
  
-@@ -210,8 +211,7 @@ static struct notifier_block mce_srao_nb;
+@@ -54,7 +54,7 @@
+ 
+ static DEFINE_MUTEX(mce_chrdev_read_mutex);
+ 
+-static int mce_chrdev_open_count;	/* #times opened */
++static local_t mce_chrdev_open_count;	/* #times opened */
+ 
+ #define mce_log_get_idx_check(p) \
+ ({ \
+@@ -212,11 +212,11 @@ EXPORT_SYMBOL_GPL(mce_inject_log);
+ 
+ static struct notifier_block mce_srao_nb;
+ 
+-static atomic_t num_notifiers;
++static atomic_unchecked_t num_notifiers;
+ 
  void mce_register_decode_chain(struct notifier_block *nb)
  {
- 	/* Ensure SRAO notifier has the highest priority in the decode chain. */
--	if (nb != &mce_srao_nb && nb->priority == INT_MAX)
--		nb->priority -= 1;
-+	BUG_ON(nb != &mce_srao_nb && nb->priority == INT_MAX);
+-	atomic_inc(&num_notifiers);
++	atomic_inc_unchecked(&num_notifiers);
  
- 	atomic_notifier_chain_register(&x86_mce_decoder_chain, nb);
+ 	WARN_ON(nb->priority > MCE_PRIO_LOWEST && nb->priority < MCE_PRIO_EDAC);
+ 
+@@ -226,7 +226,7 @@ EXPORT_SYMBOL_GPL(mce_register_decode_chain);
+ 
+ void mce_unregister_decode_chain(struct notifier_block *nb)
+ {
+-	atomic_dec(&num_notifiers);
++	atomic_dec_unchecked(&num_notifiers);
+ 
+ 	blocking_notifier_chain_unregister(&x86_mce_decoder_chain, nb);
  }
 @@ -263,7 +263,7 @@ static inline u32 smca_misc_reg(int bank)
  	return MSR_AMD64_SMCA_MCx_MISC(bank);
@@ -29,9 +51,9 @@ index a7fdf45..87c1a31 100644
  	.ctl	= ctl_reg,
  	.status	= status_reg,
  	.addr	= addr_reg,
-@@ -282,7 +282,7 @@ static void print_mce(struct mce *m)
+@@ -291,7 +291,7 @@ static void __print_mce(struct mce *m)
  			!(m->mcgstatus & MCG_STATUS_EIPV) ? " !INEXACT!" : "",
- 				m->cs, m->ip);
+ 			m->cs, m->ip);
  
 -		if (m->cs == __KERNEL_CS)
 +		if (m->cs == __KERNEL_CS || m->cs == __KERNEXEC_KERNEL_CS)
@@ -119,15 +141,6 @@ index a7fdf45..87c1a31 100644
  
  	__mcheck_cpu_init_generic();
  	__mcheck_cpu_init_vendor(c);
-@@ -1823,7 +1827,7 @@ void mcheck_cpu_clear(struct cpuinfo_x86 *c)
-  */
- 
- static DEFINE_SPINLOCK(mce_chrdev_state_lock);
--static int mce_chrdev_open_count;	/* #times opened */
-+static local_t mce_chrdev_open_count;	/* #times opened */
- static int mce_chrdev_open_exclu;	/* already open exclusive? */
- 
- static int mce_chrdev_open(struct inode *inode, struct file *file)
 @@ -1831,7 +1835,7 @@ static int mce_chrdev_open(struct inode *inode, struct file *file)
  	spin_lock(&mce_chrdev_state_lock);
  

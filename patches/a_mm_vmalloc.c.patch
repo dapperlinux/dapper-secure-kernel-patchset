@@ -138,11 +138,11 @@ index f2481cb..333cf43 100644
  	if (!pmd)
  		return -ENOMEM;
  	do {
-@@ -166,7 +237,7 @@ static int vmap_pud_range(pgd_t *pgd, unsigned long addr,
+@@ -182,7 +182,7 @@ static int vmap_pud_range(p4d_t *p4d, unsigned long addr,
  	pud_t *pud;
  	unsigned long next;
  
--	pud = pud_alloc(&init_mm, pgd, addr);
+-	pud = pud_alloc(&init_mm, p4d, addr);
 +	pud = pud_alloc_kernel(&init_mm, pgd, addr);
  	if (!pud)
  		return -ENOMEM;
@@ -159,21 +159,6 @@ index f2481cb..333cf43 100644
 +
  	return is_vmalloc_addr(x);
  }
- 
-@@ -246,8 +323,14 @@ struct page *vmalloc_to_page(const void *vmalloc_addr)
- 
- 	if (!pgd_none(*pgd)) {
- 		pud_t *pud = pud_offset(pgd, addr);
-+#ifdef CONFIG_X86
-+		if (!pud_large(*pud))
-+#endif
- 		if (!pud_none(*pud)) {
- 			pmd_t *pmd = pmd_offset(pud, addr);
-+#ifdef CONFIG_X86
-+			if (!pmd_large(*pmd))
-+#endif
- 			if (!pmd_none(*pmd)) {
- 				pte_t *ptep, pte;
  
 @@ -350,7 +433,7 @@ static BLOCKING_NOTIFIER_HEAD(vmap_notify_list);
   * Allocate a region of KVA of the specified size and alignment, within the

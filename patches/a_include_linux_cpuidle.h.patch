@@ -11,11 +11,11 @@ index bb31373..e85eb5f 100644
 +typedef struct cpuidle_state __no_const cpuidle_state_no_const;
  
  /* Idle State Flags */
- #define CPUIDLE_FLAG_COUPLED	(0x02) /* state applies to multiple cpus */
-@@ -237,7 +238,7 @@ struct cpuidle_governor {
+ #define CPUIDLE_FLAG_NONE       (0x00)
+@@ -241,7 +241,7 @@ struct cpuidle_governor {
+ 	int  (*select)		(struct cpuidle_driver *drv,
+ 					struct cpuidle_device *dev);
  	void (*reflect)		(struct cpuidle_device *dev, int index);
- 
- 	struct module 		*owner;
 -};
 +} __do_const;
  

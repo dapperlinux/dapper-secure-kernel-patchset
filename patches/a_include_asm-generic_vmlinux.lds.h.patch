@@ -2,12 +2,12 @@ diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds
 index 31e1d63..2f85b26 100644
 --- a/include/asm-generic/vmlinux.lds.h
 +++ b/include/asm-generic/vmlinux.lds.h
-@@ -274,6 +274,7 @@
+@@ -275,6 +275,7 @@
  		VMLINUX_SYMBOL(__start_rodata) = .;			\
  		*(.rodata) *(.rodata.*)					\
  		RO_AFTER_INIT_DATA	/* Read only after init */	\
 +		*(.data..read_only)					\
- 		*(__vermagic)		/* Kernel version magic */	\
+ 		KEEP(*(__vermagic))	/* Kernel version magic */	\
  		. = ALIGN(8);						\
  		VMLINUX_SYMBOL(__start___tracepoints_ptrs) = .;		\
 @@ -447,9 +448,20 @@

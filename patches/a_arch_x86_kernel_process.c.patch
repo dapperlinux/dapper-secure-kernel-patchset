@@ -20,7 +20,7 @@ index 8e10e72..fdd36da 100644
  	.x86_tss = {
  		.sp0 = TOP_OF_INIT_STACK,
  #ifdef CONFIG_X86_32
-@@ -62,8 +64,9 @@ __visible DEFINE_PER_CPU_SHARED_ALIGNED(struct tss_struct, cpu_tss) = {
+@@ -66,19 +66,33 @@ __visible DEFINE_PER_CPU_SHARED_ALIGNED(struct tss_struct, cpu_tss) = {
  #ifdef CONFIG_X86_32
  	.SYSENTER_stack_canary	= STACK_END_MAGIC,
  #endif
@@ -29,11 +29,8 @@ index 8e10e72..fdd36da 100644
 -EXPORT_PER_CPU_SYMBOL(cpu_tss);
 +EXPORT_SYMBOL(cpu_tss);
  
- #ifdef CONFIG_X86_64
- static DEFINE_PER_CPU(unsigned char, is_idle);
-@@ -82,13 +85,26 @@ void idle_notifier_unregister(struct notifier_block *n)
- EXPORT_SYMBOL_GPL(idle_notifier_unregister);
- #endif
+ DEFINE_PER_CPU(bool, __tss_limit_invalid);
+ EXPORT_PER_CPU_SYMBOL_GPL(__tss_limit_invalid);
  
 +struct kmem_cache *fpregs_state_cachep;
 +EXPORT_SYMBOL(fpregs_state_cachep);
@@ -91,15 +88,6 @@ index 8e10e72..fdd36da 100644
  	flush_ptrace_hw_breakpoint(tsk);
  	memset(tsk->thread.tls_array, 0, sizeof(tsk->thread.tls_array));
  
-@@ -269,7 +294,7 @@ static void __exit_idle(void)
- void exit_idle(void)
- {
- 	/* idle loop has pid 0 */
--	if (current->pid)
-+	if (task_pid_nr(current))
- 		return;
- 	__exit_idle();
- }
 @@ -322,7 +347,7 @@ bool xen_set_default_idle(void)
  	return ret;
  }

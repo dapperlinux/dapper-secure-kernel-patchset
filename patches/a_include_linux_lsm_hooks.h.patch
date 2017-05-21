@@ -11,10 +11,10 @@ index 558adfa..9127895 100644
  
  /*
   * Security module hook list structure.
-@@ -1876,7 +1876,7 @@ struct security_hook_list {
- 	struct list_head		list;
+@@ -1868,7 +1868,7 @@ struct security_hook_list {
  	struct list_head		*head;
  	union security_list_options	hook;
+ 	char				*lsm;
 -};
 +} __randomize_layout;
  

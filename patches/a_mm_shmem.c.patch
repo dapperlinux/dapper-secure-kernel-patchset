@@ -2,9 +2,9 @@ diff --git a/mm/shmem.c b/mm/shmem.c
 index 9d32e1c..054adce 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
-@@ -34,7 +34,7 @@
- #include <linux/uio.h>
- #include <linux/khugepaged.h>
+@@ -37,7 +37,7 @@
+ 
+ #include <asm/tlbflush.h> /* for arch/microblaze update_mmu_cache() */
  
 -static struct vfsmount *shm_mnt;
 +struct vfsmount *shm_mnt;

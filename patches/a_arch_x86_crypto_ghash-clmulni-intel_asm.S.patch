@@ -8,8 +8,8 @@ index eed55c8..18f64dc 100644
  #include <asm/frame.h>
 +#include <asm/alternative-asm.h>
  
- .data
- 
+ .section	.rodata.cst16.bswap_mask, "aM", @progbits, 16
+ .align 16
 @@ -90,7 +91,7 @@ __clmul_gf128mul_ble:
  	psrlq $1, T2
  	pxor T2, T1

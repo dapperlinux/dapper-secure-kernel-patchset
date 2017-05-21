@@ -27,16 +27,16 @@ index 297e912..d5661fb 100644
  		break;
  	default:
  		break;
-@@ -930,8 +935,10 @@ static void __init acpi_cpufreq_boost_init(void)
- 		if (!msrs)
- 			return;
+@@ -912,8 +912,10 @@ static void __init acpi_cpufreq_boost_init(void)
+ 	if (!(boot_cpu_has(X86_FEATURE_CPB) || boot_cpu_has(X86_FEATURE_IDA)))
+ 		return;
  
--		acpi_cpufreq_driver.set_boost = set_boost;
--		acpi_cpufreq_driver.boost_enabled = boost_state(0);
-+		pax_open_kernel();
-+		const_cast(acpi_cpufreq_driver.set_boost) = set_boost;
-+		const_cast(acpi_cpufreq_driver.boost_enabled) = boost_state(0);
-+		pax_close_kernel();
+-	acpi_cpufreq_driver.set_boost = set_boost;
+-	acpi_cpufreq_driver.boost_enabled = boost_state(0);
++	pax_open_kernel();
++	const_cast(acpi_cpufreq_driver.set_boost) = set_boost;
++	const_cast(acpi_cpufreq_driver.boost_enabled) = boost_state(0);
++	pax_close_kernel();
  
- 		cpu_notifier_register_begin();
- 
+ 	/*
+ 	 * This calls the online callback on all online cpu and forces all

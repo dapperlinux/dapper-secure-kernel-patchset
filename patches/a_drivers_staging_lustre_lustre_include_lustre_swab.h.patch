@@ -1,0 +1,105 @@
+diff --git a/drivers/staging/lustre/lustre/include/lustre_swab.h b/drivers/staging/lustre/lustre/include/lustre_swab.h
+index 26d01c2..de64db3 100644
+--- a/drivers/staging/lustre/lustre/include/lustre_swab.h
++++ b/drivers/staging/lustre/lustre/include/lustre_swab.h
+@@ -50,53 +50,53 @@
+ 
+ #include "lustre/lustre_idl.h"
+ 
+-void lustre_swab_ptlrpc_body(struct ptlrpc_body *pb);
+-void lustre_swab_connect(struct obd_connect_data *ocd);
+-void lustre_swab_hsm_user_state(struct hsm_user_state *hus);
+-void lustre_swab_hsm_state_set(struct hsm_state_set *hss);
+-void lustre_swab_obd_statfs(struct obd_statfs *os);
+-void lustre_swab_obd_ioobj(struct obd_ioobj *ioo);
+-void lustre_swab_niobuf_remote(struct niobuf_remote *nbr);
+-void lustre_swab_ost_lvb_v1(struct ost_lvb_v1 *lvb);
+-void lustre_swab_ost_lvb(struct ost_lvb *lvb);
+-void lustre_swab_obd_quotactl(struct obd_quotactl *q);
+-void lustre_swab_lquota_lvb(struct lquota_lvb *lvb);
+-void lustre_swab_generic_32s(__u32 *val);
+-void lustre_swab_mdt_body(struct mdt_body *b);
+-void lustre_swab_mdt_ioepoch(struct mdt_ioepoch *b);
+-void lustre_swab_mdt_rec_setattr(struct mdt_rec_setattr *sa);
+-void lustre_swab_mdt_rec_reint(struct mdt_rec_reint *rr);
+-void lustre_swab_lmv_desc(struct lmv_desc *ld);
+-void lustre_swab_lmv_mds_md(union lmv_mds_md *lmm);
+-void lustre_swab_lov_desc(struct lov_desc *ld);
+-void lustre_swab_gl_desc(union ldlm_gl_desc *desc);
+-void lustre_swab_ldlm_intent(struct ldlm_intent *i);
+-void lustre_swab_ldlm_request(struct ldlm_request *rq);
+-void lustre_swab_ldlm_reply(struct ldlm_reply *r);
+-void lustre_swab_mgs_target_info(struct mgs_target_info *oinfo);
+-void lustre_swab_mgs_nidtbl_entry(struct mgs_nidtbl_entry *oinfo);
+-void lustre_swab_mgs_config_body(struct mgs_config_body *body);
+-void lustre_swab_mgs_config_res(struct mgs_config_res *body);
+-void lustre_swab_ost_body(struct ost_body *b);
+-void lustre_swab_ost_last_id(__u64 *id);
+-void lustre_swab_fiemap(struct fiemap *fiemap);
+-void lustre_swab_lov_user_md_v1(struct lov_user_md_v1 *lum);
+-void lustre_swab_lov_user_md_v3(struct lov_user_md_v3 *lum);
+-void lustre_swab_lov_user_md_objects(struct lov_user_ost_data *lod,
++void lustre_swab_ptlrpc_body(void *pb);
++void lustre_swab_connect(void *ocd);
++void lustre_swab_hsm_user_state(void *hus);
++void lustre_swab_hsm_state_set(void *hss);
++void lustre_swab_obd_statfs(void *os);
++void lustre_swab_obd_ioobj(void *ioo);
++void lustre_swab_niobuf_remote(void *nbr);
++void lustre_swab_ost_lvb_v1(void *lvb);
++void lustre_swab_ost_lvb(void *lvb);
++void lustre_swab_obd_quotactl(void *q);
++void lustre_swab_lquota_lvb(void *lvb);
++void lustre_swab_generic_32s(void *val);
++void lustre_swab_mdt_body(void *b);
++void lustre_swab_mdt_ioepoch(void *b);
++void lustre_swab_mdt_rec_setattr(void *sa);
++void lustre_swab_mdt_rec_reint(void *rr);
++void lustre_swab_lmv_desc(void *ld);
++void lustre_swab_lmv_mds_md(void *lmm);
++void lustre_swab_lov_desc(void *ld);
++void lustre_swab_gl_desc(void *desc);
++void lustre_swab_ldlm_intent(void *i);
++void lustre_swab_ldlm_request(void *rq);
++void lustre_swab_ldlm_reply(void *r);
++void lustre_swab_mgs_target_info(void *oinfo);
++void lustre_swab_mgs_nidtbl_entry(void *oinfo);
++void lustre_swab_mgs_config_body(void *body);
++void lustre_swab_mgs_config_res(void *body);
++void lustre_swab_ost_body(void *b);
++void lustre_swab_ost_last_id(void *id);
++void lustre_swab_fiemap(void *fiemap);
++void lustre_swab_lov_user_md_v1(void *lum);
++void lustre_swab_lov_user_md_v3(void *lum);
++void lustre_swab_lov_user_md_objects(void *lod,
+ 				     int stripe_count);
+-void lustre_swab_lov_mds_md(struct lov_mds_md *lmm);
+-void lustre_swab_lustre_capa(struct lustre_capa *c);
+-void lustre_swab_lustre_capa_key(struct lustre_capa_key *k);
+-void lustre_swab_fid2path(struct getinfo_fid2path *gf);
+-void lustre_swab_layout_intent(struct layout_intent *li);
+-void lustre_swab_hsm_user_state(struct hsm_user_state *hus);
+-void lustre_swab_hsm_current_action(struct hsm_current_action *action);
+-void lustre_swab_hsm_progress_kernel(struct hsm_progress_kernel *hpk);
+-void lustre_swab_hsm_user_state(struct hsm_user_state *hus);
+-void lustre_swab_hsm_user_item(struct hsm_user_item *hui);
+-void lustre_swab_hsm_request(struct hsm_request *hr);
+-void lustre_swab_swap_layouts(struct mdc_swap_layouts *msl);
+-void lustre_swab_close_data(struct close_data *data);
+-void lustre_swab_lmv_user_md(struct lmv_user_md *lum);
++void lustre_swab_lov_mds_md(void *lmm);
++void lustre_swab_lustre_capa(void *c);
++void lustre_swab_lustre_capa_key(void *k);
++void lustre_swab_fid2path(void *gf);
++void lustre_swab_layout_intent(void *li);
++void lustre_swab_hsm_user_state(void *hus);
++void lustre_swab_hsm_current_action(void *action);
++void lustre_swab_hsm_progress_kernel(void *hpk);
++void lustre_swab_hsm_user_state(void *hus);
++void lustre_swab_hsm_user_item(void *hui);
++void lustre_swab_hsm_request(void *hr);
++void lustre_swab_swap_layouts(void *msl);
++void lustre_swab_close_data(void *data);
++void lustre_swab_lmv_user_md(void *lum);
+ 
+ #endif

@@ -2,7 +2,7 @@ diff --git a/fs/afs/file.c b/fs/afs/file.c
 index 6344aee..217c579 100644
 --- a/fs/afs/file.c
 +++ b/fs/afs/file.c
-@@ -122,11 +122,11 @@ static void afs_file_readpage_read_complete(struct page *page,
+@@ -139,12 +139,12 @@ static void afs_file_readpage_read_complete(struct page *page,
  /*
   * read page from file, directory or symlink, given a key to use
   */
@@ -11,11 +11,12 @@ index 6344aee..217c579 100644
  {
  	struct inode *inode = page->mapping->host;
  	struct afs_vnode *vnode = AFS_FS_I(inode);
+ 	struct afs_read *req;
 -	struct key *key = data;
 +	struct key *key = (struct key *)data;
- 	size_t len;
- 	off_t offset;
  	int ret;
+ 
+ 	_enter("{%x},{%lu},{%lu}", key_serial(key), inode->i_ino, page->index);
 @@ -220,14 +220,14 @@ static int afs_readpage(struct file *file, struct page *page)
  	if (file) {
  		key = file->private_data;

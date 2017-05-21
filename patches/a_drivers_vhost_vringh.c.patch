@@ -62,12 +62,3 @@ index 3bb02c6..a01ff38 100644
  	return 0;
  }
  EXPORT_SYMBOL(vringh_init_user);
-@@ -826,7 +826,7 @@ static inline int getu16_kern(const struct vringh *vrh,
- 
- static inline int putu16_kern(const struct vringh *vrh, __virtio16 *p, u16 val)
- {
--	ACCESS_ONCE(*p) = cpu_to_vringh16(vrh, val);
-+	ACCESS_ONCE_RW(*p) = cpu_to_vringh16(vrh, val);
- 	return 0;
- }
- 

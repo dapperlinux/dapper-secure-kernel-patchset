@@ -278,7 +278,7 @@ index c817627..ec8c021 100644
  		       cache, &cell);
  	if (r) {
  		if (r < 0)
-@@ -3553,12 +3557,12 @@ static void cache_status(struct dm_target *ti, status_type_t type,
+@@ -3548,12 +3548,12 @@ static void cache_status(struct dm_target *ti, status_type_t type,
  		       (unsigned long long)cache->sectors_per_block,
  		       (unsigned long long) from_cblock(residency),
  		       (unsigned long long) from_cblock(cache->cache_size),
@@ -296,4 +296,4 @@ index c817627..ec8c021 100644
 +		       (unsigned) atomic_read_unchecked(&cache->stats.promotion),
  		       (unsigned long) atomic_read(&cache->nr_dirty));
  
- 		if (writethrough_mode(&cache->features))
+ 		if (cache->features.metadata_version == 2)

@@ -36,9 +36,9 @@ index 5d2f24f..cb5d8a4 100644
 +early_param("pax_sanitize_slab", pax_sanitize_slab_setup);
 +#endif
 +
- /*
-  * Set of flags that will prevent slab merging
-  */
+ static LIST_HEAD(slab_caches_to_rcu_destroy);
+ static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work);
+ static DECLARE_WORK(slab_caches_to_rcu_destroy_work,
 @@ -44,7 +68,7 @@ struct kmem_cache *kmem_cache;
   * Merge control. If this is set then no merging of slab caches will occur.
   * (Could be removed. This was introduced to pacify the merge skeptics.)
@@ -83,15 +83,15 @@ index 5d2f24f..cb5d8a4 100644
  
  	err = init_memcg_params(s, memcg, root_cache);
  	if (err)
-@@ -348,7 +377,7 @@ static struct kmem_cache *create_cache(const char *name,
+@@ -383,7 +383,7 @@ static struct kmem_cache *create_cache(const char *name,
  	if (err)
  		goto out_free_cache;
  
 -	s->refcount = 1;
 +	atomic_set(&s->refcount, 1);
  	list_add(&s->list, &slab_caches);
+ 	memcg_link_cache(s);
  out:
- 	if (err)
 @@ -362,11 +391,13 @@ static struct kmem_cache *create_cache(const char *name,
  }
  
@@ -142,7 +142,7 @@ index 5d2f24f..cb5d8a4 100644
  	if (IS_ERR(s)) {
  		err = PTR_ERR(s);
  		kfree_const(cache_name);
-@@ -450,8 +485,25 @@ kmem_cache_create(const char *name, size_t size, size_t align,
+@@ -492,8 +516,26 @@ kmem_cache_create(const char *name, size_t size, size_t align,
  	}
  	return s;
  }
@@ -165,16 +165,17 @@ index 5d2f24f..cb5d8a4 100644
 +}
 +EXPORT_SYMBOL(kmem_cache_create_usercopy);
 +
- static int shutdown_cache(struct kmem_cache *s,
- 		struct list_head *release, bool *need_rcu_barrier)
++
+ static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work)
  {
-@@ -473,7 +525,7 @@ static void release_caches(struct list_head *release, bool need_rcu_barrier)
- 		rcu_barrier();
+ 	LIST_HEAD(to_destroy);
+@@ -518,7 +518,7 @@ static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work)
+ 	rcu_barrier();
  
- 	list_for_each_entry_safe(s, s2, release, list) {
+ 	list_for_each_entry_safe(s, s2, &to_destroy, list) {
 -#ifdef SLAB_SUPPORTS_SYSFS
 +#if defined(SLAB_SUPPORTS_SYSFS) && !defined(CONFIG_GRKERNSEC_PROC_ADD)
- 		sysfs_slab_remove(s);
+ 		sysfs_slab_release(s);
  #else
  		slab_kmem_cache_release(s);
 @@ -534,6 +586,7 @@ void memcg_create_kmem_cache(struct mem_cgroup *memcg,
@@ -185,8 +186,8 @@ index 5d2f24f..cb5d8a4 100644
  			 root_cache->ctor, memcg, root_cache);
  	/*
  	 * If we could not create a memcg cache, do not complain, because
-@@ -741,8 +794,7 @@ void kmem_cache_destroy(struct kmem_cache *s)
- 	kasan_cache_destroy(s);
+@@ -821,8 +821,7 @@ void kmem_cache_destroy(struct kmem_cache *s)
+ 
  	mutex_lock(&slab_mutex);
  
 -	s->refcount--;
@@ -194,7 +195,7 @@ index 5d2f24f..cb5d8a4 100644
 +	if (!atomic_dec_and_test(&s->refcount))
  		goto out_unlock;
  
- 	err = shutdown_memcg_caches(s, &release, &need_rcu_barrier);
+ 	err = shutdown_memcg_caches(s);
 @@ -793,13 +845,15 @@ bool slab_is_available(void)
  #ifndef CONFIG_SLOB
  /* Create a cache during boot when no slab services are available yet */
@@ -212,7 +213,7 @@ index 5d2f24f..cb5d8a4 100644
  
  	slab_init_memcg_params(s);
  
-@@ -809,23 +863,29 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name, size_t siz
+@@ -887,24 +929,31 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name, size_t siz
  		panic("Creation of kmalloc slab %s size=%zu failed. Reason %d\n",
  					name, size, err);
  
@@ -233,6 +234,7 @@ index 5d2f24f..cb5d8a4 100644
 -	create_boot_cache(s, name, size, flags);
 +	create_boot_cache(s, name, size, flags, useroffset, usersize);
  	list_add(&s->list, &slab_caches);
+ 	memcg_link_cache(s);
 -	s->refcount = 1;
 +	atomic_set(&s->refcount, 1);
  	return s;
@@ -243,6 +245,7 @@ index 5d2f24f..cb5d8a4 100644
 +{
 +	return create_kmalloc_cache_usercopy(name, size, flags, 0, 0);
 +}
++
 +
  struct kmem_cache *kmalloc_caches[KMALLOC_SHIFT_HIGH + 1];
  EXPORT_SYMBOL(kmalloc_caches);

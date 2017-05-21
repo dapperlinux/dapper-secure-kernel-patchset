@@ -2,10 +2,10 @@ diff --git a/kernel/extable.c b/kernel/extable.c
 index e820cce..72195de 100644
 --- a/kernel/extable.c
 +++ b/kernel/extable.c
-@@ -23,6 +23,7 @@
+@@ -26,6 +26,7 @@
  
  #include <asm/sections.h>
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
 +#include <asm/setup.h>
  
  /*

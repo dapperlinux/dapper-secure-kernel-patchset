@@ -2,7 +2,7 @@ diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
 index e023066..a28458a 100644
 --- a/drivers/base/power/domain.c
 +++ b/drivers/base/power/domain.c
-@@ -1895,8 +1895,10 @@ int genpd_dev_pm_attach(struct device *dev)
+@@ -2057,8 +2057,10 @@ int genpd_dev_pm_attach(struct device *dev)
  		goto out;
  	}
  
@@ -13,5 +13,5 @@ index e023066..a28458a 100644
 +	const_cast(dev->pm_domain->sync) = genpd_dev_pm_sync;
 +	pax_close_kernel();
  
- 	mutex_lock(&pd->lock);
- 	ret = genpd_poweron(pd, 0);
+ 	genpd_lock(pd);
+ 	ret = genpd_power_on(pd, 0);

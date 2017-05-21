@@ -2,14 +2,14 @@ diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
 index b1517b6..b1aa804 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
-@@ -15,12 +15,19 @@
+@@ -16,12 +16,19 @@
  #include <linux/mmu_notifier.h>
  #include <linux/page_idle.h>
  #include <linux/shmem_fs.h>
 +#include <linux/grsecurity.h>
  
  #include <asm/elf.h>
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/tlbflush.h>
  #include "internal.h"
  

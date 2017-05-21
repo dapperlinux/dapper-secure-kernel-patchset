@@ -18,7 +18,7 @@ index 7d90e25..0780424 100644
  
  	/*
  	 * set current cursor variable and proc pointer,
-@@ -787,16 +787,20 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
+@@ -786,16 +786,20 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
  
  	memset_io(crtc->cursor.vstart, 0, crtc->cursor.size);
  	if (!g_hwcursor) {
@@ -26,7 +26,7 @@ index 7d90e25..0780424 100644
 +		pax_open_kernel();
 +		const_cast(lynxfb_ops.fb_cursor) = NULL;
 +		pax_close_kernel();
- 		hw_cursor_disable(&crtc->cursor);
+ 		sm750_hw_cursor_disable(&crtc->cursor);
  	}
  
  	/* set info->fbops, must be set before fb_find_mode */

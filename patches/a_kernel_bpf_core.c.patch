@@ -2,16 +2,16 @@ diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
 index aa6d981..d5d0272 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -208,6 +208,8 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
+@@ -295,6 +295,8 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
  }
  
  #ifdef CONFIG_BPF_JIT
 +extern long __rap_hash_call___bpf_prog_run;
 +
- struct bpf_binary_header *
- bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 		     unsigned int alignment,
-@@ -221,27 +223,45 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
+ static __always_inline void
+ bpf_get_prog_addr_region(const struct bpf_prog *prog,
+ 			 unsigned long *symbol_start,
+@@ -508,27 +508,45 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  	 * random section of illegal instructions.
  	 */
  	size = round_up(proglen + sizeof(*hdr) + 128, PAGE_SIZE);
@@ -58,7 +58,7 @@ index aa6d981..d5d0272 100644
 +	module_memfree_exec(hdr);
  }
  
- int bpf_jit_harden __read_mostly;
+ /* This symbol is only overridden by archs that have different
 @@ -465,7 +485,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
   *
   * Decode and execute eBPF instructions.

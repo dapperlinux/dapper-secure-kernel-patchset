@@ -50,12 +50,12 @@ index d55a7b0..d8dbd8a 100644
  		if (!pte) {
  			rc = -ENOMEM;
  			goto out;
-@@ -510,7 +510,7 @@ int swsusp_arch_resume(void)
+@@ -500,7 +500,7 @@ int swsusp_arch_resume(void)
  	rc = create_safe_exec_page(__hibernate_exit_text_start, exit_size,
  				   (unsigned long)hibernate_exit,
  				   &phys_hibernate_exit,
 -				   (void *)get_safe_page, GFP_ATOMIC);
 +				   get_safe_page, GFP_ATOMIC);
  	if (rc) {
- 		pr_err("Failed to create safe executable page for hibernate_exit code.");
+ 		pr_err("Failed to create safe executable page for hibernate_exit code.\n");
  		goto out;

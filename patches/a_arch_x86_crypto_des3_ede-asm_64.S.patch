@@ -19,7 +19,7 @@ index 038f6ae..ec7142bf 100644
  ENDPROC(des3_ede_x86_64_crypt_blk)
  
  /***********************************************************************
-@@ -534,7 +535,7 @@ ENTRY(des3_ede_x86_64_crypt_blk_3way)
+@@ -534,7 +534,7 @@ ENTRY(des3_ede_x86_64_crypt_blk_3way)
  	popq %rbx;
  	popq %rbp;
  
@@ -27,4 +27,4 @@ index 038f6ae..ec7142bf 100644
 +	pax_ret des3_ede_x86_64_crypt_blk_3way;
  ENDPROC(des3_ede_x86_64_crypt_blk_3way)
  
- .data
+ .section	.rodata, "a", @progbits

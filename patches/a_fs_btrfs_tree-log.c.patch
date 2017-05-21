@@ -11,14 +11,14 @@ index b890045..ebd25f8 100644
  	atomic_inc(&root->log_writers);
  	if (ctx) {
  		int index = root->log_transid % 2;
-@@ -2768,7 +2768,7 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
+@@ -2792,7 +2792,7 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
  		wait_log_commit(root, log_transid - 1);
  
  	while (1) {
 -		int batch = atomic_read(&root->log_batch);
 +		int batch = atomic_read_unchecked(&root->log_batch);
  		/* when we're on an ssd, just kick the log commit out */
- 		if (!btrfs_test_opt(root->fs_info, SSD) &&
+ 		if (!btrfs_test_opt(fs_info, SSD) &&
  		    test_bit(BTRFS_ROOT_MULTI_LOG_TASKS, &root->state)) {
 @@ -2777,7 +2777,7 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
  			mutex_lock(&root->log_mutex);

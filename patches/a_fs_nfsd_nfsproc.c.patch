@@ -72,7 +72,7 @@ index 536009e..2ec9a83b 100644
  	__be32	nfserr;
  
  	dprintk("nfsd: READ    %s %d bytes at %d\n",
-@@ -200,9 +210,11 @@ nfsd_proc_read(struct svc_rqst *rqstp, struct nfsd_readargs *argp,
+@@ -200,9 +200,11 @@ nfsd_proc_read(struct svc_rqst *rqstp, struct nfsd_readargs *argp,
   * N.B. After this call resp->fh needs an fh_put
   */
  static __be32
@@ -84,8 +84,8 @@ index 536009e..2ec9a83b 100644
 +	struct nfsd_writeargs *argp = _argp;
 +	struct nfsd_attrstat *resp = _resp;
  	__be32	nfserr;
- 	int	stable = 1;
  	unsigned long cnt = argp->len;
+ 
 @@ -226,9 +238,11 @@ nfsd_proc_write(struct svc_rqst *rqstp, struct nfsd_writeargs *argp,
   * N.B. After this call _both_ argp->fh and resp->fh need an fh_put
   */

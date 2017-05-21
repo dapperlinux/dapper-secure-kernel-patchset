@@ -2,10 +2,10 @@ diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
 index edba860..d684e0f 100644
 --- a/arch/x86/entry/entry_32.S
 +++ b/arch/x86/entry/entry_32.S
-@@ -45,6 +45,7 @@
- #include <asm/asm.h>
+@@ -46,6 +46,7 @@
  #include <asm/smap.h>
  #include <asm/export.h>
+ #include <asm/frame.h>
 +#include <asm/current.h>
  
  	.section .entry.text, "ax"
@@ -178,8 +178,8 @@ index edba860..d684e0f 100644
  	movl	%edx, %ds
  	movl	%edx, %es
  	movl	$(__KERNEL_PERCPU), %edx
-@@ -175,6 +320,15 @@
- 	SET_KERNEL_GS %edx
+@@ -192,6 +192,15 @@
+ #endif
  .endm
  
 +.macro SAVE_ALL pt_regs_ax=%eax
@@ -203,21 +203,22 @@ index edba860..d684e0f 100644
  
  /*
   * A newly forked process directly context switches into this address.
-@@ -246,7 +400,7 @@ END(__switch_to_asm)
-  */
- ENTRY(ret_from_fork)
+@@ -269,7 +278,7 @@ ENTRY(ret_from_fork)
+ 	 * on the stack.
+ 	 */
  	pushl	%eax
 -	call	schedule_tail
 +	pax_direct_call schedule_tail
  	popl	%eax
  
  	testl	%ebx, %ebx
-@@ -255,12 +409,12 @@ ENTRY(ret_from_fork)
+@@ -278,13 +279,13 @@ ENTRY(ret_from_fork)
  2:
  	/* When we fork, we trace the syscall return in the child, too. */
- 	movl    %esp, %eax
+ 	leal	FRAME_OFFSET(%esp), %eax
 -	call    syscall_return_slowpath
 +	pax_direct_call syscall_return_slowpath
+ 	FRAME_END
  	jmp     restore_all
  
  	/* kernel thread */
@@ -263,13 +264,13 @@ index edba860..d684e0f 100644
  
  #ifdef CONFIG_PREEMPT
  ENTRY(resume_kernel)
-@@ -312,9 +474,9 @@ need_resched:
+@@ -336,9 +337,9 @@ ENTRY(resume_kernel)
  	jnz	restore_all
  	testl	$X86_EFLAGS_IF, PT_EFLAGS(%esp)	# interrupts off (exception path) ?
  	jz	restore_all
 -	call	preempt_schedule_irq
 +	pax_direct_call preempt_schedule_irq
- 	jmp	need_resched
+ 	jmp	.Lneed_resched
 -END(resume_kernel)
 +ENDPROC(resume_kernel)
  #endif
@@ -343,7 +344,7 @@ index edba860..d684e0f 100644
  	/*
  	 * User mode is traced as though IRQs are on, and the interrupt gate
  	 * turned them off.
-@@ -499,9 +684,16 @@ ENTRY(entry_INT80_32)
+@@ -523,9 +532,16 @@ ENTRY(entry_INT80_32)
  	TRACE_IRQS_OFF
  
  	movl	%esp, %eax
@@ -360,7 +361,7 @@ index edba860..d684e0f 100644
 +
  restore_all:
  	TRACE_IRQS_IRET
- restore_all_notrace:
+ .Lrestore_all_notrace:
 @@ -545,14 +737,34 @@ ldt_ss:
   * compensating for the offset by changing to the ESPFIX segment with
   * a base address that matches for the difference.
@@ -426,8 +427,8 @@ index edba860..d684e0f 100644
  
  /*
   * the CPU automatically disables interrupts when executing an IRQ vector,
-@@ -626,7 +845,7 @@ common_interrupt:
- 	SAVE_ALL
+@@ -652,7 +668,7 @@ common_interrupt:
+ 	ENCODE_FRAME_POINTER
  	TRACE_IRQS_OFF
  	movl	%esp, %eax
 -	call	do_IRQ
@@ -435,8 +436,8 @@ index edba860..d684e0f 100644
  	jmp	ret_from_intr
  ENDPROC(common_interrupt)
  
-@@ -637,7 +856,7 @@ ENTRY(name)				\
- 	SAVE_ALL;			\
+@@ -664,7 +680,7 @@ ENTRY(name)				\
+ 	ENCODE_FRAME_POINTER;		\
  	TRACE_IRQS_OFF			\
  	movl	%esp, %eax;		\
 -	call	fn;			\
@@ -444,19 +445,19 @@ index edba860..d684e0f 100644
  	jmp	ret_from_intr;		\
  ENDPROC(name)
  
-@@ -660,7 +879,7 @@ ENTRY(coprocessor_error)
+@@ -687,7 +688,7 @@ ENTRY(coprocessor_error)
  	pushl	$0
  	pushl	$do_coprocessor_error
- 	jmp	error_code
+ 	jmp	common_exception
 -END(coprocessor_error)
 +ENDPROC(coprocessor_error)
  
  ENTRY(simd_coprocessor_error)
  	ASM_CLAC
-@@ -674,20 +893,20 @@ ENTRY(simd_coprocessor_error)
+@@ -701,20 +702,20 @@ ENTRY(simd_coprocessor_error)
  	pushl	$do_simd_coprocessor_error
  #endif
- 	jmp	error_code
+ 	jmp	common_exception
 -END(simd_coprocessor_error)
 +ENDPROC(simd_coprocessor_error)
  
@@ -464,7 +465,7 @@ index edba860..d684e0f 100644
  	ASM_CLAC
  	pushl	$-1				# mark this as an int
  	pushl	$do_device_not_available
- 	jmp	error_code
+ 	jmp	common_exception
 -END(device_not_available)
 +ENDPROC(device_not_available)
  
@@ -477,10 +478,10 @@ index edba860..d684e0f 100644
  #endif
  
  ENTRY(overflow)
-@@ -695,59 +914,59 @@ ENTRY(overflow)
+@@ -722,59 +723,59 @@ ENTRY(overflow)
  	pushl	$0
  	pushl	$do_overflow
- 	jmp	error_code
+ 	jmp	common_exception
 -END(overflow)
 +ENDPROC(overflow)
  
@@ -488,7 +489,7 @@ index edba860..d684e0f 100644
  	ASM_CLAC
  	pushl	$0
  	pushl	$do_bounds
- 	jmp	error_code
+ 	jmp	common_exception
 -END(bounds)
 +ENDPROC(bounds)
  
@@ -496,7 +497,7 @@ index edba860..d684e0f 100644
  	ASM_CLAC
  	pushl	$0
  	pushl	$do_invalid_op
- 	jmp	error_code
+ 	jmp	common_exception
 -END(invalid_op)
 +ENDPROC(invalid_op)
  
@@ -504,35 +505,35 @@ index edba860..d684e0f 100644
  	ASM_CLAC
  	pushl	$0
  	pushl	$do_coprocessor_segment_overrun
- 	jmp	error_code
+ 	jmp	common_exception
 -END(coprocessor_segment_overrun)
 +ENDPROC(coprocessor_segment_overrun)
  
  ENTRY(invalid_TSS)
  	ASM_CLAC
  	pushl	$do_invalid_TSS
- 	jmp	error_code
+ 	jmp	common_exception
 -END(invalid_TSS)
 +ENDPROC(invalid_TSS)
  
  ENTRY(segment_not_present)
  	ASM_CLAC
  	pushl	$do_segment_not_present
- 	jmp	error_code
+ 	jmp	common_exception
 -END(segment_not_present)
 +ENDPROC(segment_not_present)
  
  ENTRY(stack_segment)
  	ASM_CLAC
  	pushl	$do_stack_segment
- 	jmp	error_code
+ 	jmp	common_exception
 -END(stack_segment)
 +ENDPROC(stack_segment)
  
  ENTRY(alignment_check)
  	ASM_CLAC
  	pushl	$do_alignment_check
- 	jmp	error_code
+ 	jmp	common_exception
 -END(alignment_check)
 +ENDPROC(alignment_check)
  
@@ -540,25 +541,25 @@ index edba860..d684e0f 100644
  	ASM_CLAC
  	pushl	$0				# no error code
  	pushl	$do_divide_error
- 	jmp	error_code
+ 	jmp	common_exception
 -END(divide_error)
 +ENDPROC(divide_error)
  
  #ifdef CONFIG_X86_MCE
  ENTRY(machine_check)
-@@ -755,7 +974,7 @@ ENTRY(machine_check)
+@@ -782,7 +783,7 @@ ENTRY(machine_check)
  	pushl	$0
  	pushl	machine_check_vector
- 	jmp	error_code
+ 	jmp	common_exception
 -END(machine_check)
 +ENDPROC(machine_check)
  #endif
  
  ENTRY(spurious_interrupt_bug)
-@@ -763,7 +982,32 @@ ENTRY(spurious_interrupt_bug)
+@@ -790,7 +791,32 @@ ENTRY(spurious_interrupt_bug)
  	pushl	$0
  	pushl	$do_spurious_interrupt_bug
- 	jmp	error_code
+ 	jmp	common_exception
 -END(spurious_interrupt_bug)
 +ENDPROC(spurious_interrupt_bug)
 +
@@ -641,7 +642,7 @@ index edba860..d684e0f 100644
  
  	addl	$4, %esp			/* Skip pt_regs */
  	movl	14*4(%esp), %eax		/* Move flags back into cs */
-@@ -973,7 +1217,7 @@ ENTRY(mcount)
+@@ -1002,7 +1018,7 @@ ENTRY(mcount)
  #endif
  .globl ftrace_stub
  ftrace_stub:
@@ -649,7 +650,7 @@ index edba860..d684e0f 100644
 +	pax_ret ftrace_stub
  
  	/* taken from glibc */
- trace:
+ .Ltrace:
 @@ -984,13 +1228,13 @@ trace:
  	movl	0x4(%ebp), %edx
  	subl	$MCOUNT_INSN_SIZE, %eax
@@ -690,16 +691,25 @@ index edba860..d684e0f 100644
  	movl	%eax, %ecx
  	popl	%edx
  	popl	%eax
-@@ -1028,7 +1272,7 @@ ENTRY(trace_page_fault)
+@@ -1057,7 +1083,7 @@ ENTRY(trace_page_fault)
  	ASM_CLAC
  	pushl	$trace_do_page_fault
- 	jmp	error_code
+ 	jmp	common_exception
 -END(trace_page_fault)
 +ENDPROC(trace_page_fault)
  #endif
  
  ENTRY(page_fault)
-@@ -1057,16 +1301,19 @@ error_code:
+@@ -1065,7 +1091,7 @@ ENTRY(page_fault)
+ 	pushl	$do_page_fault
+ 	ALIGN
+ 	jmp common_exception
+-END(page_fault)
++ENDPROC(page_fault)
+ 
+ common_exception:
+ 	/* the function address is in %gs's slot on the stack */
+@@ -1090,16 +1116,19 @@ common_exception:
  	movl	$-1, PT_ORIG_EAX(%esp)		# no syscall to restart
  	REG_TO_PTGS %ecx
  	SET_KERNEL_GS %ecx
@@ -715,8 +725,8 @@ index edba860..d684e0f 100644
 -	call	*%edi
 +	pax_indirect_call "%edi", do_page_fault
  	jmp	ret_from_exception
--END(page_fault)
-+ENDPROC(page_fault)
+-END(common_exception)
++ENDPROC(common_exception)
  
 -ENTRY(debug)
 +ENTRY(int1)
@@ -745,20 +755,16 @@ index edba860..d684e0f 100644
  	jmp	ret_from_exception
  
  .Ldebug_from_sysenter_stack:
-@@ -1097,10 +1350,10 @@ ENTRY(debug)
- 	movl	%esp, %ebp
- 	movl	PER_CPU_VAR(cpu_current_top_of_stack), %esp
- 	TRACE_IRQS_OFF
--	call	do_debug
-+	pax_direct_call do_debug
- 	movl	%ebp, %esp
+@@ -1134,7 +1163,7 @@ ENTRY(debug)
+ 	call	do_debug
+ 	movl	%ebx, %esp
  	jmp	ret_from_exception
 -END(debug)
 +ENDPROC(int1)
  
  /*
   * NMI is doubly nasty.  It can happen on the first instruction of
-@@ -1125,13 +1378,22 @@ ENTRY(nmi)
+@@ -1160,13 +1189,22 @@ ENTRY(nmi)
  	movl	%esp, %eax			# pt_regs pointer
  
  	/* Are we currently on the SYSENTER stack? */
@@ -780,24 +786,24 @@ index edba860..d684e0f 100644
 +
 +	pax_exit_kernel
 +
- 	jmp	restore_all_notrace
+ 	jmp	.Lrestore_all_notrace
  
  .Lnmi_from_sysenter_stack:
-@@ -1141,8 +1403,11 @@ ENTRY(nmi)
+@@ -1176,8 +1176,11 @@ ENTRY(nmi)
  	 */
- 	movl	%esp, %ebp
+ 	movl	%esp, %ebx
  	movl	PER_CPU_VAR(cpu_current_top_of_stack), %esp
 -	call	do_nmi
 +	pax_direct_call do_nmi
- 	movl	%ebp, %esp
+ 	movl	%ebx, %esp
 +
 +	pax_exit_kernel
 +
- 	jmp	restore_all_notrace
+ 	jmp	.Lrestore_all_notrace
  
  #ifdef CONFIG_X86_ESPFIX32
-@@ -1161,12 +1426,15 @@ nmi_espfix_stack:
- 	SAVE_ALL
+@@ -1197,12 +1235,15 @@ ENTRY(nmi)
+ 	ENCODE_FRAME_POINTER
  	FIXUP_ESPFIX_STACK			# %eax == %esp
  	xorl	%edx, %edx			# zero error code
 -	call	do_nmi
@@ -807,14 +813,14 @@ index edba860..d684e0f 100644
 +
  	RESTORE_REGS
  	lss	12+4(%esp), %esp		# back to espfix stack
- 	jmp	irq_return
+ 	jmp	.Lirq_return
  #endif
 -END(nmi)
 +ENDPROC(nmi)
  
  ENTRY(int3)
  	ASM_CLAC
-@@ -1175,21 +1443,21 @@ ENTRY(int3)
+@@ -1212,21 +1253,21 @@ ENTRY(int3)
  	TRACE_IRQS_OFF
  	xorl	%edx, %edx			# zero error code
  	movl	%esp, %eax			# pt_regs pointer
@@ -826,7 +832,7 @@ index edba860..d684e0f 100644
  
  ENTRY(general_protection)
  	pushl	$do_general_protection
- 	jmp	error_code
+ 	jmp	common_exception
 -END(general_protection)
 +ENDPROC(general_protection)
  
@@ -834,7 +840,7 @@ index edba860..d684e0f 100644
  ENTRY(async_page_fault)
  	ASM_CLAC
  	pushl	$do_async_page_fault
- 	jmp	error_code
+ 	jmp	common_exception
 -END(async_page_fault)
 +ENDPROC(async_page_fault)
  #endif

@@ -11,7 +11,7 @@ index 5db6c8d..6e7193a 100644
  	ssize_t wr = 0;
  
  	sigpipe = sigismember(&current->pending.signal, SIGPIPE);
-@@ -344,6 +344,10 @@ static int validate_request(struct autofs_wait_queue **wait,
+@@ -349,6 +349,10 @@ static int validate_request(struct autofs_wait_queue **wait,
  	return 1;
  }
  
@@ -20,7 +20,7 @@ index 5db6c8d..6e7193a 100644
 +#endif
 +
  int autofs4_wait(struct autofs_sb_info *sbi,
- 		 struct dentry *dentry, enum autofs_notify notify)
+ 		 const struct path *path, enum autofs_notify notify)
  {
 @@ -389,7 +393,12 @@ int autofs4_wait(struct autofs_sb_info *sbi,
  

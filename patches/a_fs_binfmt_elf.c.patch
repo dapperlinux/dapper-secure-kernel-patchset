@@ -2,12 +2,12 @@ diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
 index 2472af2..e3bff2f 100644
 --- a/fs/binfmt_elf.c
 +++ b/fs/binfmt_elf.c
-@@ -36,6 +36,7 @@
- #include <linux/coredump.h>
- #include <linux/sched.h>
+@@ -40,6 +40,7 @@
+ #include <linux/sched/cputime.h>
+ #include <linux/cred.h>
  #include <linux/dax.h>
 +#include <linux/xattr.h>
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/param.h>
  #include <asm/page.h>
 @@ -67,6 +68,14 @@ static int elf_core_dump(struct coredump_params *cprm);
@@ -41,9 +41,9 @@ index 2472af2..e3bff2f 100644
  	.min_coredump	= ELF_EXEC_PAGESIZE,
  };
  
-@@ -93,6 +111,8 @@ static struct linux_binfmt elf_format = {
+@@ -97,6 +97,8 @@ static struct linux_binfmt elf_format = {
  
- static int set_brk(unsigned long start, unsigned long end)
+ static int set_brk(unsigned long start, unsigned long end, int prot)
  {
 +	unsigned long e = end;
 +
@@ -83,7 +83,7 @@ index 2472af2..e3bff2f 100644
  	if (__copy_to_user(u_rand_bytes, k_rand_bytes, sizeof(k_rand_bytes)))
  		return -EFAULT;
  
-@@ -517,14 +541,14 @@ static inline int arch_check_elf(struct elfhdr *ehdr, bool has_interp,
+@@ -527,15 +528,15 @@ static inline int arch_check_elf(struct elfhdr *ehdr, bool has_interp,
     an ELF header */
  
  static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
@@ -96,6 +96,7 @@ index 2472af2..e3bff2f 100644
 +	unsigned long load_addr = 0, pax_task_size = TASK_SIZE;
  	int load_addr_set = 0;
  	unsigned long last_bss = 0, elf_bss = 0;
+ 	int bss_prot = 0;
 -	unsigned long error = ~0UL;
 +	unsigned long error = -EINVAL;
  	unsigned long total_size;
@@ -482,7 +483,7 @@ index 2472af2..e3bff2f 100644
  	if ((current->flags & PF_RANDOMIZE) &&
  		!(current->personality & ADDR_NO_RANDOMIZE)) {
  		random_variable = get_random_long();
-@@ -671,7 +1033,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -685,7 +687,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
   	unsigned long load_addr = 0, load_bias = 0;
  	int load_addr_set = 0;
  	char * elf_interpreter = NULL;
@@ -490,7 +491,7 @@ index 2472af2..e3bff2f 100644
 +	unsigned long error = 0;
  	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
  	unsigned long elf_bss, elf_brk;
- 	int retval, i;
+ 	int bss_prot = 0;
 @@ -686,6 +1048,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
  		struct elfhdr interp_elf_ex;
  	} *loc;

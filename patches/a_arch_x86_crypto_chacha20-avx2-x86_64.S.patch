@@ -8,7 +8,7 @@ index 16694e6..4675b5e 100644
  #include <linux/linkage.h>
 +#include <asm/alternative-asm.h>
  
- .data
+ .section	.rodata.cst32.ROT8, "aM", @progbits, 32
  .align 32
 @@ -439,5 +440,5 @@ ENTRY(chacha20_8block_xor_avx2)
  

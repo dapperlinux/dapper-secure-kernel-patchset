@@ -113,13 +113,13 @@ index ba8a015..37d2e1d 100644
  #endif
  
  void __init fork_init(void)
-@@ -433,9 +491,14 @@ void __init fork_init(void)
- #define ARCH_MIN_TASKALIGN	L1_CACHE_BYTES
- #endif
+@@ -448,9 +448,14 @@ void __init fork_init(void)
+ 	int align = max_t(int, L1_CACHE_BYTES, ARCH_MIN_TASKALIGN);
+ 
  	/* create a slab on which task_structs can be allocated */
 -	task_struct_cachep = kmem_cache_create("task_struct",
 +	task_struct_cachep = kmem_cache_create_usercopy("task_struct",
- 			arch_task_struct_size, ARCH_MIN_TASKALIGN,
+ 			arch_task_struct_size, align,
 -			SLAB_PANIC|SLAB_NOTRACK|SLAB_ACCOUNT, NULL);
 +			SLAB_PANIC|SLAB_NOTRACK|SLAB_ACCOUNT,
 +			offsetof(struct task_struct, blocked),
@@ -166,7 +166,7 @@ index ba8a015..37d2e1d 100644
  #endif
  
  	/*
-@@ -543,20 +610,86 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
+@@ -558,20 +563,86 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
  	return tsk;
  
  free_stack:
@@ -252,10 +252,10 @@ index ba8a015..37d2e1d 100644
  	struct rb_node **rb_link, *rb_parent;
  	int retval;
 -	unsigned long charge;
+ 	LIST_HEAD(uf);
  
  	uprobe_start_dup_mmap();
- 	if (down_write_killable(&oldmm->mmap_sem)) {
-@@ -590,52 +723,14 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+@@ -606,53 +677,14 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
  
  	prev = NULL;
  	for (mpnt = oldmm->mmap; mpnt; mpnt = mpnt->vm_next) {
@@ -282,12 +282,13 @@ index ba8a015..37d2e1d 100644
 -		if (retval)
 -			goto fail_nomem_policy;
 -		tmp->vm_mm = mm;
+-		retval = dup_userfaultfd(tmp, &uf);
+-		if (retval)
+-			goto fail_nomem_anon_vma_fork;
 -		if (anon_vma_fork(tmp, mpnt))
 -			goto fail_nomem_anon_vma_fork;
--		tmp->vm_flags &=
--			~(VM_LOCKED|VM_LOCKONFAULT|VM_UFFD_MISSING|VM_UFFD_WP);
+-		tmp->vm_flags &= ~(VM_LOCKED | VM_LOCKONFAULT);
 -		tmp->vm_next = tmp->vm_prev = NULL;
--		tmp->vm_userfaultfd_ctx = NULL_VM_UFFD_CTX;
 -		file = tmp->vm_file;
 -		if (file) {
 -			struct inode *inode = file_inode(file);

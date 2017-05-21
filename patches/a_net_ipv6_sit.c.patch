@@ -9,7 +9,7 @@ index 40d7405..dc61f2b 100644
 -static struct rtnl_link_ops sit_link_ops __read_mostly;
 +static struct rtnl_link_ops sit_link_ops;
  
- static int sit_net_id __read_mostly;
+ static unsigned int sit_net_id __read_mostly;
  struct sit_net {
 @@ -1736,7 +1736,7 @@ static void ipip6_dellink(struct net_device *dev, struct list_head *head)
  		unregister_netdevice_queue(dev, head);

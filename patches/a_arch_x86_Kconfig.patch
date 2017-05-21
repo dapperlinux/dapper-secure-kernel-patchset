@@ -2,26 +2,27 @@ diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
 index bada636..1775eac 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -39,14 +39,13 @@ config X86
- 	select ARCH_MIGHT_HAVE_PC_SERIO
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_DEFERRED_STRUCT_PAGE_INIT
--	select ARCH_SUPPORTS_INT128		if X86_64
-+	select ARCH_SUPPORTS_INT128		if X86_64 && !PAX_SIZE_OVERFLOW_EXTRA && !PAX_SIZE_OVERFLOW
- 	select ARCH_SUPPORTS_NUMA_BALANCING	if X86_64
- 	select ARCH_USE_BUILTIN_BSWAP
- 	select ARCH_USE_CMPXCHG_LOCKREF		if X86_64
- 	select ARCH_USE_QUEUED_RWLOCKS
+@@ -23,7 +23,7 @@ config X86_64
+ 	depends on 64BIT
+ 	# Options that are inherently 64-bit kernel only:
+ 	select ARCH_HAS_GIGANTIC_PAGE
+-	select ARCH_SUPPORTS_INT128
++	select ARCH_SUPPORTS_INT128		if !PAX_SIZE_OVERFLOW_EXTRA && !PAX_SIZE_OVERFLOW
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select HAVE_ARCH_SOFT_DIRTY
+ 	select MODULES_USE_ELF_RELA
+@@ -71,7 +71,6 @@ config X86
  	select ARCH_USE_QUEUED_SPINLOCKS
  	select ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH if SMP
--	select ARCH_WANTS_DYNAMIC_TASK_STRUCT
  	select ARCH_WANT_FRAME_POINTERS
- 	select ARCH_WANT_IPC_PARSE_VERSION	if X86_32
+-	select ARCH_WANTS_DYNAMIC_TASK_STRUCT
  	select BUILDTIME_EXTABLE_SORT
-@@ -94,7 +93,7 @@ config X86
- 	select HAVE_ARCH_WITHIN_STACK_FRAMES
- 	select HAVE_EBPF_JIT			if X86_64
+ 	select CLKEVT_I8253
+ 	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
+@@ -112,7 +111,7 @@ config X86
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD if X86_64
  	select HAVE_ARCH_VMAP_STACK		if X86_64
+ 	select HAVE_ARCH_WITHIN_STACK_FRAMES
 -	select HAVE_CC_STACKPROTECTOR
 +	select HAVE_CC_STACKPROTECTOR		if X86_64 || !PAX_MEMORY_UDEREF
  	select HAVE_CMPXCHG_DOUBLE
@@ -146,10 +147,10 @@ index bada636..1775eac 100644
  	range 0x2000 0x1000000 if X86_32
  	range 0x200000 0x1000000 if X86_64
  	---help---
-@@ -2093,6 +2101,7 @@ config COMPAT_VDSO
+@@ -2120,6 +2119,7 @@ config COMPAT_VDSO
  	def_bool n
  	prompt "Disable the 32-bit vDSO (needed for glibc 2.3.3)"
- 	depends on X86_32 || IA32_EMULATION
+ 	depends on COMPAT_32
 +	depends on !PAX_PAGEEXEC && !PAX_SEGMEXEC && !PAX_KERNEXEC && !PAX_MEMORY_UDEREF
  	---help---
  	  Certain buggy versions of glibc will crash if they are

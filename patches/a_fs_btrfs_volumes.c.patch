@@ -47,13 +47,13 @@ index 71a60cc..b6e9105 100644
  	if (atomic_dec_and_test(&bbio->stripes_pending)) {
  		/* Should be the original bio. */
  		WARN_ON(bio != bbio->orig_bio);
-@@ -7038,10 +7038,10 @@ int btrfs_run_dev_stats(struct btrfs_trans_handle *trans,
+@@ -7020,10 +7020,10 @@ int btrfs_run_dev_stats(struct btrfs_trans_handle *trans,
  		if (!device->dev_stats_valid || !btrfs_dev_stats_dirty(device))
  			continue;
  
 -		stats_cnt = atomic_read(&device->dev_stats_ccnt);
 +		stats_cnt = atomic_read_unchecked(&device->dev_stats_ccnt);
- 		ret = update_dev_stat_item(trans, dev_root, device);
+ 		ret = update_dev_stat_item(trans, fs_info, device);
  		if (!ret)
 -			atomic_sub(stats_cnt, &device->dev_stats_ccnt);
 +			atomic_sub_unchecked(stats_cnt, &device->dev_stats_ccnt);

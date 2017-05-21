@@ -87,12 +87,14 @@ index 315c849..7a31884 100644
  #endif
  	if (retval)
  		return retval;
-@@ -3858,10 +3858,10 @@ rs_open(struct tty_struct *tty, struct file * filp)
+@@ -3854,11 +3854,11 @@ rs_open(struct tty_struct *tty, struct file * filp)
+ 		return -ENODEV;
  
  #ifdef SERIAL_DEBUG_OPEN
-         printk("[%d] rs_open %s, count = %d\n", current->pid, tty->name,
+-        printk("[%d] rs_open %s, count = %d\n", current->pid, tty->name,
 - 	       info->port.count);
-+ 	       atomic_read(&info->port.count));
++	printk("[%d] rs_open %s, count = %d\n", current->pid, tty->name,
++	atomic_read(&info->port.count));
  #endif
  
 -	info->port.count++;

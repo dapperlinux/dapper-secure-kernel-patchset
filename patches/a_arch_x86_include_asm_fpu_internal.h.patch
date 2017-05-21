@@ -115,30 +115,12 @@ index 2737366..e152d4b 100644
  	}
  
  	__copy_kernel_to_fpregs(fpstate);
-@@ -614,7 +617,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct fpu *new_fpu, int cpu)
- 			new_fpu->counter++;
- 			__fpregs_activate(new_fpu);
- 			trace_x86_fpu_regs_activated(new_fpu);
--			prefetch(&new_fpu->state);
-+			prefetch(new_fpu->state);
- 		} else {
- 			__fpregs_deactivate_hw();
- 		}
-@@ -626,7 +629,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct fpu *new_fpu, int cpu)
- 			if (fpu_want_lazy_restore(new_fpu, cpu))
- 				fpu.preload = 0;
- 			else
--				prefetch(&new_fpu->state);
-+				prefetch(new_fpu->state);
- 			fpregs_activate(new_fpu);
- 		}
- 	}
-@@ -646,7 +649,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct fpu *new_fpu, int cpu)
- static inline void switch_fpu_finish(struct fpu *new_fpu, fpu_switch_t fpu_switch)
- {
- 	if (fpu_switch.preload)
--		copy_kernel_to_fpregs(&new_fpu->state);
-+		copy_kernel_to_fpregs(new_fpu->state);
- }
+@@ -599,7 +599,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu, int cpu)
  
- /*
+ 	if (preload) {
+ 		if (!fpregs_state_valid(new_fpu, cpu))
+-			copy_kernel_to_fpregs(&new_fpu->state);
++			copy_kernel_to_fpregs(new_fpu->state);
+ 		fpregs_activate(new_fpu);
+ 	}
+ }

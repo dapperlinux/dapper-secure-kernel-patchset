@@ -2,7 +2,7 @@ diff --git a/arch/x86/mm/hugetlbpage.c b/arch/x86/mm/hugetlbpage.c
 index 2ae8584..e8f8f29 100644
 --- a/arch/x86/mm/hugetlbpage.c
 +++ b/arch/x86/mm/hugetlbpage.c
-@@ -74,23 +74,24 @@ int pud_huge(pud_t pud)
+@@ -75,7 +75,7 @@ int pud_huge(pud_t pud)
  #ifdef CONFIG_HUGETLB_PAGE
  static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *file,
  		unsigned long addr, unsigned long len,
@@ -11,11 +11,7 @@ index 2ae8584..e8f8f29 100644
  {
  	struct hstate *h = hstate_file(file);
  	struct vm_unmapped_area_info info;
--
-+	
- 	info.flags = 0;
- 	info.length = len;
- 	info.low_limit = current->mm->mmap_legacy_base;
+@@ -86,12 +86,13 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *file,
  	info.high_limit = TASK_SIZE;
  	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
  	info.align_offset = 0;

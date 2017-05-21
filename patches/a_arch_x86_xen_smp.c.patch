@@ -22,26 +22,26 @@ index 311acad..89be7c8 100644
  #endif
  
  		xen_filter_cpu_maps();
-@@ -406,7 +402,7 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
+@@ -396,7 +396,7 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
+ 
  #ifdef CONFIG_X86_32
- 	/* Note: PVH is not yet supported on x86_32. */
  	ctxt->user_regs.fs = __KERNEL_PERCPU;
 -	ctxt->user_regs.gs = __KERNEL_STACK_CANARY;
 +	savesegment(gs, ctxt->user_regs.gs);
  #endif
  	memset(&ctxt->fpu_ctxt, 0, sizeof(ctxt->fpu_ctxt));
  
-@@ -414,8 +410,8 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
- 		ctxt->user_regs.eip = (unsigned long)cpu_bringup_and_idle;
- 		ctxt->flags = VGCF_IN_KERNEL;
- 		ctxt->user_regs.eflags = 0x1000; /* IOPL_RING1 */
--		ctxt->user_regs.ds = __USER_DS;
--		ctxt->user_regs.es = __USER_DS;
-+		ctxt->user_regs.ds = __KERNEL_DS;
-+		ctxt->user_regs.es = __KERNEL_DS;
- 		ctxt->user_regs.ss = __KERNEL_DS;
+@@ -403,8 +403,8 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
+ 	ctxt->user_regs.eip = (unsigned long)cpu_bringup_and_idle;
+ 	ctxt->flags = VGCF_IN_KERNEL;
+ 	ctxt->user_regs.eflags = 0x1000; /* IOPL_RING1 */
+-	ctxt->user_regs.ds = __USER_DS;
+-	ctxt->user_regs.es = __USER_DS;
++	ctxt->user_regs.ds = __KERNEL_DS;
++	ctxt->user_regs.es = __KERNEL_DS;
+ 	ctxt->user_regs.ss = __KERNEL_DS;
  
- 		xen_copy_trap_info(ctxt->trap_ctxt);
+ 	xen_copy_trap_info(ctxt->trap_ctxt);
 @@ -751,7 +747,7 @@ static const struct smp_ops xen_smp_ops __initconst = {
  
  void __init xen_smp_init(void)

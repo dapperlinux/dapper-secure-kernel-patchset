@@ -2,7 +2,7 @@ diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microco
 index cdc0dea..ada8a20 100644
 --- a/arch/x86/kernel/cpu/microcode/intel.c
 +++ b/arch/x86/kernel/cpu/microcode/intel.c
-@@ -1072,13 +1072,13 @@ static enum ucode_state request_microcode_fw(int cpu, struct device *device,
+@@ -923,13 +923,13 @@ static enum ucode_state request_microcode_fw(int cpu, struct device *device,
  
  static int get_ucode_user(void *to, const void *from, size_t n)
  {
@@ -17,4 +17,4 @@ index cdc0dea..ada8a20 100644
 +	return generic_load_microcode(cpu, (__force_kernel void *)buf, size, &get_ucode_user);
  }
  
- static void microcode_fini_cpu(int cpu)
+ static struct microcode_ops microcode_intel_ops = {

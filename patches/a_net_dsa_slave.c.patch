@@ -2,12 +2,21 @@ diff --git a/net/dsa/slave.c b/net/dsa/slave.c
 index 3ff9d97..a17eb98 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -982,7 +982,7 @@ static void dsa_slave_poll_controller(struct net_device *dev)
+@@ -1156,7 +1156,7 @@ static int dsa_slave_setup_tc(struct net_device *dev, u32 handle,
+ 	return ret;
  }
- #endif
  
 -void dsa_cpu_port_ethtool_init(struct ethtool_ops *ops)
 +void dsa_cpu_port_ethtool_init(ethtool_ops_no_const *ops)
  {
  	ops->get_sset_count = dsa_cpu_port_get_sset_count;
  	ops->get_ethtool_stats = dsa_cpu_port_get_ethtool_stats;
+@@ -1552,7 +1552,7 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 	return NOTIFY_DONE;
+ }
+ 
+-static struct notifier_block dsa_slave_nb __read_mostly = {
++static struct notifier_block dsa_slave_nb = {
+ 	.notifier_call	= dsa_slave_netdevice_event,
+ };
+ 

@@ -1,0 +1,33 @@
+diff --git a/fs/overlayfs/util.c b/fs/overlayfs/util.c
+index 6e610a2..70796c7 100644
+--- a/fs/overlayfs/util.c
++++ b/fs/overlayfs/util.c
+@@ -100,7 +100,7 @@ void ovl_path_lower(struct dentry *dentry, struct path *path)
+ {
+ 	struct ovl_entry *oe = dentry->d_fsdata;
+ 
+-	*path = oe->numlower ? oe->lowerstack[0] : (struct path) { NULL, NULL };
++	*path = oe->numlower ? oe->lowerstack[0] : (struct path) { .dentry = NULL, .mnt = NULL };
+ }
+ 
+ enum ovl_path_type ovl_path_real(struct dentry *dentry, struct path *path)
+@@ -223,8 +223,8 @@ void ovl_dentry_update(struct dentry *dentry, struct dentry *upperdentry)
+ 
+ void ovl_inode_init(struct inode *inode, struct inode *realinode, bool is_upper)
+ {
+-	WRITE_ONCE(inode->i_private, (unsigned long) realinode |
+-		   (is_upper ? OVL_ISUPPER_MASK : 0));
++	WRITE_ONCE(inode->i_private, (void *)((unsigned long) realinode |
++		   (is_upper ? OVL_ISUPPER_MASK : 0)));
+ }
+ 
+ void ovl_inode_update(struct inode *inode, struct inode *upperinode)
+@@ -232,7 +232,7 @@ void ovl_inode_update(struct inode *inode, struct inode *upperinode)
+ 	WARN_ON(!upperinode);
+ 	WARN_ON(!inode_unhashed(inode));
+ 	WRITE_ONCE(inode->i_private,
+-		   (unsigned long) upperinode | OVL_ISUPPER_MASK);
++		   (void *)((unsigned long) upperinode | OVL_ISUPPER_MASK));
+ 	if (!S_ISDIR(upperinode->i_mode))
+ 		__insert_inode_hash(inode, (unsigned long) upperinode);
+ }

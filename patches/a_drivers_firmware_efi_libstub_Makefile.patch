@@ -1,5 +1,5 @@
 diff --git a/drivers/firmware/efi/libstub/Makefile b/drivers/firmware/efi/libstub/Makefile
-index 5e23e2d..419407a 100644
+index f742596..4df0ecc 100644
 --- a/drivers/firmware/efi/libstub/Makefile
 +++ b/drivers/firmware/efi/libstub/Makefile
 @@ -28,6 +28,8 @@ OBJECT_FILES_NON_STANDARD	:= y
@@ -8,6 +8,6 @@ index 5e23e2d..419407a 100644
  
 +GCC_PLUGINS			:= n
 +
- lib-y				:= efi-stub-helper.o gop.o
+ lib-y				:= efi-stub-helper.o gop.o secureboot.o
  
  # include the stub's generic dependencies from lib/ when building for ARM/arm64

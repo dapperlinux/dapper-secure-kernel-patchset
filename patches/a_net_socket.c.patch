@@ -8,7 +8,7 @@ index 6bbccf0..1991a22 100644
  #include <linux/xattr.h>
 +#include <linux/in.h>
  
- #include <asm/uaccess.h>
+ #include <linux/uaccess.h>
  #include <asm/unistd.h>
 @@ -107,6 +108,7 @@
  #include <linux/atalk.h>

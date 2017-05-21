@@ -2,9 +2,9 @@ diff --git a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/mdp/m
 index ed7143d..527b26a 100644
 --- a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c
 +++ b/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c
-@@ -647,9 +647,12 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
- 	dev->mode_config.max_width = config->hw->lm.max_width;
- 	dev->mode_config.max_height = config->hw->lm.max_height;
+@@ -735,9 +735,12 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
+ 	dev->mode_config.max_width = 0xffff;
+ 	dev->mode_config.max_height = 0xffff;
  
 -	dev->driver->get_vblank_timestamp = mdp5_get_vblank_timestamp;
 -	dev->driver->get_scanout_position = mdp5_get_scanoutpos;

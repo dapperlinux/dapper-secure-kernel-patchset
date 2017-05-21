@@ -11,12 +11,12 @@ index 86c8911..f5bfc34 100644
  	if (!pmd)
  		return -ENOMEM;
  	do {
-@@ -101,7 +101,7 @@ static inline int ioremap_pud_range(pgd_t *pgd, unsigned long addr,
+@@ -108,7 +108,7 @@ static inline int ioremap_pud_range(p4d_t *p4d, unsigned long addr,
  	unsigned long next;
  
  	phys_addr -= addr;
--	pud = pud_alloc(&init_mm, pgd, addr);
-+	pud = pud_alloc_kernel(&init_mm, pgd, addr);
+-	pud = pud_alloc(&init_mm, p4d, addr);
++	pud = pud_alloc_kernel(&init_mm, p4d, addr);
  	if (!pud)
  		return -ENOMEM;
  	do {

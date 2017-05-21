@@ -11,12 +11,12 @@ index 68e8950..7149c5a 100644
  				      struct drm_display_mode *mode)
  {
  	struct tilcdc_drm_private *priv = connector->dev->dev_private;
-@@ -56,7 +56,7 @@ static int tilcdc_add_external_encoder(struct drm_device *dev,
- 				       struct drm_connector *connector)
+@@ -65,7 +65,7 @@ static int tilcdc_add_external_connector(struct drm_device *dev,
+ 					 struct drm_connector *connector)
  {
  	struct tilcdc_drm_private *priv = dev->dev_private;
 -	struct drm_connector_helper_funcs *connector_funcs;
 +	drm_connector_helper_funcs_no_const *connector_funcs;
  
- 	priv->connectors[priv->num_connectors] = connector;
- 	priv->encoders[priv->num_encoders++] = connector->encoder;
+ 	/* There should never be more than one connector */
+ 	if (WARN_ON(priv->external_connector))
