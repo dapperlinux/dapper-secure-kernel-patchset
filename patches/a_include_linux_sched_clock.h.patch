@@ -2,10 +2,12 @@ diff --git a/include/linux/sched/clock.h b/include/linux/sched/clock.h
 index 34fe92c..61a1143 100644
 --- a/include/linux/sched/clock.h
 +++ b/include/linux/sched/clock.h
-@@ -22,6 +22,50 @@ extern u64 sched_clock_cpu(int cpu);
+@@ -22,6 +22,52 @@ extern u64 sched_clock_cpu(int cpu);
  
  extern void sched_clock_init(void);
  
++extern rwlock_t tasklist_lock;
++
 +#ifdef CONFIG_GRKERNSEC_KSTACKOVERFLOW
 +static inline void populate_stack(void *stack, unsigned int size)
 +{
