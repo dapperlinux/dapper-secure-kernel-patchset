@@ -908,7 +908,7 @@ index 1af87c1..72d400b 100644
  	if (mm->map_count >= sysctl_max_map_count)
  		return -ENOMEM;
  
-@@ -2583,12 +2586,31 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
+@@ -2583,12 +2583,31 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
   * work.  This now handles partial unmappings.
   * Jeremy Fitzhardinge <jeremy@goop.org>
   */
@@ -916,16 +916,16 @@ index 1af87c1..72d400b 100644
  int do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
  	      struct list_head *uf)
  {
-+	int ret = __do_munmap(mm, start, len);
++	int ret = __do_munmap(mm, start, len, uf);
 +	if (ret || !(mm->pax_flags & MF_PAX_SEGMEXEC))
 +		return ret;
 +
-+	return __do_munmap(mm, start + SEGMEXEC_TASK_SIZE, len);
++	return __do_munmap(mm, start + SEGMEXEC_TASK_SIZE, len, uf);
 +}
 +
-+int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
++int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len, struct list_head *uf)
 +#else
-+int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
++int do_munmap(struct mm_struct *mm, unsigned long start, size_t len, struct list_head *uf)
 +#endif
 +{
  	unsigned long end;

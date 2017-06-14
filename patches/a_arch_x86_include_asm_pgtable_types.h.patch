@@ -64,24 +64,32 @@ index 8b4de22..eaf50b8 100644
  #if CONFIG_PGTABLE_LEVELS > 3
  #include <asm-generic/5level-fixup.h>
  
-@@ -288,8 +288,6 @@ static inline pudval_t native_pud_val(pud_t pud)
+@@ -288,11 +288,10 @@ static inline pudval_t native_pud_val(pud_t pud)
  }
  #else
  #define __ARCH_USE_5LEVEL_HACK
 -#include <asm-generic/pgtable-nopud.h>
--
+ 
  static inline pudval_t native_pud_val(pud_t pud)
  {
- 	return native_pgd_val(pud.pgd);
-@@ -310,8 +308,6 @@ static inline pmdval_t native_pmd_val(pmd_t pmd)
+-	return native_pgd_val(pud.pgd);
++	return native_pgd_val(pud.p4d.pgd);
+ }
+ #endif
+ 
+@@ -310,11 +309,10 @@ static inline pmdval_t native_pmd_val(pmd_t pmd)
  }
  #else
  #define __ARCH_USE_5LEVEL_HACK
 -#include <asm-generic/pgtable-nopmd.h>
--
+ 
  static inline pmdval_t native_pmd_val(pmd_t pmd)
  {
- 	return native_pgd_val(pmd.pud.pgd);
+-	return native_pgd_val(pmd.pud.pgd);
++	return native_pgd_val(pmd.pud.p4d.pgd);
+ }
+ #endif
+ 
 @@ -424,7 +437,6 @@ typedef struct page *pgtable_t;
  
  extern pteval_t __supported_pte_mask;

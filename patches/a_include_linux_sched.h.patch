@@ -2,6 +2,14 @@ diff --git a/include/linux/sched.h b/include/linux/sched.h
 index 4cf9a59..193c5fd 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
+@@ -25,6 +25,7 @@
+ #include <linux/sched/prio.h>
+ #include <linux/signal_types.h>
+ #include <linux/mm_types_task.h>
++#include <linux/mm_types.h>
+ #include <linux/task_io_accounting.h>
+ 
+ /* task_struct member predeclarations (sorted alphabetically): */
 @@ -40,6 +40,7 @@ struct mempolicy;
  struct nameidata;
  struct nsproxy;
