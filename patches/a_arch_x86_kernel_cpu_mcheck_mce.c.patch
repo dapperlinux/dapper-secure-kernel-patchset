@@ -100,6 +100,24 @@ index a7fdf45..87c1a31 100644
  	} else
  		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
  }
+@@ -586,7 +586,7 @@ static int mce_default_notifier(struct notifier_block *nb, unsigned long val,
+ 	 * Run the default notifier if we have only the SRAO
+ 	 * notifier and us registered.
+ 	 */
+-	if (atomic_read(&num_notifiers) > 2)
++	if (atomic_read_unchecked(&num_notifiers) > 2)
+ 		return NOTIFY_DONE;
+ 
+ 	/* Don't print when mcelog is running */
+@@ -590,7 +590,7 @@ static int mce_default_notifier(struct notifier_block *nb, unsigned long val,
+ 		return NOTIFY_DONE;
+ 
+ 	/* Don't print when mcelog is running */
+-	if (mce_chrdev_open_count > 0)
++	if (local_read(&mce_chrdev_open_count) > 0)
+ 		return NOTIFY_DONE;
+ 
+ 	__print_mce(m);
 @@ -787,7 +787,7 @@ static int mce_timed_out(u64 *t, const char *msg)
  	 * might have been modified by someone else.
  	 */

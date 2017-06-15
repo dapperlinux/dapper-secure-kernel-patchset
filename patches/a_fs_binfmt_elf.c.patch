@@ -644,7 +644,7 @@ index 2472af2..e3bff2f 100644
 +		if (!IS_ERR_VALUE(start) && !find_vma_intersection(current->mm, start, start + size + PAGE_SIZE)) {
 +//			if (current->personality & ADDR_NO_RANDOMIZE)
 +//				vm_flags |= VM_READ | VM_MAYREAD;
-+			start = mmap_region(NULL, start, PAGE_ALIGN(size), vm_flags, 0);
++			start = mmap_region(NULL, start, PAGE_ALIGN(size), vm_flags, 0, NULL);
 +			retval = IS_ERR_VALUE(start) ? start : 0;
 +		}
 +		up_write(&current->mm->mmap_sem);

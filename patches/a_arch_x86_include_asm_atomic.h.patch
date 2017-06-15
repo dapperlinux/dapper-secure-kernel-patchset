@@ -146,12 +146,25 @@ index 14635c5..199ea31 100644
  		     : "+m" (v->counter));
  }
  
-@@ -114,7 +197,7 @@ static __always_inline void atomic_dec(atomic_t *v)
+@@ -114,7 +114,20 @@ static __always_inline void atomic_dec(atomic_t *v)
   */
  static __always_inline bool atomic_dec_and_test(atomic_t *v)
  {
 -	GEN_UNARY_RMWcc(LOCK_PREFIX "decl", v->counter, "%0", e);
 +	GEN_UNARY_RMWcc(LOCK_PREFIX "decl", v->counter, -4, "%0", e);
++}
++
++/**
++ * atomic_dec_and_test_unchecked - decrement and test
++ * @v: pointer of type atomic_unchecked_t
++ *
++ * Atomically decrements @v by 1
++ * and returns true if the result is zero, or false for all
++ * other cases.
++ */
++static __always_inline int atomic_dec_and_test_unchecked(atomic_unchecked_t *v)
++{
++	GEN_UNARY_RMWcc_unchecked(LOCK_PREFIX "decl", v->counter, "%0", e);
  }
  
  /**

@@ -2,6 +2,14 @@ diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
 index 8a3e8727..8560eca 100644
 --- a/kernel/irq/msi.c
 +++ b/kernel/irq/msi.c
+@@ -15,6 +15,7 @@
+ #include <linux/irqdomain.h>
+ #include <linux/msi.h>
+ #include <linux/slab.h>
++#include <asm/pgtable.h>
+ 
+ /**
+  * alloc_msi_entry - Allocate an initialize msi_entry
 @@ -236,16 +236,18 @@ static void msi_domain_update_dom_ops(struct msi_domain_info *info)
  		return;
  	}

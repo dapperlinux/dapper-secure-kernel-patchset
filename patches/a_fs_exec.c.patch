@@ -2,6 +2,14 @@ diff --git a/fs/exec.c b/fs/exec.c
 index 67e8657..4368e21 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
+@@ -32,6 +32,7 @@
+ #include <linux/swap.h>
+ #include <linux/string.h>
+ #include <linux/init.h>
++#include <linux/sched/debug.h>
+ #include <linux/sched/mm.h>
+ #include <linux/sched/coredump.h>
+ #include <linux/sched/signal.h>
 @@ -62,8 +62,20 @@
  #include <linux/oom.h>
  #include <linux/compat.h>
@@ -295,12 +303,12 @@ index 67e8657..4368e21 100644
 +		size = STACK_TOP - vma->vm_end;
 +		vm_flags = VM_NONE | VM_DONTEXPAND | VM_DONTDUMP;
 +
-+		ret = vma->vm_end != mmap_region(NULL, vma->vm_end, size, vm_flags, 0);
++		ret = vma->vm_end != mmap_region(NULL, vma->vm_end, size, vm_flags, 0, NULL);
 +
 +#ifdef CONFIG_X86
 +		if (!ret) {
 +			size = PAGE_SIZE + mmap_min_addr + ((mm->delta_mmap ^ mm->delta_stack) & (0xFFUL << PAGE_SHIFT));
-+			ret = 0 != mmap_region(NULL, 0, PAGE_ALIGN(size), vm_flags, 0);
++			ret = 0 != mmap_region(NULL, 0, PAGE_ALIGN(size), vm_flags, 0, NULL);
 +		}
 +#endif
 +

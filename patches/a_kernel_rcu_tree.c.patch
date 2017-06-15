@@ -77,6 +77,15 @@ index 50fee76..f71f17e 100644
  }
  
  /*
+@@ -3682,7 +3682,7 @@ static void rcu_barrier_callback(struct rcu_head *rhp)
+ 	struct rcu_data *rdp = container_of(rhp, struct rcu_data, barrier_head);
+ 	struct rcu_state *rsp = rdp->rsp;
+ 
+-	if (atomic_dec_and_test(&rsp->barrier_cpu_count)) {
++	if (atomic_dec_and_test_unchecked(&rsp->barrier_cpu_count)) {
+ 		_rcu_barrier_trace(rsp, "LastCB", -1, rsp->barrier_sequence);
+ 		complete(&rsp->barrier_completion);
+ 	} else {
 @@ -3699,7 +3699,7 @@ static void rcu_barrier_func(void *type)
  	struct rcu_data *rdp = raw_cpu_ptr(rsp->rda);
  
@@ -104,3 +113,12 @@ index 50fee76..f71f17e 100644
  				__call_rcu(&rdp->barrier_head,
  					   rcu_barrier_callback, rsp, cpu, 0);
  			}
+@@ -3776,7 +3776,7 @@ static void _rcu_barrier(struct rcu_state *rsp)
+ 	 * Now that we have an rcu_barrier_callback() callback on each
+ 	 * CPU, and thus each counted, remove the initial count.
+ 	 */
+-	if (atomic_dec_and_test(&rsp->barrier_cpu_count))
++	if (atomic_dec_and_test_unchecked(&rsp->barrier_cpu_count))
+ 		complete(&rsp->barrier_completion);
+ 
+ 	/* Wait for all rcu_barrier_callback() callbacks to be invoked. */

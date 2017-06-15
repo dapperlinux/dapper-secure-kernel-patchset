@@ -29,7 +29,7 @@ index 96d80df..1932b44 100644
  
  	/*
  	 * Save current FPU registers directly into the child
-@@ -220,8 +220,7 @@ int fpu__copy(struct fpu *dst_fpu, struct fpu *src_fpu)
+@@ -220,10 +220,9 @@ int fpu__copy(struct fpu *dst_fpu, struct fpu *src_fpu)
  	 */
  	preempt_disable();
  	if (!copy_fpregs_to_fpstate(dst_fpu)) {
@@ -37,8 +37,11 @@ index 96d80df..1932b44 100644
 -		       fpu_kernel_xstate_size);
 +		memcpy(src_fpu->state, dst_fpu->state, fpu_kernel_xstate_size);
  
- 		copy_kernel_to_fpregs(&src_fpu->state);
+-		copy_kernel_to_fpregs(&src_fpu->state);
++		copy_kernel_to_fpregs(src_fpu->state);
  	}
+ 	preempt_enable();
+ 
 @@ -306,7 +305,7 @@ void fpu__activate_curr(struct fpu *fpu)
  	WARN_ON_FPU(fpu != &current->thread.fpu);
  
