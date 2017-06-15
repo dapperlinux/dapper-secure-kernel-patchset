@@ -2,18 +2,18 @@ diff --git a/security/keys/keyctl.c b/security/keys/keyctl.c
 index d580ad0..283a3ed 100644
 --- a/security/keys/keyctl.c
 +++ b/security/keys/keyctl.c
-@@ -99,7 +99,7 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
+@@ -101,7 +101,7 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
  
- 	if (_payload) {
+ 	if (plen) {
  		ret = -ENOMEM;
 -		payload = kmalloc(plen, GFP_KERNEL | __GFP_NOWARN);
 +		payload = kmalloc(plen, GFP_KERNEL | GFP_USERCOPY | __GFP_NOWARN);
  		if (!payload) {
  			if (plen <= PAGE_SIZE)
  				goto error2;
-@@ -324,7 +324,7 @@ long keyctl_update_key(key_serial_t id,
+@@ -331,7 +331,7 @@ long keyctl_update_key(key_serial_t id,
  	payload = NULL;
- 	if (_payload) {
+ 	if (plen) {
  		ret = -ENOMEM;
 -		payload = kmalloc(plen, GFP_KERNEL);
 +		payload = kmalloc(plen, GFP_KERNEL | GFP_USERCOPY);

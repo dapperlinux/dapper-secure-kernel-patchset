@@ -29,8 +29,8 @@ index f1ca116..7f396f8 100644
  				audit_rate_limit,
  				audit_backlog_limit);
  		audit_panic(message);
-@@ -1107,7 +1107,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 		rcu_read_unlock();
+@@ -1166,7 +1166,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
+ 		s.pid			= auditd_pid_vnr();
  		s.rate_limit		= audit_rate_limit;
  		s.backlog_limit		= audit_backlog_limit;
 -		s.lost			= atomic_read(&audit_lost);
