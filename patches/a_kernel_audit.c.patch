@@ -38,6 +38,15 @@ index f1ca116..7f396f8 100644
  		s.backlog		= skb_queue_len(&audit_queue);
  		s.feature_bitmap	= AUDIT_FEATURE_BITMAP_ALL;
  		s.backlog_wait_time	= audit_backlog_wait_time;
+@@ -1261,7 +1261,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
+ 				return err;
+ 		}
+ 		if (s.mask == AUDIT_STATUS_LOST) {
+-			u32 lost = atomic_xchg(&audit_lost, 0);
++			u32 lost = atomic_xchg_unchecked(&audit_lost, 0);
+ 
+ 			audit_log_config_change("lost", 0, lost, 1);
+ 			return lost;
 @@ -1455,7 +1455,7 @@ static void __net_exit audit_net_exit(struct net *net)
  	netlink_kernel_release(aunet->sk);
  }

@@ -649,7 +649,7 @@ index 2472af2..e3bff2f 100644
 +		}
 +		up_write(&current->mm->mmap_sem);
 +		if (retval == 0)
-+			retval = set_brk(start + size, start + size + PAGE_SIZE);
++			retval = set_brk(start + size, start + size + PAGE_SIZE, bss_prot);
 +		if (retval < 0)
 +			goto out_free_dentry;
 +	}

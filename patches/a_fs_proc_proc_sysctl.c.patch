@@ -196,11 +196,11 @@ index d4e37ac..5a409fc 100644
  	if (unlikely(S_ISLNK(table->mode)))
  		res = proc_sys_link_fill_cache(file, ctx, head, table);
  	else
-@@ -778,6 +819,9 @@ static int proc_sys_getattr(struct vfsmount *mnt, struct dentry *dentry, struct
+@@ -812,6 +812,9 @@ static int proc_sys_getattr(const struct path *path, struct kstat *stat,
  	if (IS_ERR(head))
  		return PTR_ERR(head);
  
-+	if (table && !gr_acl_handle_hidden_file(dentry, mnt))
++	if (table && !gr_acl_handle_hidden_file(path->dentry, path->mnt))
 +		return -ENOENT;
 +
  	generic_fillattr(inode, stat);

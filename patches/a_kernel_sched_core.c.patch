@@ -2,6 +2,14 @@ diff --git a/kernel/sched/core.c b/kernel/sched/core.c
 index 154fd68..f95f804 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
+@@ -25,6 +25,7 @@
+ #include <linux/profile.h>
+ #include <linux/security.h>
+ #include <linux/syscalls.h>
++#include <linux/vmalloc.h>
+ 
+ #include <asm/switch_to.h>
+ #include <asm/tlb.h>
 @@ -2268,7 +2268,7 @@ void set_numabalancing_state(bool enabled)
  int sysctl_numa_balancing(struct ctl_table *table, int write,
  			 void __user *buffer, size_t *lenp, loff_t *ppos)

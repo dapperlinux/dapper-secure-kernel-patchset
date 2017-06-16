@@ -2,6 +2,14 @@ diff --git a/arch/x86/mm/hugetlbpage.c b/arch/x86/mm/hugetlbpage.c
 index 2ae8584..e8f8f29 100644
 --- a/arch/x86/mm/hugetlbpage.c
 +++ b/arch/x86/mm/hugetlbpage.c
+@@ -8,6 +8,7 @@
+ #include <linux/fs.h>
+ #include <linux/mm.h>
+ #include <linux/sched/mm.h>
++#include <linux/sched/task.h>
+ #include <linux/hugetlb.h>
+ #include <linux/pagemap.h>
+ #include <linux/err.h>
 @@ -75,7 +75,7 @@ int pud_huge(pud_t pud)
  #ifdef CONFIG_HUGETLB_PAGE
  static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *file,
