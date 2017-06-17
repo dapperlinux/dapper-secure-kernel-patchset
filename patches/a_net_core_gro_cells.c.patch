@@ -1,0 +1,13 @@
+diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+index c98bbfb..662c5c0 100644
+--- a/net/core/gro_cells.c
++++ b/net/core/gro_cells.c
+@@ -19,7 +19,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
+ 	cell = this_cpu_ptr(gcells->cells);
+ 
+ 	if (skb_queue_len(&cell->napi_skbs) > netdev_max_backlog) {
+-		atomic_long_inc(&dev->rx_dropped);
++		atomic_long_inc_unchecked(&dev->rx_dropped);
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
+ 	}

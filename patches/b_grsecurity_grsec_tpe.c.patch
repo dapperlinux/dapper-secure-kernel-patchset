@@ -3,9 +3,10 @@ new file mode 100644
 index 0000000..cbd2776
 --- /dev/null
 +++ b/grsecurity/grsec_tpe.c
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,79 @@
 +#include <linux/kernel.h>
 +#include <linux/sched.h>
++#include <linux/cred.h>
 +#include <linux/file.h>
 +#include <linux/fs.h>
 +#include <linux/grinternal.h>

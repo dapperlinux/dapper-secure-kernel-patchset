@@ -50,6 +50,15 @@ index 5bab6c3..f5f5d03 100644
  		daddr = inet->inet_daddr;
  		dport = inet->inet_dport;
  		/* Open fast path for connected socket.
+@@ -1297,7 +1297,7 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
+ 	atomic_sub(skb->truesize, &sk->sk_rmem_alloc);
+ 
+ drop:
+-	atomic_inc(&sk->sk_drops);
++	atomic_inc_unchecked(&sk->sk_drops);
+ 	busylock_release(busy);
+ 	return err;
+ }
 @@ -1359,7 +1359,7 @@ static int first_packet_length(struct sock *sk)
  				IS_UDPLITE(sk));
  		__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,

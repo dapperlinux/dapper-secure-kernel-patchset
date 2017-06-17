@@ -2,11 +2,12 @@ diff --git a/mm/slub.c b/mm/slub.c
 index 58c7526..5566ff1 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -34,6 +34,7 @@
+@@ -34,6 +34,8 @@
  #include <linux/stacktrace.h>
  #include <linux/prefetch.h>
  #include <linux/memcontrol.h>
 +#include <linux/vmalloc.h>
++#include <linux/sched/task_stack.h>
  
  #include <trace/events/kmem.h>
  

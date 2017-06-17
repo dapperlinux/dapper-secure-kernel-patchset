@@ -3,13 +3,15 @@ new file mode 100644
 index 0000000..a24b338
 --- /dev/null
 +++ b/grsecurity/grsec_log.c
-@@ -0,0 +1,340 @@
+@@ -0,0 +1,342 @@
 +#include <linux/kernel.h>
 +#include <linux/sched.h>
 +#include <linux/file.h>
 +#include <linux/tty.h>
 +#include <linux/fs.h>
 +#include <linux/mm.h>
++#include <linux/sched/task.h>
++#include <linux/cred.h>
 +#include <linux/grinternal.h>
 +
 +#ifdef CONFIG_TREE_PREEMPT_RCU

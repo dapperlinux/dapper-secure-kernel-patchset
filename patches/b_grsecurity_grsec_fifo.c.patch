@@ -3,9 +3,10 @@ new file mode 100644
 index 0000000..cdec49b
 --- /dev/null
 +++ b/grsecurity/grsec_fifo.c
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,27 @@
 +#include <linux/kernel.h>
 +#include <linux/sched.h>
++#include <linux/cred.h>
 +#include <linux/fs.h>
 +#include <linux/file.h>
 +#include <linux/grinternal.h>

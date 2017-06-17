@@ -3,10 +3,11 @@ new file mode 100644
 index 0000000..6b0c9cc
 --- /dev/null
 +++ b/grsecurity/gracl_shm.c
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,41 @@
 +#include <linux/kernel.h>
 +#include <linux/mm.h>
 +#include <linux/sched.h>
++#include <linux/sched/task.h>
 +#include <linux/file.h>
 +#include <linux/ipc.h>
 +#include <linux/gracl.h>
