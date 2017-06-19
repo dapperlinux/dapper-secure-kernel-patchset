@@ -11,6 +11,15 @@ index 80bc36b..d70d622 100644
  		.data = &range,
  		.maxlen = sizeof(range),
  		.mode = table->mode,
+@@ -104,7 +104,7 @@ static int ipv4_privileged_ports(struct ctl_table *table, int write,
+ 	int ret;
+ 	int pports;
+ 	int range[2];
+-	struct ctl_table tmp = {
++	ctl_table_no_const tmp = {
+ 		.data = &pports,
+ 		.maxlen = sizeof(pports),
+ 		.mode = table->mode,
 @@ -124,7 +124,7 @@ static int ipv4_ping_group_range(struct ctl_table *table, int write,
  	int ret;
  	gid_t urange[2];

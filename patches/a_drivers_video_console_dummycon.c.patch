@@ -27,7 +27,7 @@ index 9269d56..78d2a06 100644
 +{
 +}
 +
-+static int dummycon_scroll(struct vc_data *a, int b, int c, int d, int e)
++static bool dummycon_scroll(struct vc_data *a, unsigned int b, unsigned int c, enum con_scroll d, unsigned int e)
 +{
 +    return 0;
 +}

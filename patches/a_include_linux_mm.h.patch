@@ -149,7 +149,7 @@ index 0b5b2e4..8f2773e 100644
  
  static inline void mm_nr_pmds_init(struct mm_struct *mm)
  {
-@@ -1640,12 +1640,25 @@ static inline p4d_t *p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
+@@ -1640,6 +1640,12 @@ static inline p4d_t *p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
  		NULL : p4d_offset(pgd, address);
  }
  
@@ -162,20 +162,18 @@ index 0b5b2e4..8f2773e 100644
  static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
  		unsigned long address)
  {
- 	return (unlikely(p4d_none(*p4d)) && __pud_alloc(mm, p4d, address)) ?
+@@ -1647,12 +1653,23 @@ static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
  		NULL : pud_offset(p4d, address);
  }
-+
+ #endif /* !__ARCH_HAS_5LEVEL_HACK */
 +static inline pud_t *pud_alloc_kernel(struct mm_struct *mm, p4d_t *p4d, unsigned long address)
 +{
-+	return (unlikely(p4d_none(*p4d)) && __pud_alloc_kernel(mm, p4d, address))?
++	return (unlikely(pgd_none(*p4d)) && __pud_alloc_kernel(mm, p4d, address))?
 +		NULL: pud_offset(p4d, address);
 +}
-+
- #endif /* !__ARCH_HAS_5LEVEL_HACK */
  
  static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address)
-@@ -1653,6 +1666,12 @@ static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long a
+ {
  	return (unlikely(pud_none(*pud)) && __pmd_alloc(mm, pud, address))?
  		NULL: pmd_offset(pud, address);
  }
