@@ -83,7 +83,7 @@ index 988acc8b..f26345c 100644
  
  	if (test_thread_flag(TIF_32BIT))
  		task_size = STACK_TOP32;
-@@ -116,19 +125,22 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+@@ -116,19 +116,22 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
  		return addr;
  	}
  
@@ -95,7 +95,7 @@ index 988acc8b..f26345c 100644
  		addr = ALIGN(addr, huge_page_size(h));
  		vma = find_vma(mm, addr);
 -		if (task_size - len >= addr &&
--		    (!vma || addr + len <= vma->vm_start))
+-		    (!vma || addr + len <= vm_start_gap(vma)))
 +		if (task_size - len >= addr && check_heap_stack_gap(vma, addr, len, offset))
  			return addr;
  	}
