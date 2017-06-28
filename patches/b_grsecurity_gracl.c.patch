@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..fa03095
 --- /dev/null
 +++ b/grsecurity/gracl.c
-@@ -0,0 +1,2773 @@
+@@ -0,0 +1,2732 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/sched.h>
@@ -117,7 +117,7 @@ index 0000000..fa03095
 +
 +#if defined(CONFIG_BTRFS_FS) || defined(CONFIG_BTRFS_FS_MODULE)
 +	if (ldentry->d_sb->s_magic == BTRFS_SUPER_MAGIC)
-+		return btrfs_ino(d_inode(dentry));
++		return btrfs_ino(BTRFS_I(d_inode(dentry)));
 +	else
 +#endif
 +		return d_inode(ldentry)->i_ino;
@@ -2576,47 +2576,6 @@ index 0000000..fa03095
 +	}
 +
 +	return 1;
-+}
-+
-+void
-+gr_acl_handle_psacct(struct task_struct *task, const long code)
-+{
-+	unsigned long runtime, cputime;
-+	cputime_t utime, stime;
-+	unsigned int wday, cday;
-+	__u8 whr, chr;
-+	__u8 wmin, cmin;
-+	__u8 wsec, csec;
-+	struct timespec curtime, starttime;
-+
-+	if (unlikely(!(gr_status & GR_READY) || !task->acl ||
-+		     !(task->acl->mode & GR_PROCACCT)))
-+		return;
-+	
-+	curtime = ns_to_timespec(ktime_get_ns());
-+	starttime = ns_to_timespec(task->start_time);
-+	runtime = curtime.tv_sec - starttime.tv_sec;
-+	wday = runtime / (60 * 60 * 24);
-+	runtime -= wday * (60 * 60 * 24);
-+	whr = runtime / (60 * 60);
-+	runtime -= whr * (60 * 60);
-+	wmin = runtime / 60;
-+	runtime -= wmin * 60;
-+	wsec = runtime;
-+
-+	task_cputime(task, &utime, &stime);
-+	cputime = cputime_to_secs(utime + stime);
-+	cday = cputime / (60 * 60 * 24);
-+	cputime -= cday * (60 * 60 * 24);
-+	chr = cputime / (60 * 60);
-+	cputime -= chr * (60 * 60);
-+	cmin = cputime / 60;
-+	cputime -= cmin * 60;
-+	csec = cputime;
-+
-+	gr_log_procacct(GR_DO_AUDIT, GR_ACL_PROCACCT_MSG, task, wday, whr, wmin, wsec, cday, chr, cmin, csec, code);
-+
-+	return;
 +}
 +
 +#ifdef CONFIG_TASKSTATS

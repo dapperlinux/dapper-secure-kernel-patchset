@@ -65,11 +65,10 @@ index 3076f30..28d8eb4 100644
  	ptrace_event(PTRACE_EVENT_EXIT, code);
  
  	validate_creds_for_do_exit(tsk);
-@@ -862,6 +862,9 @@ void __noreturn do_exit(long code)
+@@ -862,6 +862,8 @@ void __noreturn do_exit(long code)
  	tsk->exit_code = code;
  	taskstats_exit(tsk, group_dead);
  
-+	gr_acl_handle_psacct(tsk, code);
 +	gr_acl_handle_exit();
 +
  	exit_mm();

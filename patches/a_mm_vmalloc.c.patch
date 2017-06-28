@@ -143,7 +143,7 @@ index f2481cb..333cf43 100644
  	unsigned long next;
  
 -	pud = pud_alloc(&init_mm, p4d, addr);
-+	pud = pud_alloc_kernel(&init_mm, pgd, addr);
++	pud = pud_alloc_kernel(&init_mm, p4d, addr);
  	if (!pud)
  		return -ENOMEM;
  	do {

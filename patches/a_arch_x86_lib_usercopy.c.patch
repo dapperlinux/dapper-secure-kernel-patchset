@@ -21,7 +21,7 @@ index c074799..35f7894 100644
 - * On success, this will be zero.
 - */
 -unsigned long _copy_to_user(void __user *to, const void *from, unsigned n)
-+#ifdef CONFIG_PAX_MEMORY_UDEREF
++#if defined(CONFIG_X86_32) && defined(CONFIG_PAX_MEMORY_UDEREF)
 +void __set_fs(mm_segment_t x)
  {
 -	if (access_ok(VERIFY_WRITE, to, n))

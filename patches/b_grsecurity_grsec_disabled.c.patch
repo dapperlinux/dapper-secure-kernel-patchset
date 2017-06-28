@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..ba8d997
 --- /dev/null
 +++ b/grsecurity/grsec_disabled.c
-@@ -0,0 +1,445 @@
+@@ -0,0 +1,439 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/sched.h>
@@ -61,12 +61,6 @@ index 0000000..ba8d997
 +gr_handle_rawio(const struct inode *inode)
 +{
 +	return 0;
-+}
-+
-+void
-+gr_acl_handle_psacct(struct task_struct *task, const long code)
-+{
-+	return;
 +}
 +
 +int
