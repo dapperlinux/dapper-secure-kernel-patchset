@@ -1,5 +1,5 @@
 diff --git a/crypto/cryptd.c b/crypto/cryptd.c
-index 0c654e5..cf01e3e 100644
+index 0508c48..1eb1dd2 100644
 --- a/crypto/cryptd.c
 +++ b/crypto/cryptd.c
 @@ -70,7 +70,7 @@ struct cryptd_blkcipher_ctx {
@@ -11,7 +11,16 @@ index 0c654e5..cf01e3e 100644
  
  struct cryptd_skcipher_ctx {
  	atomic_t refcnt;
-@@ -84,7 +84,7 @@ struct cryptd_aead_ctx {
+@@ -79,7 +79,7 @@ struct cryptd_skcipher_ctx {
+ 
+ struct cryptd_skcipher_request_ctx {
+ 	crypto_completion_t complete;
+-};
++} __no_const;
+ 
+ struct cryptd_hash_ctx {
+ 	atomic_t refcnt;
+@@ -98,7 +98,7 @@ struct cryptd_aead_ctx {
  
  struct cryptd_aead_request_ctx {
  	crypto_completion_t complete;

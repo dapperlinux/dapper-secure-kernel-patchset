@@ -7,7 +7,7 @@ index cb3c8fe..a001ef9 100644
  #define _LINUX_SCATTERLIST_H
  
 +#include <linux/sched.h>
-+#include <linux/sched/clock.h>
++#include <linux/sched/task.h>
  #include <linux/string.h>
  #include <linux/types.h>
  #include <linux/bug.h>

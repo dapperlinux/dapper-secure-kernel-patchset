@@ -1,5 +1,5 @@
 diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-index a978d71..f28baae 100644
+index a978d71..7e644c0 100644
 --- a/include/linux/sched/task.h
 +++ b/include/linux/sched/task.h
 @@ -65,7 +65,7 @@ static inline void exit_thread(struct task_struct *tsk)
@@ -11,7 +11,7 @@ index a978d71..f28baae 100644
  
  extern void exit_files(struct task_struct *);
  extern void exit_itimers(struct signal_struct *);
-@@ -99,11 +99,62 @@ struct task_struct *try_get_task_struct(struct task_struct **ptask);
+@@ -99,11 +99,106 @@ struct task_struct *try_get_task_struct(struct task_struct **ptask);
  
  
  #ifdef CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT
@@ -72,10 +72,54 @@ index a978d71..f28baae 100644
 +extern void pax_report_insns(struct pt_regs *regs, void *pc, void *sp);
 +extern void pax_report_refcount_error(struct pt_regs *regs, const char *kind);
 +
++#ifdef CONFIG_GRKERNSEC_KSTACKOVERFLOW
++static inline void populate_stack(void *stack, unsigned int size)
++{
++	int c;
++	int *ptr = stack;
++	int *end = stack + size;
++
++	while (ptr < end) {
++		c = *(volatile int *)ptr;
++		(void)c;
++		ptr += PAGE_SIZE/sizeof(int);
++	}
++}
++#else
++static inline void populate_stack(void *stack, unsigned int size)
++{
++}
++#endif
++
++const void *gr_convert_stack_address_to_lowmem(const void *buf);
++
++#ifdef CONFIG_GRKERNSEC
++static inline bool current_is_ptracer(struct task_struct *task, u64 *exec_id)
++{
++	bool ret = false;
++        if (!task->ptrace)
++		return ret;
++
++	rcu_read_lock();
++	read_lock(&tasklist_lock);
++	if (task->parent && task->parent == current) {
++		ret = true;
++#ifdef CONFIG_GRKERNSEC_PROC_MEMMAP
++		if (exec_id)
++			*exec_id = task->parent->exec_id;
++#endif
++	}
++	read_unlock(&tasklist_lock);
++	rcu_read_unlock();
++
++	return ret;
++}
++#endif
++
  #ifdef CONFIG_VMAP_STACK
  static inline struct vm_struct *task_stack_vm_area(const struct task_struct *t)
  {
-@@ -126,11 +126,13 @@ static inline struct vm_struct *task_stack_vm_area(const struct task_struct *t)
+@@ -126,11 +221,13 @@ static inline struct vm_struct *task_stack_vm_area(const struct task_struct *t)
   * It must not be nested with write_lock_irq(&tasklist_lock),
   * neither inside nor outside.
   */

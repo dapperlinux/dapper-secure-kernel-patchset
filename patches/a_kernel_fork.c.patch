@@ -6,7 +6,7 @@ index ba8a015..37d2e1d 100644
  #include <linux/sched/autogroup.h>
  #include <linux/sched/mm.h>
  #include <linux/sched/coredump.h>
-+#include <linux/sched/clock.h>
++#include <linux/sched/task.h>
  #include <linux/sched/user.h>
  #include <linux/sched/numa_balancing.h>
  #include <linux/sched/stat.h>
