@@ -1,8 +1,26 @@
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-dev.c b/drivers/net/ethernet/amd/xgbe/xgbe-dev.c
-index ca106d4..36c4702 100644
+index 24a687c..77e1ce0 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-dev.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-dev.c
-@@ -2818,7 +2818,7 @@ static void xgbe_powerdown_rx(struct xgbe_prv_data *pdata)
+@@ -2701,7 +2701,7 @@ static void xgbe_config_dcb_pfc(struct xgbe_prv_data *pdata)
+ 		netif_tx_stop_all_queues(pdata->netdev);
+ 
+ 		/* Suspend Rx so that fifo's can be adjusted */
+-		pdata->hw_if.disable_rx(pdata);
++		pdata->hw_if->disable_rx(pdata);
+ 	}
+ 
+ 	xgbe_config_rx_fifo_size(pdata);
+@@ -2709,7 +2709,7 @@ static void xgbe_config_dcb_pfc(struct xgbe_prv_data *pdata)
+ 
+ 	if (!test_bit(XGBE_DOWN, &pdata->dev_state)) {
+ 		/* Resume Rx */
+-		pdata->hw_if.enable_rx(pdata);
++		pdata->hw_if->enable_rx(pdata);
+ 
+ 		/* Resume Tx queues */
+ 		netif_tx_start_all_queues(pdata->netdev);
+@@ -3402,7 +3402,7 @@ static void xgbe_powerdown_rx(struct xgbe_prv_data *pdata)
  
  static int xgbe_init(struct xgbe_prv_data *pdata)
  {

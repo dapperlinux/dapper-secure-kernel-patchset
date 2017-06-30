@@ -1,8 +1,8 @@
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-index 0f0f3014..882be95 100644
+index a713abd..dea1f1c 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -245,7 +245,7 @@ static int xgbe_maybe_stop_tx_queue(struct xgbe_channel *channel,
+@@ -259,7 +259,7 @@ static int xgbe_maybe_stop_tx_queue(struct xgbe_channel *channel,
  		 * support, tell it now
  		 */
  		if (ring->tx.xmit_more)
@@ -29,6 +29,37 @@ index 0f0f3014..882be95 100644
  	enum xgbe_int int_id;
  
  	if (channel->tx_ring && channel->rx_ring)
+@@ -409,7 +409,7 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
+ 	}
+ 
+ 	if (stop) {
+-		pdata->hw_if.disable_ecc_ded(pdata);
++		pdata->hw_if->disable_ecc_ded(pdata);
+ 		schedule_work(&pdata->stopdev_work);
+ 		goto out;
+ 	}
+@@ -417,18 +417,18 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
+ 	if (XP_GET_BITS(ecc_isr, XP_ECC_ISR, TX_SEC)) {
+ 		if (xgbe_ecc_sec(pdata, &pdata->tx_sec_period,
+ 				 &pdata->tx_sec_count, "TX fifo"))
+-			pdata->hw_if.disable_ecc_sec(pdata, XGBE_ECC_SEC_TX);
++			pdata->hw_if->disable_ecc_sec(pdata, XGBE_ECC_SEC_TX);
+ 	}
+ 
+ 	if (XP_GET_BITS(ecc_isr, XP_ECC_ISR, RX_SEC))
+ 		if (xgbe_ecc_sec(pdata, &pdata->rx_sec_period,
+ 				 &pdata->rx_sec_count, "RX fifo"))
+-			pdata->hw_if.disable_ecc_sec(pdata, XGBE_ECC_SEC_RX);
++			pdata->hw_if->disable_ecc_sec(pdata, XGBE_ECC_SEC_RX);
+ 
+ 	if (XP_GET_BITS(ecc_isr, XP_ECC_ISR, DESC_SEC))
+ 		if (xgbe_ecc_sec(pdata, &pdata->desc_sec_period,
+ 				 &pdata->desc_sec_count, "descriptor cache"))
+-			pdata->hw_if.disable_ecc_sec(pdata, XGBE_ECC_SEC_DESC);
++			pdata->hw_if->disable_ecc_sec(pdata, XGBE_ECC_SEC_DESC);
+ 
+ out:
+ 	/* Clear all ECC interrupts */
 @@ -440,7 +440,7 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
  static irqreturn_t xgbe_isr(int irq, void *data)
  {
@@ -38,7 +69,25 @@ index 0f0f3014..882be95 100644
  	struct xgbe_channel *channel;
  	unsigned int dma_isr, dma_ch_isr;
  	unsigned int mac_isr, mac_tssr, mac_mdioisr;
-@@ -447,7 +447,7 @@ static void xgbe_service(struct work_struct *work)
+@@ -542,7 +542,7 @@ static irqreturn_t xgbe_isr(int irq, void *data)
+ isr_done:
+ 	/* If there is not a separate AN irq, handle it here */
+ 	if (pdata->dev_irq == pdata->an_irq)
+-		pdata->phy_if.an_isr(irq, pdata);
++		pdata->phy_if->an_isr(irq, pdata);
+ 
+ 	/* If there is not a separate ECC irq, handle it here */
+ 	if (pdata->vdata->ecc_support && (pdata->dev_irq == pdata->ecc_irq))
+@@ -550,7 +550,7 @@ static irqreturn_t xgbe_isr(int irq, void *data)
+ 
+ 	/* If there is not a separate I2C irq, handle it here */
+ 	if (pdata->vdata->i2c_support && (pdata->dev_irq == pdata->i2c_irq))
+-		pdata->i2c_if.i2c_isr(irq, pdata);
++		pdata->i2c_if->i2c_isr(irq, pdata);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -619,7 +619,7 @@ static void xgbe_service(struct work_struct *work)
  						   struct xgbe_prv_data,
  						   service_work);
  
@@ -47,7 +96,7 @@ index 0f0f3014..882be95 100644
  }
  
  static void xgbe_service_timer(unsigned long data)
-@@ -706,7 +706,7 @@ static void xgbe_free_irqs(struct xgbe_prv_data *pdata)
+@@ -899,7 +899,7 @@ static void xgbe_free_irqs(struct xgbe_prv_data *pdata)
  
  void xgbe_init_tx_coalesce(struct xgbe_prv_data *pdata)
  {
@@ -56,7 +105,7 @@ index 0f0f3014..882be95 100644
  
  	DBGPR("-->xgbe_init_tx_coalesce\n");
  
-@@ -720,7 +720,7 @@ void xgbe_init_tx_coalesce(struct xgbe_prv_data *pdata)
+@@ -913,7 +913,7 @@ void xgbe_init_tx_coalesce(struct xgbe_prv_data *pdata)
  
  void xgbe_init_rx_coalesce(struct xgbe_prv_data *pdata)
  {
@@ -65,7 +114,7 @@ index 0f0f3014..882be95 100644
  
  	DBGPR("-->xgbe_init_rx_coalesce\n");
  
-@@ -735,7 +735,7 @@ void xgbe_init_rx_coalesce(struct xgbe_prv_data *pdata)
+@@ -928,7 +928,7 @@ void xgbe_init_rx_coalesce(struct xgbe_prv_data *pdata)
  
  static void xgbe_free_tx_data(struct xgbe_prv_data *pdata)
  {
@@ -74,7 +123,7 @@ index 0f0f3014..882be95 100644
  	struct xgbe_channel *channel;
  	struct xgbe_ring *ring;
  	struct xgbe_ring_data *rdata;
-@@ -760,7 +760,7 @@ static void xgbe_free_tx_data(struct xgbe_prv_data *pdata)
+@@ -953,7 +953,7 @@ static void xgbe_free_tx_data(struct xgbe_prv_data *pdata)
  
  static void xgbe_free_rx_data(struct xgbe_prv_data *pdata)
  {
@@ -83,7 +132,7 @@ index 0f0f3014..882be95 100644
  	struct xgbe_channel *channel;
  	struct xgbe_ring *ring;
  	struct xgbe_ring_data *rdata;
-@@ -788,13 +788,13 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
+@@ -981,13 +981,13 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
  	pdata->phy_link = -1;
  	pdata->phy_speed = SPEED_UNKNOWN;
  
@@ -99,7 +148,7 @@ index 0f0f3014..882be95 100644
  	unsigned long flags;
  
  	DBGPR("-->xgbe_powerdown\n");
-@@ -833,7 +833,7 @@ int xgbe_powerdown(struct net_device *netdev, unsigned int caller)
+@@ -1026,7 +1026,7 @@ int xgbe_powerdown(struct net_device *netdev, unsigned int caller)
  int xgbe_powerup(struct net_device *netdev, unsigned int caller)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -108,7 +157,7 @@ index 0f0f3014..882be95 100644
  	unsigned long flags;
  
  	DBGPR("-->xgbe_powerup\n");
-@@ -870,8 +870,8 @@ int xgbe_powerup(struct net_device *netdev, unsigned int caller)
+@@ -1063,8 +1063,8 @@ int xgbe_powerup(struct net_device *netdev, unsigned int caller)
  
  static int xgbe_start(struct xgbe_prv_data *pdata)
  {
@@ -119,7 +168,7 @@ index 0f0f3014..882be95 100644
  	struct net_device *netdev = pdata->netdev;
  	int ret;
  
-@@ -914,8 +914,8 @@ static int xgbe_start(struct xgbe_prv_data *pdata)
+@@ -1111,8 +1111,8 @@ static int xgbe_start(struct xgbe_prv_data *pdata)
  
  static void xgbe_stop(struct xgbe_prv_data *pdata)
  {
@@ -130,7 +179,7 @@ index 0f0f3014..882be95 100644
  	struct xgbe_channel *channel;
  	struct net_device *netdev = pdata->netdev;
  	struct netdev_queue *txq;
-@@ -1143,7 +1143,7 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
+@@ -1363,7 +1363,7 @@ static int xgbe_set_hwtstamp_settings(struct xgbe_prv_data *pdata,
  		return -ERANGE;
  	}
  
@@ -139,7 +188,7 @@ index 0f0f3014..882be95 100644
  
  	memcpy(&pdata->tstamp_config, &config, sizeof(config));
  
-@@ -1292,7 +1292,7 @@ static void xgbe_packet_info(struct xgbe_prv_data *pdata,
+@@ -1512,7 +1512,7 @@ static void xgbe_packet_info(struct xgbe_prv_data *pdata,
  static int xgbe_open(struct net_device *netdev)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -148,7 +197,7 @@ index 0f0f3014..882be95 100644
  	int ret;
  
  	DBGPR("-->xgbe_open\n");
-@@ -1364,7 +1364,7 @@ static int xgbe_open(struct net_device *netdev)
+@@ -1585,7 +1585,7 @@ static int xgbe_open(struct net_device *netdev)
  static int xgbe_close(struct net_device *netdev)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -157,7 +206,7 @@ index 0f0f3014..882be95 100644
  
  	DBGPR("-->xgbe_close\n");
  
-@@ -1388,11 +1388,11 @@ static int xgbe_close(struct net_device *netdev)
+@@ -1609,11 +1609,11 @@ static int xgbe_close(struct net_device *netdev)
  	return 0;
  }
  
@@ -172,7 +221,7 @@ index 0f0f3014..882be95 100644
  	struct xgbe_channel *channel;
  	struct xgbe_ring *ring;
  	struct xgbe_packet_data *packet;
-@@ -1461,7 +1461,7 @@ static int xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
+@@ -1682,7 +1682,7 @@ static int xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
  static void xgbe_set_rx_mode(struct net_device *netdev)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -181,7 +230,7 @@ index 0f0f3014..882be95 100644
  
  	DBGPR("-->xgbe_set_rx_mode\n");
  
-@@ -1473,7 +1473,7 @@ static void xgbe_set_rx_mode(struct net_device *netdev)
+@@ -1694,7 +1694,7 @@ static void xgbe_set_rx_mode(struct net_device *netdev)
  static int xgbe_set_mac_address(struct net_device *netdev, void *addr)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -190,7 +239,7 @@ index 0f0f3014..882be95 100644
  	struct sockaddr *saddr = addr;
  
  	DBGPR("-->xgbe_set_mac_address\n");
-@@ -1548,7 +1548,7 @@ static struct rtnl_link_stats64 *xgbe_get_stats64(struct net_device *netdev,
+@@ -1769,7 +1769,7 @@ static void xgbe_get_stats64(struct net_device *netdev,
  
  	DBGPR("-->%s\n", __func__);
  
@@ -199,7 +248,7 @@ index 0f0f3014..882be95 100644
  
  	s->rx_packets = pstats->rxframecount_gb;
  	s->rx_bytes = pstats->rxoctetcount_gb;
-@@ -1575,7 +1575,7 @@ static int xgbe_vlan_rx_add_vid(struct net_device *netdev, __be16 proto,
+@@ -1794,7 +1794,7 @@ static int xgbe_vlan_rx_add_vid(struct net_device *netdev, __be16 proto,
  				u16 vid)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -208,7 +257,7 @@ index 0f0f3014..882be95 100644
  
  	DBGPR("-->%s\n", __func__);
  
-@@ -1591,7 +1591,7 @@ static int xgbe_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto,
+@@ -1810,7 +1810,7 @@ static int xgbe_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto,
  				 u16 vid)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -217,7 +266,7 @@ index 0f0f3014..882be95 100644
  
  	DBGPR("-->%s\n", __func__);
  
-@@ -1641,7 +1641,7 @@ static int xgbe_setup_tc(struct net_device *netdev, u32 handle, __be16 proto,
+@@ -1860,7 +1860,7 @@ static int xgbe_setup_tc(struct net_device *netdev, u32 handle, __be16 proto,
  		return -EINVAL;
  
  	pdata->num_tcs = tc;
@@ -226,7 +275,7 @@ index 0f0f3014..882be95 100644
  
  	return 0;
  }
-@@ -1650,7 +1650,7 @@ static int xgbe_set_features(struct net_device *netdev,
+@@ -1869,7 +1869,7 @@ static int xgbe_set_features(struct net_device *netdev,
  			     netdev_features_t features)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -235,7 +284,7 @@ index 0f0f3014..882be95 100644
  	netdev_features_t rxhash, rxcsum, rxvlan, rxvlan_filter;
  	int ret = 0;
  
-@@ -1716,8 +1716,8 @@ const struct net_device_ops *xgbe_get_netdev_ops(void)
+@@ -1935,8 +1935,8 @@ const struct net_device_ops *xgbe_get_netdev_ops(void)
  static void xgbe_rx_refresh(struct xgbe_channel *channel)
  {
  	struct xgbe_prv_data *pdata = channel->pdata;
@@ -246,7 +295,7 @@ index 0f0f3014..882be95 100644
  	struct xgbe_ring *ring = channel->rx_ring;
  	struct xgbe_ring_data *rdata;
  
-@@ -1812,8 +1812,8 @@ static unsigned int xgbe_rx_buf2_len(struct xgbe_ring_data *rdata,
+@@ -2031,8 +2031,8 @@ static unsigned int xgbe_rx_buf2_len(struct xgbe_ring_data *rdata,
  static int xgbe_tx_poll(struct xgbe_channel *channel)
  {
  	struct xgbe_prv_data *pdata = channel->pdata;
@@ -257,7 +306,7 @@ index 0f0f3014..882be95 100644
  	struct xgbe_ring *ring = channel->tx_ring;
  	struct xgbe_ring_data *rdata;
  	struct xgbe_ring_desc *rdesc;
-@@ -1883,7 +1883,7 @@ static int xgbe_tx_poll(struct xgbe_channel *channel)
+@@ -2102,7 +2102,7 @@ static int xgbe_tx_poll(struct xgbe_channel *channel)
  static int xgbe_rx_poll(struct xgbe_channel *channel, int budget)
  {
  	struct xgbe_prv_data *pdata = channel->pdata;

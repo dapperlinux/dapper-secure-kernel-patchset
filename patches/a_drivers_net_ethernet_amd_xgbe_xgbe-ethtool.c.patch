@@ -1,5 +1,5 @@
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-index 4007b42..5786161 100644
+index 920566a..ef48433 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
 @@ -206,7 +206,7 @@ static void xgbe_get_ethtool_stats(struct net_device *netdev,
@@ -20,7 +20,16 @@ index 4007b42..5786161 100644
  
  	return ret;
  }
-@@ -368,7 +368,7 @@ static int xgbe_set_settings(struct net_device *netdev,
+@@ -319,7 +319,7 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
+ 	}
+ 
+ 	if (cmd->base.autoneg == AUTONEG_DISABLE) {
+-		if (!pdata->phy_if.phy_valid_speed(pdata, speed)) {
++		if (!pdata->phy_if->phy_valid_speed(pdata, speed)) {
+ 			netdev_err(netdev, "unsupported speed %u\n", speed);
+ 			return -EINVAL;
+ 		}
+@@ -357,7 +357,7 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
  		pdata->phy.advertising &= ~ADVERTISED_Autoneg;
  
  	if (netif_running(netdev))
@@ -29,7 +38,7 @@ index 4007b42..5786161 100644
  
  	return ret;
  }
-@@ -422,7 +422,7 @@ static int xgbe_set_coalesce(struct net_device *netdev,
+@@ -411,7 +411,7 @@ static int xgbe_set_coalesce(struct net_device *netdev,
  			     struct ethtool_coalesce *ec)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
@@ -38,7 +47,7 @@ index 4007b42..5786161 100644
  	unsigned int rx_frames, rx_riwt, rx_usecs;
  	unsigned int tx_frames;
  
-@@ -545,7 +545,7 @@ static int xgbe_set_rxfh(struct net_device *netdev, const u32 *indir,
+@@ -534,7 +534,7 @@ static int xgbe_set_rxfh(struct net_device *netdev, const u32 *indir,
  			 const u8 *key, const u8 hfunc)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);

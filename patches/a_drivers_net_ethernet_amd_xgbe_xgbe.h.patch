@@ -10,10 +10,10 @@ index 5dd17dc..962ff6a 100644
 -	struct xgbe_phy_if phy_if;
 -	struct xgbe_desc_if desc_if;
 -	struct xgbe_i2c_if i2c_if;
-+	const struct xgbe_hw_if hw_if;
-+	const struct xgbe_phy_if phy_if;
-+	const struct xgbe_desc_if desc_if;
-+	const struct xgbe_i2c_if i2c_if;
++	const struct xgbe_hw_if *hw_if;
++	const struct xgbe_phy_if *phy_if;
++	const struct xgbe_desc_if *desc_if;
++	const struct xgbe_i2c_if *i2c_if;
  
  	/* AXI DMA settings */
  	unsigned int coherent;
