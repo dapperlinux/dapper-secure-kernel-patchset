@@ -1,0 +1,22 @@
+diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
+index 2b713b6..9d540e2 100644
+--- a/drivers/net/ipvlan/ipvtap.c
++++ b/drivers/net/ipvlan/ipvtap.c
+@@ -126,7 +126,7 @@ static void ipvtap_setup(struct net_device *dev)
+ 	dev->priv_flags &= ~IFF_NO_QUEUE;
+ }
+ 
+-static struct rtnl_link_ops ipvtap_link_ops __read_mostly = {
++static struct rtnl_link_ops ipvtap_link_ops = {
+ 	.kind		= "ipvtap",
+ 	.setup		= ipvtap_setup,
+ 	.newlink	= ipvtap_newlink,
+@@ -190,7 +190,7 @@ static int ipvtap_device_event(struct notifier_block *unused,
+ 	return NOTIFY_DONE;
+ }
+ 
+-static struct notifier_block ipvtap_notifier_block __read_mostly = {
++static struct notifier_block ipvtap_notifier_block = {
+ 	.notifier_call	= ipvtap_device_event,
+ };
+ 

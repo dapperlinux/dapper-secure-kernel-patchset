@@ -2,6 +2,30 @@ diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
 index dfbc4ef..47e795d 100644
 --- a/drivers/net/ipvlan/ipvlan_main.c
 +++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -639,16 +639,17 @@ static struct rtnl_link_ops ipvlan_link_ops = {
+ 	.setup		= ipvlan_link_setup,
+ 	.newlink	= ipvlan_link_new,
+ 	.dellink	= ipvlan_link_delete,
++
++	.get_size	= ipvlan_nl_getsize,
++	.policy	= ipvlan_nl_policy,
++	.validate	= ipvlan_nl_validate,
++	.fill_info	= ipvlan_nl_fillinfo,
++	.changelink = ipvlan_nl_changelink,
++	.maxtype	= IFLA_IPVLAN_MAX
+ };
+ 
+ int ipvlan_link_register(struct rtnl_link_ops *ops)
+ {
+-	ops->get_size	= ipvlan_nl_getsize;
+-	ops->policy	= ipvlan_nl_policy;
+-	ops->validate	= ipvlan_nl_validate;
+-	ops->fill_info	= ipvlan_nl_fillinfo;
+-	ops->changelink = ipvlan_nl_changelink;
+-	ops->maxtype	= IFLA_IPVLAN_MAX;
+ 	return rtnl_link_register(ops);
+ }
+ EXPORT_SYMBOL_GPL(ipvlan_link_register);
 @@ -816,15 +816,15 @@ static int ipvlan_addr4_event(struct notifier_block *unused,
  	return NOTIFY_OK;
  }

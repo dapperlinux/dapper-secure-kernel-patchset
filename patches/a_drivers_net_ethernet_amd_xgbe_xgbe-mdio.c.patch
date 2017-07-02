@@ -289,24 +289,24 @@ index 4c5b90e..125a2b0 100644
 -	phy_if->phy_exit        = xgbe_phy_exit;
 +const struct xgbe_phy_if default_xgbe_phy_if = {
 +	.phy_init        = xgbe_phy_init,
-+	.phy_exit        = xgbe_phy_exit;
++	.phy_exit        = xgbe_phy_exit,
  
 -	phy_if->phy_reset       = xgbe_phy_reset;
 -	phy_if->phy_start       = xgbe_phy_start;
 -	phy_if->phy_stop        = xgbe_phy_stop;
-+	.phy_reset       = xgbe_phy_reset;
-+	.phy_start       = xgbe_phy_start;
-+	.phy_stop        = xgbe_phy_stop;
++	.phy_reset       = xgbe_phy_reset,
++	.phy_start       = xgbe_phy_start,
++	.phy_stop        = xgbe_phy_stop,
  
 -	phy_if->phy_status      = xgbe_phy_status;
 -	phy_if->phy_config_aneg = xgbe_phy_config_aneg;
-+	.phy_status      = xgbe_phy_status;
-+	.phy_config_aneg = xgbe_phy_config_aneg;
++	.phy_status      = xgbe_phy_status,
++	.phy_config_aneg = xgbe_phy_config_aneg,
  
 -	phy_if->phy_valid_speed = xgbe_phy_valid_speed;
-+	.phy_valid_speed = xgbe_phy_valid_speed;
++	.phy_valid_speed = xgbe_phy_valid_speed,
  
 -	phy_if->an_isr          = xgbe_an_combined_isr;
 -}
-+	.an_isr          = xgbe_an_combined_isr;
++	.an_isr          = xgbe_an_combined_isr
 +};
