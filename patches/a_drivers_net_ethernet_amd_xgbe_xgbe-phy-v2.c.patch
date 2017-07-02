@@ -1,55 +1,176 @@
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index e707c49..ff0c053 100644
+index e707c49..c4dd314 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -3077,32 +3077,30 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
+@@ -371,7 +371,7 @@ static int xgbe_phy_i2c_xfer(struct xgbe_prv_data *pdata,
+ 	if (WARN_ON(!phy_data->comm_owned))
+ 		return -EIO;
+ 
+-	return pdata->i2c_if.i2c_xfer(pdata, i2c_op);
++	return pdata->i2c_if->i2c_xfer(pdata, i2c_op);
+ }
+ 
+ static int xgbe_phy_redrv_write(struct xgbe_prv_data *pdata, unsigned int reg,
+@@ -600,7 +600,7 @@ static int xgbe_phy_mdio_mii_write(struct xgbe_prv_data *pdata, int addr,
+ 			return -ENOTSUPP;
+ 	}
+ 
+-	return pdata->hw_if.write_ext_mii_regs(pdata, addr, reg, val);
++	return pdata->hw_if->write_ext_mii_regs(pdata, addr, reg, val);
+ }
+ 
+ static int xgbe_phy_i2c_mii_write(struct xgbe_prv_data *pdata, int reg, u16 val)
+@@ -660,7 +660,7 @@ static int xgbe_phy_mdio_mii_read(struct xgbe_prv_data *pdata, int addr,
+ 			return -ENOTSUPP;
+ 	}
+ 
+-	return pdata->hw_if.read_ext_mii_regs(pdata, addr, reg);
++	return pdata->hw_if->read_ext_mii_regs(pdata, addr, reg);
+ }
+ 
+ static int xgbe_phy_i2c_mii_read(struct xgbe_prv_data *pdata, int reg)
+@@ -878,7 +878,7 @@ static int xgbe_phy_find_phy_device(struct xgbe_prv_data *pdata)
+ 		return 0;
+ 
+ 	/* Set the proper MDIO mode for the PHY */
+-	ret = pdata->hw_if.set_ext_mii_mode(pdata, phy_data->mdio_addr,
++	ret = pdata->hw_if->set_ext_mii_mode(pdata, phy_data->mdio_addr,
+ 					    phy_data->phydev_mode);
+ 	if (ret) {
+ 		netdev_err(pdata->netdev,
+@@ -1648,7 +1648,7 @@ static int xgbe_phy_set_redrv_mode_mdio(struct xgbe_prv_data *pdata,
+ 	redrv_reg = XGBE_PHY_REDRV_MODE_REG + (phy_data->redrv_lane * 0x1000);
+ 	redrv_val = (u16)mode;
+ 
+-	return pdata->hw_if.write_ext_mii_regs(pdata, phy_data->redrv_addr,
++	return pdata->hw_if->write_ext_mii_regs(pdata, phy_data->redrv_addr,
+ 					       redrv_reg, redrv_val);
+ }
+ 
+@@ -2478,11 +2478,11 @@ static int xgbe_phy_int_mdio_reset(struct xgbe_prv_data *pdata)
+ 	struct xgbe_phy_data *phy_data = pdata->phy_data;
+ 	unsigned int ret;
+ 
+-	ret = pdata->hw_if.set_gpio(pdata, phy_data->mdio_reset_gpio);
++	ret = pdata->hw_if->set_gpio(pdata, phy_data->mdio_reset_gpio);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = pdata->hw_if.clr_gpio(pdata, phy_data->mdio_reset_gpio);
++	ret = pdata->hw_if->clr_gpio(pdata, phy_data->mdio_reset_gpio);
+ 
+ 	return ret;
+ }
+@@ -2721,7 +2721,7 @@ static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
+ 	xgbe_phy_power_off(pdata);
+ 
+ 	/* Stop the I2C controller */
+-	pdata->i2c_if.i2c_stop(pdata);
++	pdata->i2c_if->i2c_stop(pdata);
+ }
+ 
+ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
+@@ -2730,13 +2730,13 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
+ 	int ret;
+ 
+ 	/* Start the I2C controller */
+-	ret = pdata->i2c_if.i2c_start(pdata);
++	ret = pdata->i2c_if->i2c_start(pdata);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* Set the proper MDIO mode for the re-driver */
+ 	if (phy_data->redrv && !phy_data->redrv_if) {
+-		ret = pdata->hw_if.set_ext_mii_mode(pdata, phy_data->redrv_addr,
++		ret = pdata->hw_if->set_ext_mii_mode(pdata, phy_data->redrv_addr,
+ 						    XGBE_MDIO_MODE_CL22);
+ 		if (ret) {
+ 			netdev_err(pdata->netdev,
+@@ -2766,7 +2766,7 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
+ 	return 0;
+ 
+ err_i2c:
+-	pdata->i2c_if.i2c_stop(pdata);
++	pdata->i2c_if->i2c_stop(pdata);
+ 
+ 	return ret;
+ }
+@@ -2815,7 +2815,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
+ 	}
+ 
+ 	/* Initialize the I2C controller */
+-	ret = pdata->i2c_if.i2c_init(pdata);
++	ret = pdata->i2c_if->i2c_init(pdata);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -3032,7 +3032,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
+ 
+ 	if ((phy_data->conn_type & XGBE_CONN_TYPE_MDIO) &&
+ 	    (phy_data->phydev_mode != XGBE_MDIO_MODE_NONE)) {
+-		ret = pdata->hw_if.set_ext_mii_mode(pdata, phy_data->mdio_addr,
++		ret = pdata->hw_if->set_ext_mii_mode(pdata, phy_data->mdio_addr,
+ 						    phy_data->phydev_mode);
+ 		if (ret) {
+ 			dev_err(pdata->dev,
+@@ -3043,7 +3043,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
+ 	}
+ 
+ 	if (phy_data->redrv && !phy_data->redrv_if) {
+-		ret = pdata->hw_if.set_ext_mii_mode(pdata, phy_data->redrv_addr,
++		ret = pdata->hw_if->set_ext_mii_mode(pdata, phy_data->redrv_addr,
+ 						    XGBE_MDIO_MODE_CL22);
+ 		if (ret) {
+ 			dev_err(pdata->dev,
+@@ -3077,32 +3077,31 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
  	return 0;
  }
  
 -void xgbe_init_function_ptrs_phy_v2(struct xgbe_phy_if *phy_if)
 -{
 -	struct xgbe_phy_impl_if *phy_impl = &phy_if->phy_impl;
-+const struct xgbe_phy_impl_if default_xgbe_phy_impl = {
  
 -	phy_impl->init			= xgbe_phy_init;
 -	phy_impl->exit			= xgbe_phy_exit;
-+	.init			= xgbe_phy_init,
-+	.exit			= xgbe_phy_exit,
++const struct xgbe_phy_impl_if default_xgbe_phy_impl = {
  
 -	phy_impl->reset			= xgbe_phy_reset;
 -	phy_impl->start			= xgbe_phy_start;
 -	phy_impl->stop			= xgbe_phy_stop;
++	.init			= xgbe_phy_init,
++	.exit			= xgbe_phy_exit,
+ 
+-	phy_impl->link_status		= xgbe_phy_link_status;
 +	.reset			= xgbe_phy_reset,
 +	.start			= xgbe_phy_start,
 +	.stop			= xgbe_phy_stop,
  
--	phy_impl->link_status		= xgbe_phy_link_status;
-+	.link_status		= xgbe_phy_link_status,
- 
 -	phy_impl->valid_speed		= xgbe_phy_valid_speed;
-+	.valid_speed		= xgbe_phy_valid_speed,
++	.link_status		= xgbe_phy_link_status,
  
 -	phy_impl->use_mode		= xgbe_phy_use_mode;
 -	phy_impl->set_mode		= xgbe_phy_set_mode;
 -	phy_impl->get_mode		= xgbe_phy_get_mode;
 -	phy_impl->switch_mode		= xgbe_phy_switch_mode;
 -	phy_impl->cur_mode		= xgbe_phy_cur_mode;
++	.valid_speed		= xgbe_phy_valid_speed,
+ 
+-	phy_impl->an_mode		= xgbe_phy_an_mode;
 +	.use_mode		= xgbe_phy_use_mode,
 +	.set_mode		= xgbe_phy_set_mode,
 +	.get_mode		= xgbe_phy_get_mode,
 +	.switch_mode		= xgbe_phy_switch_mode,
 +	.cur_mode		= xgbe_phy_cur_mode,
  
--	phy_impl->an_mode		= xgbe_phy_an_mode;
+-	phy_impl->an_config		= xgbe_phy_an_config;
 +	.an_mode		= xgbe_phy_an_mode,
  
--	phy_impl->an_config		= xgbe_phy_an_config;
-+	.an_config		= xgbe_phy_an_config,
- 
 -	phy_impl->an_advertising	= xgbe_phy_an_advertising;
-+	.an_advertising	= xgbe_phy_an_advertising,
++	.an_config		= xgbe_phy_an_config,
  
 -	phy_impl->an_outcome		= xgbe_phy_an_outcome;
 -}
++	.an_advertising	= xgbe_phy_an_advertising,
++
 +	.an_outcome		= xgbe_phy_an_outcome
 +};
