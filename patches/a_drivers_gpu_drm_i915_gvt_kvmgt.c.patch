@@ -1,0 +1,19 @@
+diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
+index e466259..790510e 100644
+--- a/drivers/gpu/drm/i915/gvt/kvmgt.c
++++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
+@@ -320,12 +320,12 @@ static bool intel_gvt_init_vgpu_type_groups(struct intel_gvt *gvt)
+ {
+ 	int i, j;
+ 	struct intel_vgpu_type *type;
+-	struct attribute_group *group;
++	attribute_group_no_const *group;
+ 
+ 	for (i = 0; i < gvt->num_types; i++) {
+ 		type = &gvt->types[i];
+ 
+-		group = kzalloc(sizeof(struct attribute_group), GFP_KERNEL);
++		group = kzalloc(sizeof(attribute_group_no_const), GFP_KERNEL);
+ 		if (WARN_ON(!group))
+ 			goto unwind;
+ 

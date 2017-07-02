@@ -1,0 +1,13 @@
+diff --git a/drivers/platform/x86/mlxcpld-hotplug.c b/drivers/platform/x86/mlxcpld-hotplug.c
+index aff3686..c9c5cfb 100644
+--- a/drivers/platform/x86/mlxcpld-hotplug.c
++++ b/drivers/platform/x86/mlxcpld-hotplug.c
+@@ -87,7 +87,7 @@ struct mlxcpld_hotplug_priv_data {
+ 	struct platform_device *pdev;
+ 	struct mlxcpld_hotplug_platform_data *plat;
+ 	struct device *hwmon;
+-	struct attribute *mlxcpld_hotplug_attr[MLXCPLD_HOTPLUG_ATTRS_NUM + 1];
++	attribute_no_const *mlxcpld_hotplug_attr[MLXCPLD_HOTPLUG_ATTRS_NUM + 1];
+ 	struct sensor_device_attribute_2
+ 			mlxcpld_hotplug_dev_attr[MLXCPLD_HOTPLUG_ATTRS_NUM];
+ 	struct attribute_group group;

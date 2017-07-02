@@ -1,0 +1,13 @@
+diff --git a/drivers/misc/eeprom/idt_89hpesx.c b/drivers/misc/eeprom/idt_89hpesx.c
+index 4a22a1d..63cfca7 100644
+--- a/drivers/misc/eeprom/idt_89hpesx.c
++++ b/drivers/misc/eeprom/idt_89hpesx.c
+@@ -135,7 +135,7 @@ struct idt_89hpesx_dev {
+ 
+ 	struct i2c_client *client;
+ 
+-	struct bin_attribute *ee_file;
++	bin_attribute_no_const *ee_file;
+ 	struct dentry *csr_dir;
+ 	struct dentry *csr_file;
+ };

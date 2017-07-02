@@ -1,0 +1,13 @@
+diff --git a/arch/x86/events/amd/uncore.c b/arch/x86/events/amd/uncore.c
+index 4d1f7f2..6c67753 100644
+--- a/arch/x86/events/amd/uncore.c
++++ b/arch/x86/events/amd/uncore.c
+@@ -261,7 +261,7 @@ _dev##_show##_name(struct device *dev,					     \
+ 	BUILD_BUG_ON(sizeof(_format) >= PAGE_SIZE);			     \
+ 	return sprintf(page, _format "\n");				     \
+ }									     \
+-static struct device_attribute format_attr_##_dev##_name = __ATTR_RO(_dev);
++static device_attribute_no_const format_attr_##_dev##_name = __ATTR_RO(_dev);
+ 
+ /* Used for each uncore counter type */
+ #define AMD_ATTRIBUTE(_name)						     \

@@ -1,0 +1,13 @@
+diff --git a/drivers/gpu/drm/i915/gvt/firmware.c b/drivers/gpu/drm/i915/gvt/firmware.c
+index dce8d15..73c97c8 100644
+--- a/drivers/gpu/drm/i915/gvt/firmware.c
++++ b/drivers/gpu/drm/i915/gvt/firmware.c
+@@ -59,7 +59,7 @@ gvt_firmware_read(struct file *filp, struct kobject *kobj,
+ 	return count;
+ }
+ 
+-static struct bin_attribute firmware_attr = {
++static bin_attribute_no_const firmware_attr = {
+ 	.attr = {.name = "gvt_firmware", .mode = (S_IRUSR)},
+ 	.read = gvt_firmware_read,
+ 	.write = NULL,

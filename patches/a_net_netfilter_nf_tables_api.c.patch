@@ -62,3 +62,12 @@ index e5194f6f..ad76273 100644
  			.dump = nf_tables_dump_set,
  		};
  		return netlink_dump_start(nlsk, skb, nlh, &c);
+@@ -4354,7 +4354,7 @@ static int nf_tables_getobj(struct net *net, struct sock *nlsk,
+ 	int err;
+ 
+ 	if (nlh->nlmsg_flags & NLM_F_DUMP) {
+-		struct netlink_dump_control c = {
++		netlink_dump_control_no_const c = {
+ 			.dump = nf_tables_dump_obj,
+ 			.done = nf_tables_dump_obj_done,
+ 		};
