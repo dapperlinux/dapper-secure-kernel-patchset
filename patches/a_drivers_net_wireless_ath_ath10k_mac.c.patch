@@ -16,3 +16,17 @@ index f2e85eb..5e10c3e 100644
  
  	ret = ath10k_mac_init_rd(ar);
  	if (ret) {
+@@ -8235,8 +8235,11 @@ int ath10k_mac_register(struct ath10k *ar)
+ 	}
+ 
+ 	/* Disable set_coverage_class for chipsets that do not support it. */
+-	if (!ar->hw_params.hw_ops->set_coverage_class)
+-		ar->ops->set_coverage_class = NULL;
++	if (!ar->hw_params.hw_ops->set_coverage_class) {
++		pax_open_kernel();
++		const_cast(ar->ops->set_coverage_class) = NULL;
++		pax_close_kernel();
++	}
+ 
+ 	ret = ath_regd_init(&ar->ath_common.regulatory, ar->hw->wiphy,
+ 			    ath10k_reg_notifier);

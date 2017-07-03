@@ -1,0 +1,15 @@
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index cceddd9..5669ed7 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -3288,7 +3288,9 @@ static int __init qedf_init(void)
+ 		goto err4;
+ 	}
+ 
+-	qedf_cb_ops.get_login_failures = qedf_get_login_failures;
++	pax_open_kernel();
++	const_cast(qedf_cb_ops.get_login_failures) = qedf_get_login_failures;
++	pax_close_kernel();
+ 
+ 	ret = pci_register_driver(&qedf_pci_driver);
+ 	if (ret) {

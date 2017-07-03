@@ -29,7 +29,7 @@ index 460cebf..eb16bb4 100644
 +{
 +}
 +
-+static int sisusb_con_scroll(struct vc_data *a, int b, int c, int d, int e)
++static bool sisusb_con_scroll(struct vc_data *a, unsigned int b, unsigned c, enum con_scroll d, unsigned int e)
 +{
 +	return 0;
 +}

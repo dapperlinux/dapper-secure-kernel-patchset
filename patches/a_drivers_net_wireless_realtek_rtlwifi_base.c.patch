@@ -44,3 +44,12 @@ index 4ac928b..9832ba8 100644
  {
  	struct rtl_works *rtlworks =
  		container_of_dwork_rtl(data, struct rtl_works, fwevt_wq);
+@@ -1814,7 +1814,7 @@ void rtl_c2hcmd_launcher(struct ieee80211_hw *hw, int exec)
+ 	}
+ }
+ 
+-void rtl_c2hcmd_wq_callback(void *data)
++void rtl_c2hcmd_wq_callback(struct work_struct *data)
+ {
+ 	struct rtl_works *rtlworks = container_of_dwork_rtl(data,
+ 							    struct rtl_works,

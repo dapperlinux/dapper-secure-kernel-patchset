@@ -132,7 +132,7 @@ index e707c49..c4dd314 100644
  
 -	phy_impl->init			= xgbe_phy_init;
 -	phy_impl->exit			= xgbe_phy_exit;
-+const struct xgbe_phy_impl_if default_xgbe_phy_impl = {
++const struct xgbe_phy_impl_if default_xgbe_phy_impl_v2 = {
  
 -	phy_impl->reset			= xgbe_phy_reset;
 -	phy_impl->start			= xgbe_phy_start;

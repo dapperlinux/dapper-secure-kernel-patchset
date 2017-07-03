@@ -27,6 +27,24 @@ index 80fa656..fe05593 100644
  	{								\
  		return sprintf(buf, "%u\n", global.object);		\
  	}
+@@ -1051,7 +1051,7 @@ static ssize_t intel_pstate_show_status(char *buf);
+ static int intel_pstate_update_status(const char *buf, size_t size);
+ 
+ static ssize_t show_status(struct kobject *kobj,
+-			   struct attribute *attr, char *buf)
++			   struct kobj_attribute *attr, char *buf)
+ {
+ 	ssize_t ret;
+ 
+@@ -1062,7 +1062,7 @@ static ssize_t show_status(struct kobject *kobj,
+ 	return ret;
+ }
+ 
+-static ssize_t store_status(struct kobject *a, struct attribute *b,
++static ssize_t store_status(struct kobject *a, struct kobj_attribute *b,
+ 			    const char *buf, size_t count)
+ {
+ 	char *p = memchr(buf, '\n', count);
 @@ -1076,7 +1076,7 @@ static ssize_t store_status(struct kobject *a, struct attribute *b,
  }
  
@@ -188,15 +206,21 @@ index 80fa656..fe05593 100644
  {
  	pid_params.sample_rate_ms = policy->sample_rate_ms;
  	pid_params.sample_rate_ns = pid_params.sample_rate_ms * NSEC_PER_MSEC;
-@@ -2480,7 +2480,7 @@ static void __init copy_pid_params(struct pstate_adjust_policy *policy)
+@@ -2479,9 +2479,11 @@ static void __init copy_pid_params(struct pstate_adjust_policy *policy)
+ #ifdef CONFIG_ACPI
  static void intel_pstate_use_acpi_profile(void)
  {
- 	if (acpi_gbl_FADT.preferred_profile == PM_MOBILE)
+-	if (acpi_gbl_FADT.preferred_profile == PM_MOBILE)
 -		pstate_funcs.get_target_pstate =
-+		pstate_funcs->get_target_pstate =
- 				get_target_pstate_use_cpu_load;
+-				get_target_pstate_use_cpu_load;
++	if (acpi_gbl_FADT.preferred_profile == PM_MOBILE) {
++		pax_open_kernel();
++		const_cast(pstate_funcs->get_target_pstate) = get_target_pstate_use_cpu_load;
++		pax_close_kernel();
++	}
  }
  #else
+ static void intel_pstate_use_acpi_profile(void)
 @@ -2491,14 +2491,7 @@ static void intel_pstate_use_acpi_profile(void)
  
  static void __init copy_cpu_funcs(struct pstate_funcs *funcs)
@@ -213,3 +237,14 @@ index 80fa656..fe05593 100644
  
  	intel_pstate_use_acpi_profile();
  }
+@@ -2647,7 +2649,9 @@ static int __init intel_pstate_init(void)
+ 	if (x86_match_cpu(hwp_support_ids) && !no_hwp) {
+ 		copy_cpu_funcs(&core_params.funcs);
+ 		hwp_active++;
+-		intel_pstate.attr = hwp_cpufreq_attrs;
++		pax_open_kernel();
++		const_cast(intel_pstate.attr) = hwp_cpufreq_attrs;
++		pax_close_kernel();
+ 		goto hwp_cpu_matched;
+ 	}
+ 

@@ -2,14 +2,16 @@ diff --git a/drivers/net/wireless/realtek/rtlwifi/base.h b/drivers/net/wireless/
 index 02ff0c5..0b6d8e6 100644
 --- a/drivers/net/wireless/realtek/rtlwifi/base.h
 +++ b/drivers/net/wireless/realtek/rtlwifi/base.h
-@@ -134,8 +134,8 @@ int rtl_rx_agg_start(struct ieee80211_hw *hw,
+@@ -134,9 +134,9 @@ int rtl_rx_agg_start(struct ieee80211_hw *hw,
  		     struct ieee80211_sta *sta, u16 tid);
  int rtl_rx_agg_stop(struct ieee80211_hw *hw,
  		    struct ieee80211_sta *sta, u16 tid);
 -void rtl_watchdog_wq_callback(void *data);
 -void rtl_fwevt_wq_callback(void *data);
+-void rtl_c2hcmd_wq_callback(void *data);
 +void rtl_watchdog_wq_callback(struct work_struct *data);
 +void rtl_fwevt_wq_callback(struct work_struct *data);
- void rtl_c2hcmd_wq_callback(void *data);
++void rtl_c2hcmd_wq_callback(struct work_struct *data);
  void rtl_c2hcmd_launcher(struct ieee80211_hw *hw, int exec);
  void rtl_c2hcmd_enqueue(struct ieee80211_hw *hw, u8 tag, u8 len, u8 *val);
+ 

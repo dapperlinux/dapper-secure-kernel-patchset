@@ -9,7 +9,7 @@ index c75edca..239f99e 100644
 -void xgbe_init_function_ptrs_phy_v1(struct xgbe_phy_if *phy_if)
 -{
 -	struct xgbe_phy_impl_if *phy_impl = &phy_if->phy_impl;
-+const struct xgbe_phy_impl_if default_xgbe_phy_impl = {
++const struct xgbe_phy_impl_if default_xgbe_phy_impl_v1 = {
  
 -	phy_impl->init			= xgbe_phy_init;
 -	phy_impl->exit			= xgbe_phy_exit;
