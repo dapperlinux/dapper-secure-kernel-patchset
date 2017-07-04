@@ -11,3 +11,12 @@ index aff3686..c9c5cfb 100644
  	struct sensor_device_attribute_2
  			mlxcpld_hotplug_dev_attr[MLXCPLD_HOTPLUG_ATTRS_NUM];
  	struct attribute_group group;
+@@ -178,7 +178,7 @@ static int mlxcpld_hotplug_attr_init(struct mlxcpld_hotplug_priv_data *priv)
+ 		sysfs_attr_init(&PRIV_DEV_ATTR(i).dev_attr.attr);
+ 	}
+ 
+-	priv->group.attrs = priv->mlxcpld_hotplug_attr;
++	priv->group.attrs = (struct attribute **) priv->mlxcpld_hotplug_attr;
+ 	priv->groups[0] = &priv->group;
+ 	priv->groups[1] = NULL;
+ 

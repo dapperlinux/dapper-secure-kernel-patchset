@@ -178,6 +178,15 @@ index 5d2f24f..cb5d8a4 100644
  		sysfs_slab_release(s);
  #else
  		slab_kmem_cache_release(s);
+@@ -541,7 +541,7 @@ static int shutdown_cache(struct kmem_cache *s)
+ 		list_add_tail(&s->list, &slab_caches_to_rcu_destroy);
+ 		schedule_work(&slab_caches_to_rcu_destroy_work);
+ 	} else {
+-#ifdef SLAB_SUPPORTS_SYSFS
++#if defined(SLAB_SUPPORTS_SYSFS) && !defined(CONFIG_GRKERNSEC_PROC_ADD)
+ 		sysfs_slab_release(s);
+ #else
+ 		slab_kmem_cache_release(s);
 @@ -534,6 +586,7 @@ void memcg_create_kmem_cache(struct mem_cgroup *memcg,
  	s = create_cache(cache_name, root_cache->object_size,
  			 root_cache->size, root_cache->align,

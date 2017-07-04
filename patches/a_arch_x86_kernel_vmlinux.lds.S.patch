@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index dbf67f6..2836431 100644
+index c74ae9c..a5c17c9 100644
 --- a/arch/x86/kernel/vmlinux.lds.S
 +++ b/arch/x86/kernel/vmlinux.lds.S
 @@ -26,6 +26,13 @@
@@ -16,7 +16,7 @@ index dbf67f6..2836431 100644
  
  #undef i386     /* in case the preprocessor is a 32bit one */
  
-@@ -68,31 +68,46 @@ jiffies_64 = jiffies;
+@@ -68,28 +75,42 @@ jiffies_64 = jiffies;
  
  PHDRS {
  	text PT_LOAD FLAGS(5);          /* R_E */
@@ -55,11 +55,7 @@ index dbf67f6..2836431 100644
  
  	/* Text and read-only data */
 -	.text :  AT(ADDR(.text) - LOAD_OFFSET) {
--		_text = .;
 +	.text (. - __KERNEL_TEXT_OFFSET): AT(ADDR(.text) - LOAD_OFFSET + __KERNEL_TEXT_OFFSET) {
- 		_stext = .;
-+	.text (. - __KERNEL_TEXT_OFFSET): AT(ADDR(.text) - LOAD_OFFSET + __KERNEL_TEXT_OFFSET) {
- 		/* bootstrapping code */
 +#ifdef CONFIG_X86_32
 +		phys_startup_32 = ABSOLUTE(startup_32 - LOAD_OFFSET + __KERNEL_TEXT_OFFSET);
 +		__LOAD_PHYSICAL_ADDR = . - LOAD_OFFSET + __KERNEL_TEXT_OFFSET;
@@ -67,10 +63,9 @@ index dbf67f6..2836431 100644
 +		phys_startup_64 = ABSOLUTE(startup_64 - LOAD_OFFSET + __KERNEL_TEXT_OFFSET);
 +		__LOAD_PHYSICAL_ADDR = ABSOLUTE(. - LOAD_OFFSET + __KERNEL_TEXT_OFFSET);
 +#endif
-+		_text = .;
- 		HEAD_TEXT
- 		. = ALIGN(8);
- 		TEXT_TEXT
+ 		_text = .;
+ 		_stext = .;
+ 		/* bootstrapping code */
 @@ -105,13 +126,35 @@ SECTIONS
  		SOFTIRQENTRY_TEXT
  		*(.fixup)
@@ -81,8 +76,7 @@ index dbf67f6..2836431 100644
  
 -	NOTES :text :note
 +	. += __KERNEL_TEXT_OFFSET;
- 
--	EXCEPTION_TABLE(16) :text = 0x9090
++
 +#ifdef CONFIG_X86_32
 +	. = ALIGN(PAGE_SIZE);
 +	.module.text : AT(ADDR(.module.text) - LOAD_OFFSET) {
@@ -106,7 +100,8 @@ index dbf67f6..2836431 100644
 +
 +	. = ALIGN(PAGE_SIZE);
 +	NOTES :rodata :note
-+
+ 
+-	EXCEPTION_TABLE(16) :text = 0x9090
 +	EXCEPTION_TABLE(16) :rodata
  
  	/* .text should occupy whole number of pages */
@@ -255,7 +250,7 @@ index dbf67f6..2836431 100644
  		__brk_limit = .;
  	}
  
-@@ -362,13 +425,12 @@ SECTIONS
+@@ -361,13 +424,12 @@ SECTIONS
   * for the boot processor.
   */
  #define INIT_PER_CPU(x) init_per_cpu__##x = x + __per_cpu_load

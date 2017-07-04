@@ -1,0 +1,20 @@
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+index 38392a5..a425b67 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+@@ -437,7 +437,6 @@ static int xgbe_pci_resume(struct pci_dev *pdev)
+ #endif /* CONFIG_PM */
+ 
+ static const struct xgbe_version_data xgbe_v2a = {
+-	.init_function_ptrs_phy_impl	= xgbe_init_function_ptrs_phy_v2,
+ 	.xpcs_access			= XGBE_XPCS_ACCESS_V2,
+ 	.mmc_64bit			= 1,
+ 	.tx_max_fifo_size		= 229376,
+@@ -448,7 +447,6 @@ static const struct xgbe_version_data xgbe_v2a = {
+ };
+ 
+ static const struct xgbe_version_data xgbe_v2b = {
+-	.init_function_ptrs_phy_impl	= xgbe_init_function_ptrs_phy_v2,
+ 	.xpcs_access			= XGBE_XPCS_ACCESS_V2,
+ 	.mmc_64bit			= 1,
+ 	.tx_max_fifo_size		= 65536,
