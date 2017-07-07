@@ -1,5 +1,5 @@
 diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 6153b66..d3d0871 100644
+index 26b643d..b5de649 100644
 --- a/drivers/cpufreq/cpufreq.c
 +++ b/drivers/cpufreq/cpufreq.c
 @@ -528,12 +528,12 @@ EXPORT_SYMBOL_GPL(cpufreq_driver_resolve_freq);
@@ -17,7 +17,7 @@ index 6153b66..d3d0871 100644
  				  const char *buf, size_t count)
  {
  	int ret, enable;
-@@ -2119,7 +2119,7 @@ void cpufreq_unregister_governor(struct cpufreq_governor *governor)
+@@ -2115,7 +2115,7 @@ void cpufreq_unregister_governor(struct cpufreq_governor *governor)
  	read_unlock_irqrestore(&cpufreq_driver_lock, flags);
  
  	mutex_lock(&cpufreq_governor_mutex);
@@ -26,7 +26,7 @@ index 6153b66..d3d0871 100644
  	mutex_unlock(&cpufreq_governor_mutex);
  	return;
  }
-@@ -2339,13 +2339,17 @@ int cpufreq_boost_trigger_state(int state)
+@@ -2333,13 +2333,17 @@ int cpufreq_boost_trigger_state(int state)
  		return 0;
  
  	write_lock_irqsave(&cpufreq_driver_lock, flags);
@@ -46,7 +46,7 @@ index 6153b66..d3d0871 100644
  		write_unlock_irqrestore(&cpufreq_driver_lock, flags);
  
  		pr_err("%s: Cannot %s BOOST\n",
-@@ -2386,7 +2390,9 @@ int cpufreq_enable_boost_support(void)
+@@ -2380,7 +2384,9 @@ int cpufreq_enable_boost_support(void)
  	if (cpufreq_boost_supported())
  		return 0;
  
@@ -57,7 +57,7 @@ index 6153b66..d3d0871 100644
  
  	/* This will get removed on driver unregister */
  	return create_boost_sysfs_file();
-@@ -2458,8 +2464,11 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
+@@ -2452,8 +2458,11 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
  	cpufreq_driver = driver_data;
  	write_unlock_irqrestore(&cpufreq_driver_lock, flags);
  

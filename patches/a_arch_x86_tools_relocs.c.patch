@@ -1,5 +1,5 @@
 diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
-index 0c2fae8..1d2a079 100644
+index 73eb7fd..9977c79 100644
 --- a/arch/x86/tools/relocs.c
 +++ b/arch/x86/tools/relocs.c
 @@ -1,5 +1,7 @@
@@ -217,7 +217,7 @@ index 0c2fae8..1d2a079 100644
  	int (*write_reloc)(uint32_t, FILE *) = write32;
  	int (*do_reloc)(struct section *sec, Elf_Rel *rel, Elf_Sym *sym,
  			const char *symname);
-@@ -1078,10 +1144,11 @@ void process(FILE *fp, int use_real_mode, int as_text,
+@@ -1079,10 +1145,11 @@ void process(FILE *fp, int use_real_mode, int as_text,
  {
  	regex_init(use_real_mode);
  	read_ehdr(fp);

@@ -1,8 +1,8 @@
 diff --git a/sound/soc/codecs/sti-sas.c b/sound/soc/codecs/sti-sas.c
-index d6e00c7..4b64c8a 100644
+index 62c6187..7d0a238 100644
 --- a/sound/soc/codecs/sti-sas.c
 +++ b/sound/soc/codecs/sti-sas.c
-@@ -591,11 +591,13 @@ static int sti_sas_driver_probe(struct platform_device *pdev)
+@@ -452,11 +452,13 @@ static int sti_sas_driver_probe(struct platform_device *pdev)
  	sti_sas_dai[STI_SAS_DAI_ANALOG_OUT].ops = drvdata->dev_data->dac_ops;
  
  	/* Set dapms*/

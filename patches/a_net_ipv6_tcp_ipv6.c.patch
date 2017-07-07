@@ -1,5 +1,5 @@
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index b2e61a0..bf47484 100644
+index 4f4310a..d99c421 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
 @@ -101,6 +101,10 @@ static void inet6_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
@@ -13,7 +13,7 @@ index b2e61a0..bf47484 100644
  static u32 tcp_v6_init_seq(const struct sk_buff *skb)
  {
  	return secure_tcpv6_seq(ipv6_hdr(skb)->daddr.s6_addr32,
-@@ -1304,6 +1308,9 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+@@ -1317,6 +1321,9 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
  	return 0;
  
  reset:
@@ -23,7 +23,7 @@ index b2e61a0..bf47484 100644
  	tcp_v6_send_reset(sk, skb);
  discard:
  	if (opt_skb)
-@@ -1408,12 +1415,20 @@ static int tcp_v6_rcv(struct sk_buff *skb)
+@@ -1421,12 +1428,20 @@ lookup:
  	sk = __inet6_lookup_skb(&tcp_hashinfo, skb, __tcp_hdrlen(th),
  				th->source, th->dest, inet6_iif(skb),
  				&refcounted);
@@ -46,7 +46,7 @@ index b2e61a0..bf47484 100644
  
  	if (sk->sk_state == TCP_NEW_SYN_RECV) {
  		struct request_sock *req = inet_reqsk(sk);
-@@ -1503,6 +1518,10 @@ static int tcp_v6_rcv(struct sk_buff *skb)
+@@ -1516,6 +1531,10 @@ csum_error:
  bad_packet:
  		__TCP_INC_STATS(net, TCP_MIB_INERRS);
  	} else {

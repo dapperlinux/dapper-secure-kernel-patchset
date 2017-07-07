@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/nouveau/nv50_display.c b/drivers/gpu/drm/nouveau/nv50_display.c
-index ce37cbd..6c63260 100644
+index 06e564a..37bab4a 100644
 --- a/drivers/gpu/drm/nouveau/nv50_display.c
 +++ b/drivers/gpu/drm/nouveau/nv50_display.c
-@@ -4455,8 +4455,11 @@ nv50_display_create(struct drm_device *dev)
+@@ -4384,8 +4384,11 @@ nv50_display_create(struct drm_device *dev)
  	nouveau_display(dev)->fini = nv50_display_fini;
  	disp->disp = &nouveau_display(dev)->disp;
  	dev->mode_config.funcs = &nv50_disp_func;

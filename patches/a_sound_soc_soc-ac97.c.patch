@@ -1,5 +1,5 @@
 diff --git a/sound/soc/soc-ac97.c b/sound/soc/soc-ac97.c
-index 6c8b0b0..2c4a5c6 100644
+index 36dae41..ca2e6ad 100644
 --- a/sound/soc/soc-ac97.c
 +++ b/sound/soc/soc-ac97.c
 @@ -414,8 +414,10 @@ int snd_soc_set_ac97_ops_of_reset(struct snd_ac97_bus_ops *ops,

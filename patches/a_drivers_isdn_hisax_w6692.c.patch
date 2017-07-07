@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hisax/w6692.c b/drivers/isdn/hisax/w6692.c
-index a858955..908285b 100644
+index c99f0ec..9edb6b7 100644
 --- a/drivers/isdn/hisax/w6692.c
 +++ b/drivers/isdn/hisax/w6692.c
 @@ -681,8 +681,9 @@ DC_Close_W6692(struct IsdnCardState *cs)
@@ -17,8 +17,8 @@ index a858955..908285b 100644
  	if (part & 1) {
  		cs->setstack_d = setstack_W6692;
  		cs->DC_Close = DC_Close_W6692;
--		cs->dbusytimer.function = (void *) dbusy_timer_handler;
-+		cs->dbusytimer.function = dbusy_timer_handler;
- 		cs->dbusytimer.data = (long) cs;
- 		init_timer(&cs->dbusytimer);
+-		setup_timer(&cs->dbusytimer, (void *)dbusy_timer_handler,
++		setup_timer(&cs->dbusytimer,dbusy_timer_handler,
+ 			    (long)cs);
  		resetW6692(cs);
+ 		ph_command(cs, W_L1CMD_RST);

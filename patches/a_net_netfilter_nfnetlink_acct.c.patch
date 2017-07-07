@@ -1,8 +1,8 @@
 diff --git a/net/netfilter/nfnetlink_acct.c b/net/netfilter/nfnetlink_acct.c
-index d44d89b..c834ed3 100644
+index 9898fb4..0531086 100644
 --- a/net/netfilter/nfnetlink_acct.c
 +++ b/net/netfilter/nfnetlink_acct.c
-@@ -28,8 +28,8 @@ MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
+@@ -29,8 +29,8 @@ MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
  MODULE_DESCRIPTION("nfacct: Extended Netfilter accounting infrastructure");
  
  struct nf_acct {
@@ -12,8 +12,8 @@ index d44d89b..c834ed3 100644
 +	atomic64_unchecked_t	bytes;
  	unsigned long		flags;
  	struct list_head	head;
- 	atomic_t		refcnt;
-@@ -76,8 +76,8 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
+ 	refcount_t		refcnt;
+@@ -77,8 +77,8 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
  	if (matching) {
  		if (nlh->nlmsg_flags & NLM_F_REPLACE) {
  			/* reset counters if you request a replacement. */
@@ -24,7 +24,7 @@ index d44d89b..c834ed3 100644
  			smp_mb__before_atomic();
  			/* reset overquota flag if quota is enabled. */
  			if ((matching->flags & NFACCT_F_QUOTA))
-@@ -116,11 +116,11 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
+@@ -117,11 +117,11 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
  	strncpy(nfacct->name, nla_data(tb[NFACCT_NAME]), NFACCT_NAME_MAX);
  
  	if (tb[NFACCT_BYTES]) {
@@ -37,8 +37,8 @@ index d44d89b..c834ed3 100644
 +		atomic64_set_unchecked(&nfacct->pkts,
  			     be64_to_cpu(nla_get_be64(tb[NFACCT_PKTS])));
  	}
- 	atomic_set(&nfacct->refcnt, 1);
-@@ -153,14 +153,14 @@ nfnl_acct_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
+ 	refcount_set(&nfacct->refcnt, 1);
+@@ -154,14 +154,14 @@ nfnl_acct_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
  
  	old_flags = acct->flags;
  	if (type == NFNL_MSG_ACCT_GET_CTRZERO) {
@@ -57,7 +57,7 @@ index d44d89b..c834ed3 100644
  	}
  	if (nla_put_be64(skb, NFACCT_PKTS, cpu_to_be64(pkts),
  			 NFACCT_PAD) ||
-@@ -269,10 +269,11 @@ static int nfnl_acct_get(struct net *net, struct sock *nfnl,
+@@ -271,10 +271,11 @@ static int nfnl_acct_get(struct net *net, struct sock *nfnl,
  	char *acct_name;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
@@ -70,7 +70,7 @@ index d44d89b..c834ed3 100644
  
  		if (tb[NFACCT_FILTER]) {
  			struct nfacct_filter *filter;
-@@ -281,9 +282,9 @@ static int nfnl_acct_get(struct net *net, struct sock *nfnl,
+@@ -283,9 +284,9 @@ static int nfnl_acct_get(struct net *net, struct sock *nfnl,
  			if (IS_ERR(filter))
  				return PTR_ERR(filter);
  
@@ -82,7 +82,7 @@ index d44d89b..c834ed3 100644
  	}
  
  	if (!tb[NFACCT_NAME])
-@@ -438,8 +439,8 @@ EXPORT_SYMBOL_GPL(nfnl_acct_put);
+@@ -440,8 +441,8 @@ EXPORT_SYMBOL_GPL(nfnl_acct_put);
  
  void nfnl_acct_update(const struct sk_buff *skb, struct nf_acct *nfacct)
  {
@@ -93,7 +93,7 @@ index d44d89b..c834ed3 100644
  }
  EXPORT_SYMBOL_GPL(nfnl_acct_update);
  
-@@ -475,7 +476,7 @@ int nfnl_acct_overquota(struct net *net, const struct sk_buff *skb,
+@@ -477,7 +478,7 @@ int nfnl_acct_overquota(struct net *net, const struct sk_buff *skb,
  
  	quota = (u64 *)nfacct->data;
  	now = (nfacct->flags & NFACCT_F_QUOTA_PKTS) ?

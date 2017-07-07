@@ -13,7 +13,7 @@ index 50b4ca6..cf64608 100644
  		set_page_address(page, NULL);
  		need_flush = 1;
  	}
-@@ -255,8 +256,11 @@ static inline unsigned long map_new_virtual(struct page *page)
+@@ -255,8 +256,11 @@ start:
  		}
  	}
  	vaddr = PKMAP_ADDR(last_pkmap_nr);

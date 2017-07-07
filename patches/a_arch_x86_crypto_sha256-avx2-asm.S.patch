@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/sha256-avx2-asm.S b/arch/x86/crypto/sha256-avx2-asm.S
-index 570ec5e..6c7f33c 100644
+index 89c8f09..df91cf5 100644
 --- a/arch/x86/crypto/sha256-avx2-asm.S
 +++ b/arch/x86/crypto/sha256-avx2-asm.S
 @@ -50,6 +50,7 @@

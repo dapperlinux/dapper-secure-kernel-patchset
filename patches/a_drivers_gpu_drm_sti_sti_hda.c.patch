@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/sti/sti_hda.c b/drivers/gpu/drm/sti/sti_hda.c
-index e7c243f..7cc96133 100644
+index 0c0a75b..28b83bf 100644
 --- a/drivers/gpu/drm/sti/sti_hda.c
 +++ b/drivers/gpu/drm/sti/sti_hda.c
 @@ -361,7 +361,7 @@ static int hda_dbg_show(struct seq_file *s, void *data)
@@ -11,7 +11,7 @@ index e7c243f..7cc96133 100644
  	{ "hda", hda_dbg_show, 0, NULL },
  };
  
-@@ -376,8 +376,10 @@ static int hda_debugfs_init(struct sti_hda *hda, struct drm_minor *minor)
+@@ -369,8 +369,10 @@ static int hda_debugfs_init(struct sti_hda *hda, struct drm_minor *minor)
  {
  	unsigned int i;
  

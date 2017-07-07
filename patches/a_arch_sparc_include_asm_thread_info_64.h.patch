@@ -1,5 +1,5 @@
 diff --git a/arch/sparc/include/asm/thread_info_64.h b/arch/sparc/include/asm/thread_info_64.h
-index 3d7b925..493ce82 100644
+index 38a24f2..9cdf8e4 100644
 --- a/arch/sparc/include/asm/thread_info_64.h
 +++ b/arch/sparc/include/asm/thread_info_64.h
 @@ -59,6 +59,8 @@ struct thread_info {
@@ -11,7 +11,7 @@ index 3d7b925..493ce82 100644
  	unsigned long		fpregs[(7 * 256) / sizeof(unsigned long)]
  		__attribute__ ((aligned(64)));
  };
-@@ -181,6 +181,7 @@ register struct thread_info *current_thread_info_reg asm("g6");
+@@ -181,6 +183,7 @@ register struct thread_info *current_thread_info_reg asm("g6");
  /* flag bit 4 is available */
  #define TIF_UNALIGNED		5	/* allowed to do unaligned accesses */
  #define TIF_UPROBE		6	/* breakpointed or singlestepped */
@@ -19,7 +19,7 @@ index 3d7b925..493ce82 100644
  #define TIF_32BIT		7	/* 32-bit binary */
  #define TIF_NOHZ		8	/* in adaptive nohz mode */
  #define TIF_SECCOMP		9	/* secure computing */
-@@ -206,6 +206,7 @@ register struct thread_info *current_thread_info_reg asm("g6");
+@@ -206,6 +209,7 @@ register struct thread_info *current_thread_info_reg asm("g6");
  #define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
  #define _TIF_SYSCALL_TRACEPOINT	(1<<TIF_SYSCALL_TRACEPOINT)
  #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
@@ -27,7 +27,7 @@ index 3d7b925..493ce82 100644
  
  #define _TIF_USER_WORK_MASK	((0xff << TI_FLAG_WSAVED_SHIFT) | \
  				 _TIF_DO_NOTIFY_RESUME_MASK | \
-@@ -213,6 +215,10 @@ register struct thread_info *current_thread_info_reg asm("g6");
+@@ -213,6 +217,10 @@ register struct thread_info *current_thread_info_reg asm("g6");
  #define _TIF_DO_NOTIFY_RESUME_MASK	(_TIF_NOTIFY_RESUME | \
  					 _TIF_SIGPENDING | _TIF_UPROBE)
  

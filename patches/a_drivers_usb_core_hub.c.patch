@@ -1,8 +1,8 @@
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 35fb2bef..301257b 100644
+index b8bb20d..9f50c7a 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -26,6 +26,7 @@
+@@ -28,6 +28,7 @@
  #include <linux/mutex.h>
  #include <linux/random.h>
  #include <linux/pm_qos.h>
@@ -10,7 +10,7 @@ index 35fb2bef..301257b 100644
  
  #include <linux/uaccess.h>
  #include <asm/byteorder.h>
-@@ -4760,6 +4761,10 @@ static void hub_port_connect(struct usb_hub *hub, int port1, u16 portstatus,
+@@ -4786,6 +4787,10 @@ static void hub_port_connect(struct usb_hub *hub, int port1, u16 portstatus,
  			goto done;
  		return;
  	}

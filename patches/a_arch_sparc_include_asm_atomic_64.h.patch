@@ -1,5 +1,5 @@
 diff --git a/arch/sparc/include/asm/atomic_64.h b/arch/sparc/include/asm/atomic_64.h
-index 24827a3..5dd45ac4 100644
+index 24827a3..5dd45ac 100644
 --- a/arch/sparc/include/asm/atomic_64.h
 +++ b/arch/sparc/include/asm/atomic_64.h
 @@ -15,18 +15,38 @@
@@ -26,19 +26,19 @@ index 24827a3..5dd45ac4 100644
 +{
 +	WRITE_ONCE(v->counter, i);
 +}
- 
--#define ATOMIC_OP(op)							\
--void atomic_##op(int, atomic_t *);					\
--void atomic64_##op(long, atomic64_t *);
++
 +#define __ATOMIC_OP(op, suffix)						\
 +void atomic_##op##suffix(int, atomic##suffix##_t *);			\
 +void atomic64_##op##suffix(long, atomic64##suffix##_t *);
  
+-#define ATOMIC_OP(op)							\
+-void atomic_##op(int, atomic_t *);					\
+-void atomic64_##op(long, atomic64_t *);
++#define ATOMIC_OP(op) __ATOMIC_OP(op, ) __ATOMIC_OP(op, _unchecked)
+ 
 -#define ATOMIC_OP_RETURN(op)						\
 -int atomic_##op##_return(int, atomic_t *);				\
 -long atomic64_##op##_return(long, atomic64_t *);
-+#define ATOMIC_OP(op) __ATOMIC_OP(op, ) __ATOMIC_OP(op, _unchecked)
-+
 +#define __ATOMIC_OP_RETURN(op, suffix)					\
 +int atomic_##op##_return##suffix(int, atomic##suffix##_t *);		\
 +long atomic64_##op##_return##suffix(long, atomic64##suffix##_t *);

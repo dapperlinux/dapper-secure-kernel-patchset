@@ -1,5 +1,5 @@
 diff --git a/drivers/pnp/pnpbios/bioscalls.c b/drivers/pnp/pnpbios/bioscalls.c
-index 438d4c7..ca8a2fb 100644
+index ff563db..59a5b56 100644
 --- a/drivers/pnp/pnpbios/bioscalls.c
 +++ b/drivers/pnp/pnpbios/bioscalls.c
 @@ -59,7 +59,7 @@ do { \
@@ -14,10 +14,10 @@ index 438d4c7..ca8a2fb 100644
 @@ -96,7 +96,10 @@ static inline u16 call_pnp_bios(u16 func, u16 arg1, u16 arg2, u16 arg3,
  
  	cpu = get_cpu();
- 	save_desc_40 = get_cpu_gdt_table(cpu)[0x40 / 8];
+ 	save_desc_40 = get_cpu_gdt_rw(cpu)[0x40 / 8];
 +
 +	pax_open_kernel();
- 	get_cpu_gdt_table(cpu)[0x40 / 8] = bad_bios_desc;
+ 	get_cpu_gdt_rw(cpu)[0x40 / 8] = bad_bios_desc;
 +	pax_close_kernel();
  
  	/* On some boxes IRQ's during PnP BIOS calls are deadly.  */
@@ -27,7 +27,7 @@ index 438d4c7..ca8a2fb 100644
  	spin_unlock_irqrestore(&pnp_bios_lock, flags);
  
 +	pax_open_kernel();
- 	get_cpu_gdt_table(cpu)[0x40 / 8] = save_desc_40;
+ 	get_cpu_gdt_rw(cpu)[0x40 / 8] = save_desc_40;
 +	pax_close_kernel();
 +
  	put_cpu();
@@ -49,7 +49,7 @@ index 438d4c7..ca8a2fb 100644
 +	pax_open_kernel();
 +
  	for_each_possible_cpu(i) {
- 		struct desc_struct *gdt = get_cpu_gdt_table(i);
+ 		struct desc_struct *gdt = get_cpu_gdt_rw(i);
  		if (!gdt)
 @@ -487,4 +495,6 @@ void pnpbios_calls_init(union pnp_bios_install_struct *header)
  		set_desc_base(&gdt[GDT_ENTRY_PNPBIOS_DS],

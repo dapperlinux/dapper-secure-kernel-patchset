@@ -1,8 +1,8 @@
 diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index a0eee72..9af876b 100644
+index 527908c..8d8546d 100644
 --- a/drivers/net/ethernet/altera/altera_tse_main.c
 +++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -543,7 +543,7 @@ static irqreturn_t altera_isr(int irq, void *dev_id)
+@@ -565,7 +565,7 @@ static irqreturn_t altera_isr(int irq, void *dev_id)
   * physically contiguous fragment starting at
   * skb->data, for length of skb_headlen(skb).
   */
@@ -11,7 +11,7 @@ index a0eee72..9af876b 100644
  {
  	struct altera_tse_private *priv = netdev_priv(dev);
  	unsigned int txsize = priv->tx_ring_size;
-@@ -1233,7 +1233,7 @@ static int tse_shutdown(struct net_device *dev)
+@@ -1315,7 +1315,7 @@ static int tse_shutdown(struct net_device *dev)
  	return 0;
  }
  
@@ -20,7 +20,7 @@ index a0eee72..9af876b 100644
  	.ndo_open		= tse_open,
  	.ndo_stop		= tse_shutdown,
  	.ndo_start_xmit		= tse_start_xmit,
-@@ -1470,11 +1470,13 @@ static int altera_tse_probe(struct platform_device *pdev)
+@@ -1555,11 +1555,13 @@ static int altera_tse_probe(struct platform_device *pdev)
  	ndev->netdev_ops = &altera_tse_netdev_ops;
  	altera_tse_set_ethtool_ops(ndev);
  

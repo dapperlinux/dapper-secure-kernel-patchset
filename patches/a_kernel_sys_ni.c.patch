@@ -1,5 +1,5 @@
 diff --git a/kernel/sys_ni.c b/kernel/sys_ni.c
-index 635482e..e232efb 100644
+index 8acef85..5a45642 100644
 --- a/kernel/sys_ni.c
 +++ b/kernel/sys_ni.c
 @@ -1,17 +1,18 @@

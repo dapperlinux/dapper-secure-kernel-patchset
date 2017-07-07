@@ -1,8 +1,8 @@
 diff --git a/include/linux/preempt.h b/include/linux/preempt.h
-index 75e4e30..fcfde15 100644
+index cae4612..c8996d4 100644
 --- a/include/linux/preempt.h
 +++ b/include/linux/preempt.h
-@@ -134,11 +134,16 @@ extern void preempt_count_sub(int val);
+@@ -160,11 +160,16 @@ extern void preempt_count_sub(int val);
  #define preempt_count_dec_and_test() __preempt_count_dec_and_test()
  #endif
  
@@ -19,7 +19,7 @@ index 75e4e30..fcfde15 100644
  
  #ifdef CONFIG_PREEMPT_COUNT
  
-@@ -148,6 +153,12 @@ do { \
+@@ -174,6 +179,12 @@ do { \
  	barrier(); \
  } while (0)
  
@@ -32,7 +32,7 @@ index 75e4e30..fcfde15 100644
  #define sched_preempt_enable_no_resched() \
  do { \
  	barrier(); \
-@@ -156,6 +167,12 @@ do { \
+@@ -182,6 +193,12 @@ do { \
  
  #define preempt_enable_no_resched() sched_preempt_enable_no_resched()
  
@@ -45,7 +45,7 @@ index 75e4e30..fcfde15 100644
  #define preemptible()	(preempt_count() == 0 && !irqs_disabled())
  
  #ifdef CONFIG_PREEMPT
-@@ -216,8 +233,10 @@ do { \
+@@ -242,8 +259,10 @@ do { \
   * region.
   */
  #define preempt_disable()			barrier()
@@ -56,7 +56,7 @@ index 75e4e30..fcfde15 100644
  #define preempt_enable()			barrier()
  #define preempt_check_resched()			do { } while (0)
  
-@@ -232,11 +251,13 @@ do { \
+@@ -258,11 +277,13 @@ do { \
  /*
   * Modules have no business playing preemption tricks.
   */

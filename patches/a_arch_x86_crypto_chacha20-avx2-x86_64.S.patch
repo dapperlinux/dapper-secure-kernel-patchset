@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/chacha20-avx2-x86_64.S b/arch/x86/crypto/chacha20-avx2-x86_64.S
-index 16694e6..4675b5e 100644
+index 3a2dc3d..57b8633 100644
 --- a/arch/x86/crypto/chacha20-avx2-x86_64.S
 +++ b/arch/x86/crypto/chacha20-avx2-x86_64.S
 @@ -10,6 +10,7 @@
@@ -10,7 +10,7 @@ index 16694e6..4675b5e 100644
  
  .section	.rodata.cst32.ROT8, "aM", @progbits, 32
  .align 32
-@@ -439,5 +440,5 @@ ENTRY(chacha20_8block_xor_avx2)
+@@ -444,5 +445,5 @@ ENTRY(chacha20_8block_xor_avx2)
  
  	vzeroupper
  	mov		%r8,%rsp

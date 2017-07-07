@@ -1,5 +1,5 @@
 diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
-index 66fc137..9602956 100644
+index 50398b6..bfc57da 100644
 --- a/include/linux/usb/hcd.h
 +++ b/include/linux/usb/hcd.h
 @@ -24,6 +24,7 @@

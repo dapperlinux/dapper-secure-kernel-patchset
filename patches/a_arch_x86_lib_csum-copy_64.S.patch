@@ -1,5 +1,5 @@
 diff --git a/arch/x86/lib/csum-copy_64.S b/arch/x86/lib/csum-copy_64.S
-index 7e48807..627b003 100644
+index 45a53df..97b029a 100644
 --- a/arch/x86/lib/csum-copy_64.S
 +++ b/arch/x86/lib/csum-copy_64.S
 @@ -8,6 +8,7 @@
@@ -18,7 +18,7 @@ index 7e48807..627b003 100644
 +	movq  %r15, 3*8(%rsp)
  	movq  %r14, 4*8(%rsp)
  	movq  %r13, 5*8(%rsp)
- 	movq  %rbp, 6*8(%rsp)
+ 	movq  %r15, 6*8(%rsp)
 @@ -64,16 +65,16 @@ ENTRY(csum_partial_copy_generic)
  	movl  %edx, %ecx
  
@@ -36,7 +36,7 @@ index 7e48807..627b003 100644
  	/* r9: zero, r8: temp2, rbx: temp1, rax: sum, rcx: saved length */
 -	/* r11:	temp3, rdx: temp4, r12 loopcnt */
 +	/* r11:	temp3, rdx: temp4, r15 loopcnt */
- 	/* r10:	temp5, rbp: temp6, r14 temp7, r13 temp8 */
+ 	/* r10:	temp5, r15: temp6, r14 temp7, r13 temp8 */
  	.p2align 4
  .Lloop:
 @@ -107,7 +108,7 @@ ENTRY(csum_partial_copy_generic)
@@ -56,7 +56,7 @@ index 7e48807..627b003 100644
 +	movq 3*8(%rsp), %r15
  	movq 4*8(%rsp), %r14
  	movq 5*8(%rsp), %r13
- 	movq 6*8(%rsp), %rbp
+ 	movq 6*8(%rsp), %r15
  	addq $7*8, %rsp
 -	ret
 +	pax_ret csum_partial_copy_generic

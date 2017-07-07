@@ -1,9 +1,9 @@
 diff --git a/drivers/gpu/drm/nouveau/nouveau_drm.c b/drivers/gpu/drm/nouveau/nouveau_drm.c
-index 3100fd88..6d573f7 100644
+index 15a13d0..77b8ac5 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_drm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_drm.c
-@@ -80,9 +80,8 @@ MODULE_PARM_DESC(runpm, "disable (0), force enable (1), optimus only default (-1
- int nouveau_runtime_pm = -1;
+@@ -83,9 +83,8 @@ MODULE_PARM_DESC(runpm, "disable (0), force enable (1), optimus only default (-1
+ static int nouveau_runtime_pm = -1;
  module_param_named(runpm, nouveau_runtime_pm, int, 0400);
  
 -static struct drm_driver driver_stub;
@@ -13,7 +13,7 @@ index 3100fd88..6d573f7 100644
  
  static u64
  nouveau_pci_name(struct pci_dev *pdev)
-@@ -942,7 +941,7 @@ nouveau_driver_fops = {
+@@ -962,7 +961,7 @@ nouveau_driver_fops = {
  };
  
  static struct drm_driver
@@ -22,7 +22,7 @@ index 3100fd88..6d573f7 100644
  	.driver_features =
  		DRIVER_GEM | DRIVER_MODESET | DRIVER_PRIME | DRIVER_RENDER |
  		DRIVER_KMS_LEGACY_CONTEXT,
-@@ -954,6 +953,8 @@ driver_stub = {
+@@ -974,6 +973,8 @@ driver_stub = {
  	.postclose = nouveau_drm_postclose,
  	.lastclose = nouveau_vga_lastclose,
  
@@ -30,8 +30,8 @@ index 3100fd88..6d573f7 100644
 +
  #if defined(CONFIG_DEBUG_FS)
  	.debugfs_init = nouveau_drm_debugfs_init,
- 	.debugfs_cleanup = nouveau_drm_debugfs_cleanup,
-@@ -1086,9 +1087,10 @@ nouveau_platform_device_create(const struct nvkm_device_tegra_func *func,
+ #endif
+@@ -1104,9 +1105,10 @@ err_free:
  static int __init
  nouveau_drm_init(void)
  {

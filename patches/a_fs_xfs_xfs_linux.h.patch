@@ -1,22 +1,22 @@
 diff --git a/fs/xfs/xfs_linux.h b/fs/xfs/xfs_linux.h
-index 1455b2520..6f717f3 100644
+index 044fb0e..6339348 100644
 --- a/fs/xfs/xfs_linux.h
 +++ b/fs/xfs/xfs_linux.h
-@@ -219,7 +219,7 @@ static inline kgid_t xfs_gid_to_kgid(__uint32_t gid)
-  * of the compiler which do not like us using do_div in the middle
-  * of large functions.
-  */
--static inline __u32 xfs_do_div(void *a, __u32 b, int n)
-+static inline __u32 __intentional_overflow(-1) xfs_do_div(void *a, __u32 b, int n)
- {
- 	__u32	mod;
+@@ -213,7 +213,7 @@ static inline kgid_t xfs_gid_to_kgid(__uint32_t gid)
+ #define xfs_stack_trace()	dump_stack()
  
-@@ -275,7 +275,7 @@ static inline __u32 xfs_do_mod(void *a, __u32 b, int n)
+ /* Side effect free 64 bit mod operation */
+-static inline __u32 xfs_do_mod(void *a, __u32 b, int n)
++static inline __u32 __intentional_overflow(-1) xfs_do_mod(void *a, __u32 b, int n)
+ {
+ 	switch (n) {
+ 		case 4:
+@@ -229,7 +229,7 @@ static inline __u32 xfs_do_mod(void *a, __u32 b, int n)
  	return 0;
  }
- #else
--static inline __u32 xfs_do_div(void *a, __u32 b, int n)
-+static inline __u32 __intentional_overflow(-1) xfs_do_div(void *a, __u32 b, int n)
- {
- 	__u32	mod;
  
+-#define do_mod(a, b)	xfs_do_mod(&(a), (b), sizeof(a))
++#define do_mod(a, b)	xfs_do_mod(&(a), __intentional_overflow(-1) (b), sizeof(a))
+ 
+ static inline __uint64_t roundup_64(__uint64_t x, __uint32_t y)
+ {

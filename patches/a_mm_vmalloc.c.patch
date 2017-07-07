@@ -1,8 +1,8 @@
 diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index f2481cb..333cf43 100644
+index ecc97f7..0390c0f 100644
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -43,20 +43,65 @@ struct vfree_deferred {
+@@ -43,19 +43,64 @@ struct vfree_deferred {
  	struct work_struct wq;
  };
  static DEFINE_PER_CPU(struct vfree_deferred, vfree_deferred);
@@ -33,12 +33,11 @@ index f2481cb..333cf43 100644
  	while (llnode) {
 -		void *p = llnode;
 +		void *x = llnode;
- 		llnode = llist_next(llnode);
--		__vunmap(p, 1);
++		llnode = llist_next(llnode);
 +		__vunmap(x, 1);
- 	}
- }
- 
++	}
++}
++
 +static void vunmap_work(struct work_struct *w)
 +{
 +	struct vfree_deferred *p = container_of(w, struct vfree_deferred, wq);
@@ -61,16 +60,16 @@ index f2481cb..333cf43 100644
 +				     struct stack_deferred_llist, list);
 +		void *stack = ACCESS_ONCE(x->stack);
 +		void *lowmem_stack = ACCESS_ONCE(x->lowmem_stack);
-+		llnode = llist_next(llnode);
+ 		llnode = llist_next(llnode);
+-		__vunmap(p, 1);
 +		__vunmap(stack, 0);
 +		free_pages((unsigned long)lowmem_stack, THREAD_SIZE_ORDER);
-+	}
-+}
+ 	}
+ }
 +#endif
-+
+ 
  /*** Page table manipulation functions ***/
  
- static void vunmap_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end)
 @@ -64,10 +109,23 @@ static void vunmap_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end)
  	pte_t *pte;
  
@@ -97,7 +96,7 @@ index f2481cb..333cf43 100644
  }
  
  static void vunmap_pmd_range(pud_t *pud, unsigned long addr, unsigned long end)
-@@ -130,16 +188,29 @@ static int vmap_pte_range(pmd_t *pmd, unsigned long addr,
+@@ -146,16 +204,29 @@ static int vmap_pte_range(pmd_t *pmd, unsigned long addr,
  	pte = pte_alloc_kernel(pmd, addr);
  	if (!pte)
  		return -ENOMEM;
@@ -129,7 +128,7 @@ index f2481cb..333cf43 100644
  	return 0;
  }
  
-@@ -149,7 +220,7 @@ static int vmap_pmd_range(pud_t *pud, unsigned long addr,
+@@ -165,7 +236,7 @@ static int vmap_pmd_range(pud_t *pud, unsigned long addr,
  	pmd_t *pmd;
  	unsigned long next;
  
@@ -138,7 +137,7 @@ index f2481cb..333cf43 100644
  	if (!pmd)
  		return -ENOMEM;
  	do {
-@@ -182,7 +182,7 @@ static int vmap_pud_range(p4d_t *p4d, unsigned long addr,
+@@ -182,7 +253,7 @@ static int vmap_pud_range(p4d_t *p4d, unsigned long addr,
  	pud_t *pud;
  	unsigned long next;
  
@@ -147,7 +146,7 @@ index f2481cb..333cf43 100644
  	if (!pud)
  		return -ENOMEM;
  	do {
-@@ -226,6 +297,12 @@ int is_vmalloc_or_module_addr(const void *x)
+@@ -259,6 +330,12 @@ int is_vmalloc_or_module_addr(const void *x)
  	if (addr >= MODULES_VADDR && addr < MODULES_END)
  		return 1;
  #endif
@@ -160,7 +159,7 @@ index f2481cb..333cf43 100644
  	return is_vmalloc_addr(x);
  }
  
-@@ -350,7 +433,7 @@ static BLOCKING_NOTIFIER_HEAD(vmap_notify_list);
+@@ -400,7 +477,7 @@ static BLOCKING_NOTIFIER_HEAD(vmap_notify_list);
   * Allocate a region of KVA of the specified size and alignment, within the
   * vstart and vend.
   */
@@ -169,7 +168,7 @@ index f2481cb..333cf43 100644
  				unsigned long align,
  				unsigned long vstart, unsigned long vend,
  				int node, gfp_t gfp_mask)
-@@ -1228,13 +1311,27 @@ void __init vmalloc_init(void)
+@@ -1261,13 +1338,27 @@ void __init vmalloc_init(void)
  	for_each_possible_cpu(i) {
  		struct vmap_block_queue *vbq;
  		struct vfree_deferred *p;
@@ -198,7 +197,7 @@ index f2481cb..333cf43 100644
  	}
  
  	/* Import existing vmlist entries. */
-@@ -1359,6 +1456,16 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
+@@ -1392,6 +1483,16 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
  	struct vm_struct *area;
  
  	BUG_ON(in_interrupt());
@@ -215,7 +214,7 @@ index f2481cb..333cf43 100644
  	size = PAGE_ALIGN(size);
  	if (unlikely(!size))
  		return NULL;
-@@ -1371,7 +1478,11 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
+@@ -1404,7 +1505,11 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
  	if (unlikely(!area))
  		return NULL;
  
@@ -227,7 +226,7 @@ index f2481cb..333cf43 100644
  		size += PAGE_SIZE;
  
  	va = alloc_vmap_area(size, align, start, end, node, gfp_mask);
-@@ -1553,13 +1664,36 @@ EXPORT_SYMBOL(vfree);
+@@ -1618,13 +1723,36 @@ EXPORT_SYMBOL(vfree);
   */
  void vunmap(const void *addr)
  {
@@ -267,7 +266,7 @@ index f2481cb..333cf43 100644
  /**
   *	vmap  -  map an array of pages into virtually contiguous space
   *	@pages:		array of page pointers
-@@ -1581,6 +1715,11 @@ void *vmap(struct page **pages, unsigned int count,
+@@ -1646,6 +1774,11 @@ void *vmap(struct page **pages, unsigned int count,
  	if (count > totalram_pages)
  		return NULL;
  
@@ -279,7 +278,7 @@ index f2481cb..333cf43 100644
  	size = (unsigned long)count << PAGE_SHIFT;
  	area = get_vm_area_caller(size, flags, __builtin_return_address(0));
  	if (!area)
-@@ -1683,6 +1822,14 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
+@@ -1754,6 +1887,14 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
  	if (!size || (size >> PAGE_SHIFT) > totalram_pages)
  		goto fail;
  
@@ -294,7 +293,7 @@ index f2481cb..333cf43 100644
  	area = __get_vm_area_node(size, align, VM_ALLOC | VM_UNINITIALIZED |
  				vm_flags, start, end, node, gfp_mask, caller);
  	if (!area)
-@@ -1735,6 +1882,14 @@ static void *__vmalloc_node(unsigned long size, unsigned long align,
+@@ -1813,6 +1954,14 @@ static void *__vmalloc_node(unsigned long size, unsigned long align,
  				gfp_mask, prot, 0, node, caller);
  }
  
@@ -309,19 +308,19 @@ index f2481cb..333cf43 100644
  void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot)
  {
  	return __vmalloc_node(size, 1, gfp_mask, prot, NUMA_NO_NODE,
-@@ -1858,10 +2013,9 @@ EXPORT_SYMBOL(vzalloc_node);
+@@ -1943,10 +2092,9 @@ EXPORT_SYMBOL(vzalloc_node);
   *	For tight control over page level allocator and protection flags
   *	use __vmalloc() instead.
   */
 -
  void *vmalloc_exec(unsigned long size)
  {
--	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL_EXEC,
-+	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO, PAGE_KERNEL_EXEC,
+-	return __vmalloc_node(size, 1, GFP_KERNEL, PAGE_KERNEL_EXEC,
++	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_ZERO, PAGE_KERNEL_EXEC,
  			      NUMA_NO_NODE, __builtin_return_address(0));
  }
  
-@@ -2168,6 +2322,8 @@ int remap_vmalloc_range_partial(struct vm_area_struct *vma, unsigned long uaddr,
+@@ -2253,6 +2401,8 @@ int remap_vmalloc_range_partial(struct vm_area_struct *vma, unsigned long uaddr,
  {
  	struct vm_struct *area;
  
@@ -330,7 +329,7 @@ index f2481cb..333cf43 100644
  	size = PAGE_ALIGN(size);
  
  	if (!PAGE_ALIGNED(uaddr) || !PAGE_ALIGNED(kaddr))
-@@ -2537,7 +2693,7 @@ struct vm_struct **pcpu_get_vm_areas(const unsigned long *offsets,
+@@ -2622,7 +2772,7 @@ found:
  	/* insert all vm's */
  	for (area = 0; area < nr_vms; area++)
  		setup_vmalloc_vm(vms[area], vas[area], VM_ALLOC,
@@ -339,7 +338,7 @@ index f2481cb..333cf43 100644
  
  	kfree(vas);
  	return vms;
-@@ -2650,7 +2806,11 @@ static int s_show(struct seq_file *m, void *p)
+@@ -2718,7 +2868,11 @@ static int s_show(struct seq_file *m, void *p)
  		v->addr, v->addr + v->size, v->size);
  
  	if (v->caller)

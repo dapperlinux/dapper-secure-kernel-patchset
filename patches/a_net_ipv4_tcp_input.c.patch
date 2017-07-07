@@ -1,8 +1,8 @@
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 7727ffe..9488999 100644
+index 174d437..02864fa 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -288,11 +288,13 @@ static void tcp_ecn_rcv_synack(struct tcp_sock *tp, const struct tcphdr *th)
+@@ -289,11 +289,13 @@ static void tcp_ecn_rcv_synack(struct tcp_sock *tp, const struct tcphdr *th)
  		tp->ecn_flags &= ~TCP_ECN_OK;
  }
  
@@ -16,7 +16,7 @@ index 7727ffe..9488999 100644
  
  static bool tcp_ecn_rcv_ecn_echo(const struct tcp_sock *tp, const struct tcphdr *th)
  {
-@@ -811,7 +813,7 @@ static void tcp_update_pacing_rate(struct sock *sk)
+@@ -818,7 +820,7 @@ static void tcp_update_pacing_rate(struct sock *sk)
  	 * without any lock. We want to make sure compiler wont store
  	 * intermediate values in this location.
  	 */
@@ -25,7 +25,7 @@ index 7727ffe..9488999 100644
  						sk->sk_max_pacing_rate);
  }
  
-@@ -4801,7 +4803,7 @@ static void tcp_rbtree_insert(struct rb_root *root, struct sk_buff *skb)
+@@ -4750,7 +4752,7 @@ static void tcp_rbtree_insert(struct rb_root *root, struct sk_buff *skb)
   * Segments with FIN/SYN are not collapsed (only because this
   * simplifies code)
   */
@@ -34,7 +34,7 @@ index 7727ffe..9488999 100644
  tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
  	     struct sk_buff *head, struct sk_buff *tail, u32 start, u32 end)
  {
-@@ -5820,6 +5822,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+@@ -5805,6 +5807,7 @@ discard:
  	    tcp_paws_reject(&tp->rx_opt, 0))
  		goto discard_and_undo;
  
@@ -42,7 +42,7 @@ index 7727ffe..9488999 100644
  	if (th->syn) {
  		/* We see SYN without ACK. It is attempt of
  		 * simultaneous connect with crossed SYNs.
-@@ -5871,6 +5874,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+@@ -5856,6 +5859,7 @@ discard:
  		goto discard;
  #endif
  	}
@@ -50,7 +50,7 @@ index 7727ffe..9488999 100644
  	/* "fifth, if neither of the SYN or RST bits is set then
  	 * drop the segment and return."
  	 */
-@@ -5914,7 +5918,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+@@ -5899,7 +5903,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
  			goto discard;
  
  		if (th->syn) {
@@ -59,7 +59,7 @@ index 7727ffe..9488999 100644
  				goto discard;
  			/* It is possible that we process SYN packets from backlog,
  			 * so we need to make sure to disable BH right there.
-@@ -6241,7 +6245,7 @@ struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
+@@ -6232,7 +6236,7 @@ struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
  #if IS_ENABLED(CONFIG_IPV6)
  		ireq->pktopts = NULL;
  #endif

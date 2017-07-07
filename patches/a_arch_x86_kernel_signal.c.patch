@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kernel/signal.c b/arch/x86/kernel/signal.c
-index 763af1d..178b2d6 100644
+index cc30a74..3704d71 100644
 --- a/arch/x86/kernel/signal.c
 +++ b/arch/x86/kernel/signal.c
-@@ -23,6 +23,7 @@
+@@ -24,6 +24,7 @@
  #include <linux/user-return-notifier.h>
  #include <linux/uprobes.h>
  #include <linux/context_tracking.h>
@@ -10,7 +10,7 @@ index 763af1d..178b2d6 100644
  
  #include <asm/processor.h>
  #include <asm/ucontext.h>
-@@ -227,7 +228,7 @@ static unsigned long align_sigframe(unsigned long sp)
+@@ -228,7 +229,7 @@ static unsigned long align_sigframe(unsigned long sp)
  	 * Align the stack pointer according to the i386 ABI,
  	 * i.e. so that on function entry ((sp + 4) & 15) == 0.
  	 */
@@ -19,7 +19,7 @@ index 763af1d..178b2d6 100644
  #else /* !CONFIG_X86_32 */
  	sp = round_down(sp, 16) - 8;
  #endif
-@@ -335,10 +336,9 @@ __setup_frame(int sig, struct ksignal *ksig, sigset_t *set,
+@@ -336,10 +337,9 @@ __setup_frame(int sig, struct ksignal *ksig, sigset_t *set,
  	}
  
  	if (current->mm->context.vdso)
@@ -32,7 +32,7 @@ index 763af1d..178b2d6 100644
  	if (ksig->ka.sa.sa_flags & SA_RESTORER)
  		restorer = ksig->ka.sa.sa_restorer;
  
-@@ -352,7 +352,7 @@ __setup_frame(int sig, struct ksignal *ksig, sigset_t *set,
+@@ -353,7 +353,7 @@ __setup_frame(int sig, struct ksignal *ksig, sigset_t *set,
  	 * reasons and because gdb uses it as a signature to notice
  	 * signal handler stack frames.
  	 */
@@ -41,7 +41,7 @@ index 763af1d..178b2d6 100644
  
  	if (err)
  		return -EFAULT;
-@@ -399,8 +399,10 @@ static int __setup_rt_frame(int sig, struct ksignal *ksig,
+@@ -400,8 +400,10 @@ static int __setup_rt_frame(int sig, struct ksignal *ksig,
  		save_altstack_ex(&frame->uc.uc_stack, regs->sp);
  
  		/* Set up to return from userspace.  */
@@ -54,7 +54,7 @@ index 763af1d..178b2d6 100644
  		if (ksig->ka.sa.sa_flags & SA_RESTORER)
  			restorer = ksig->ka.sa.sa_restorer;
  		put_user_ex(restorer, &frame->pretcode);
-@@ -412,7 +414,7 @@ static int __setup_rt_frame(int sig, struct ksignal *ksig,
+@@ -413,7 +415,7 @@ static int __setup_rt_frame(int sig, struct ksignal *ksig,
  		 * reasons and because gdb uses it as a signature to notice
  		 * signal handler stack frames.
  		 */
@@ -63,7 +63,7 @@ index 763af1d..178b2d6 100644
  	} put_user_catch(err);
  	
  	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
-@@ -599,7 +601,7 @@ static int x32_setup_rt_frame(struct ksignal *ksig,
+@@ -600,7 +602,7 @@ static int x32_setup_rt_frame(struct ksignal *ksig,
   * Do a signal return; undo the signal stack.
   */
  #ifdef CONFIG_X86_32
@@ -72,7 +72,7 @@ index 763af1d..178b2d6 100644
  {
  	struct pt_regs *regs = current_pt_regs();
  	struct sigframe __user *frame;
-@@ -631,7 +633,7 @@ asmlinkage unsigned long sys_sigreturn(void)
+@@ -632,7 +634,7 @@ badframe:
  }
  #endif /* CONFIG_X86_32 */
  
@@ -81,7 +81,7 @@ index 763af1d..178b2d6 100644
  {
  	struct pt_regs *regs = current_pt_regs();
  	struct rt_sigframe __user *frame;
-@@ -853,7 +855,7 @@ void signal_fault(struct pt_regs *regs, void __user *frame, char *where)
+@@ -854,7 +856,7 @@ void signal_fault(struct pt_regs *regs, void __user *frame, char *where)
  }
  
  #ifdef CONFIG_X86_X32_ABI

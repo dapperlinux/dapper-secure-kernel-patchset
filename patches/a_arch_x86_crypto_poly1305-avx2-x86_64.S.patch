@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/poly1305-avx2-x86_64.S b/arch/x86/crypto/poly1305-avx2-x86_64.S
-index eff2f41..932718e 100644
+index 3b6e70d..221bf8c 100644
 --- a/arch/x86/crypto/poly1305-avx2-x86_64.S
 +++ b/arch/x86/crypto/poly1305-avx2-x86_64.S
 @@ -10,6 +10,7 @@
@@ -10,7 +10,7 @@ index eff2f41..932718e 100644
  
  .section	.rodata.cst32.ANMASK, "aM", @progbits, 32
  .align 32
-@@ -382,5 +383,5 @@ ENTRY(poly1305_4block_avx2)
+@@ -384,5 +385,5 @@ ENTRY(poly1305_4block_avx2)
  	pop		%r13
  	pop		%r12
  	pop		%rbx

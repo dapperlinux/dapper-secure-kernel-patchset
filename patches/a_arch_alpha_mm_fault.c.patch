@@ -1,5 +1,5 @@
 diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 83e9eee..db02682 100644
+index c25e882..2a5e036 100644
 --- a/arch/alpha/mm/fault.c
 +++ b/arch/alpha/mm/fault.c
 @@ -52,6 +52,124 @@ __load_new_mm_context(struct mm_struct *next_mm)
@@ -127,7 +127,7 @@ index 83e9eee..db02682 100644
  
  /*
   * This routine handles page faults.  It determines the address,
-@@ -132,8 +250,29 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+@@ -132,8 +250,29 @@ retry:
   good_area:
  	si_code = SEGV_ACCERR;
  	if (cause < 0) {

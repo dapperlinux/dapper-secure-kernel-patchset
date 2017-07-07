@@ -1,5 +1,5 @@
 diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
-index 34e3f3c..3d2dada 100644
+index 4e80bf7..d269b3e 100644
 --- a/arch/arm/kernel/setup.c
 +++ b/arch/arm/kernel/setup.c
 @@ -112,6 +112,8 @@ EXPORT_SYMBOL(elf_hwcap);

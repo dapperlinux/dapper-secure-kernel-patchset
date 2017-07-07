@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hisax/hfc4s8s_l1.c b/drivers/isdn/hisax/hfc4s8s_l1.c
-index e034ed8..52056d1 100644
+index 90f051c..6142bf7 100644
 --- a/drivers/isdn/hisax/hfc4s8s_l1.c
 +++ b/drivers/isdn/hisax/hfc4s8s_l1.c
 @@ -299,8 +299,9 @@ Read_hfc16_stable(hfc4s8s_hw *hw, int reg)
@@ -24,14 +24,13 @@ index e034ed8..52056d1 100644
  	u_long flags;
  
  	if (!l1->enabled)
-@@ -1396,16 +1398,16 @@ setup_instance(hfc4s8s_hw *hw)
+@@ -1396,15 +1398,15 @@ setup_instance(hfc4s8s_hw *hw)
  		l1p = hw->l1 + i;
  		spin_lock_init(&l1p->lock);
  		l1p->hw = hw;
--		l1p->l1_timer.function = (void *) hfc_l1_timer;
-+		l1p->l1_timer.function = hfc_l1_timer;
- 		l1p->l1_timer.data = (long) (l1p);
- 		init_timer(&l1p->l1_timer);
+-		setup_timer(&l1p->l1_timer, (void *)hfc_l1_timer,
++		setup_timer(&l1p->l1_timer,hfc_l1_timer,
+ 			    (long)(l1p));
  		l1p->st_num = i;
  		skb_queue_head_init(&l1p->d_tx_queue);
  		l1p->d_if.ifc.priv = hw->l1 + i;
@@ -44,7 +43,7 @@ index e034ed8..52056d1 100644
  		l1p->b_ch[0].b_if.ifc.priv = (void *) &l1p->b_ch[0];
  		l1p->b_ch[0].l1p = hw->l1 + i;
  		l1p->b_ch[0].bchan = 1;
-@@ -1413,7 +1415,7 @@ setup_instance(hfc4s8s_hw *hw)
+@@ -1412,7 +1414,7 @@ setup_instance(hfc4s8s_hw *hw)
  		skb_queue_head_init(&l1p->b_ch[0].tx_queue);
  
  		spin_lock_init(&l1p->b_ch[1].lock);

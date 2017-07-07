@@ -1,5 +1,5 @@
 diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index 2472af2..e3bff2f 100644
+index 5075fd5..d819753 100644
 --- a/fs/binfmt_elf.c
 +++ b/fs/binfmt_elf.c
 @@ -40,6 +40,7 @@
@@ -10,7 +10,7 @@ index 2472af2..e3bff2f 100644
  #include <linux/uaccess.h>
  #include <asm/param.h>
  #include <asm/page.h>
-@@ -67,6 +68,14 @@ static int elf_core_dump(struct coredump_params *cprm);
+@@ -71,6 +72,14 @@ static int elf_core_dump(struct coredump_params *cprm);
  #define elf_core_dump	NULL
  #endif
  
@@ -25,7 +25,7 @@ index 2472af2..e3bff2f 100644
  #if ELF_EXEC_PAGESIZE > PAGE_SIZE
  #define ELF_MIN_ALIGN	ELF_EXEC_PAGESIZE
  #else
-@@ -86,6 +95,15 @@ static struct linux_binfmt elf_format = {
+@@ -90,6 +99,15 @@ static struct linux_binfmt elf_format = {
  	.load_binary	= load_elf_binary,
  	.load_shlib	= load_elf_library,
  	.core_dump	= elf_core_dump,
@@ -41,7 +41,7 @@ index 2472af2..e3bff2f 100644
  	.min_coredump	= ELF_EXEC_PAGESIZE,
  };
  
-@@ -97,6 +97,8 @@ static struct linux_binfmt elf_format = {
+@@ -97,6 +115,8 @@ static struct linux_binfmt elf_format = {
  
  static int set_brk(unsigned long start, unsigned long end, int prot)
  {
@@ -50,7 +50,7 @@ index 2472af2..e3bff2f 100644
  	start = ELF_PAGEALIGN(start);
  	end = ELF_PAGEALIGN(end);
  	if (end > start) {
-@@ -100,7 +120,7 @@ static int set_brk(unsigned long start, unsigned long end)
+@@ -110,7 +130,7 @@ static int set_brk(unsigned long start, unsigned long end, int prot)
  		if (error)
  			return error;
  	}
@@ -59,7 +59,7 @@ index 2472af2..e3bff2f 100644
  	return 0;
  }
  
-@@ -161,7 +181,7 @@ create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
+@@ -171,7 +191,7 @@ create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
  	elf_addr_t __user *u_rand_bytes;
  	const char *k_platform = ELF_PLATFORM;
  	const char *k_base_platform = ELF_BASE_PLATFORM;
@@ -68,7 +68,7 @@ index 2472af2..e3bff2f 100644
  	int items;
  	elf_addr_t *elf_info;
  	int ei_index = 0;
-@@ -208,8 +228,12 @@ create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
+@@ -218,8 +238,12 @@ create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
  	 * Generate 16 random bytes for userspace PRNG seeding.
  	 */
  	get_random_bytes(k_rand_bytes, sizeof(k_rand_bytes));
@@ -83,7 +83,7 @@ index 2472af2..e3bff2f 100644
  	if (__copy_to_user(u_rand_bytes, k_rand_bytes, sizeof(k_rand_bytes)))
  		return -EFAULT;
  
-@@ -527,15 +528,15 @@ static inline int arch_check_elf(struct elfhdr *ehdr, bool has_interp,
+@@ -527,15 +551,15 @@ static inline int arch_check_elf(struct elfhdr *ehdr, bool has_interp,
     an ELF header */
  
  static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
@@ -102,7 +102,7 @@ index 2472af2..e3bff2f 100644
  	unsigned long total_size;
  	int i;
  
-@@ -544,6 +568,11 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+@@ -555,6 +579,11 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
  		goto out;
  	}
  
@@ -114,7 +114,7 @@ index 2472af2..e3bff2f 100644
  	eppnt = interp_elf_phdata;
  	for (i = 0; i < interp_elf_ex->e_phnum; i++, eppnt++) {
  		if (eppnt->p_type == PT_LOAD) {
-@@ -567,8 +596,6 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+@@ -578,8 +607,6 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
  			map_addr = elf_map(interpreter, load_addr + vaddr,
  					eppnt, elf_prot, elf_type, total_size);
  			total_size = 0;
@@ -123,7 +123,7 @@ index 2472af2..e3bff2f 100644
  			error = map_addr;
  			if (BAD_ADDR(map_addr))
  				goto out;
-@@ -587,8 +614,8 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+@@ -598,8 +625,8 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
  			k = load_addr + eppnt->p_vaddr;
  			if (BAD_ADDR(k) ||
  			    eppnt->p_filesz > eppnt->p_memsz ||
@@ -134,7 +134,7 @@ index 2472af2..e3bff2f 100644
  				error = -ENOMEM;
  				goto out;
  			}
-@@ -639,6 +666,336 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+@@ -653,6 +680,336 @@ out:
  	return error;
  }
  
@@ -471,7 +471,7 @@ index 2472af2..e3bff2f 100644
  /*
   * These are the functions used to load ELF style executables and shared
   * libraries.  There is no binary dependent code anywhere else.
-@@ -652,6 +1009,11 @@ static unsigned long randomize_stack_top(unsigned long stack_top)
+@@ -666,6 +1023,11 @@ static unsigned long randomize_stack_top(unsigned long stack_top)
  {
  	unsigned long random_variable = 0;
  
@@ -483,7 +483,7 @@ index 2472af2..e3bff2f 100644
  	if ((current->flags & PF_RANDOMIZE) &&
  		!(current->personality & ADDR_NO_RANDOMIZE)) {
  		random_variable = get_random_long();
-@@ -685,7 +687,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -685,7 +1047,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
   	unsigned long load_addr = 0, load_bias = 0;
  	int load_addr_set = 0;
  	char * elf_interpreter = NULL;
@@ -492,7 +492,7 @@ index 2472af2..e3bff2f 100644
  	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
  	unsigned long elf_bss, elf_brk;
  	int bss_prot = 0;
-@@ -686,6 +1048,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -701,6 +1063,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
  		struct elfhdr interp_elf_ex;
  	} *loc;
  	struct arch_elf_state arch_state = INIT_ARCH_ELF_STATE;
@@ -500,7 +500,7 @@ index 2472af2..e3bff2f 100644
  
  	loc = kmalloc(sizeof(*loc), GFP_KERNEL);
  	if (!loc) {
-@@ -846,6 +1209,77 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -861,6 +1224,77 @@ static int load_elf_binary(struct linux_binprm *bprm)
  	/* Do this immediately, since STACK_TOP as used in setup_arg_pages
  	   may depend on the personality.  */
  	SET_PERSONALITY2(loc->elf_ex, &arch_state);
@@ -578,7 +578,7 @@ index 2472af2..e3bff2f 100644
  	if (elf_read_implies_exec(loc->elf_ex, executable_stack))
  		current->personality |= READ_IMPLIES_EXEC;
  
-@@ -922,8 +1356,21 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -938,8 +1372,21 @@ static int load_elf_binary(struct linux_binprm *bprm)
  			if (current->flags & PF_RANDOMIZE)
  				load_bias += arch_mmap_rnd();
  			load_bias = ELF_PAGESTART(load_bias);
@@ -602,7 +602,7 @@ index 2472af2..e3bff2f 100644
  			if (!total_size) {
  				retval = -EINVAL;
  				goto out_free_dentry;
-@@ -959,9 +1406,9 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -975,9 +1422,9 @@ static int load_elf_binary(struct linux_binprm *bprm)
  		 * allowed task size. Note that p_filesz must always be
  		 * <= p_memsz so it is only necessary to check p_memsz.
  		 */
@@ -615,7 +615,7 @@ index 2472af2..e3bff2f 100644
  			/* set_brk can never work. Avoid overflows. */
  			retval = -EINVAL;
  			goto out_free_dentry;
-@@ -997,16 +1444,43 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -1015,16 +1462,43 @@ static int load_elf_binary(struct linux_binprm *bprm)
  	if (retval)
  		goto out_free_dentry;
  	if (likely(elf_bss != elf_brk) && unlikely(padzero(elf_bss))) {
@@ -628,11 +628,13 @@ index 2472af2..e3bff2f 100644
 +		 */
  	}
  
+-	if (elf_interpreter) {
+-		unsigned long interp_map_addr = 0;
 +#ifdef CONFIG_PAX_RANDMMAP
 +	if (current->mm->pax_flags & MF_PAX_RANDMMAP) {
 +		unsigned long start, size, flags;
 +		vm_flags_t vm_flags;
-+
+ 
 +		start = ELF_PAGEALIGN(elf_brk);
 +		size = PAGE_SIZE + ((pax_get_random_long() & ((1UL << 22) - 1UL)) << 4);
 +		flags = MAP_FIXED | MAP_PRIVATE;
@@ -655,16 +657,14 @@ index 2472af2..e3bff2f 100644
 +	}
 +#endif
 +
- 	if (elf_interpreter) {
--		unsigned long interp_map_addr = 0;
--
++	if (elf_interpreter) {
  		elf_entry = load_elf_interp(&loc->interp_elf_ex,
  					    interpreter,
 -					    &interp_map_addr,
  					    load_bias, interp_elf_phdata);
  		if (!IS_ERR((void *)elf_entry)) {
  			/*
-@@ -1056,6 +1530,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -1074,6 +1548,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
  	current->mm->end_data = end_data;
  	current->mm->start_stack = bprm->p;
  
@@ -672,7 +672,7 @@ index 2472af2..e3bff2f 100644
  	if ((current->flags & PF_RANDOMIZE) && (randomize_va_space > 1)) {
  		current->mm->brk = current->mm->start_brk =
  			arch_randomize_brk(current->mm);
-@@ -1063,6 +1538,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -1081,6 +1556,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
  		current->brk_randomized = 1;
  #endif
  	}
@@ -680,7 +680,7 @@ index 2472af2..e3bff2f 100644
  
  	if (current->personality & MMAP_PAGE_ZERO) {
  		/* Why this, you ask???  Well SVr4 maps page 0 as read-only,
-@@ -1234,7 +1710,7 @@ static bool always_dump_vma(struct vm_area_struct *vma)
+@@ -1252,7 +1728,7 @@ static bool always_dump_vma(struct vm_area_struct *vma)
   * Decide what to dump of a segment, part, all or none.
   */
  static unsigned long vma_dump_size(struct vm_area_struct *vma,
@@ -689,7 +689,7 @@ index 2472af2..e3bff2f 100644
  {
  #define FILTER(type)	(mm_flags & (1UL << MMF_DUMP_##type))
  
-@@ -1281,7 +1757,7 @@ static unsigned long vma_dump_size(struct vm_area_struct *vma,
+@@ -1299,7 +1775,7 @@ static unsigned long vma_dump_size(struct vm_area_struct *vma,
  	if (vma->vm_file == NULL)
  		return 0;
  
@@ -698,7 +698,7 @@ index 2472af2..e3bff2f 100644
  		goto whole;
  
  	/*
-@@ -1381,7 +1857,7 @@ static void fill_elf_header(struct elfhdr *elf, int segs,
+@@ -1399,7 +1875,7 @@ static void fill_elf_header(struct elfhdr *elf, int segs,
  	return;
  }
  
@@ -707,7 +707,7 @@ index 2472af2..e3bff2f 100644
  {
  	phdr->p_type = PT_NOTE;
  	phdr->p_offset = offset;
-@@ -1488,9 +1964,9 @@ static void fill_auxv_note(struct memelfnote *note, struct mm_struct *mm)
+@@ -1507,9 +1983,9 @@ static void fill_auxv_note(struct memelfnote *note, struct mm_struct *mm)
  {
  	elf_addr_t *auxv = (elf_addr_t *) mm->saved_auxv;
  	int i = 0;
@@ -719,7 +719,7 @@ index 2472af2..e3bff2f 100644
  	fill_note(note, "CORE", NT_AUXV, i * sizeof(elf_addr_t), auxv);
  }
  
-@@ -1499,7 +1975,7 @@ static void fill_siginfo_note(struct memelfnote *note, user_siginfo_t *csigdata,
+@@ -1518,7 +1994,7 @@ static void fill_siginfo_note(struct memelfnote *note, user_siginfo_t *csigdata,
  {
  	mm_segment_t old_fs = get_fs();
  	set_fs(KERNEL_DS);
@@ -728,7 +728,7 @@ index 2472af2..e3bff2f 100644
  	set_fs(old_fs);
  	fill_note(note, "CORE", NT_SIGINFO, sizeof(*csigdata), csigdata);
  }
-@@ -2212,7 +2688,7 @@ static int elf_core_dump(struct coredump_params *cprm)
+@@ -2233,7 +2709,7 @@ static int elf_core_dump(struct coredump_params *cprm)
  			vma = next_vma(vma, gate_vma)) {
  		unsigned long dump_size;
  
@@ -737,7 +737,7 @@ index 2472af2..e3bff2f 100644
  		vma_filesz[i++] = dump_size;
  		vma_data_size += dump_size;
  	}
-@@ -2320,6 +2796,167 @@ static int elf_core_dump(struct coredump_params *cprm)
+@@ -2342,6 +2818,167 @@ out:
  
  #endif		/* CONFIG_ELF_CORE */
  

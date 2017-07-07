@@ -1,8 +1,8 @@
 diff --git a/net/decnet/af_decnet.c b/net/decnet/af_decnet.c
-index 13d6b1a..eaa0cee 100644
+index 405483a..9a7517c 100644
 --- a/net/decnet/af_decnet.c
 +++ b/net/decnet/af_decnet.c
-@@ -1524,7 +1524,12 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
+@@ -1526,7 +1526,12 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
  	struct linkinfo_dn link;
  	unsigned int r_len;
  	void *r_data = NULL;
@@ -16,7 +16,7 @@ index 13d6b1a..eaa0cee 100644
  
  	if(get_user(r_len , optlen))
  		return -EFAULT;
-@@ -1533,25 +1538,29 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
+@@ -1535,25 +1540,29 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
  	case DSO_CONDATA:
  		if (r_len > sizeof(struct optdata_dn))
  			r_len = sizeof(struct optdata_dn);
@@ -50,7 +50,7 @@ index 13d6b1a..eaa0cee 100644
  		break;
  
  	case DSO_LINKINFO:
-@@ -1601,7 +1610,8 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
+@@ -1603,7 +1612,8 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
  	case DSO_MAXWINDOW:
  		if (r_len > sizeof(unsigned long))
  			r_len = sizeof(unsigned long);
@@ -60,7 +60,7 @@ index 13d6b1a..eaa0cee 100644
  		break;
  
  	case DSO_NODELAY:
-@@ -1621,13 +1631,15 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
+@@ -1623,13 +1633,15 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
  	case DSO_SERVICES:
  		if (r_len > sizeof(unsigned char))
  			r_len = sizeof(unsigned char);

@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/sha256_ni_asm.S b/arch/x86/crypto/sha256_ni_asm.S
-index 748cdf2..cd2180d 100644
+index fb58f58..f3ae41f 100644
 --- a/arch/x86/crypto/sha256_ni_asm.S
 +++ b/arch/x86/crypto/sha256_ni_asm.S
 @@ -54,6 +54,7 @@
@@ -19,7 +19,7 @@ index 748cdf2..cd2180d 100644
  
  	shl		$6, NUM_BLKS		/*  convert to bytes */
  	jz		.Ldone_hash
-@@ -326,7 +326,7 @@ ENTRY(sha256_ni_transform)
+@@ -326,7 +327,7 @@ ENTRY(sha256_ni_transform)
  
  .Ldone_hash:
  

@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 4eece91..9eeb03b 100644
+index c8b3987..4dc3007 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -93,60 +93,6 @@ static const struct cpu_dev default_cpu = {
+@@ -98,60 +98,6 @@ static const struct cpu_dev default_cpu = {
  
  static const struct cpu_dev *this_cpu = &default_cpu;
  
@@ -63,7 +63,7 @@ index 4eece91..9eeb03b 100644
  static int __init x86_mpx_setup(char *s)
  {
  	/* require an exact match without trailing characters */
-@@ -281,6 +227,10 @@ static __always_inline void setup_smep(struct cpuinfo_x86 *c)
+@@ -286,6 +232,10 @@ static __always_inline void setup_smep(struct cpuinfo_x86 *c)
  {
  	if (cpu_has(c, X86_FEATURE_SMEP))
  		cr4_set_bits(X86_CR4_SMEP);
@@ -74,7 +74,7 @@ index 4eece91..9eeb03b 100644
  }
  
  static __init int setup_disable_smap(char *arg)
-@@ -306,6 +256,109 @@ static __always_inline void setup_smap(struct cpuinfo_x86 *c)
+@@ -311,6 +261,109 @@ static __always_inline void setup_smap(struct cpuinfo_x86 *c)
  	}
  }
  
@@ -184,16 +184,16 @@ index 4eece91..9eeb03b 100644
  /*
   * Protection Keys are not available in 32-bit mode.
   */
-@@ -451,7 +504,7 @@ void switch_to_new_gdt(int cpu)
+@@ -476,7 +529,7 @@ void load_direct_gdt(int cpu)
  {
  	struct desc_ptr gdt_descr;
  
--	gdt_descr.address = (long)get_cpu_gdt_table(cpu);
-+	gdt_descr.address = (unsigned long)get_cpu_gdt_table(cpu);
+-	gdt_descr.address = (long)get_cpu_gdt_rw(cpu);
++	gdt_descr.address = (unsigned long)get_cpu_gdt_rw(cpu);
  	gdt_descr.size = GDT_SIZE - 1;
  	load_gdt(&gdt_descr);
- 	/* Reload the per-cpu base */
-@@ -973,9 +1026,11 @@ static void x86_init_cache_qos(struct cpuinfo_x86 *c)
+ }
+@@ -1037,9 +1090,11 @@ static void x86_init_cache_qos(struct cpuinfo_x86 *c)
  	 * in case CQM bits really aren't there in this CPU.
  	 */
  	if (c != &boot_cpu_data) {
@@ -205,7 +205,7 @@ index 4eece91..9eeb03b 100644
  	}
  }
  
-@@ -1064,6 +1119,20 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1125,6 +1180,20 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  	setup_smep(c);
  	setup_smap(c);
  
@@ -226,7 +226,7 @@ index 4eece91..9eeb03b 100644
  	/*
  	 * The vendor-specific functions might have changed features.
  	 * Now we do "generic changes."
-@@ -1109,10 +1178,14 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1166,10 +1235,14 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  	 * executed, c == &boot_cpu_data.
  	 */
  	if (c != &boot_cpu_data) {
@@ -241,7 +241,7 @@ index 4eece91..9eeb03b 100644
  		/* OR, i.e. replicate the bug flags */
  		for (i = NCAPINTS; i < NCAPINTS + NBUGINTS; i++)
  			c->x86_capability[i] |= boot_cpu_data.x86_capability[i];
-@@ -1142,7 +1215,7 @@ void enable_sep_cpu(void)
+@@ -1199,7 +1272,7 @@ void enable_sep_cpu(void)
  		return;
  
  	cpu = get_cpu();
@@ -250,7 +250,7 @@ index 4eece91..9eeb03b 100644
  
  	/*
  	 * We cache MSR_IA32_SYSENTER_CS's value in the TSS's ss1 field --
-@@ -1308,6 +1381,8 @@ EXPORT_PER_CPU_SYMBOL(current_task);
+@@ -1311,6 +1384,8 @@ EXPORT_PER_CPU_SYMBOL(current_task);
  
  DEFINE_PER_CPU(char *, irq_stack_ptr) =
  	init_per_cpu_var(irq_stack_union.irq_stack) + IRQ_STACK_SIZE;
@@ -259,7 +259,7 @@ index 4eece91..9eeb03b 100644
  
  DEFINE_PER_CPU(unsigned int, irq_count) __visible = -1;
  
-@@ -1400,21 +1475,21 @@ EXPORT_PER_CPU_SYMBOL(current_task);
+@@ -1403,21 +1478,21 @@ EXPORT_PER_CPU_SYMBOL(current_task);
  DEFINE_PER_CPU(int, __preempt_count) = INIT_PREEMPT_COUNT;
  EXPORT_PER_CPU_SYMBOL(__preempt_count);
  
@@ -288,7 +288,7 @@ index 4eece91..9eeb03b 100644
  /*
   * Clear all 6 debug registers:
   */
-@@ -1450,7 +1450,7 @@ void cpu_init(void)
+@@ -1490,7 +1565,7 @@ void cpu_init(void)
  	if (cpu)
  		load_ucode_ap();
  
@@ -305,7 +305,7 @@ index 4eece91..9eeb03b 100644
  	x2apic_setup();
  
  	/*
-@@ -1574,7 +1648,7 @@ void cpu_init(void)
+@@ -1577,7 +1651,7 @@ void cpu_init(void)
  {
  	int cpu = smp_processor_id();
  	struct task_struct *curr = current;

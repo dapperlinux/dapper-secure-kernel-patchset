@@ -1,8 +1,8 @@
 diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index a5caece..a072a59 100644
+index 60f356d..8dd57f9 100644
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
-@@ -250,7 +250,35 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
+@@ -259,7 +259,35 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
  	return ret;
  }
  
@@ -39,7 +39,7 @@ index a5caece..a072a59 100644
  {
  	if (mode & PTRACE_MODE_NOAUDIT)
  		return has_ns_capability_noaudit(current, ns, CAP_SYS_PTRACE);
-@@ -265,6 +293,7 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
+@@ -274,6 +302,7 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
  	struct mm_struct *mm;
  	kuid_t caller_uid;
  	kgid_t caller_gid;
@@ -47,7 +47,7 @@ index a5caece..a072a59 100644
  
  	if (!(mode & PTRACE_MODE_FSCREDS) == !(mode & PTRACE_MODE_REALCREDS)) {
  		WARN(1, "denying ptrace access check without PTRACE_MODE_*CREDS\n");
-@@ -307,16 +336,27 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
+@@ -316,16 +345,27 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
  	    gid_eq(caller_gid, tcred->sgid) &&
  	    gid_eq(caller_gid, tcred->gid))
  		goto ok;
@@ -78,7 +78,7 @@ index a5caece..a072a59 100644
  	    return -EPERM;
  
  	return security_ptrace_access_check(task, mode);
-@@ -577,7 +617,7 @@ int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst
+@@ -586,7 +626,7 @@ int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst
  				break;
  			return -EIO;
  		}
@@ -87,7 +87,7 @@ index a5caece..a072a59 100644
  			return -EFAULT;
  		copied += retval;
  		src += retval;
-@@ -879,7 +919,7 @@ int ptrace_request(struct task_struct *child, long request,
+@@ -888,7 +928,7 @@ int ptrace_request(struct task_struct *child, long request,
  	bool seized = child->ptrace & PT_SEIZED;
  	int ret = -EIO;
  	siginfo_t siginfo, *si;
@@ -96,7 +96,7 @@ index a5caece..a072a59 100644
  	unsigned long __user *datalp = datavp;
  	unsigned long flags;
  
-@@ -1130,14 +1170,21 @@ SYSCALL_DEFINE4(ptrace, long, request, long, pid, unsigned long, addr,
+@@ -1139,14 +1179,21 @@ SYSCALL_DEFINE4(ptrace, long, request, long, pid, unsigned long, addr,
  		goto out;
  	}
  
@@ -119,7 +119,7 @@ index a5caece..a072a59 100644
  		goto out_put_task_struct;
  	}
  
-@@ -1165,7 +1212,7 @@ int generic_ptrace_peekdata(struct task_struct *tsk, unsigned long addr,
+@@ -1174,7 +1221,7 @@ int generic_ptrace_peekdata(struct task_struct *tsk, unsigned long addr,
  	copied = ptrace_access_vm(tsk, addr, &tmp, sizeof(tmp), FOLL_FORCE);
  	if (copied != sizeof(tmp))
  		return -EIO;
@@ -128,7 +128,7 @@ index a5caece..a072a59 100644
  }
  
  int generic_ptrace_pokedata(struct task_struct *tsk, unsigned long addr,
-@@ -1261,7 +1308,7 @@ int compat_ptrace_request(struct task_struct *child, compat_long_t request,
+@@ -1270,7 +1317,7 @@ int compat_ptrace_request(struct task_struct *child, compat_long_t request,
  }
  
  COMPAT_SYSCALL_DEFINE4(ptrace, compat_long_t, request, compat_long_t, pid,
@@ -137,7 +137,7 @@ index a5caece..a072a59 100644
  {
  	struct task_struct *child;
  	long ret;
-@@ -1277,14 +1324,21 @@ COMPAT_SYSCALL_DEFINE4(ptrace, compat_long_t, request, compat_long_t, pid,
+@@ -1286,14 +1333,21 @@ COMPAT_SYSCALL_DEFINE4(ptrace, compat_long_t, request, compat_long_t, pid,
  		goto out;
  	}
  

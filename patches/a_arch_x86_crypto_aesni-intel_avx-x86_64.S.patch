@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
-index 522ab68..782ae42 100644
+index d664382..26f9d67 100644
 --- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
 +++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
 @@ -121,6 +121,7 @@
@@ -10,7 +10,7 @@ index 522ab68..782ae42 100644
  
  # constants in mergeable sections, linker can reorder and merge
  .section	.rodata.cst16.POLY, "aM", @progbits, 16
-@@ -1486,7 +1487,7 @@ ENTRY(aesni_gcm_precomp_avx_gen2)
+@@ -1502,7 +1503,7 @@ ENTRY(aesni_gcm_precomp_avx_gen2)
          pop     %r14
          pop     %r13
          pop     %r12
@@ -19,7 +19,7 @@ index 522ab68..782ae42 100644
  ENDPROC(aesni_gcm_precomp_avx_gen2)
  
  ###############################################################################
-@@ -1507,7 +1508,7 @@ ENDPROC(aesni_gcm_precomp_avx_gen2)
+@@ -1523,7 +1524,7 @@ ENDPROC(aesni_gcm_precomp_avx_gen2)
  ###############################################################################
  ENTRY(aesni_gcm_enc_avx_gen2)
          GCM_ENC_DEC_AVX     ENC
@@ -28,7 +28,7 @@ index 522ab68..782ae42 100644
  ENDPROC(aesni_gcm_enc_avx_gen2)
  
  ###############################################################################
-@@ -1528,7 +1529,7 @@ ENDPROC(aesni_gcm_enc_avx_gen2)
+@@ -1544,7 +1545,7 @@ ENDPROC(aesni_gcm_enc_avx_gen2)
  ###############################################################################
  ENTRY(aesni_gcm_dec_avx_gen2)
          GCM_ENC_DEC_AVX     DEC
@@ -37,7 +37,7 @@ index 522ab68..782ae42 100644
  ENDPROC(aesni_gcm_dec_avx_gen2)
  #endif /* CONFIG_AS_AVX */
  
-@@ -2762,7 +2763,7 @@ ENTRY(aesni_gcm_precomp_avx_gen4)
+@@ -2778,7 +2779,7 @@ ENTRY(aesni_gcm_precomp_avx_gen4)
          pop     %r14
          pop     %r13
          pop     %r12
@@ -46,7 +46,7 @@ index 522ab68..782ae42 100644
  ENDPROC(aesni_gcm_precomp_avx_gen4)
  
  
-@@ -2784,7 +2785,7 @@ ENDPROC(aesni_gcm_precomp_avx_gen4)
+@@ -2800,7 +2801,7 @@ ENDPROC(aesni_gcm_precomp_avx_gen4)
  ###############################################################################
  ENTRY(aesni_gcm_enc_avx_gen4)
          GCM_ENC_DEC_AVX2     ENC
@@ -55,7 +55,7 @@ index 522ab68..782ae42 100644
  ENDPROC(aesni_gcm_enc_avx_gen4)
  
  ###############################################################################
-@@ -2805,7 +2806,7 @@ ENDPROC(aesni_gcm_enc_avx_gen4)
+@@ -2821,7 +2822,7 @@ ENDPROC(aesni_gcm_enc_avx_gen4)
  ###############################################################################
  ENTRY(aesni_gcm_dec_avx_gen4)
          GCM_ENC_DEC_AVX2     DEC

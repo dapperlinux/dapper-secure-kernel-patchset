@@ -1,8 +1,8 @@
 diff --git a/fs/posix_acl.c b/fs/posix_acl.c
-index c9d48dc..6caa844 100644
+index eebf5f6..6f16f7b 100644
 --- a/fs/posix_acl.c
 +++ b/fs/posix_acl.c
-@@ -20,6 +20,7 @@
+@@ -21,6 +21,7 @@
  #include <linux/xattr.h>
  #include <linux/export.h>
  #include <linux/user_namespace.h>
@@ -10,7 +10,7 @@ index c9d48dc..6caa844 100644
  
  static struct posix_acl **acl_by_type(struct inode *inode, int type)
  {
-@@ -311,7 +312,7 @@ posix_acl_equiv_mode(const struct posix_acl *acl, umode_t *mode_p)
+@@ -312,7 +313,7 @@ posix_acl_equiv_mode(const struct posix_acl *acl, umode_t *mode_p)
  		}
  	}
          if (mode_p)
@@ -19,7 +19,7 @@ index c9d48dc..6caa844 100644
          return not_equiv;
  }
  EXPORT_SYMBOL(posix_acl_equiv_mode);
-@@ -461,7 +462,7 @@ static int posix_acl_create_masq(struct posix_acl *acl, umode_t *mode_p)
+@@ -462,7 +463,7 @@ static int posix_acl_create_masq(struct posix_acl *acl, umode_t *mode_p)
  		mode &= (group_obj->e_perm << 3) | ~S_IRWXG;
  	}
  
@@ -28,7 +28,7 @@ index c9d48dc..6caa844 100644
          return not_equiv;
  }
  
-@@ -519,6 +520,8 @@ __posix_acl_create(struct posix_acl **acl, gfp_t gfp, umode_t *mode_p)
+@@ -520,6 +521,8 @@ __posix_acl_create(struct posix_acl **acl, gfp_t gfp, umode_t *mode_p)
  	struct posix_acl *clone = posix_acl_clone(*acl, gfp);
  	int err = -ENOMEM;
  	if (clone) {
@@ -37,7 +37,7 @@ index c9d48dc..6caa844 100644
  		err = posix_acl_create_masq(clone, mode_p);
  		if (err < 0) {
  			posix_acl_release(clone);
-@@ -728,6 +731,7 @@ posix_acl_from_xattr(struct user_namespace *user_ns,
+@@ -729,6 +732,7 @@ posix_acl_from_xattr(struct user_namespace *user_ns,
  	int count;
  	struct posix_acl *acl;
  	struct posix_acl_entry *acl_e;
@@ -45,7 +45,7 @@ index c9d48dc..6caa844 100644
  
  	if (!value)
  		return NULL;
-@@ -753,12 +757,18 @@ posix_acl_from_xattr(struct user_namespace *user_ns,
+@@ -754,12 +758,18 @@ posix_acl_from_xattr(struct user_namespace *user_ns,
  
  		switch(acl_e->e_tag) {
  			case ACL_USER_OBJ:
@@ -64,7 +64,7 @@ index c9d48dc..6caa844 100644
  				acl_e->e_uid =
  					make_kuid(user_ns,
  						  le32_to_cpu(entry->e_id));
-@@ -766,6 +776,7 @@ posix_acl_from_xattr(struct user_namespace *user_ns,
+@@ -767,6 +777,7 @@ posix_acl_from_xattr(struct user_namespace *user_ns,
  					goto fail;
  				break;
  			case ACL_GROUP:

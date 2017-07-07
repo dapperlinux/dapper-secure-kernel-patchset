@@ -1,9 +1,9 @@
 diff --git a/arch/x86/xen/Kconfig b/arch/x86/xen/Kconfig
-index c7b15f3..cc09a65 100644
+index 0279876..b4ec30a 100644
 --- a/arch/x86/xen/Kconfig
 +++ b/arch/x86/xen/Kconfig
-@@ -10,6 +10,7 @@ config XEN
- 	select XEN_HAVE_VPMU
+@@ -8,6 +8,7 @@ config XEN
+ 	select PARAVIRT_CLOCK
  	depends on X86_64 || (X86_32 && X86_PAE)
  	depends on X86_LOCAL_APIC && X86_TSC
 +	depends on !GRKERNSEC_CONFIG_AUTO || GRKERNSEC_CONFIG_VIRT_XEN

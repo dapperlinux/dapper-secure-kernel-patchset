@@ -1,5 +1,5 @@
 diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 31e1d63..2f85b26 100644
+index 314a0b9..9c46c35 100644
 --- a/include/asm-generic/vmlinux.lds.h
 +++ b/include/asm-generic/vmlinux.lds.h
 @@ -275,6 +275,7 @@
@@ -10,7 +10,7 @@ index 31e1d63..2f85b26 100644
  		KEEP(*(__vermagic))	/* Kernel version magic */	\
  		. = ALIGN(8);						\
  		VMLINUX_SYMBOL(__start___tracepoints_ptrs) = .;		\
-@@ -447,9 +448,20 @@
+@@ -446,9 +447,20 @@
  		ALIGN_FUNCTION();					\
  		*(.text.hot .text .text.fixup .text.unlikely)		\
  		*(.ref.text)						\
@@ -31,7 +31,7 @@ index 31e1d63..2f85b26 100644
  
  /* sched.text is aling to function alignment to secure we have same
   * address even at second ld pass when generating System.map */
-@@ -551,7 +563,9 @@
+@@ -550,7 +562,9 @@
  	MEM_DISCARD(init.data)						\
  	KERNEL_CTORS()							\
  	MCOUNT_REC()							\
@@ -88,7 +88,7 @@ index 31e1d63..2f85b26 100644
  
  /**
   * PERCPU_SECTION - define output section for percpu area, simple version
-@@ -866,12 +886,14 @@
+@@ -867,12 +887,14 @@
  
  #define INIT_DATA_SECTION(initsetup_align)				\
  	.init.data : AT(ADDR(.init.data) - LOAD_OFFSET) {		\

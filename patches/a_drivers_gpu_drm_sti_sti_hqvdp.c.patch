@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/sti/sti_hqvdp.c b/drivers/gpu/drm/sti/sti_hqvdp.c
-index f88130f..a2be8a4 100644
+index 66f8431..767bfcf 100644
 --- a/drivers/gpu/drm/sti/sti_hqvdp.c
 +++ b/drivers/gpu/drm/sti/sti_hqvdp.c
-@@ -628,7 +628,7 @@ static int hqvdp_dbg_show(struct seq_file *s, void *data)
+@@ -630,7 +630,7 @@ static int hqvdp_dbg_show(struct seq_file *s, void *data)
  	return 0;
  }
  
@@ -11,7 +11,7 @@ index f88130f..a2be8a4 100644
  	{ "hqvdp", hqvdp_dbg_show, 0, NULL },
  };
  
-@@ -636,8 +636,10 @@ static int hqvdp_debugfs_init(struct sti_hqvdp *hqvdp, struct drm_minor *minor)
+@@ -638,8 +638,10 @@ static int hqvdp_debugfs_init(struct sti_hqvdp *hqvdp, struct drm_minor *minor)
  {
  	unsigned int i;
  

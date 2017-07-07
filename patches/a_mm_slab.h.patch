@@ -1,5 +1,5 @@
 diff --git a/mm/slab.h b/mm/slab.h
-index ceb7d70..99ab7d7 100644
+index 9cfcf09..40015bd 100644
 --- a/mm/slab.h
 +++ b/mm/slab.h
 @@ -21,8 +21,10 @@ struct kmem_cache {
@@ -14,7 +14,7 @@ index ceb7d70..99ab7d7 100644
  	void (*ctor)(void *);	/* Called on object slot creation */
  	struct list_head list;	/* List of all slab caches on the system */
  };
-@@ -71,6 +71,35 @@ extern struct list_head slab_caches;
+@@ -71,6 +73,35 @@ extern struct list_head slab_caches;
  /* The slab cache that manages slab cache information */
  extern struct kmem_cache *kmem_cache;
  
@@ -50,7 +50,7 @@ index ceb7d70..99ab7d7 100644
  /* A table of kmalloc cache names and sizes */
  extern const struct kmalloc_info_struct {
  	const char *name;
-@@ -89,8 +120,11 @@ extern int __kmem_cache_create(struct kmem_cache *, unsigned long flags);
+@@ -95,8 +126,11 @@ extern int __kmem_cache_create(struct kmem_cache *, unsigned long flags);
  
  extern struct kmem_cache *create_kmalloc_cache(const char *name, size_t size,
  			unsigned long flags);
@@ -63,16 +63,16 @@ index ceb7d70..99ab7d7 100644
  
  int slab_unmergeable(struct kmem_cache *s);
  struct kmem_cache *find_mergeable(size_t size, size_t align,
-@@ -120,7 +154,7 @@ static inline unsigned long kmem_cache_flags(unsigned long object_size,
+@@ -126,7 +160,7 @@ static inline unsigned long kmem_cache_flags(unsigned long object_size,
  
  /* Legal flag mask for kmem_cache_create(), for various configurations */
  #define SLAB_CORE_FLAGS (SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA | SLAB_PANIC | \
--			 SLAB_DESTROY_BY_RCU | SLAB_DEBUG_OBJECTS )
-+			 SLAB_DESTROY_BY_RCU | SLAB_DEBUG_OBJECTS | SLAB_NO_SANITIZE)
+-			 SLAB_TYPESAFE_BY_RCU | SLAB_DEBUG_OBJECTS )
++			 SLAB_TYPESAFE_BY_RCU | SLAB_DEBUG_OBJECTS | SLAB_NO_SANITIZE)
  
  #if defined(CONFIG_DEBUG_SLAB)
  #define SLAB_DEBUG_FLAGS (SLAB_RED_ZONE | SLAB_POISON | SLAB_STORE_USER)
-@@ -345,6 +379,9 @@ static inline struct kmem_cache *cache_from_obj(struct kmem_cache *s, void *x)
+@@ -384,6 +418,9 @@ static inline struct kmem_cache *cache_from_obj(struct kmem_cache *s, void *x)
  		return s;
  
  	page = virt_to_head_page(x);

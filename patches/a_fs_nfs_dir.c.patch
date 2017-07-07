@@ -1,8 +1,8 @@
 diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index 53e02b8..f87205c 100644
+index 2ac00bf..92157ed 100644
 --- a/fs/nfs/dir.c
 +++ b/fs/nfs/dir.c
-@@ -713,8 +713,9 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page,
+@@ -671,8 +671,9 @@ out:
   * We only need to convert from xdr once so future lookups are much simpler
   */
  static
@@ -13,12 +13,12 @@ index 53e02b8..f87205c 100644
  	struct inode	*inode = file_inode(desc->file);
  	int ret;
  
-@@ -749,7 +750,7 @@ struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
- 
- 	for (;;) {
- 		page = read_cache_page(desc->file->f_mapping,
+@@ -705,7 +706,7 @@ static
+ struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
+ {
+ 	return read_cache_page(desc->file->f_mapping,
 -			desc->page_index, (filler_t *)nfs_readdir_filler, desc);
 +			desc->page_index, nfs_readdir_filler, desc);
- 		if (IS_ERR(page) || grab_page(page))
- 			break;
- 		put_page(page);
+ }
+ 
+ /*

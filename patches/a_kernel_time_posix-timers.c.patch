@@ -1,8 +1,8 @@
 diff --git a/kernel/time/posix-timers.c b/kernel/time/posix-timers.c
-index f2826c3..7e6663a 100644
+index 4d7b2ce..351cf9a 100644
 --- a/kernel/time/posix-timers.c
 +++ b/kernel/time/posix-timers.c
-@@ -43,6 +43,7 @@
+@@ -44,6 +44,7 @@
  #include <linux/hash.h>
  #include <linux/posix-clock.h>
  #include <linux/posix-timers.h>
@@ -10,7 +10,7 @@ index f2826c3..7e6663a 100644
  #include <linux/syscalls.h>
  #include <linux/wait.h>
  #include <linux/workqueue.h>
-@@ -124,7 +125,7 @@ static DEFINE_SPINLOCK(hash_lock);
+@@ -125,7 +126,7 @@ static DEFINE_SPINLOCK(hash_lock);
   *	    which we beg off on and pass to do_sys_settimeofday().
   */
  
@@ -19,58 +19,58 @@ index f2826c3..7e6663a 100644
  
  /*
   * These ones are defined below.
-@@ -203,7 +204,7 @@ static inline void unlock_timer(struct k_itimer *timr, unsigned long flags)
+@@ -204,7 +205,7 @@ static inline void unlock_timer(struct k_itimer *timr, unsigned long flags)
  }
  
  /* Get clock_realtime */
--static int posix_clock_realtime_get(clockid_t which_clock, struct timespec *tp)
-+static int posix_clock_realtime_get(const clockid_t which_clock, struct timespec *tp)
+-static int posix_clock_realtime_get(clockid_t which_clock, struct timespec64 *tp)
++static int posix_clock_realtime_get(const clockid_t which_clock, struct timespec64 *tp)
  {
- 	ktime_get_real_ts(tp);
+ 	ktime_get_real_ts64(tp);
  	return 0;
-@@ -225,7 +226,7 @@ static int posix_clock_realtime_adj(const clockid_t which_clock,
+@@ -226,7 +227,7 @@ static int posix_clock_realtime_adj(const clockid_t which_clock,
  /*
   * Get monotonic time for posix timers
   */
--static int posix_ktime_get_ts(clockid_t which_clock, struct timespec *tp)
-+static int posix_ktime_get_ts(const clockid_t which_clock, struct timespec *tp)
+-static int posix_ktime_get_ts(clockid_t which_clock, struct timespec64 *tp)
++static int posix_ktime_get_ts(const clockid_t which_clock, struct timespec64 *tp)
  {
- 	ktime_get_ts(tp);
+ 	ktime_get_ts64(tp);
  	return 0;
-@@ -234,20 +235,20 @@ static int posix_ktime_get_ts(clockid_t which_clock, struct timespec *tp)
+@@ -235,20 +236,20 @@ static int posix_ktime_get_ts(clockid_t which_clock, struct timespec64 *tp)
  /*
   * Get monotonic-raw time for posix timers
   */
--static int posix_get_monotonic_raw(clockid_t which_clock, struct timespec *tp)
-+static int posix_get_monotonic_raw(const clockid_t which_clock, struct timespec *tp)
+-static int posix_get_monotonic_raw(clockid_t which_clock, struct timespec64 *tp)
++static int posix_get_monotonic_raw(const clockid_t which_clock, struct timespec64 *tp)
  {
- 	getrawmonotonic(tp);
+ 	getrawmonotonic64(tp);
  	return 0;
  }
  
  
--static int posix_get_realtime_coarse(clockid_t which_clock, struct timespec *tp)
-+static int posix_get_realtime_coarse(const clockid_t which_clock, struct timespec *tp)
+-static int posix_get_realtime_coarse(clockid_t which_clock, struct timespec64 *tp)
++static int posix_get_realtime_coarse(const clockid_t which_clock, struct timespec64 *tp)
  {
- 	*tp = current_kernel_time();
+ 	*tp = current_kernel_time64();
  	return 0;
  }
  
 -static int posix_get_monotonic_coarse(clockid_t which_clock,
 +static int posix_get_monotonic_coarse(const clockid_t which_clock,
- 						struct timespec *tp)
+ 						struct timespec64 *tp)
  {
- 	*tp = get_monotonic_coarse();
-@@ -266,7 +267,7 @@ static int posix_get_boottime(const clockid_t which_clock, struct timespec *tp)
+ 	*tp = get_monotonic_coarse64();
+@@ -267,7 +268,7 @@ static int posix_get_boottime(const clockid_t which_clock, struct timespec64 *tp
  	return 0;
  }
  
--static int posix_get_tai(clockid_t which_clock, struct timespec *tp)
-+static int posix_get_tai(const clockid_t which_clock, struct timespec *tp)
+-static int posix_get_tai(clockid_t which_clock, struct timespec64 *tp)
++static int posix_get_tai(const clockid_t which_clock, struct timespec64 *tp)
  {
- 	timekeeping_clocktai(tp);
+ 	timekeeping_clocktai64(tp);
  	return 0;
-@@ -284,7 +285,7 @@ static int posix_get_hrtimer_res(clockid_t which_clock, struct timespec *tp)
+@@ -285,7 +286,7 @@ static int posix_get_hrtimer_res(clockid_t which_clock, struct timespec64 *tp)
   */
  static __init int init_posix_timers(void)
  {
@@ -79,7 +79,7 @@ index f2826c3..7e6663a 100644
  		.clock_getres	= posix_get_hrtimer_res,
  		.clock_get	= posix_clock_realtime_get,
  		.clock_set	= posix_clock_realtime_set,
-@@ -296,7 +297,7 @@ static __init int init_posix_timers(void)
+@@ -297,7 +298,7 @@ static __init int init_posix_timers(void)
  		.timer_get	= common_timer_get,
  		.timer_del	= common_timer_del,
  	};
@@ -88,7 +88,7 @@ index f2826c3..7e6663a 100644
  		.clock_getres	= posix_get_hrtimer_res,
  		.clock_get	= posix_ktime_get_ts,
  		.nsleep		= common_nsleep,
-@@ -306,19 +307,19 @@ static __init int init_posix_timers(void)
+@@ -307,19 +308,19 @@ static __init int init_posix_timers(void)
  		.timer_get	= common_timer_get,
  		.timer_del	= common_timer_del,
  	};
@@ -112,7 +112,7 @@ index f2826c3..7e6663a 100644
  		.clock_getres	= posix_get_hrtimer_res,
  		.clock_get	= posix_get_tai,
  		.nsleep		= common_nsleep,
-@@ -328,7 +329,7 @@ static __init int init_posix_timers(void)
+@@ -329,7 +330,7 @@ static __init int init_posix_timers(void)
  		.timer_get	= common_timer_get,
  		.timer_del	= common_timer_del,
  	};
@@ -121,7 +121,7 @@ index f2826c3..7e6663a 100644
  		.clock_getres	= posix_get_hrtimer_res,
  		.clock_get	= posix_get_boottime,
  		.nsleep		= common_nsleep,
-@@ -540,7 +541,7 @@ void posix_timers_register_clock(const clockid_t clock_id,
+@@ -541,7 +542,7 @@ void posix_timers_register_clock(const clockid_t clock_id,
  		return;
  	}
  
@@ -130,7 +130,7 @@ index f2826c3..7e6663a 100644
  }
  EXPORT_SYMBOL_GPL(posix_timers_register_clock);
  
-@@ -586,9 +587,9 @@ static struct k_clock *clockid_to_kclock(const clockid_t id)
+@@ -587,9 +588,9 @@ static struct k_clock *clockid_to_kclock(const clockid_t id)
  		return (id & CLOCKFD_MASK) == CLOCKFD ?
  			&clock_posix_dynamic : &clock_posix_cpu;
  
@@ -142,7 +142,7 @@ index f2826c3..7e6663a 100644
  }
  
  static int common_timer_create(struct k_itimer *new_timer)
-@@ -606,7 +607,7 @@ SYSCALL_DEFINE3(timer_create, const clockid_t, which_clock,
+@@ -607,7 +608,7 @@ SYSCALL_DEFINE3(timer_create, const clockid_t, which_clock,
  	struct k_clock *kc = clockid_to_kclock(which_clock);
  	struct k_itimer *new_timer;
  	int error, new_timer_id;
@@ -151,9 +151,9 @@ index f2826c3..7e6663a 100644
  	int it_id_set = IT_ID_NOT_SET;
  
  	if (!kc)
-@@ -1021,6 +1022,13 @@ SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
- 	if (copy_from_user(&new_tp, tp, sizeof (*tp)))
+@@ -1029,6 +1030,13 @@ SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
  		return -EFAULT;
+ 	new_tp64 = timespec_to_timespec64(new_tp);
  
 +	/* only the CLOCK_REALTIME clock can be set, all other clocks
 +	   have their clock_set fptr set to a nosettime dummy function
@@ -162,6 +162,6 @@ index f2826c3..7e6663a 100644
 +	   we hook
 +	*/
 +
- 	return kc->clock_set(which_clock, &new_tp);
+ 	return kc->clock_set(which_clock, &new_tp64);
  }
  

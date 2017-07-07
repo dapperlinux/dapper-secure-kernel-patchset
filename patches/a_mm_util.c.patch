@@ -1,8 +1,8 @@
 diff --git a/mm/util.c b/mm/util.c
-index 1a41553..344fbfb 100644
+index 26be640..67cc8ea 100644
 --- a/mm/util.c
 +++ b/mm/util.c
-@@ -134,7 +134,7 @@ void *memdup_user(const void __user *src, size_t len)
+@@ -137,7 +137,7 @@ void *memdup_user(const void __user *src, size_t len)
  	 * cause pagefault, which makes it pointless to use GFP_NOFS
  	 * or GFP_ATOMIC.
  	 */
@@ -11,7 +11,7 @@ index 1a41553..344fbfb 100644
  	if (!p)
  		return ERR_PTR(-ENOMEM);
  
-@@ -241,6 +241,12 @@ int vma_is_stack_for_current(struct vm_area_struct *vma)
+@@ -244,6 +244,12 @@ int vma_is_stack_for_current(struct vm_area_struct *vma)
  void arch_pick_mmap_layout(struct mm_struct *mm)
  {
  	mm->mmap_base = TASK_UNMAPPED_BASE;
@@ -24,7 +24,7 @@ index 1a41553..344fbfb 100644
  	mm->get_unmapped_area = arch_get_unmapped_area;
  }
  #endif
-@@ -435,6 +441,7 @@ unsigned long sysctl_overcommit_kbytes __read_mostly;
+@@ -501,6 +507,7 @@ unsigned long sysctl_overcommit_kbytes __read_mostly;
  int sysctl_max_map_count __read_mostly = DEFAULT_MAX_MAP_COUNT;
  unsigned long sysctl_user_reserve_kbytes __read_mostly = 1UL << 17; /* 128MB */
  unsigned long sysctl_admin_reserve_kbytes __read_mostly = 1UL << 13; /* 8MB */
@@ -32,7 +32,7 @@ index 1a41553..344fbfb 100644
  
  int overcommit_ratio_handler(struct ctl_table *table, int write,
  			     void __user *buffer, size_t *lenp,
-@@ -614,6 +621,9 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen)
+@@ -680,6 +687,9 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen)
  	if (!mm->arg_end)
  		goto out_mm;	/* Shh! No looking before we're done */
  

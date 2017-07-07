@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/sti/sti_dvo.c b/drivers/gpu/drm/sti/sti_dvo.c
-index e8c1ed0..b034392 100644
+index bb23318..8207758 100644
 --- a/drivers/gpu/drm/sti/sti_dvo.c
 +++ b/drivers/gpu/drm/sti/sti_dvo.c
 @@ -191,7 +191,7 @@ static int dvo_dbg_show(struct seq_file *s, void *data)
@@ -11,7 +11,7 @@ index e8c1ed0..b034392 100644
  	{ "dvo", dvo_dbg_show, 0, NULL },
  };
  
-@@ -206,8 +206,10 @@ static int dvo_debugfs_init(struct sti_dvo *dvo, struct drm_minor *minor)
+@@ -199,8 +199,10 @@ static int dvo_debugfs_init(struct sti_dvo *dvo, struct drm_minor *minor)
  {
  	unsigned int i;
  

@@ -1,5 +1,5 @@
 diff --git a/arch/x86/lib/copy_user_64.S b/arch/x86/lib/copy_user_64.S
-index d376e4b..8e52373 100644
+index c595957..abe2e3e 100644
 --- a/arch/x86/lib/copy_user_64.S
 +++ b/arch/x86/lib/copy_user_64.S
 @@ -15,6 +15,35 @@
@@ -38,7 +38,7 @@ index d376e4b..8e52373 100644
  
  /*
   * copy_user_generic_unrolled - memory copy with exception handling.
-@@ -77,7 +58,8 @@ ENDPROC(bad_from_user)
+@@ -30,7 +59,8 @@
   * eax uncopied bytes or 0 if successful.
   */
  ENTRY(copy_user_generic_unrolled)
@@ -48,7 +48,7 @@ index d376e4b..8e52373 100644
  	cmpl $8,%edx
  	jb 20f		/* less then 8 bytes, go to byte copy loop */
  	ALIGN_DESTINATION
-@@ -125,8 +107,9 @@ ENTRY(copy_user_generic_unrolled)
+@@ -78,8 +108,9 @@ ENTRY(copy_user_generic_unrolled)
  	decl %ecx
  	jnz 21b
  23:	xor %eax,%eax
@@ -60,7 +60,7 @@ index d376e4b..8e52373 100644
  
  	.section .fixup,"ax"
  30:	shll $6,%ecx
-@@ -135,7 +118,8 @@ ENTRY(copy_user_generic_unrolled)
+@@ -88,7 +119,8 @@ ENTRY(copy_user_generic_unrolled)
  40:	leal (%rdx,%rcx,8),%edx
  	jmp 60f
  50:	movl %ecx,%edx
@@ -70,7 +70,7 @@ index d376e4b..8e52373 100644
  	.previous
  
  	_ASM_EXTABLE(1b,30b)
-@@ -180,7 +164,8 @@ EXPORT_SYMBOL(copy_user_generic_unrolled)
+@@ -133,7 +165,8 @@ EXPORT_SYMBOL(copy_user_generic_unrolled)
   * eax uncopied bytes or 0 if successful.
   */
  ENTRY(copy_user_generic_string)
@@ -80,7 +80,7 @@ index d376e4b..8e52373 100644
  	cmpl $8,%edx
  	jb 2f		/* less than 8 bytes, go to byte copy loop */
  	ALIGN_DESTINATION
-@@ -193,12 +178,14 @@ ENTRY(copy_user_generic_string)
+@@ -146,12 +179,14 @@ ENTRY(copy_user_generic_string)
  3:	rep
  	movsb
  	xorl %eax,%eax
@@ -97,7 +97,7 @@ index d376e4b..8e52373 100644
  	jmp copy_user_handle_tail
  	.previous
  
-@@ -220,16 +207,19 @@ EXPORT_SYMBOL(copy_user_generic_string)
+@@ -173,16 +208,19 @@ EXPORT_SYMBOL(copy_user_generic_string)
   * eax uncopied bytes or 0 if successful.
   */
  ENTRY(copy_user_enhanced_fast_string)
@@ -120,7 +120,7 @@ index d376e4b..8e52373 100644
  	jmp copy_user_handle_tail
  	.previous
  
-@@ -247,7 +237,17 @@ EXPORT_SYMBOL(copy_user_enhanced_fast_string)
+@@ -200,7 +238,17 @@ EXPORT_SYMBOL(copy_user_enhanced_fast_string)
   *  - Require 4-byte alignment when size is 4 bytes.
   */
  ENTRY(__copy_user_nocache)
@@ -139,7 +139,7 @@ index d376e4b..8e52373 100644
  
  	/* If size is less than 8 bytes, go to 4-byte copy */
  	cmpl $8,%edx
-@@ -341,9 +341,10 @@ ENTRY(__copy_user_nocache)
+@@ -294,9 +342,10 @@ ENTRY(__copy_user_nocache)
  	/* Finished copying; fence the prior stores */
  .L_finish_copy:
  	xorl %eax,%eax
@@ -152,7 +152,7 @@ index d376e4b..8e52373 100644
  
  	.section .fixup,"ax"
  .L_fixup_4x8b_copy:
-@@ -360,6 +361,7 @@ ENTRY(__copy_user_nocache)
+@@ -313,6 +362,7 @@ ENTRY(__copy_user_nocache)
  	movl %ecx,%edx
  .L_fixup_handle_tail:
  	sfence

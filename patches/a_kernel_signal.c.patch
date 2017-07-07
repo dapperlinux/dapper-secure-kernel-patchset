@@ -1,8 +1,8 @@
 diff --git a/kernel/signal.c b/kernel/signal.c
-index 0b14157..3a99520 100644
+index 45b4c1f..c2e3df2 100644
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -53,12 +53,12 @@ static struct kmem_cache *sigqueue_cachep;
+@@ -58,12 +58,12 @@ static struct kmem_cache *sigqueue_cachep;
  
  int print_fatal_signals __read_mostly;
  
@@ -17,7 +17,7 @@ index 0b14157..3a99520 100644
  {
  	/* Is it explicitly or implicitly ignored? */
  	return handler == SIG_IGN ||
-@@ -67,7 +67,7 @@ static int sig_handler_ignored(void __user *handler, int sig)
+@@ -72,7 +72,7 @@ static int sig_handler_ignored(void __user *handler, int sig)
  
  static int sig_task_ignored(struct task_struct *t, int sig, bool force)
  {
@@ -26,7 +26,7 @@ index 0b14157..3a99520 100644
  
  	handler = sig_handler(t, sig);
  
-@@ -372,6 +372,9 @@ __sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags, int override_rlimi
+@@ -377,6 +377,9 @@ __sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags, int override_rlimi
  	atomic_inc(&user->sigpending);
  	rcu_read_unlock();
  
@@ -36,7 +36,7 @@ index 0b14157..3a99520 100644
  	if (override_rlimit ||
  	    atomic_read(&user->sigpending) <=
  			task_rlimit(t, RLIMIT_SIGPENDING)) {
-@@ -494,7 +497,7 @@ flush_signal_handlers(struct task_struct *t, int force_default)
+@@ -501,7 +504,7 @@ flush_signal_handlers(struct task_struct *t, int force_default)
  
  int unhandled_signal(struct task_struct *tsk, int sig)
  {
@@ -45,7 +45,7 @@ index 0b14157..3a99520 100644
  	if (is_global_init(tsk))
  		return 1;
  	if (handler != SIG_IGN && handler != SIG_DFL)
-@@ -570,6 +570,7 @@ static int __dequeue_signal(struct sigpending *pending, sigset_t *mask,
+@@ -570,6 +573,7 @@ static int __dequeue_signal(struct sigpending *pending, sigset_t *mask,
   *
   * All callers have to hold the siglock.
   */
@@ -53,7 +53,7 @@ index 0b14157..3a99520 100644
  int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info)
  {
  	bool resched_timer = false;
-@@ -742,6 +746,13 @@ static int check_kill_permission(int sig, struct siginfo *info,
+@@ -761,6 +765,13 @@ static int check_kill_permission(int sig, struct siginfo *info,
  		}
  	}
  
@@ -67,7 +67,7 @@ index 0b14157..3a99520 100644
  	return security_task_kill(t, info, sig, 0);
  }
  
-@@ -1125,7 +1136,7 @@ __group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
+@@ -1144,7 +1155,7 @@ __group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
  	return send_signal(sig, info, p, 1);
  }
  
@@ -76,7 +76,7 @@ index 0b14157..3a99520 100644
  specific_send_sig_info(int sig, struct siginfo *info, struct task_struct *t)
  {
  	return send_signal(sig, info, t, 0);
-@@ -1162,6 +1173,7 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
+@@ -1181,6 +1192,7 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
  	unsigned long int flags;
  	int ret, blocked, ignored;
  	struct k_sigaction *action;
@@ -84,7 +84,7 @@ index 0b14157..3a99520 100644
  
  	spin_lock_irqsave(&t->sighand->siglock, flags);
  	action = &t->sighand->action[sig-1];
-@@ -1176,9 +1188,18 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
+@@ -1195,9 +1207,18 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
  	}
  	if (action->sa.sa_handler == SIG_DFL)
  		t->signal->flags &= ~SIGNAL_UNKILLABLE;
@@ -103,7 +103,7 @@ index 0b14157..3a99520 100644
  	return ret;
  }
  
-@@ -1259,8 +1280,11 @@ int group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
+@@ -1278,8 +1299,11 @@ int group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
  	ret = check_kill_permission(sig, info, p);
  	rcu_read_unlock();
  
@@ -116,7 +116,7 @@ index 0b14157..3a99520 100644
  
  	return ret;
  }
-@@ -1774,9 +1798,8 @@ static int sigkill_pending(struct task_struct *tsk)
+@@ -1793,9 +1817,8 @@ static int sigkill_pending(struct task_struct *tsk)
   * If we actually decide not to stop at all because the tracer
   * is gone, we keep current->exit_code unless clear_code.
   */
@@ -127,7 +127,7 @@ index 0b14157..3a99520 100644
  {
  	bool gstop_done = false;
  
-@@ -1896,6 +1919,7 @@ static void ptrace_stop(int exit_code, int why, int clear_code, siginfo_t *info)
+@@ -1915,6 +1938,7 @@ static void ptrace_stop(int exit_code, int why, int clear_code, siginfo_t *info)
  	recalc_sigpending_tsk(current);
  }
  
@@ -135,7 +135,7 @@ index 0b14157..3a99520 100644
  static void ptrace_do_notify(int signr, int exit_code, int why)
  {
  	siginfo_t info;
-@@ -1943,8 +1967,8 @@ void ptrace_notify(int exit_code)
+@@ -1962,8 +1986,8 @@ void ptrace_notify(int exit_code)
   * %false if group stop is already cancelled or ptrace trap is scheduled.
   * %true if participated in group stop.
   */
@@ -145,7 +145,7 @@ index 0b14157..3a99520 100644
  {
  	struct signal_struct *sig = current->signal;
  
-@@ -1956,8 +1980,10 @@ static bool do_signal_stop(int signr)
+@@ -1975,8 +1999,10 @@ static bool do_signal_stop(int signr)
  		WARN_ON_ONCE(signr & ~JOBCTL_STOP_SIGMASK);
  
  		if (!likely(current->jobctl & JOBCTL_STOP_DEQUEUED) ||
@@ -157,7 +157,7 @@ index 0b14157..3a99520 100644
  		/*
  		 * There is no group stop already in progress.  We must
  		 * initiate one now.
-@@ -2041,6 +2067,7 @@ static bool do_signal_stop(int signr)
+@@ -2060,6 +2086,7 @@ static bool do_signal_stop(int signr)
  		 * Schedule it and let the caller deal with it.
  		 */
  		task_set_jobctl_pending(current, JOBCTL_TRAP_STOP);
@@ -165,7 +165,7 @@ index 0b14157..3a99520 100644
  		return false;
  	}
  }
-@@ -2864,7 +2891,15 @@ do_send_specific(pid_t tgid, pid_t pid, int sig, struct siginfo *info)
+@@ -2890,7 +2917,15 @@ do_send_specific(pid_t tgid, pid_t pid, int sig, struct siginfo *info)
  	int error = -ESRCH;
  
  	rcu_read_lock();
@@ -182,7 +182,7 @@ index 0b14157..3a99520 100644
  	if (p && (tgid <= 0 || task_tgid_vnr(p) == tgid)) {
  		error = check_kill_permission(sig, info, p);
  		/*
-@@ -3203,8 +3238,8 @@ COMPAT_SYSCALL_DEFINE2(sigaltstack,
+@@ -3229,8 +3264,8 @@ COMPAT_SYSCALL_DEFINE2(sigaltstack,
  	}
  	seg = get_fs();
  	set_fs(KERNEL_DS);
@@ -193,7 +193,7 @@ index 0b14157..3a99520 100644
  			     compat_user_stack_pointer());
  	set_fs(seg);
  	if (ret >= 0 && uoss_ptr)  {
-@@ -3495,7 +3530,7 @@ SYSCALL_DEFINE1(ssetmask, int, newmask)
+@@ -3521,7 +3556,7 @@ SYSCALL_DEFINE1(ssetmask, int, newmask)
  SYSCALL_DEFINE2(signal, int, sig, __sighandler_t, handler)
  {
  	struct k_sigaction new_sa, old_sa;
@@ -202,7 +202,7 @@ index 0b14157..3a99520 100644
  
  	new_sa.sa.sa_handler = handler;
  	new_sa.sa.sa_flags = SA_ONESHOT | SA_NOMASK;
-@@ -3503,7 +3538,7 @@ SYSCALL_DEFINE2(signal, int, sig, __sighandler_t, handler)
+@@ -3529,7 +3564,7 @@ SYSCALL_DEFINE2(signal, int, sig, __sighandler_t, handler)
  
  	ret = do_sigaction(sig, &new_sa, &old_sa);
  

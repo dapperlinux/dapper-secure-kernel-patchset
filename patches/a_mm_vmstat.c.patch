@@ -1,5 +1,5 @@
 diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 604f26a..6e8df6a 100644
+index 76f7367..7b3895c 100644
 --- a/mm/vmstat.c
 +++ b/mm/vmstat.c
 @@ -27,6 +27,7 @@
@@ -93,7 +93,7 @@ index 604f26a..6e8df6a 100644
  #ifdef CONFIG_SMP
  	if (x < 0)
  		x = 0;
-@@ -1477,10 +1478,22 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
+@@ -1491,10 +1492,22 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
  	stat_items_size += sizeof(struct vm_event_state);
  #endif
  
@@ -117,16 +117,16 @@ index 604f26a..6e8df6a 100644
  	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
  		v[i] = global_page_state(i);
  	v += NR_VM_ZONE_STAT_ITEMS;
-@@ -1580,7 +1593,7 @@ int vmstat_refresh(struct ctl_table *table, int write,
+@@ -1593,7 +1606,7 @@ int vmstat_refresh(struct ctl_table *table, int write,
  	if (err)
  		return err;
  	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
 -		val = atomic_long_read(&vm_zone_stat[i]);
 +		val = atomic_long_read_unchecked(&vm_zone_stat[i]);
  		if (val < 0) {
- 			switch (i) {
- 			case NR_PAGES_SCANNED:
-@@ -1789,10 +1789,16 @@ void __init init_mm_internals(void)
+ 			pr_warn("%s: %s %ld\n",
+ 				__func__, vmstat_text[i], val);
+@@ -1785,10 +1798,16 @@ void __init init_mm_internals(void)
  	start_shepherd_timer();
  #endif
  #ifdef CONFIG_PROC_FS

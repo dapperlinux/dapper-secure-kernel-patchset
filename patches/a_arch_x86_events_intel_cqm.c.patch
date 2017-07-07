@@ -1,8 +1,8 @@
 diff --git a/arch/x86/events/intel/cqm.c b/arch/x86/events/intel/cqm.c
-index 8f82b02..b10c4b0 100644
+index 8c00dc0..52f5053 100644
 --- a/arch/x86/events/intel/cqm.c
 +++ b/arch/x86/events/intel/cqm.c
-@@ -1488,7 +1488,7 @@ static struct attribute *intel_cmt_mbm_events_attr[] = {
+@@ -1469,7 +1469,7 @@ static struct attribute *intel_cmt_mbm_events_attr[] = {
  	NULL,
  };
  
@@ -11,7 +11,7 @@ index 8f82b02..b10c4b0 100644
  	.name = "events",
  	.attrs = NULL,
  };
-@@ -1732,7 +1732,9 @@ static int __init intel_cqm_init(void)
+@@ -1713,7 +1713,9 @@ static int __init intel_cqm_init(void)
  		goto out;
  	}
  
@@ -22,7 +22,7 @@ index 8f82b02..b10c4b0 100644
  
  	ret = intel_cqm_setup_rmid_cache();
  	if (ret)
-@@ -1743,12 +1745,14 @@ static int __init intel_cqm_init(void)
+@@ -1724,12 +1726,14 @@ static int __init intel_cqm_init(void)
  	if (ret && !cqm_enabled)
  		goto out;
  

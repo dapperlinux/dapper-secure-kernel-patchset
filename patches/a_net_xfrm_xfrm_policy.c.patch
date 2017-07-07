@@ -1,8 +1,8 @@
 diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index e0437a7..05fba66 100644
+index 643a18f..56a68cb 100644
 --- a/net/xfrm/xfrm_policy.c
 +++ b/net/xfrm/xfrm_policy.c
-@@ -338,7 +338,7 @@ static void xfrm_policy_kill(struct xfrm_policy *policy)
+@@ -333,7 +333,7 @@ static void xfrm_policy_kill(struct xfrm_policy *policy)
  {
  	policy->walk.dead = 1;
  
@@ -11,7 +11,7 @@ index e0437a7..05fba66 100644
  
  	if (del_timer(&policy->polq.hold_timer))
  		xfrm_pol_put(policy);
-@@ -803,7 +803,7 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
+@@ -798,7 +798,7 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
  	else
  		hlist_add_head(&policy->bydst, chain);
  	__xfrm_policy_link(policy, dir);
@@ -20,8 +20,8 @@ index e0437a7..05fba66 100644
  
  	/* After previous checking, family can either be AF_INET or AF_INET6 */
  	if (policy->family == AF_INET)
-@@ -1928,7 +1928,7 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
- 
+@@ -1866,7 +1866,7 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
+ 	xdst->num_xfrms = err;
  	xdst->num_pols = num_pols;
  	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy *) * num_pols);
 -	xdst->policy_genid = atomic_read(&pols[0]->genid);
@@ -29,7 +29,7 @@ index e0437a7..05fba66 100644
  
  	return xdst;
  }
-@@ -2795,7 +2796,7 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
+@@ -2734,7 +2734,7 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
  		if (xdst->xfrm_genid != dst->xfrm->genid)
  			return 0;
  		if (xdst->num_pols > 0 &&
@@ -38,7 +38,7 @@ index e0437a7..05fba66 100644
  			return 0;
  
  		mtu = dst_mtu(dst->child);
-@@ -3106,7 +3104,7 @@ static void __net_exit xfrm_net_exit(struct net *net)
+@@ -3050,7 +3050,7 @@ static void __net_exit xfrm_net_exit(struct net *net)
  	xfrm_statistics_fini(net);
  }
  
@@ -47,7 +47,7 @@ index e0437a7..05fba66 100644
  	.init = xfrm_net_init,
  	.exit = xfrm_net_exit,
  };
-@@ -3299,7 +3297,7 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
+@@ -3244,7 +3244,7 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
  			       sizeof(pol->xfrm_vec[i].saddr));
  			pol->xfrm_vec[i].encap_family = mp->new_family;
  			/* flush bundles */

@@ -61,7 +61,7 @@ index a260cde..c395165 100644
  	if (err)
  		goto noconfig;
  
-@@ -205,8 +214,6 @@ static int configure_kgdboc(void)
+@@ -205,8 +214,6 @@ do_register:
  	if (err)
  		goto nmi_con_failed;
  
@@ -70,7 +70,7 @@ index a260cde..c395165 100644
  	return 0;
  
  nmi_con_failed:
-@@ -223,7 +230,7 @@ static int configure_kgdboc(void)
+@@ -223,7 +230,7 @@ noconfig:
  static int __init init_kgdboc(void)
  {
  	/* Already configured? */
@@ -97,28 +97,26 @@ index a260cde..c395165 100644
  		cleanup_kgdboc();
  
  	/* Go and configure with the new params. */
-@@ -304,7 +311,7 @@ static void kgdboc_post_exp_handler(void)
+@@ -304,12 +311,21 @@ static void kgdboc_post_exp_handler(void)
  	kgdboc_restore_input();
  }
  
 -static struct kgdb_io kgdboc_io_ops = {
 +static struct kgdb_io kgdboc_io_ops __read_only = {
- 	.name			= "kgdboc",
- 	.read_char		= kgdboc_get_char,
- 	.write_char		= kgdboc_put_char,
-@@ -312,6 +319,15 @@ static struct kgdb_io kgdboc_io_ops = {
- 	.post_exception		= kgdboc_post_exp_handler,
- };
- 
-+static struct kgdb_io kgdboc_io_ops_console __read_only = {
 +	.name			= "kgdboc",
 +	.read_char		= kgdboc_get_char,
 +	.write_char		= kgdboc_put_char,
 +	.pre_exception		= kgdboc_pre_exp_handler,
 +	.post_exception		= kgdboc_post_exp_handler,
-+	.is_console		= 1
 +};
 +
++static struct kgdb_io kgdboc_io_ops_console __read_only = {
+ 	.name			= "kgdboc",
+ 	.read_char		= kgdboc_get_char,
+ 	.write_char		= kgdboc_put_char,
+ 	.pre_exception		= kgdboc_pre_exp_handler,
+ 	.post_exception		= kgdboc_post_exp_handler,
++	.is_console		= 1
+ };
+ 
  #ifdef CONFIG_KGDB_SERIAL_CONSOLE
- /* This is only available if kgdboc is a built in for early debugging */
- static int __init kgdboc_early_init(char *opt)

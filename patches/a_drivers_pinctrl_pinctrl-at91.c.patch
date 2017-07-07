@@ -1,5 +1,5 @@
 diff --git a/drivers/pinctrl/pinctrl-at91.c b/drivers/pinctrl/pinctrl-at91.c
-index 9f09041..5713a0e 100644
+index 569bc28..94fe0e4 100644
 --- a/drivers/pinctrl/pinctrl-at91.c
 +++ b/drivers/pinctrl/pinctrl-at91.c
 @@ -23,6 +23,7 @@
@@ -10,7 +10,7 @@ index 9f09041..5713a0e 100644
  
  #include "pinctrl-at91.h"
  #include "core.h"
-@@ -1600,7 +1601,9 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
+@@ -1621,7 +1622,9 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
  	at91_gpio->pioc_hwirq = irqd_to_hwirq(d);
  
  	/* Setup proper .irq_set_type function */

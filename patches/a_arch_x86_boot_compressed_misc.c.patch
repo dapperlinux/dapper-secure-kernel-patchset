@@ -1,5 +1,5 @@
 diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
-index b3c5a5f0..596115e 100644
+index 00241c8..e04a90e 100644
 --- a/arch/x86/boot/compressed/misc.c
 +++ b/arch/x86/boot/compressed/misc.c
 @@ -176,13 +176,17 @@ static void handle_relocations(void *output, unsigned long output_len,
@@ -64,15 +64,15 @@ index b3c5a5f0..596115e 100644
 +#else
  	const unsigned long kernel_total_size = VO__end - VO__text;
 +#endif
- 	unsigned long virt_addr = (unsigned long)output;
+ 	unsigned long virt_addr = LOAD_PHYSICAL_ADDR;
  
  	/* Retain x86 boot parameters pointer passed from startup_32/64. */
-@@ -395,7 +406,7 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
+@@ -397,7 +408,7 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
  		error("Destination address too large");
  #endif
  #ifndef CONFIG_RELOCATABLE
 -	if ((unsigned long)output != LOAD_PHYSICAL_ADDR)
 +	if ((unsigned long)output != ____LOAD_PHYSICAL_ADDR)
  		error("Destination address does not match LOAD_PHYSICAL_ADDR");
- 	if ((unsigned long)output != virt_addr)
+ 	if (virt_addr != LOAD_PHYSICAL_ADDR)
  		error("Destination virtual address changed when not relocatable");

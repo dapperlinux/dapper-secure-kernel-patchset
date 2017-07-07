@@ -1,5 +1,5 @@
 diff --git a/arch/x86/boot/Makefile b/arch/x86/boot/Makefile
-index 12ea8f8..46969be 100644
+index 0d810fb..ac26768 100644
 --- a/arch/x86/boot/Makefile
 +++ b/arch/x86/boot/Makefile
 @@ -11,6 +11,7 @@

@@ -1,5 +1,5 @@
 diff --git a/scripts/dtc/checks.c b/scripts/dtc/checks.c
-index 3d18e45..3551829 100644
+index 4b72b53..1620d3f 100644
 --- a/scripts/dtc/checks.c
 +++ b/scripts/dtc/checks.c
 @@ -243,7 +243,7 @@ ERROR(duplicate_property_names, check_duplicate_property_names, NULL);
@@ -10,8 +10,8 @@ index 3d18e45..3551829 100644
 +	size_t n = strspn(node->name, c->data);
  
  	if (n < strlen(node->name))
- 		FAIL(c, "Bad character '%c' in node %s",
-@@ -290,7 +290,7 @@ static void check_property_name_chars(struct check *c, struct dt_info *dti,
+ 		FAIL(c, dti, "Bad character '%c' in node %s",
+@@ -301,7 +301,7 @@ static void check_property_name_chars(struct check *c, struct dt_info *dti,
  	struct property *prop;
  
  	for_each_property(node, prop) {
@@ -19,17 +19,17 @@ index 3d18e45..3551829 100644
 +		size_t n = strspn(prop->name, c->data);
  
  		if (n < strlen(prop->name))
- 			FAIL(c, "Bad character '%c' in property name \"%s\", node %s",
-@@ -392,7 +392,7 @@ static cell_t check_phandle_prop(struct check *c, struct dt_info *dti,
+ 			FAIL(c, dti, "Bad character '%c' in property name \"%s\", node %s",
+@@ -435,7 +435,7 @@ static cell_t check_phandle_prop(struct check *c, struct dt_info *dti,
  
  	phandle = propval_cell(prop);
  
 -	if ((phandle == 0) || (phandle == -1)) {
 +	if ((phandle == 0) || (phandle == ~0U)) {
- 		FAIL(c, "%s has bad value (0x%x) in %s property",
+ 		FAIL(c, dti, "%s has bad value (0x%x) in %s property",
  		     node->fullpath, phandle, prop->name);
  		return 0;
-@@ -483,7 +483,7 @@ static void fixup_phandle_references(struct check *c, struct dt_info *dti,
+@@ -526,7 +526,7 @@ static void fixup_phandle_references(struct check *c, struct dt_info *dti,
  		cell_t phandle;
  
  		for_each_marker_of_type(m, REF_PHANDLE) {
@@ -38,7 +38,7 @@ index 3d18e45..3551829 100644
  
  			refnode = get_node_by_ref(dt, m->ref);
  			if (! refnode) {
-@@ -728,7 +728,7 @@ static void enable_warning_error(struct check *c, bool warn, bool error)
+@@ -1005,7 +1005,7 @@ static void enable_warning_error(struct check *c, bool warn, bool error)
  
  static void disable_warning_error(struct check *c, bool warn, bool error)
  {
@@ -47,7 +47,7 @@ index 3d18e45..3551829 100644
  
  	/* Lowering level, also lower it for things this is the prereq
  	 * for */
-@@ -749,7 +749,7 @@ static void disable_warning_error(struct check *c, bool warn, bool error)
+@@ -1026,7 +1026,7 @@ static void disable_warning_error(struct check *c, bool warn, bool error)
  
  void parse_checks_option(bool warn, bool error, const char *arg)
  {
@@ -56,7 +56,7 @@ index 3d18e45..3551829 100644
  	const char *name = arg;
  	bool enable = true;
  
-@@ -776,7 +776,7 @@ void parse_checks_option(bool warn, bool error, const char *arg)
+@@ -1053,7 +1053,7 @@ void parse_checks_option(bool warn, bool error, const char *arg)
  
  void process_checks(bool force, struct dt_info *dti)
  {

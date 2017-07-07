@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kernel/apm_32.c b/arch/x86/kernel/apm_32.c
-index 51287cd..24489b3 100644
+index 446b0d3..b72732d 100644
 --- a/arch/x86/kernel/apm_32.c
 +++ b/arch/x86/kernel/apm_32.c
-@@ -432,7 +432,7 @@ static DEFINE_MUTEX(apm_mutex);
+@@ -433,7 +433,7 @@ static DEFINE_MUTEX(apm_mutex);
   * This is for buggy BIOS's that refer to (real mode) segment 0x40
   * even though they are called in protected mode.
   */
@@ -11,9 +11,9 @@ index 51287cd..24489b3 100644
  			(unsigned long)__va(0x400UL), PAGE_SIZE - 0x400 - 1);
  
  static const char driver_version[] = "1.16ac";	/* no spaces */
-@@ -610,7 +610,10 @@ static long __apm_bios_call(void *_call)
+@@ -611,7 +611,10 @@ static long __apm_bios_call(void *_call)
  	BUG_ON(cpu != 0);
- 	gdt = get_cpu_gdt_table(cpu);
+ 	gdt = get_cpu_gdt_rw(cpu);
  	save_desc_40 = gdt[0x40 / 8];
 +
 +	pax_open_kernel();
@@ -22,7 +22,7 @@ index 51287cd..24489b3 100644
  
  	apm_irq_save(flags);
  	APM_DO_SAVE_SEGS;
-@@ -619,7 +622,11 @@ static long __apm_bios_call(void *_call)
+@@ -620,7 +623,11 @@ static long __apm_bios_call(void *_call)
  			  &call->esi);
  	APM_DO_RESTORE_SEGS;
  	apm_irq_restore(flags);
@@ -34,9 +34,9 @@ index 51287cd..24489b3 100644
  	put_cpu();
  
  	return call->eax & 0xff;
-@@ -686,7 +693,10 @@ static long __apm_bios_call_simple(void *_call)
+@@ -687,7 +694,10 @@ static long __apm_bios_call_simple(void *_call)
  	BUG_ON(cpu != 0);
- 	gdt = get_cpu_gdt_table(cpu);
+ 	gdt = get_cpu_gdt_rw(cpu);
  	save_desc_40 = gdt[0x40 / 8];
 +
 +	pax_open_kernel();
@@ -45,7 +45,7 @@ index 51287cd..24489b3 100644
  
  	apm_irq_save(flags);
  	APM_DO_SAVE_SEGS;
-@@ -694,7 +704,11 @@ static long __apm_bios_call_simple(void *_call)
+@@ -695,7 +705,11 @@ static long __apm_bios_call_simple(void *_call)
  					 &call->eax);
  	APM_DO_RESTORE_SEGS;
  	apm_irq_restore(flags);
@@ -57,7 +57,7 @@ index 51287cd..24489b3 100644
  	put_cpu();
  	return error;
  }
-@@ -2042,7 +2056,7 @@ static int __init swab_apm_power_in_minutes(const struct dmi_system_id *d)
+@@ -2043,7 +2057,7 @@ static int __init swab_apm_power_in_minutes(const struct dmi_system_id *d)
  	return 0;
  }
  
@@ -66,10 +66,10 @@ index 51287cd..24489b3 100644
  	{
  		print_if_true,
  		KERN_WARNING "IBM T23 - BIOS 1.03b+ and controller firmware 1.02+ may be needed for Linux APM.",
-@@ -2352,12 +2366,15 @@ static int __init apm_init(void)
+@@ -2353,12 +2367,15 @@ static int __init apm_init(void)
  	 * code to that CPU.
  	 */
- 	gdt = get_cpu_gdt_table(0);
+ 	gdt = get_cpu_gdt_rw(0);
 +
 +	pax_open_kernel();
  	set_desc_base(&gdt[APM_CS >> 3],

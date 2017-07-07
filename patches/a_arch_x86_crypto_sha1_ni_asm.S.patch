@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/sha1_ni_asm.S b/arch/x86/crypto/sha1_ni_asm.S
-index 874a651..aa3d201 100644
+index ebbdba7..0815040 100644
 --- a/arch/x86/crypto/sha1_ni_asm.S
 +++ b/arch/x86/crypto/sha1_ni_asm.S
 @@ -54,6 +54,7 @@
@@ -10,7 +10,7 @@ index 874a651..aa3d201 100644
  
  #define DIGEST_PTR	%rdi	/* 1st arg */
  #define DATA_PTR	%rsi	/* 2nd arg */
-@@ -290,7 +290,7 @@ ENTRY(sha1_ni_transform)
+@@ -290,7 +291,7 @@ ENTRY(sha1_ni_transform)
  .Ldone_hash:
  	mov		RSPSAVE, %rsp
  

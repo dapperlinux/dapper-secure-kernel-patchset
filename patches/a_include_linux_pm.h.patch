@@ -1,5 +1,5 @@
 diff --git a/include/linux/pm.h b/include/linux/pm.h
-index 06eb353..dbf4a34 100644
+index a0894bc..1b9b0d7 100644
 --- a/include/linux/pm.h
 +++ b/include/linux/pm.h
 @@ -631,6 +631,7 @@ struct dev_pm_domain {

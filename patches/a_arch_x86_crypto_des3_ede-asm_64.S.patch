@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/des3_ede-asm_64.S b/arch/x86/crypto/des3_ede-asm_64.S
-index 038f6ae..ec7142bf 100644
+index f3e9164..4c96f79 100644
 --- a/arch/x86/crypto/des3_ede-asm_64.S
 +++ b/arch/x86/crypto/des3_ede-asm_64.S
 @@ -15,6 +15,7 @@
@@ -19,7 +19,7 @@ index 038f6ae..ec7142bf 100644
  ENDPROC(des3_ede_x86_64_crypt_blk)
  
  /***********************************************************************
-@@ -534,7 +534,7 @@ ENTRY(des3_ede_x86_64_crypt_blk_3way)
+@@ -534,7 +535,7 @@ ENTRY(des3_ede_x86_64_crypt_blk_3way)
  	popq %rbx;
  	popq %rbp;
  

@@ -1,8 +1,8 @@
 diff --git a/arch/ia64/mm/fault.c b/arch/ia64/mm/fault.c
-index fa6ad95..b46bd89 100644
+index 15f09cf..065ba98 100644
 --- a/arch/ia64/mm/fault.c
 +++ b/arch/ia64/mm/fault.c
-@@ -72,6 +72,23 @@ mapped_kernel_page_is_present (unsigned long address)
+@@ -74,6 +74,23 @@ mapped_kernel_page_is_present (unsigned long address)
  	return pte_present(pte);
  }
  
@@ -26,7 +26,7 @@ index fa6ad95..b46bd89 100644
  #	define VM_READ_BIT	0
  #	define VM_WRITE_BIT	1
  #	define VM_EXEC_BIT	2
-@@ -151,8 +168,21 @@ ia64_do_page_fault (unsigned long address, unsigned long isr, struct pt_regs *re
+@@ -153,8 +170,21 @@ retry:
  	if (((isr >> IA64_ISR_R_BIT) & 1UL) && (!(vma->vm_flags & (VM_READ | VM_WRITE))))
  		goto bad_area;
  

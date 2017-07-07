@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-index d34bd37..08f3231 100644
+index 7afb0e2..edabac7 100644
 --- a/arch/x86/include/asm/io.h
 +++ b/arch/x86/include/asm/io.h
 @@ -42,6 +42,7 @@

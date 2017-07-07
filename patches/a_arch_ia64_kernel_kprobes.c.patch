@@ -1,5 +1,5 @@
 diff --git a/arch/ia64/kernel/kprobes.c b/arch/ia64/kernel/kprobes.c
-index c7c5144..7e31461 100644
+index f5f3a5e..7861840 100644
 --- a/arch/ia64/kernel/kprobes.c
 +++ b/arch/ia64/kernel/kprobes.c
 @@ -499,6 +499,7 @@ int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)

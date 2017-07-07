@@ -1,5 +1,5 @@
 diff --git a/drivers/acpi/bgrt.c b/drivers/acpi/bgrt.c
-index 75f128e..0fbae68 100644
+index df1c629..e6f9812 100644
 --- a/drivers/acpi/bgrt.c
 +++ b/drivers/acpi/bgrt.c
 @@ -18,40 +18,40 @@
@@ -58,7 +58,7 @@ index 75f128e..0fbae68 100644
  
  static ssize_t image_read(struct file *file, struct kobject *kobj,
  	       struct bin_attribute *attr, char *buf, loff_t off, size_t count)
-@@ -95,8 +95,10 @@ static int __init bgrt_init(void)
+@@ -101,8 +101,10 @@ static int __init bgrt_init(void)
  		return -ENOMEM;
  	}
  

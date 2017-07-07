@@ -1,33 +1,27 @@
 diff --git a/include/linux/thread_info.h b/include/linux/thread_info.h
-index 2873baf..19e866c 100644
+index d7d3ea6..24c810e 100644
 --- a/include/linux/thread_info.h
 +++ b/include/linux/thread_info.h
-@@ -18,7 +18,9 @@
+@@ -18,8 +18,17 @@
   * including <asm/current.h> can cause a circular dependency on some platforms.
   */
  #include <asm/current.h>
 -#define current_thread_info() ((struct thread_info *)current)
 +#ifndef current_thread_info
 +struct thread_info *current_thread_info(void);
+ #endif
 +#endif
- #endif
- 
- #include <linux/bitops.h>
-@@ -21,6 +21,13 @@
- #define current_thread_info() ((struct thread_info *)current)
- #endif
- 
++
 +enum {
 +	BAD_STACK = -1,
 +	NOT_STACK = 0,
 +	GOOD_STACK,
 +	GOOD_FRAME,
 +};
-+
- #include <linux/bitops.h>
- #include <asm/thread_info.h>
  
-@@ -71,6 +80,22 @@ extern long do_no_restart_syscall(struct restart_block *parm);
+ #include <linux/bitops.h>
+ 
+@@ -50,6 +59,22 @@ enum {
   * - pass TIF_xxxx constants to these functions
   */
  
@@ -50,7 +44,7 @@ index 2873baf..19e866c 100644
  static inline void set_ti_thread_flag(struct thread_info *ti, int flag)
  {
  	set_bit(flag, (unsigned long *)&ti->flags);
-@@ -95,6 +120,7 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
+@@ -74,6 +99,7 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
  {
  	return test_bit(flag, (unsigned long *)&ti->flags);
  }
@@ -58,7 +52,7 @@ index 2873baf..19e866c 100644
  
  #define set_thread_flag(flag) \
  	set_ti_thread_flag(current_thread_info(), flag)
-@@ -110,11 +136,11 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
+@@ -89,11 +115,11 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
  #define tif_need_resched() test_thread_flag(TIF_NEED_RESCHED)
  
  #ifndef CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES
@@ -74,9 +68,9 @@ index 2873baf..19e866c 100644
  }
  #endif
  
-@@ -134,6 +160,8 @@ static inline void check_object_size(const void *ptr, unsigned long n,
- { }
- #endif /* CONFIG_HARDENED_USERCOPY */
+@@ -117,6 +143,8 @@ static inline void check_object_size(const void *ptr, unsigned long n,
+ static inline void arch_setup_new_exec(void) { }
+ #endif
  
 +bool __access_ok(int type, unsigned long addr, size_t size);
 +

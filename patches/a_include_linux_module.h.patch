@@ -1,5 +1,5 @@
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 0c3207d..18808a5 100644
+index 21f5639..47df79d 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -19,9 +19,11 @@
@@ -14,7 +14,7 @@ index 0c3207d..18808a5 100644
  
  /* In stripped ARM and x86-64 modules, ~ is surprisingly rare. */
  #define MODULE_SIG_STRING "~Module signature appended~\n"
-@@ -46,7 +48,7 @@ struct module_kobject {
+@@ -45,7 +47,7 @@ struct module_kobject {
  	struct kobject *drivers_dir;
  	struct module_param_attrs *mp;
  	struct completion *kobj_completion;
@@ -23,7 +23,7 @@ index 0c3207d..18808a5 100644
  
  struct module_attribute {
  	struct attribute attr;
-@@ -58,12 +60,13 @@ struct module_attribute {
+@@ -57,12 +59,13 @@ struct module_attribute {
  	int (*test)(struct module *);
  	void (*free)(struct module *);
  };
@@ -38,7 +38,7 @@ index 0c3207d..18808a5 100644
  
  extern ssize_t __modver_version_show(struct module_attribute *,
  				     struct module_kobject *, char *);
-@@ -290,19 +293,18 @@ struct mod_tree_node {
+@@ -287,19 +290,18 @@ struct mod_tree_node {
  };
  
  struct module_layout {
@@ -68,7 +68,7 @@ index 0c3207d..18808a5 100644
  #endif
  };
  
-@@ -339,7 +341,7 @@ struct module {
+@@ -336,7 +338,7 @@ struct module {
  
  	/* Sysfs stuff. */
  	struct module_kobject mkobj;
@@ -77,7 +77,7 @@ index 0c3207d..18808a5 100644
  	const char *version;
  	const char *srcversion;
  	struct kobject *holders_dir;
-@@ -447,6 +449,10 @@ struct module {
+@@ -444,6 +446,10 @@ struct module {
  	unsigned int num_trace_events;
  	struct trace_enum_map **trace_enums;
  	unsigned int num_trace_enums;
@@ -88,7 +88,7 @@ index 0c3207d..18808a5 100644
  #endif
  #ifdef CONFIG_FTRACE_MCOUNT_RECORD
  	unsigned int num_ftrace_callsites;
-@@ -478,7 +484,8 @@ struct module {
+@@ -475,7 +481,8 @@ struct module {
  	ctor_fn_t *ctors;
  	unsigned int num_ctors;
  #endif
@@ -98,7 +98,7 @@ index 0c3207d..18808a5 100644
  #ifndef MODULE_ARCH_INIT
  #define MODULE_ARCH_INIT {}
  #endif
-@@ -499,18 +506,38 @@ bool is_module_address(unsigned long addr);
+@@ -497,18 +504,38 @@ bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr);
  bool is_module_percpu_address(unsigned long addr);
  bool is_module_text_address(unsigned long addr);
  

@@ -1,8 +1,8 @@
 diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
-index 7123ef9..758d077 100644
+index 23d8b8a..b310184 100644
 --- a/drivers/mmc/host/sdhci-esdhc-imx.c
 +++ b/drivers/mmc/host/sdhci-esdhc-imx.c
-@@ -1255,9 +1255,12 @@ static int sdhci_esdhc_imx_probe(struct platform_device *pdev)
+@@ -1282,9 +1282,12 @@ static int sdhci_esdhc_imx_probe(struct platform_device *pdev)
  		writel(0x0, host->ioaddr + ESDHC_TUNE_CTRL_STATUS);
  	}
  

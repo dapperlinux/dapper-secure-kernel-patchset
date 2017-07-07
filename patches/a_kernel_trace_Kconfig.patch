@@ -1,8 +1,8 @@
 diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-index 2a96b06..9c16b00 100644
+index 7e06f04..c0b02b8 100644
 --- a/kernel/trace/Kconfig
 +++ b/kernel/trace/Kconfig
-@@ -102,6 +102,7 @@ config TRACING
+@@ -103,6 +103,7 @@ config TRACING
  config GENERIC_TRACER
  	bool
  	select TRACING
@@ -10,7 +10,7 @@ index 2a96b06..9c16b00 100644
  
  #
  # Minimum requirements an architecture has to meet for us to
-@@ -115,6 +116,7 @@ config TRACING_SUPPORT
+@@ -116,6 +117,7 @@ config TRACING_SUPPORT
  	# irqflags tracing for your architecture.
  	depends on TRACE_IRQFLAGS_SUPPORT || PPC32
  	depends on STACKTRACE_SUPPORT
@@ -18,7 +18,7 @@ index 2a96b06..9c16b00 100644
  	default y
  
  if TRACING_SUPPORT
-@@ -147,6 +149,7 @@ config FUNCTION_GRAPH_TRACER
+@@ -150,6 +152,7 @@ config FUNCTION_GRAPH_TRACER
  	depends on HAVE_FUNCTION_GRAPH_TRACER
  	depends on FUNCTION_TRACER
  	depends on !X86_32 || !CC_OPTIMIZE_FOR_SIZE
@@ -26,7 +26,7 @@ index 2a96b06..9c16b00 100644
  	default y
  	help
  	  Enable the kernel to trace a function at both its return
-@@ -255,6 +258,7 @@ config ENABLE_DEFAULT_TRACERS
+@@ -258,6 +261,7 @@ config ENABLE_DEFAULT_TRACERS
  	bool "Trace process context switches and events"
  	depends on !GENERIC_TRACER
  	select TRACING
@@ -34,7 +34,7 @@ index 2a96b06..9c16b00 100644
  	help
  	  This tracer hooks to various trace points in the kernel,
  	  allowing the user to pick and choose which trace point they
-@@ -408,6 +412,7 @@ config BLK_DEV_IO_TRACE
+@@ -411,6 +415,7 @@ config BLK_DEV_IO_TRACE
  	depends on BLOCK
  	select RELAY
  	select DEBUG_FS
@@ -42,7 +42,7 @@ index 2a96b06..9c16b00 100644
  	select TRACEPOINTS
  	select GENERIC_TRACER
  	select STACKTRACE
-@@ -432,6 +437,7 @@ config KPROBE_EVENT
+@@ -435,6 +440,7 @@ config KPROBE_EVENTS
  	depends on HAVE_REGS_AND_STACK_ACCESS_API
  	bool "Enable kprobes-based dynamic events"
  	select TRACING
@@ -50,11 +50,11 @@ index 2a96b06..9c16b00 100644
  	select PROBE_EVENTS
  	default y
  	help
-@@ -453,6 +459,7 @@ config UPROBE_EVENT
+@@ -456,6 +462,7 @@ config UPROBE_EVENTS
  	select UPROBES
  	select PROBE_EVENTS
  	select TRACING
 +	depends on !GRKERNSEC_KMEM
- 	default n
+ 	default y
  	help
  	  This allows the user to add tracing events on top of userspace

@@ -1,5 +1,5 @@
 diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index a7655f6..0cab8dd 100644
+index 6e7bedf..db27136 100644
 --- a/arch/x86/mm/tlb.c
 +++ b/arch/x86/mm/tlb.c
 @@ -47,7 +47,11 @@ void leave_mm(int cpu)
@@ -167,9 +167,9 @@ index a7655f6..0cab8dd 100644
 +#endif
 +
  		}
-+#endif
- 	}
--#endif
+-	}
+ #endif
++	}
  }
  
  #ifdef CONFIG_SMP

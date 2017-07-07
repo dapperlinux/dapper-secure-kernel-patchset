@@ -1,8 +1,8 @@
 diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 26d6f0b..af4d2ad 100644
+index 72b8018..e7cf6b0 100644
 --- a/drivers/net/macvlan.c
 +++ b/drivers/net/macvlan.c
-@@ -343,7 +343,7 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
+@@ -372,7 +372,7 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
  free_nskb:
  	kfree_skb(nskb);
  err:
@@ -11,7 +11,7 @@ index 26d6f0b..af4d2ad 100644
  }
  
  static void macvlan_flush_sources(struct macvlan_port *port,
-@@ -1534,12 +1534,14 @@ static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
+@@ -1594,12 +1594,14 @@ static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
  int macvlan_link_register(struct rtnl_link_ops *ops)
  {
  	/* common fields */
@@ -32,7 +32,7 @@ index 26d6f0b..af4d2ad 100644
  
  	return rtnl_link_register(ops);
  };
-@@ -1616,7 +1618,7 @@ static int macvlan_device_event(struct notifier_block *unused,
+@@ -1688,7 +1690,7 @@ static int macvlan_device_event(struct notifier_block *unused,
  	return NOTIFY_DONE;
  }
  

@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 43b55ef..b88294e 100644
+index ca5d2b9..7783580 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -1675,14 +1675,14 @@ static __always_inline void vmcs_writel(unsigned long field, unsigned long value
+@@ -1720,14 +1720,14 @@ static __always_inline void vmcs_writel(unsigned long field, unsigned long value
  	__vmcs_writel(field, value);
  }
  
@@ -19,9 +19,9 @@ index 43b55ef..b88294e 100644
  {
          BUILD_BUG_ON_MSG(__builtin_constant_p(field) && ((field) & 0x6000) == 0x2000,
  			 "vmcs_set_bits does not support 64-bit fields");
-@@ -2284,6 +2284,10 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+@@ -2278,6 +2278,10 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
  			    (unsigned long)this_cpu_ptr(&cpu_tss));
- 		vmcs_writel(HOST_GDTR_BASE, gdt->address);
+ 		vmcs_writel(HOST_GDTR_BASE, (unsigned long)gdt);   /* 22.2.4 */
  
 +#ifdef CONFIG_PAX_PER_CPU_PGD
 +		vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
@@ -30,7 +30,7 @@ index 43b55ef..b88294e 100644
  		/*
  		 * VM exits change the host TR limit to 0x67 after a VM
  		 * exit.  This is okay, since 0x67 covers everything except
-@@ -2596,7 +2604,7 @@ static void setup_msrs(struct vcpu_vmx *vmx)
+@@ -2566,7 +2570,7 @@ static void setup_msrs(struct vcpu_vmx *vmx)
   * guest_tsc = (host_tsc * tsc multiplier) >> 48 + tsc_offset
   * -- Intel TSC Scaling for Virtualization White Paper, sec 1.3
   */
@@ -39,7 +39,7 @@ index 43b55ef..b88294e 100644
  {
  	u64 host_tsc, tsc_offset;
  
-@@ -5026,7 +5026,10 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
+@@ -5017,7 +5021,10 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
  	cr0 = read_cr0();
  	WARN_ON(cr0 & X86_CR0_TS);
  	vmcs_writel(HOST_CR0, cr0);  /* 22.2.3 */
@@ -50,7 +50,7 @@ index 43b55ef..b88294e 100644
  
  	/* Save the most likely value for this task's CR4 in the VMCS. */
  	cr4 = cr4_read_shadow();
-@@ -4875,7 +4886,7 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
+@@ -5044,7 +5051,7 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
  	vmcs_writel(HOST_IDTR_BASE, dt.address);   /* 22.2.4 */
  	vmx->host_idt_base = dt.address;
  
@@ -59,7 +59,7 @@ index 43b55ef..b88294e 100644
  
  	rdmsr(MSR_IA32_SYSENTER_CS, low32, high32);
  	vmcs_write32(HOST_IA32_SYSENTER_CS, low32);
-@@ -6447,11 +6458,17 @@ static __init int hardware_setup(void)
+@@ -6518,11 +6525,17 @@ static __init int hardware_setup(void)
  	 * page upon invalidation.  No need to do anything if not
  	 * using the APIC_ACCESS_ADDR VMCS field.
  	 */
@@ -79,7 +79,7 @@ index 43b55ef..b88294e 100644
  
  	if (enable_ept && !cpu_has_vmx_ept_2m_page())
  		kvm_disable_largepages();
-@@ -6532,10 +6549,12 @@ static __init int hardware_setup(void)
+@@ -6593,10 +6606,12 @@ static __init int hardware_setup(void)
  		enable_pml = 0;
  
  	if (!enable_pml) {
@@ -92,7 +92,7 @@ index 43b55ef..b88294e 100644
  	}
  
  	if (cpu_has_vmx_preemption_timer() && enable_preemption_timer) {
-@@ -8934,6 +8953,12 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+@@ -8909,6 +8924,12 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
  		"jmp 2f \n\t"
  		"1: " __ex(ASM_VMX_VMRESUME) "\n\t"
  		"2: "
@@ -105,7 +105,7 @@ index 43b55ef..b88294e 100644
  		/* Save guest registers, load host registers, keep flags */
  		"mov %0, %c[wordsize](%%" _ASM_SP ") \n\t"
  		"pop %0 \n\t"
-@@ -8986,6 +9011,11 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+@@ -8961,6 +8982,11 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
  #endif
  		[cr2]"i"(offsetof(struct vcpu_vmx, vcpu.arch.cr2)),
  		[wordsize]"i"(sizeof(ulong))
@@ -117,7 +117,7 @@ index 43b55ef..b88294e 100644
  	      : "cc", "memory"
  #ifdef CONFIG_X86_64
  		, "rax", "rbx", "rdi", "rsi"
-@@ -8999,7 +9029,7 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+@@ -8974,7 +9000,7 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
  	if (debugctlmsr)
  		update_debugctlmsr(debugctlmsr);
  
@@ -126,7 +126,7 @@ index 43b55ef..b88294e 100644
  	/*
  	 * The sysexit path does not restore ds/es, so we must set them to
  	 * a reasonable value ourselves.
-@@ -9008,8 +9038,18 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+@@ -8983,8 +9009,18 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
  	 * may be executed in interrupt context, which saves and restore segments
  	 * around it, nullifying its effect.
  	 */

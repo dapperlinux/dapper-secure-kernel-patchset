@@ -1,5 +1,5 @@
 diff --git a/include/linux/atomic.h b/include/linux/atomic.h
-index e71835b..957f2d6 100644
+index c56be74..da977a4 100644
 --- a/include/linux/atomic.h
 +++ b/include/linux/atomic.h
 @@ -72,6 +72,7 @@
@@ -34,7 +34,7 @@ index e71835b..957f2d6 100644
  #endif /* atomic_inc_return_relaxed */
  
  /* atomic_sub_return_relaxed */
-@@ -490,6 +501,10 @@
+@@ -513,6 +524,10 @@
  #ifndef xchg
  #define  xchg(...)			__atomic_op_fence(xchg, __VA_ARGS__)
  #endif
@@ -45,7 +45,7 @@ index e71835b..957f2d6 100644
  #endif /* xchg_relaxed */
  
  /**
-@@ -501,7 +516,7 @@
+@@ -524,7 +539,7 @@
   * Atomically adds @a to @v, so long as @v was not already @u.
   * Returns non-zero if @v was not @u, and zero otherwise.
   */
@@ -54,7 +54,7 @@ index e71835b..957f2d6 100644
  {
  	return __atomic_add_unless(v, a, u) != u;
  }
-@@ -618,7 +633,7 @@ static inline int atomic_dec_if_positive(atomic_t *v)
+@@ -641,7 +656,7 @@ static inline int atomic_dec_if_positive(atomic_t *v)
  		dec = c - 1;
  		if (unlikely(dec < 0))
  			break;
@@ -63,7 +63,7 @@ index e71835b..957f2d6 100644
  		if (likely(old == c))
  			break;
  		c = old;
-@@ -661,6 +676,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
+@@ -684,6 +699,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
  #define  atomic64_add_return(...)					\
  	__atomic_op_fence(atomic64_add_return, __VA_ARGS__)
  #endif
@@ -75,7 +75,7 @@ index e71835b..957f2d6 100644
  #endif /* atomic64_add_return_relaxed */
  
  /* atomic64_inc_return_relaxed */
-@@ -685,6 +705,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
+@@ -708,6 +728,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
  #define  atomic64_inc_return(...)					\
  	__atomic_op_fence(atomic64_inc_return, __VA_ARGS__)
  #endif
@@ -87,7 +87,7 @@ index e71835b..957f2d6 100644
  #endif /* atomic64_inc_return_relaxed */
  
  
-@@ -970,6 +995,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
+@@ -993,6 +1018,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
  #define  atomic64_xchg(...)						\
  	__atomic_op_fence(atomic64_xchg, __VA_ARGS__)
  #endif
@@ -99,7 +99,7 @@ index e71835b..957f2d6 100644
  #endif /* atomic64_xchg_relaxed */
  
  /* atomic64_cmpxchg_relaxed */
-@@ -994,6 +1024,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
+@@ -1017,6 +1047,11 @@ static inline int atomic_dec_if_positive(atomic_t *v)
  #define  atomic64_cmpxchg(...)						\
  	__atomic_op_fence(atomic64_cmpxchg, __VA_ARGS__)
  #endif
@@ -110,4 +110,4 @@ index e71835b..957f2d6 100644
 +#endif
  #endif /* atomic64_cmpxchg_relaxed */
  
- #ifndef atomic64_andnot
+ #ifndef atomic64_try_cmpxchg

@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/chacha20-ssse3-x86_64.S b/arch/x86/crypto/chacha20-ssse3-x86_64.S
-index 3a33124..ba21c6f 100644
+index 3f511a7..982fbbb 100644
 --- a/arch/x86/crypto/chacha20-ssse3-x86_64.S
 +++ b/arch/x86/crypto/chacha20-ssse3-x86_64.S
 @@ -10,6 +10,7 @@
@@ -10,7 +10,7 @@ index 3a33124..ba21c6f 100644
  
  .section	.rodata.cst16.ROT8, "aM", @progbits, 16
  .align 16
-@@ -139,7 +140,7 @@ ENTRY(chacha20_block_xor_ssse3)
+@@ -142,7 +143,7 @@ ENTRY(chacha20_block_xor_ssse3)
  	pxor		%xmm7,%xmm3
  	movdqu		%xmm3,0x30(%rsi)
  
@@ -19,7 +19,7 @@ index 3a33124..ba21c6f 100644
  ENDPROC(chacha20_block_xor_ssse3)
  
  ENTRY(chacha20_4block_xor_ssse3)
-@@ -623,5 +624,5 @@ ENTRY(chacha20_4block_xor_ssse3)
+@@ -626,5 +627,5 @@ ENTRY(chacha20_4block_xor_ssse3)
  	movdqu		%xmm15,0xf0(%rsi)
  
  	mov		%r11,%rsp

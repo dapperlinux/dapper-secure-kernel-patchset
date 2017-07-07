@@ -1,8 +1,8 @@
 diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-index be20239..99d75dd 100644
+index c6d23ff..326b6b6 100644
 --- a/arch/x86/events/intel/ds.c
 +++ b/arch/x86/events/intel/ds.c
-@@ -601,7 +601,7 @@ int intel_pmu_drain_bts_buffer(void)
+@@ -601,7 +601,7 @@ unlock:
  
  static inline void intel_pmu_drain_pebs_buffer(void)
  {

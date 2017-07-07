@@ -1,8 +1,8 @@
 diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index 6422eef..9570baa 100644
+index 72d0ece..54636f8 100644
 --- a/include/linux/i2c.h
 +++ b/include/linux/i2c.h
-@@ -425,6 +425,7 @@ struct i2c_algorithm {
+@@ -447,6 +447,7 @@ struct i2c_algorithm {
  	int (*unreg_slave)(struct i2c_client *client);
  #endif
  };

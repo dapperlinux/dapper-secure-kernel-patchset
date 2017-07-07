@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/pgtable_types.h b/arch/x86/include/asm/pgtable_types.h
-index 8b4de22..eaf50b8 100644
+index bf9638e..a925533 100644
 --- a/arch/x86/include/asm/pgtable_types.h
 +++ b/arch/x86/include/asm/pgtable_types.h
 @@ -112,10 +112,14 @@
@@ -46,7 +46,7 @@ index 8b4de22..eaf50b8 100644
  #define PDE_IDENT_ATTR	 0x063		/* PRESENT+RW+DIRTY+ACCESSED */
  #define PGD_IDENT_ATTR	 0x001		/* PRESENT (no other attributes) */
  #endif
-@@ -271,7 +271,17 @@ static inline pgdval_t pgd_flags(pgd_t pgd)
+@@ -271,7 +278,17 @@ static inline pgdval_t pgd_flags(pgd_t pgd)
  {
  	return native_pgd_val(pgd) & PTE_FLAGS_MASK;
  }
@@ -61,36 +61,26 @@ index 8b4de22..eaf50b8 100644
 +#endif
 +
 +#ifndef __ASSEMBLY__
- #if CONFIG_PGTABLE_LEVELS > 3
- #include <asm-generic/5level-fixup.h>
+ #if CONFIG_PGTABLE_LEVELS > 4
+ typedef struct { p4dval_t p4d; } p4d_t;
  
-@@ -288,11 +288,10 @@ static inline pudval_t native_pud_val(pud_t pud)
+@@ -306,7 +323,6 @@ static inline pudval_t native_pud_val(pud_t pud)
+ 	return pud.pud;
  }
  #else
- #define __ARCH_USE_5LEVEL_HACK
 -#include <asm-generic/pgtable-nopud.h>
  
  static inline pudval_t native_pud_val(pud_t pud)
  {
--	return native_pgd_val(pud.pgd);
-+	return native_pgd_val(pud.p4d.pgd);
- }
- #endif
- 
-@@ -310,11 +309,10 @@ static inline pmdval_t native_pmd_val(pmd_t pmd)
+@@ -327,7 +343,6 @@ static inline pmdval_t native_pmd_val(pmd_t pmd)
+ 	return pmd.pmd;
  }
  #else
- #define __ARCH_USE_5LEVEL_HACK
 -#include <asm-generic/pgtable-nopmd.h>
  
  static inline pmdval_t native_pmd_val(pmd_t pmd)
  {
--	return native_pgd_val(pmd.pud.pgd);
-+	return native_pgd_val(pmd.pud.p4d.pgd);
- }
- #endif
- 
-@@ -424,7 +437,6 @@ typedef struct page *pgtable_t;
+@@ -461,7 +476,6 @@ typedef struct page *pgtable_t;
  
  extern pteval_t __supported_pte_mask;
  extern void set_nx(void);

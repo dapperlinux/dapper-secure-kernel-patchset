@@ -1,8 +1,8 @@
 diff --git a/arch/s390/kernel/kprobes.c b/arch/s390/kernel/kprobes.c
-index fdb4042..b72ae72 100644
+index 3d6a997..020d192 100644
 --- a/arch/s390/kernel/kprobes.c
 +++ b/arch/s390/kernel/kprobes.c
-@@ -269,6 +269,7 @@ static void pop_kprobe(struct kprobe_ctlblk *kcb)
+@@ -275,6 +275,7 @@ static void pop_kprobe(struct kprobe_ctlblk *kcb)
  }
  NOKPROBE_SYMBOL(pop_kprobe);
  
@@ -10,7 +10,7 @@ index fdb4042..b72ae72 100644
  void arch_prepare_kretprobe(struct kretprobe_instance *ri, struct pt_regs *regs)
  {
  	ri->ret_addr = (kprobe_opcode_t *) regs->gprs[14];
-@@ -277,6 +278,7 @@ void arch_prepare_kretprobe(struct kretprobe_instance *ri, struct pt_regs *regs)
+@@ -283,6 +284,7 @@ void arch_prepare_kretprobe(struct kretprobe_instance *ri, struct pt_regs *regs)
  	regs->gprs[14] = (unsigned long) &kretprobe_trampoline;
  }
  NOKPROBE_SYMBOL(arch_prepare_kretprobe);
@@ -18,7 +18,7 @@ index fdb4042..b72ae72 100644
  
  static void kprobe_reenter_check(struct kprobe_ctlblk *kcb, struct kprobe *p)
  {
-@@ -740,8 +742,10 @@ int __init arch_init_kprobes(void)
+@@ -746,8 +748,10 @@ int __init arch_init_kprobes(void)
  	return register_kprobe(&trampoline);
  }
  

@@ -1,5 +1,5 @@
 diff --git a/mm/slob.c b/mm/slob.c
-index eac04d43..73c02ba 100644
+index 1bae78d..b154442 100644
 --- a/mm/slob.c
 +++ b/mm/slob.c
 @@ -67,6 +67,7 @@
@@ -134,7 +134,7 @@ index eac04d43..73c02ba 100644
  	if (!slob_page_free(sp)) {
  		/* This slob page is about to become partially free. Easy! */
  		sp->units = units;
-@@ -424,11 +434,10 @@ static void slob_free(void *block, int size)
+@@ -424,11 +434,10 @@ out:
   */
  
  static __always_inline void *
@@ -348,7 +348,7 @@ index eac04d43..73c02ba 100644
  {
 +	flags = pax_sanitize_slab_flags(flags);
 +
- 	if (flags & SLAB_DESTROY_BY_RCU) {
+ 	if (flags & SLAB_TYPESAFE_BY_RCU) {
  		/* leave room for rcu footer at the end of object */
  		c->size += sizeof(struct slob_rcu);
 @@ -534,23 +662,33 @@ int __kmem_cache_create(struct kmem_cache *c, unsigned long flags)
@@ -438,7 +438,7 @@ index eac04d43..73c02ba 100644
 +#endif
 +
  	kmemleak_free_recursive(b, c->flags);
- 	if (unlikely(c->flags & SLAB_DESTROY_BY_RCU)) {
+ 	if (unlikely(c->flags & SLAB_TYPESAFE_BY_RCU)) {
  		struct slob_rcu *slob_rcu;
 -		slob_rcu = b + (c->size - sizeof(struct slob_rcu));
 -		slob_rcu->size = c->size;

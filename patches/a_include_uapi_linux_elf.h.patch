@@ -1,5 +1,5 @@
 diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
-index b59ee07..acfaf4ca 100644
+index b5280db..460116a 100644
 --- a/include/uapi/linux/elf.h
 +++ b/include/uapi/linux/elf.h
 @@ -37,6 +37,17 @@ typedef __s64	Elf64_Sxword;

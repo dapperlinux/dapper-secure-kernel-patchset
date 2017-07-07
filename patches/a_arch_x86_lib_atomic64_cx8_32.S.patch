@@ -1,5 +1,5 @@
 diff --git a/arch/x86/lib/atomic64_cx8_32.S b/arch/x86/lib/atomic64_cx8_32.S
-index db3ae854..5e266ef 100644
+index db3ae85..5e266ef 100644
 --- a/arch/x86/lib/atomic64_cx8_32.S
 +++ b/arch/x86/lib/atomic64_cx8_32.S
 @@ -10,6 +10,7 @@

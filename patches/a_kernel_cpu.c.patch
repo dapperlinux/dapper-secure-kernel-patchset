@@ -1,8 +1,8 @@
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 217fd2e..f665bfe 100644
+index cb51034..d538d33 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
-@@ -74,16 +74,8 @@ static DEFINE_PER_CPU(struct cpuhp_cpu_state, cpuhp_state);
+@@ -76,16 +76,8 @@ static DEFINE_PER_CPU(struct cpuhp_cpu_state, cpuhp_state);
   */
  struct cpuhp_step {
  	const char		*name;
@@ -21,7 +21,7 @@ index 217fd2e..f665bfe 100644
  	struct hlist_head	list;
  	bool			skip_onerr;
  	bool			cant_stop;
-@@ -644,7 +636,7 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
+@@ -573,7 +565,7 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
  	return st->result;
  }
  
@@ -30,7 +30,7 @@ index 217fd2e..f665bfe 100644
  	.store			= &cpuhp_state.thread,
  	.create			= &cpuhp_create,
  	.thread_should_run	= cpuhp_should_run,
-@@ -1327,8 +1327,8 @@ static int cpuhp_reserve_state(enum cpuhp_state state)
+@@ -1329,8 +1321,8 @@ static int cpuhp_reserve_state(enum cpuhp_state state)
  }
  
  static int cpuhp_store_callbacks(enum cpuhp_state state, const char *name,
@@ -41,7 +41,7 @@ index 217fd2e..f665bfe 100644
  				 bool multi_instance)
  {
  	/* (Un)Install the callbacks for further cpu hotplug operations */
-@@ -1345,17 +1345,17 @@ static int cpuhp_store_callbacks(enum cpuhp_state state, const char *name,
+@@ -1347,17 +1339,17 @@ static int cpuhp_store_callbacks(enum cpuhp_state state, const char *name,
  	if (name && sp->name)
  		return -EBUSY;
  
@@ -63,7 +63,7 @@ index 217fd2e..f665bfe 100644
  }
  
  /*
-@@ -1590,8 +1582,8 @@ EXPORT_SYMBOL_GPL(__cpuhp_state_add_instance);
+@@ -1476,8 +1468,8 @@ EXPORT_SYMBOL_GPL(__cpuhp_state_add_instance);
   */
  int __cpuhp_setup_state(enum cpuhp_state state,
  			const char *name, bool invoke,
@@ -74,7 +74,7 @@ index 217fd2e..f665bfe 100644
  			bool multi_instance)
  {
  	int cpu, ret = 0;
-@@ -1496,7 +1496,7 @@ int __cpuhp_setup_state(enum cpuhp_state state,
+@@ -1498,7 +1490,7 @@ int __cpuhp_setup_state(enum cpuhp_state state,
  		ret = 0;
  	}
  
@@ -83,7 +83,7 @@ index 217fd2e..f665bfe 100644
  		goto out;
  
  	/*
-@@ -1629,9 +1621,12 @@ int __cpuhp_setup_state(enum cpuhp_state state,
+@@ -1514,9 +1506,12 @@ int __cpuhp_setup_state(enum cpuhp_state state,
  
  		ret = cpuhp_issue_call(cpu, state, true, NULL);
  		if (ret) {
@@ -98,7 +98,7 @@ index 217fd2e..f665bfe 100644
  			goto out;
  		}
  	}
-@@ -1545,7 +1545,7 @@ int __cpuhp_state_remove_instance(enum cpuhp_state state,
+@@ -1547,7 +1542,7 @@ int __cpuhp_state_remove_instance(enum cpuhp_state state,
  	get_online_cpus();
  	mutex_lock(&cpuhp_state_mutex);
  
@@ -107,7 +107,7 @@ index 217fd2e..f665bfe 100644
  		goto remove;
  	/*
  	 * Call the teardown callback for each present cpu depending
-@@ -1692,6 +1687,8 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
+@@ -1584,6 +1579,8 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
  {
  	struct cpuhp_step *sp = cpuhp_get_step(state);
  	int cpu;
@@ -116,7 +116,7 @@ index 217fd2e..f665bfe 100644
  
  	BUG_ON(cpuhp_cb_check(state));
  
-@@ -1704,7 +1701,7 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
+@@ -1597,7 +1594,7 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
  		goto remove;
  	}
  
@@ -125,7 +125,7 @@ index 217fd2e..f665bfe 100644
  		goto remove;
  
  	/*
-@@ -1611,7 +1611,7 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
+@@ -1613,7 +1610,7 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
  			cpuhp_issue_call(cpu, state, false, NULL);
  	}
  remove:

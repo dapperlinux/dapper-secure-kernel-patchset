@@ -1,10 +1,10 @@
 diff --git a/net/sunrpc/xprtrdma/svc_rdma.c b/net/sunrpc/xprtrdma/svc_rdma.c
-index c846ca9..d5968b4 100644
+index a4a8f69..74d823e 100644
 --- a/net/sunrpc/xprtrdma/svc_rdma.c
 +++ b/net/sunrpc/xprtrdma/svc_rdma.c
-@@ -62,15 +62,15 @@ unsigned int svcrdma_max_req_size = RPCRDMA_MAX_REQ_SIZE;
- static unsigned int min_max_inline = 4096;
- static unsigned int max_max_inline = 65536;
+@@ -62,15 +62,15 @@ unsigned int svcrdma_max_req_size = RPCRDMA_DEF_INLINE_THRESH;
+ static unsigned int min_max_inline = RPCRDMA_DEF_INLINE_THRESH;
+ static unsigned int max_max_inline = RPCRDMA_MAX_INLINE_THRESH;
  
 -atomic_t rdma_stat_recv;
 -atomic_t rdma_stat_read;

@@ -1,5 +1,5 @@
 diff --git a/fs/fhandle.c b/fs/fhandle.c
-index ca3c3dd..0c5456e 100644
+index 58a61f5..a0308af 100644
 --- a/fs/fhandle.c
 +++ b/fs/fhandle.c
 @@ -8,6 +8,7 @@
@@ -8,9 +8,9 @@ index ca3c3dd..0c5456e 100644
  #include <linux/personality.h>
 +#include <linux/grsecurity.h>
  #include <linux/uaccess.h>
+ #include <linux/compat.h>
  #include "internal.h"
- #include "mount.h"
-@@ -67,8 +68,7 @@ static long do_sys_name_to_handle(struct path *path,
+@@ -68,8 +69,7 @@ static long do_sys_name_to_handle(struct path *path,
  	} else
  		retval = 0;
  	/* copy the mount id */
@@ -20,7 +20,7 @@ index ca3c3dd..0c5456e 100644
  	    copy_to_user(ufh, handle,
  			 sizeof(struct file_handle) + handle_bytes))
  		retval = -EFAULT;
-@@ -175,7 +175,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
+@@ -176,7 +176,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
  	 * the directory. Ideally we would like CAP_DAC_SEARCH.
  	 * But we don't have that
  	 */
@@ -29,7 +29,7 @@ index ca3c3dd..0c5456e 100644
  		retval = -EPERM;
  		goto out_err;
  	}
-@@ -197,7 +197,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
+@@ -198,7 +198,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
  	/* copy the full handle */
  	*handle = f_handle;
  	if (copy_from_user(&handle->f_handle,

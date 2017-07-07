@@ -1,8 +1,8 @@
 diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardware/mISDN/hfcmulti.c
-index 480c2d7..89f2219 100644
+index 961c07e..839cb18 100644
 --- a/drivers/isdn/hardware/mISDN/hfcmulti.c
 +++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
-@@ -2856,8 +2856,9 @@ hfcmulti_interrupt(int intno, void *dev_id)
+@@ -2856,8 +2856,9 @@ irq_notforus:
   */
  
  static void
@@ -17,17 +17,17 @@ index 480c2d7..89f2219 100644
  		if (hc->dnum[pt]) {
  			mode_hfcmulti(hc, dch->slot, dch->dev.D.protocol,
  				      -1, 0, -1, 0);
--			dch->timer.function = (void *) hfcmulti_dbusy_timer;
-+			dch->timer.function = hfcmulti_dbusy_timer;
- 			dch->timer.data = (long) dch;
- 			init_timer(&dch->timer);
+-			setup_timer(&dch->timer, (void *)hfcmulti_dbusy_timer,
++			setup_timer(&dch->timer,hfcmulti_dbusy_timer,
+ 				    (long)dch);
  		}
-@@ -3986,7 +3987,7 @@ hfcmulti_initmode(struct dchannel *dch)
+ 		for (i = 1; i <= 31; i++) {
+@@ -3985,7 +3986,7 @@ hfcmulti_initmode(struct dchannel *dch)
  		hc->chan[i].slot_rx = -1;
  		hc->chan[i].conf = -1;
  		mode_hfcmulti(hc, i, dch->dev.D.protocol, -1, 0, -1, 0);
--		dch->timer.function = (void *) hfcmulti_dbusy_timer;
-+		dch->timer.function = hfcmulti_dbusy_timer;
- 		dch->timer.data = (long) dch;
- 		init_timer(&dch->timer);
+-		setup_timer(&dch->timer, (void *)hfcmulti_dbusy_timer,
++		setup_timer(&dch->timer,hfcmulti_dbusy_timer,
+ 			    (long)dch);
  		hc->chan[i - 2].slot_tx = -1;
+ 		hc->chan[i - 2].slot_rx = -1;

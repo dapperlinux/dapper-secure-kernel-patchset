@@ -31,12 +31,12 @@ index 661dd30..e804f84 100644
 -	__GEN_RMWcc(op " " arg0, var, cc)
 +#define GEN_UNARY_RMWcc(op, var, size, arg0, cc) 			\
 +	__GEN_RMWcc(op " " arg0, var, size, cc)
++
++#define GEN_UNARY_RMWcc_unchecked(op, var, arg0, cc) 			\
++	__GEN_RMWcc_unchecked(op " " arg0, var, cc)
  
 -#define GEN_BINARY_RMWcc(op, var, vcon, val, arg0, cc)			\
 -	__GEN_RMWcc(op " %1, " arg0, var, cc, vcon (val))
-+#define GEN_UNARY_RMWcc_unchecked(op, var, arg0, cc) 			\
-+	__GEN_RMWcc_unchecked(op " " arg0, var, cc)
-+
 +#define GEN_BINARY_RMWcc(op, var, size, vcon, val, arg0, cc)		\
 +	__GEN_RMWcc(op " %1, " arg0, var, size, cc, vcon (val))
 +
@@ -71,15 +71,15 @@ index 661dd30..e804f84 100644
 -	__GEN_RMWcc(op " " arg0, var, cc)
 +#define GEN_UNARY_RMWcc(op, var, size, arg0, cc)			\
 +	__GEN_RMWcc(op " " arg0, var, size, cc)
- 
--#define GEN_BINARY_RMWcc(op, var, vcon, val, arg0, cc)			\
--	__GEN_RMWcc(op " %2, " arg0, var, cc, vcon (val))
++
 +#define GEN_UNARY_RMWcc_unchecked(op, var, arg0, cc)			\
 +	__GEN_RMWcc_unchecked(op " " arg0, var, cc)
 +
 +#define GEN_BINARY_RMWcc(op, var, size, vcon, val, arg0, cc)		\
 +	__GEN_RMWcc(op " %2, " arg0, var, size, cc, vcon (val))
-+
+ 
+-#define GEN_BINARY_RMWcc(op, var, vcon, val, arg0, cc)			\
+-	__GEN_RMWcc(op " %2, " arg0, var, cc, vcon (val))
 +#define GEN_BINARY_RMWcc_unchecked(op, var, vcon, val, arg0, cc)	\
 +	__GEN_RMWcc_unchecked(op " %2, " arg0, var, cc, vcon (val))
  

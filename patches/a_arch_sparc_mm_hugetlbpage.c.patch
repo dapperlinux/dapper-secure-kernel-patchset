@@ -1,5 +1,5 @@
 diff --git a/arch/sparc/mm/hugetlbpage.c b/arch/sparc/mm/hugetlbpage.c
-index 988acc8b..f26345c 100644
+index 88855e3..4b6e139 100644
 --- a/arch/sparc/mm/hugetlbpage.c
 +++ b/arch/sparc/mm/hugetlbpage.c
 @@ -27,8 +27,10 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
@@ -38,7 +38,7 @@ index 988acc8b..f26345c 100644
  		info.high_limit = task_size;
  		addr = vm_unmapped_area(&info);
  	}
-@@ -55,10 +55,11 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
+@@ -55,10 +64,11 @@ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *filp,
  }
  
  static unsigned long
@@ -54,7 +54,7 @@ index 988acc8b..f26345c 100644
  {
  	struct hstate *h = hstate_file(filp);
  	struct mm_struct *mm = current->mm;
-@@ -74,6 +75,7 @@ hugetlb_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
+@@ -74,6 +84,7 @@ hugetlb_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
  	info.high_limit = mm->mmap_base;
  	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
  	info.align_offset = 0;
@@ -62,7 +62,7 @@ index 988acc8b..f26345c 100644
  	addr = vm_unmapped_area(&info);
  
  	/*
-@@ -83,6 +94,12 @@ hugetlb_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
+@@ -86,6 +97,12 @@ hugetlb_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
  		VM_BUG_ON(addr != -ENOMEM);
  		info.flags = 0;
  		info.low_limit = TASK_UNMAPPED_BASE;
@@ -75,7 +75,7 @@ index 988acc8b..f26345c 100644
  		info.high_limit = STACK_TOP32;
  		addr = vm_unmapped_area(&info);
  	}
-@@ -97,6 +114,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+@@ -101,6 +118,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
  	struct mm_struct *mm = current->mm;
  	struct vm_area_struct *vma;
  	unsigned long task_size = TASK_SIZE;
@@ -83,7 +83,7 @@ index 988acc8b..f26345c 100644
  
  	if (test_thread_flag(TIF_32BIT))
  		task_size = STACK_TOP32;
-@@ -116,19 +116,22 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+@@ -116,19 +134,22 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
  		return addr;
  	}
  

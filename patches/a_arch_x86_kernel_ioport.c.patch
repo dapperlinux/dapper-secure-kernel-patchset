@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/ioport.c b/arch/x86/kernel/ioport.c
-index 589b319..367e6ce 100644
+index 9c3cf09..3e1aad2 100644
 --- a/arch/x86/kernel/ioport.c
 +++ b/arch/x86/kernel/ioport.c
 @@ -7,6 +7,7 @@
@@ -10,7 +10,7 @@ index 589b319..367e6ce 100644
  #include <linux/errno.h>
  #include <linux/types.h>
  #include <linux/ioport.h>
-@@ -20,7 +21,7 @@
+@@ -22,7 +23,7 @@
  /*
   * this changes the io permissions bitmap in the current task.
   */
@@ -19,7 +19,7 @@ index 589b319..367e6ce 100644
  {
  	struct thread_struct *t = &current->thread;
  	struct tss_struct *tss;
-@@ -30,6 +31,12 @@ asmlinkage long sys_ioperm(unsigned long from, unsigned long num, int turn_on)
+@@ -32,6 +33,12 @@ asmlinkage long sys_ioperm(unsigned long from, unsigned long num, int turn_on)
  		return -EINVAL;
  	if (turn_on && !capable(CAP_SYS_RAWIO))
  		return -EPERM;
@@ -32,7 +32,7 @@ index 589b319..367e6ce 100644
  
  	/*
  	 * If it's the first ioperm() call in this thread's lifetime, set the
-@@ -54,7 +61,7 @@ asmlinkage long sys_ioperm(unsigned long from, unsigned long num, int turn_on)
+@@ -66,7 +73,7 @@ asmlinkage long sys_ioperm(unsigned long from, unsigned long num, int turn_on)
  	 * because the ->io_bitmap_max value must match the bitmap
  	 * contents:
  	 */
@@ -41,7 +41,7 @@ index 589b319..367e6ce 100644
  
  	if (turn_on)
  		bitmap_clear(t->io_bitmap_ptr, from, num);
-@@ -110,6 +117,12 @@ SYSCALL_DEFINE1(iopl, unsigned int, level)
+@@ -122,6 +129,12 @@ SYSCALL_DEFINE1(iopl, unsigned int, level)
  	if (level > old) {
  		if (!capable(CAP_SYS_RAWIO))
  			return -EPERM;

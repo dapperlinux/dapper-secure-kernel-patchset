@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
-index dc05f010..83302a8 100644
+index 7a7de27..5cfac0d 100644
 --- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
 +++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
 @@ -45,6 +45,7 @@
@@ -10,7 +10,7 @@ index dc05f010..83302a8 100644
  
  ## ISCSI CRC 32 Implementation with crc32 and pclmulqdq Instruction
  
-@@ -309,7 +309,7 @@ do_return:
+@@ -309,7 +310,7 @@ do_return:
  	popq    %rsi
  	popq    %rdi
  	popq    %rbx

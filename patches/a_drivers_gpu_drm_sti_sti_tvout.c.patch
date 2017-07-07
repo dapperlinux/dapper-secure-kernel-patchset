@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/sti/sti_tvout.c b/drivers/gpu/drm/sti/sti_tvout.c
-index ad46d35..488be64 100644
+index 8b8ea71..a4f635e 100644
 --- a/drivers/gpu/drm/sti/sti_tvout.c
 +++ b/drivers/gpu/drm/sti/sti_tvout.c
 @@ -563,7 +563,7 @@ static int tvout_dbg_show(struct seq_file *s, void *data)
@@ -11,7 +11,7 @@ index ad46d35..488be64 100644
  	{ "tvout", tvout_dbg_show, 0, NULL },
  };
  
-@@ -578,8 +578,10 @@ static int tvout_debugfs_init(struct sti_tvout *tvout, struct drm_minor *minor)
+@@ -571,8 +571,10 @@ static int tvout_debugfs_init(struct sti_tvout *tvout, struct drm_minor *minor)
  {
  	unsigned int i;
  

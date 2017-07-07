@@ -1,13 +1,13 @@
 diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
-index 674f367..ec3a31f 100644
+index a8cb332..e4c774d 100644
 --- a/drivers/net/can/vcan.c
 +++ b/drivers/net/can/vcan.c
-@@ -163,7 +163,7 @@ static void vcan_setup(struct net_device *dev)
- 	dev->destructor		= free_netdev;
+@@ -166,7 +166,7 @@ static void vcan_setup(struct net_device *dev)
+ 	dev->needs_free_netdev	= true;
  }
  
 -static struct rtnl_link_ops vcan_link_ops __read_mostly = {
 +static struct rtnl_link_ops vcan_link_ops = {
- 	.kind	= "vcan",
+ 	.kind	= DRV_NAME,
  	.setup	= vcan_setup,
  };
