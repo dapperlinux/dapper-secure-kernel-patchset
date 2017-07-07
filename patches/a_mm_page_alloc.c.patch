@@ -72,14 +72,6 @@ index e5b159b..90fc606 100644
  	page_zone(page)->managed_pages += nr_pages;
  	set_page_refcounted(page);
  	__free_pages(page, order);
-@@ -1321,7 +1356,6 @@ static inline bool __meminit meminit_pfn_in_nid(unsigned long pfn, int node,
- }
- #endif
- 
--
- void __init __free_pages_bootmem(struct page *page, unsigned long pfn,
- 							unsigned int order)
- {
 @@ -1697,8 +1731,8 @@ static inline int check_new_page(struct page *page)
  
  static inline bool free_pages_prezeroed(bool poisoned)
@@ -91,20 +83,6 @@ index e5b159b..90fc606 100644
  }
  
  #ifdef CONFIG_DEBUG_VM
-@@ -1754,11 +1788,13 @@ static void prep_new_page(struct page *page, unsigned int order, gfp_t gfp_flags
- 	int i;
- 	bool poisoned = true;
- 
-+#ifndef CONFIG_PAX_MEMORY_SANITIZE
- 	for (i = 0; i < (1 << order); i++) {
- 		struct page *p = page + i;
- 		if (poisoned)
- 			poisoned &= page_is_poisoned(p);
- 	}
-+#endif
- 
- 	post_alloc_hook(page, order, gfp_flags);
- 
 @@ -2305,8 +2341,9 @@ static void drain_pages(unsigned int cpu)
   * The CPU has to be pinned. When zone parameter is non-NULL, spill just
   * the single zone's pages.
