@@ -116,7 +116,7 @@ index 516acdb..d36757c 100644
  				int ptrace, struct task_struct *p)
  {
  	struct siginfo __user *infop;
-@@ -1310,6 +1322,7 @@ unlock_sig:
+@@ -1310,6 +1322,7 @@ static int wait_task_stopped(struct wait_opts *wo,
  	pid = task_pid_vnr(p);
  	why = ptrace ? CLD_TRAPPED : CLD_STOPPED;
  	read_unlock(&tasklist_lock);
@@ -124,7 +124,7 @@ index 516acdb..d36757c 100644
  	sched_annotate_sleep();
  
  	if (unlikely(wo->wo_flags & WNOWAIT))
-@@ -1347,6 +1360,7 @@ unlock_sig:
+@@ -1347,6 +1360,7 @@ static int wait_task_stopped(struct wait_opts *wo,
   * the lock and this task is uninteresting.  If we return nonzero, we have
   * released the lock and the system call should return.
   */
@@ -165,7 +165,7 @@ index 516acdb..d36757c 100644
  static int ptrace_do_wait(struct wait_opts *wo, struct task_struct *tsk)
  {
  	struct task_struct *p;
-@@ -1590,12 +1609,16 @@ repeat:
+@@ -1590,12 +1609,16 @@ static long do_wait(struct wait_opts *wo)
  	tsk = current;
  	do {
  		retval = do_wait_thread(wo, tsk);

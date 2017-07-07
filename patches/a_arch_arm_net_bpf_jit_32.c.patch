@@ -96,7 +96,7 @@ index d5b9fa1..4bc4b1a 100644
  			emit_mov_i(r_off, k, ctx);
  load_common:
  			ctx->seen |= SEEN_DATA | SEEN_CALL;
-@@ -569,18 +559,6 @@ load_common:
+@@ -569,18 +559,6 @@ static int build_body(struct jit_ctx *ctx)
  				condt = ARM_COND_HI;
  			}
  

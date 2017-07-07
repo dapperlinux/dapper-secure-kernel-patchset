@@ -134,7 +134,7 @@ index 5075fd5..d819753 100644
  				error = -ENOMEM;
  				goto out;
  			}
-@@ -653,6 +680,336 @@ out:
+@@ -653,6 +680,336 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
  	return error;
  }
  
@@ -737,7 +737,7 @@ index 5075fd5..d819753 100644
  		vma_filesz[i++] = dump_size;
  		vma_data_size += dump_size;
  	}
-@@ -2342,6 +2818,167 @@ out:
+@@ -2342,6 +2818,167 @@ static int elf_core_dump(struct coredump_params *cprm)
  
  #endif		/* CONFIG_ELF_CORE */
  

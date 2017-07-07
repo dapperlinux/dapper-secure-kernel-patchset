@@ -65,7 +65,7 @@ index 326d4f8..6719607 100644
  		return -EPERM;
  
  	retval = security_task_setnice(current, nice);
-@@ -4244,6 +4248,7 @@ recheck:
+@@ -4244,6 +4248,7 @@ static int __sched_setscheduler(struct task_struct *p,
  			if (policy != p->policy && !rlim_rtprio)
  				return -EPERM;
  

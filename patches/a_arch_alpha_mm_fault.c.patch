@@ -127,7 +127,7 @@ index c25e882..2a5e036 100644
  
  /*
   * This routine handles page faults.  It determines the address,
-@@ -132,8 +250,29 @@ retry:
+@@ -132,8 +250,29 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
   good_area:
  	si_code = SEGV_ACCERR;
  	if (cause < 0) {

@@ -72,7 +72,7 @@ index cc30a74..3704d71 100644
  {
  	struct pt_regs *regs = current_pt_regs();
  	struct sigframe __user *frame;
-@@ -632,7 +634,7 @@ badframe:
+@@ -632,7 +634,7 @@ asmlinkage unsigned long sys_sigreturn(void)
  }
  #endif /* CONFIG_X86_32 */
  

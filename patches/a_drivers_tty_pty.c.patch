@@ -2,7 +2,7 @@ diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
 index 6579957..6b66c03 100644
 --- a/drivers/tty/pty.c
 +++ b/drivers/tty/pty.c
-@@ -795,7 +795,7 @@ out_free_file:
+@@ -795,7 +795,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
  	return retval;
  }
  

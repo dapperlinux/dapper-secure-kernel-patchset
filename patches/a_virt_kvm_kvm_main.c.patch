@@ -80,7 +80,7 @@ index f0fe9d0..192bb88 100644
  	.release        = kvm_vm_release,
  	.unlocked_ioctl = kvm_vm_ioctl,
  #ifdef CONFIG_KVM_COMPAT
-@@ -3241,7 +3258,7 @@ out:
+@@ -3241,7 +3258,7 @@ static long kvm_dev_ioctl(struct file *filp,
  	return r;
  }
  

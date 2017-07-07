@@ -11,7 +11,7 @@ index bc0f5a0..c40d5e0 100644
  {
  	int *ip = (int *)kp->arg;
  	struct svc_pool_map *m = &svc_pool_map;
-@@ -80,7 +80,7 @@ out:
+@@ -80,7 +80,7 @@ param_set_pool_mode(const char *val, struct kernel_param *kp)
  }
  
  static int

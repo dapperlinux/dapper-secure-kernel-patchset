@@ -148,7 +148,7 @@ index 3eedb18..13138e6 100644
  /*
   * Hugetlb_cow() should be called with page lock of the original hugepage held.
   * Called with hugetlb_instantiation_mutex held and pte_page locked so we
-@@ -3585,6 +3675,11 @@ retry_avoidcopy:
+@@ -3585,6 +3675,11 @@ static int hugetlb_cow(struct mm_struct *mm, struct vm_area_struct *vma,
  				make_huge_pte(vma, new_page, 1));
  		page_remove_rmap(old_page, true);
  		hugepage_add_new_anon_rmap(new_page, vma, address);
@@ -160,7 +160,7 @@ index 3eedb18..13138e6 100644
  		/* Make the old page be freed below */
  		new_page = old_page;
  	}
-@@ -3790,6 +3885,10 @@ retry:
+@@ -3790,6 +3885,10 @@ static int hugetlb_no_page(struct mm_struct *mm, struct vm_area_struct *vma,
  				&& (vma->vm_flags & VM_SHARED)));
  	set_huge_pte_at(mm, address, ptep, new_pte);
  

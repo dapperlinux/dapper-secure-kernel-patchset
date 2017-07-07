@@ -24,7 +24,7 @@ index f589393..b76a511 100644
  }
  
  struct jit_context {
-@@ -1070,7 +1076,9 @@ common_load:
+@@ -1070,7 +1076,9 @@ xadd:			if (is_imm8(insn->off))
  				pr_err("bpf_jit: fatal error\n");
  				return -EFAULT;
  			}

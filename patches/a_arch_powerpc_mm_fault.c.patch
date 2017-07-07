@@ -56,7 +56,7 @@ index 3a7d580..6e42854 100644
  	else
  		is_write = error_code & DSISR_ISSTORE;
  #else
-@@ -377,12 +408,16 @@ good_area:
+@@ -377,12 +408,16 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
           * "undefined".  Of those that can be set, this is the only
           * one which seems bad.
           */
@@ -74,7 +74,7 @@ index 3a7d580..6e42854 100644
  		/*
  		 * Allow execution from readable areas if the MMU does not
  		 * provide separate controls over reading and executing.
-@@ -510,6 +545,23 @@ bad_area:
+@@ -510,6 +545,23 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
  bad_area_nosemaphore:
  	/* User mode accesses cause a SIGSEGV */
  	if (user_mode(regs)) {

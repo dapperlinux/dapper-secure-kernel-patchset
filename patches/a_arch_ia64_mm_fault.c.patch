@@ -26,7 +26,7 @@ index 15f09cf..065ba98 100644
  #	define VM_READ_BIT	0
  #	define VM_WRITE_BIT	1
  #	define VM_EXEC_BIT	2
-@@ -153,8 +170,21 @@ retry:
+@@ -153,8 +170,21 @@ ia64_do_page_fault (unsigned long address, unsigned long isr, struct pt_regs *re
  	if (((isr >> IA64_ISR_R_BIT) & 1UL) && (!(vma->vm_flags & (VM_READ | VM_WRITE))))
  		goto bad_area;
  
