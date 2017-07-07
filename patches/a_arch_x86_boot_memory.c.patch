@@ -1,5 +1,5 @@
 diff --git a/arch/x86/boot/memory.c b/arch/x86/boot/memory.c
-index db75d07..8e6d0af 100644
+index d9c28c8..c0932a3 100644
 --- a/arch/x86/boot/memory.c
 +++ b/arch/x86/boot/memory.c
 @@ -19,7 +19,7 @@
@@ -9,5 +9,5 @@ index db75d07..8e6d0af 100644
 -	int count = 0;
 +	unsigned int count = 0;
  	struct biosregs ireg, oreg;
- 	struct e820entry *desc = boot_params.e820_map;
- 	static struct e820entry buf; /* static so it is zeroed */
+ 	struct boot_e820_entry *desc = boot_params.e820_table;
+ 	static struct boot_e820_entry buf; /* static so it is zeroed */

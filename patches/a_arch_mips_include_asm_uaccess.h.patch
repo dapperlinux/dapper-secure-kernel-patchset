@@ -1,12 +1,12 @@
 diff --git a/arch/mips/include/asm/uaccess.h b/arch/mips/include/asm/uaccess.h
-index 89fa5c0b..9409cea 100644
+index 99e629a..a92535d 100644
 --- a/arch/mips/include/asm/uaccess.h
 +++ b/arch/mips/include/asm/uaccess.h
-@@ -148,6 +148,7 @@ static inline bool eva_kernel_access(void)
- 	__ok == 0;							\
- })
+@@ -134,6 +134,7 @@ static inline int __access_ok(const void __user *p, unsigned long size)
+ 	return (get_fs().seg & (addr | (addr + size) | __ua_size(size))) == 0;
+ }
  
 +#define access_ok_noprefault(type, addr, size) access_ok((type), (addr), (size))
  #define access_ok(type, addr, size)					\
- 	likely(__access_ok((addr), (size), __access_mask))
+ 	likely(__access_ok((addr), (size)))
  

@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 5130985..6067a9f 100644
+index 40ed268..c4c6b85 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -150,7 +150,7 @@ static bool __init vmware_legacy_x2apic_available(void)
+@@ -205,7 +205,7 @@ static bool __init vmware_legacy_x2apic_available(void)
  	       (eax & (1 << VMWARE_PORT_CMD_LEGACY_X2APIC)) != 0;
  }
  
@@ -10,4 +10,4 @@ index 5130985..6067a9f 100644
 +const struct hypervisor_x86 x86_hyper_vmware = {
  	.name			= "VMware",
  	.detect			= vmware_platform,
- 	.set_cpu_features	= vmware_set_cpu_features,
+ 	.init_platform		= vmware_platform_setup,

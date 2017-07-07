@@ -1,17 +1,23 @@
 diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
-index 5082b30..9ef38c2 100644
+index ea9bb4e..6a0fbea 100644
 --- a/arch/arm64/include/asm/cache.h
 +++ b/arch/arm64/include/asm/cache.h
-@@ -16,10 +16,14 @@
+@@ -16,8 +16,12 @@
  #ifndef __ASM_CACHE_H
  #define __ASM_CACHE_H
  
 +#include <linux/const.h>
 +
- #include <asm/cachetype.h>
+ #include <asm/cputype.h>
  
 +#include <linux/const.h>
 +
+ #define CTR_L1IP_SHIFT		14
+ #define CTR_L1IP_MASK		3
+ #define CTR_CWG_SHIFT		24
+@@ -30,7 +34,7 @@
+ #define ICACHE_POLICY_PIPT	3
+ 
  #define L1_CACHE_SHIFT		7
 -#define L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)
 +#define L1_CACHE_BYTES		(_AC(1,UL) << L1_CACHE_SHIFT)

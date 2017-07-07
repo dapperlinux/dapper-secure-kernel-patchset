@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/acpi/sleep.c b/arch/x86/kernel/acpi/sleep.c
-index 4858733..3353d988 100644
+index ed01481..58a2619 100644
 --- a/arch/x86/kernel/acpi/sleep.c
 +++ b/arch/x86/kernel/acpi/sleep.c
 @@ -100,8 +100,12 @@ int x86_acpi_suspend_lowlevel(void)
@@ -9,7 +9,7 @@ index 4858733..3353d988 100644
 +
 +	pax_open_kernel();
  	early_gdt_descr.address =
- 			(unsigned long)get_cpu_gdt_table(smp_processor_id());
+ 			(unsigned long)get_cpu_gdt_rw(smp_processor_id());
 +	pax_close_kernel();
 +
  	initial_gs = per_cpu_offset(smp_processor_id());

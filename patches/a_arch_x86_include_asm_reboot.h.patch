@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/reboot.h b/arch/x86/include/asm/reboot.h
-index 2cb1cc2..787d524 100644
+index fc62ba8..7518897 100644
 --- a/arch/x86/include/asm/reboot.h
 +++ b/arch/x86/include/asm/reboot.h
 @@ -6,13 +6,13 @@
@@ -20,4 +20,4 @@ index 2cb1cc2..787d524 100644
 +} __no_const;
  
  extern struct machine_ops machine_ops;
- 
+ extern int crashing_cpu;
