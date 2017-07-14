@@ -2,7 +2,7 @@ diff --git a/include/asm-generic/uaccess.h b/include/asm-generic/uaccess.h
 index cc6bb31..804a417 100644
 --- a/include/asm-generic/uaccess.h
 +++ b/include/asm-generic/uaccess.h
-@@ -348,4 +348,20 @@ clear_user(void __user *to, unsigned long n)
+@@ -227,6 +227,22 @@ clear_user(void __user *to, unsigned long n)
  	return __clear_user(to, n);
  }
  
@@ -22,4 +22,6 @@ index cc6bb31..804a417 100644
 +#endif
 +#endif
 +
+ #include <asm/extable.h>
+ 
  #endif /* __ASM_GENERIC_UACCESS_H */
