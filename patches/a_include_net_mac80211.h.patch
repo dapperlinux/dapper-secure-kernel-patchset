@@ -11,15 +11,6 @@ index e2dba93..5a752f4 100644
  	u32 cipher;
  	u8 icv_len;
  	u8 iv_len;
-@@ -5421,7 +5421,7 @@ struct ieee80211_tx_rate_control {
- 	struct sk_buff *skb;
- 	struct ieee80211_tx_rate reported_rate;
- 	bool rts, short_preamble;
--	u8 max_rate_idx;
-+	s8 max_rate_idx;
- 	u32 rate_idx_mask;
- 	u8 *rate_idx_mcs_mask;
- 	bool bss;
 @@ -5458,7 +5458,7 @@ struct rate_control_ops {
  	void (*remove_sta_debugfs)(void *priv, void *priv_sta);
  

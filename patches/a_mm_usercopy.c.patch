@@ -2,7 +2,7 @@ diff --git a/mm/usercopy.c b/mm/usercopy.c
 index 3c8da0a..3dfb587 100644
 --- a/mm/usercopy.c
 +++ b/mm/usercopy.c
-@@ -16,17 +16,13 @@
+@@ -16,11 +16,13 @@
  
  #include <linux/mm.h>
  #include <linux/slab.h>
@@ -10,14 +10,8 @@ index 3c8da0a..3dfb587 100644
  #include <linux/sched.h>
  #include <linux/sched/task.h>
  #include <linux/sched/task_stack.h>
+ #include <linux/thread_info.h>
  #include <asm/sections.h>
- 
--enum {
--	BAD_STACK = -1,
--	NOT_STACK = 0,
--	GOOD_FRAME,
--	GOOD_STACK,
--};
 +#include <linux/uaccess.h>
  
  /*

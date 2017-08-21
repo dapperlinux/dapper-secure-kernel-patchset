@@ -12,7 +12,7 @@ index 6b10573..af9e62e 100644
  static DEFINE_MUTEX(sock_diag_table_mutex);
  static struct workqueue_struct *broadcast_wq;
 @@ -22,12 +22,12 @@ static struct workqueue_struct *broadcast_wq;
- static u64 sock_gen_cookie(struct sock *sk)
+ u64 sock_gen_cookie(struct sock *sk)
  {
  	while (1) {
 -		u64 res = atomic64_read(&sk->sk_cookie);
@@ -27,15 +27,6 @@ index 6b10573..af9e62e 100644
  	}
  }
  
-@@ -67,7 +67,7 @@ int sock_diag_put_meminfo(struct sock *sk, struct sk_buff *skb, int attrtype)
- 	mem[SK_MEMINFO_WMEM_QUEUED] = sk->sk_wmem_queued;
- 	mem[SK_MEMINFO_OPTMEM] = atomic_read(&sk->sk_omem_alloc);
- 	mem[SK_MEMINFO_BACKLOG] = sk->sk_backlog.len;
--	mem[SK_MEMINFO_DROPS] = atomic_read(&sk->sk_drops);
-+	mem[SK_MEMINFO_DROPS] = atomic_read_unchecked(&sk->sk_drops);
- 
- 	return nla_put(skb, attrtype, sizeof(mem), &mem);
- }
 @@ -193,8 +193,11 @@ int sock_diag_register(const struct sock_diag_handler *hndl)
  	mutex_lock(&sock_diag_table_mutex);
  	if (sock_diag_handlers[hndl->family])

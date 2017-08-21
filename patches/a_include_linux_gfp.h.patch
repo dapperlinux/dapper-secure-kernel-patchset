@@ -2,10 +2,10 @@ diff --git a/include/linux/gfp.h b/include/linux/gfp.h
 index f8041f9de..593a07b 100644
 --- a/include/linux/gfp.h
 +++ b/include/linux/gfp.h
-@@ -40,6 +40,13 @@ struct vm_area_struct;
- #define ___GFP_DIRECT_RECLAIM	0x400000u
- #define ___GFP_WRITE		0x800000u
- #define ___GFP_KSWAPD_RECLAIM	0x1000000u
+@@ -45,6 +45,13 @@ struct vm_area_struct;
+ #else
+ #define ___GFP_NOLOCKDEP	0
+ #endif
 +
 +#ifdef CONFIG_PAX_USERCOPY
 +#define ___GFP_USERCOPY		0x4000000u
@@ -32,12 +32,12 @@ index f8041f9de..593a07b 100644
  
  /*
   * Watermark modifiers -- controls access to emergency reserves
-@@ -180,7 +187,7 @@ struct vm_area_struct;
- #define __GFP_NOTRACK_FALSE_POSITIVE (__GFP_NOTRACK)
+@@ -188,7 +195,7 @@ struct vm_area_struct;
+ #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
  
  /* Room for N __GFP_FOO bits */
--#define __GFP_BITS_SHIFT 25
-+#define __GFP_BITS_SHIFT 26
+-#define __GFP_BITS_SHIFT (25 + IS_ENABLED(CONFIG_LOCKDEP))
++#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
  
  /*

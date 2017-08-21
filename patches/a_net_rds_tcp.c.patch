@@ -11,15 +11,6 @@ index 20e2923..999f629 100644
  #define	RDS_TCP_SNDBUF	0
  	{
  		.procname       = "rds_tcp_sndbuf",
-@@ -88,7 +88,7 @@ void rds_tcp_nonagle(struct socket *sock)
- 	int val = 1;
- 
- 	set_fs(KERNEL_DS);
--	sock->ops->setsockopt(sock, SOL_TCP, TCP_NODELAY, (char __user *)&val,
-+	sock->ops->setsockopt(sock, SOL_TCP, TCP_NODELAY, (char __force_user *)&val,
- 			      sizeof(val));
- 	set_fs(oldfs);
- }
 @@ -415,7 +415,7 @@ void rds_tcp_accept_work(struct sock *sk)
  static __net_init int rds_tcp_init_net(struct net *net)
  {

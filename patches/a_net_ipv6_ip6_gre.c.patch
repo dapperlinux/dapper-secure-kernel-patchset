@@ -22,8 +22,8 @@ index 0a59220..645d4d6 100644
  	.handler     = gre_rcv,
  	.err_handler = ip6gre_err,
  	.flags       = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
-@@ -1522,7 +1522,7 @@ static const struct nla_policy ip6gre_policy[IFLA_GRE_MAX + 1] = {
- 	[IFLA_GRE_ENCAP_DPORT]  = { .type = NLA_U16 },
+@@ -1541,7 +1541,7 @@ static const struct nla_policy ip6gre_policy[IFLA_GRE_MAX + 1] = {
+ 	[IFLA_GRE_FWMARK]       = { .type = NLA_U32 },
  };
  
 -static struct rtnl_link_ops ip6gre_link_ops __read_mostly = {

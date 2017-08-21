@@ -2,10 +2,10 @@ diff --git a/mm/page_alloc.c b/mm/page_alloc.c
 index e5b159b..90fc606 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -64,6 +64,7 @@
- #include <linux/page_owner.h>
+@@ -66,6 +66,7 @@
  #include <linux/kthread.h>
  #include <linux/memcontrol.h>
+ #include <linux/ftrace.h>
 +#include <linux/random.h>
  
  #include <asm/sections.h>
@@ -72,14 +72,14 @@ index e5b159b..90fc606 100644
  	page_zone(page)->managed_pages += nr_pages;
  	set_page_refcounted(page);
  	__free_pages(page, order);
-@@ -1697,8 +1731,8 @@ static inline int check_new_page(struct page *page)
+@@ -1703,8 +1704,8 @@ static inline int check_new_page(struct page *page)
  
- static inline bool free_pages_prezeroed(bool poisoned)
+ static inline bool free_pages_prezeroed(void)
  {
 -	return IS_ENABLED(CONFIG_PAGE_POISONING_ZERO) &&
--		page_poisoning_enabled() && poisoned;
-+	return IS_ENABLED(CONFIG_PAX_MEMORY_SANITIZE) ||
-+		(IS_ENABLED(CONFIG_PAGE_POISONING_ZERO) && page_poisoning_enabled() && poisoned);
+-		page_poisoning_enabled();
++	return IS_ENABLED(CONFIG_PAX_MEMORY_SANITIZE) || (IS_ENABLED(CONFIG_PAGE_POISONING_ZERO) &&
++		page_poisoning_enabled());
  }
  
  #ifdef CONFIG_DEBUG_VM

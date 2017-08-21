@@ -13,8 +13,8 @@ index 4d7ffc0..e0a4504 100644
  	/*
  	 * static variable?
  	 */
-@@ -733,6 +737,7 @@ register_lock_class(struct lockdep_map *lock, unsigned int subclass, int force)
- 	if (!static_obj(lock->key)) {
+@@ -750,6 +750,7 @@ register_lock_class(struct lockdep_map *lock, unsigned int subclass, int force)
+ 	if (IS_ERR(class)) {
  		debug_locks_off();
  		printk("INFO: trying to register non-static key.\n");
 +		printk("lock:%pS key:%pS.\n", lock, lock->key);

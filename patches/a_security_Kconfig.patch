@@ -1078,7 +1078,7 @@ index 118f454..3312d82 100644
  	default 65536
  	help
  	  This is the portion of low virtual memory which should be protected
-@@ -118,13 +1178,6 @@ config LSM_MMAP_MIN_ADDR
+@@ -123,30 +123,15 @@ config LSM_MMAP_MIN_ADDR
  	  this low address space will need the permission specific to the
  	  systems running LSM.
  
@@ -1089,15 +1089,8 @@ index 118f454..3312d82 100644
 -	  validating memory ranges against heap object sizes in
 -	  support of CONFIG_HARDENED_USERCOPY.
 -
- config HAVE_ARCH_HARDENED_USERCOPY
- 	bool
- 	help
-@@ -134,23 +1187,14 @@ config HAVE_ARCH_HARDENED_USERCOPY
- 	  copy_to_user() and copy_from_user().
- 
  config HARDENED_USERCOPY
 -	bool "Harden memory copies between kernel and userspace"
--	depends on HAVE_ARCH_HARDENED_USERCOPY
 -	depends on HAVE_HARDENED_USERCOPY_ALLOCATOR
 -	select BUG
 -	help

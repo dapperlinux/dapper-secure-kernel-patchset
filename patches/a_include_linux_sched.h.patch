@@ -75,7 +75,7 @@ index 4cf9a59..193c5fd 100644
  #endif
  
  #ifdef CONFIG_TRACING
-@@ -1041,17 +1046,43 @@ struct task_struct {
+@@ -1052,6 +1052,11 @@ struct task_struct {
  #ifdef CONFIG_THREAD_INFO_IN_TASK
  	/* A live task holds one reference: */
  	atomic_t			stack_refcount;
@@ -85,16 +85,14 @@ index 4cf9a59..193c5fd 100644
 +	struct thread_info tinfo;
 +#endif
  #endif
+ #ifdef CONFIG_LIVEPATCH
+ 	int patch_state;
+@@ -1060,16 +1065,36 @@ struct task_struct {
+ 	/* Used by LSM modules for access restriction: */
+ 	void				*security;
+ #endif
 -	/* CPU-specific state of this task: */
 -	struct thread_struct		thread;
- 
--	/*
--	 * WARNING: on x86, 'thread_struct' contains a variable-sized
--	 * structure.  It *MUST* be at the end of 'task_struct'.
--	 *
--	 * Do not put anything below here!
--	 */
--};
 +#ifdef CONFIG_GRKERNSEC
 +	/* grsecurity */
 +#ifdef CONFIG_GRKERNSEC_PROC_MEMMAP
@@ -117,7 +115,14 @@ index 4cf9a59..193c5fd 100644
 +	u8 brute;
 +	u8 gr_is_chrooted;
 +#endif
-+
+ 
+-	/*
+-	 * WARNING: on x86, 'thread_struct' contains a variable-sized
+-	 * structure.  It *MUST* be at the end of 'task_struct'.
+-	 *
+-	 * Do not put anything below here!
+-	 */
+-};
 +} __randomize_layout;
 +
 +#ifdef CONFIG_THREAD_INFO_IN_TASK

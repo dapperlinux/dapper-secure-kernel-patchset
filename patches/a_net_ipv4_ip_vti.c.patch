@@ -11,8 +11,8 @@ index 5d7944f..f7953fe 100644
  
  static unsigned int vti_net_id __read_mostly;
  static int vti_tunnel_init(struct net_device *dev);
-@@ -555,7 +555,7 @@ static const struct nla_policy vti_policy[IFLA_VTI_MAX + 1] = {
- 	[IFLA_VTI_REMOTE]	= { .len = FIELD_SIZEOF(struct iphdr, daddr) },
+@@ -566,7 +566,7 @@ static const struct nla_policy vti_policy[IFLA_VTI_MAX + 1] = {
+ 	[IFLA_VTI_FWMARK]	= { .type = NLA_U32 },
  };
  
 -static struct rtnl_link_ops vti_link_ops __read_mostly = {

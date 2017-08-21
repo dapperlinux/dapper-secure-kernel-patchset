@@ -11,8 +11,8 @@ index 576f705..8b243be 100644
  static int ipgre_tunnel_init(struct net_device *dev);
  
  static unsigned int ipgre_net_id __read_mostly;
-@@ -1095,7 +1095,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
- 	[IFLA_GRE_IGNORE_DF]	= { .type = NLA_U8 },
+@@ -1105,7 +1105,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
+ 	[IFLA_GRE_FWMARK]	= { .type = NLA_U32 },
  };
  
 -static struct rtnl_link_ops ipgre_link_ops __read_mostly = {

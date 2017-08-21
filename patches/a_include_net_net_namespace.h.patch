@@ -11,8 +11,8 @@ index 0940598..e69bc18 100644
  
  	struct list_head	list;		/* list of network namespaces */
  	struct list_head	cleanup_list;	/* namespaces on death row */
-@@ -142,8 +142,8 @@ struct net {
- 	struct netns_mpls	mpls;
+@@ -146,8 +146,8 @@ struct net {
+ 	struct netns_can	can;
  #endif
  	struct sock		*diag_nlsk;
 -	atomic_t		fnhe_genid;

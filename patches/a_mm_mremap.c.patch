@@ -48,15 +48,15 @@ index 30d7d24..65b49cb 100644
  		goto out;
  
  	/* Ensure the old/new locations do not overlap */
-@@ -513,6 +513,8 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+@@ -515,6 +515,8 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
  	unsigned long ret = -EINVAL;
  	unsigned long charged = 0;
  	bool locked = false;
 +	unsigned long pax_task_size = TASK_SIZE;
-+
++	
  	struct vm_userfaultfd_ctx uf = NULL_VM_UFFD_CTX;
+ 	LIST_HEAD(uf_unmap_early);
  	LIST_HEAD(uf_unmap);
- 
 @@ -518,6 +538,17 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
  	if (!new_len)
  		return ret;

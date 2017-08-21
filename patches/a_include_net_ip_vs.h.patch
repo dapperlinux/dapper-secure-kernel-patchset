@@ -11,15 +11,15 @@ index cd6018a..996671f 100644
  
  	/* Packet transmitter for different forwarding methods.  If it
  	 * mangles the packet, it must return NF_DROP or better NF_STOLEN,
-@@ -664,7 +664,7 @@ struct ip_vs_dest {
+@@ -666,7 +666,7 @@ struct ip_vs_dest {
  	__be16			port;		/* port number of the server */
  	union nf_inet_addr	addr;		/* IP address of the server */
  	volatile unsigned int	flags;		/* dest status flags */
 -	atomic_t		conn_flags;	/* flags to copy to conn */
-+	atomic_unchecked_t	conn_flags;	/* flags to copy to conn */
++	atomic_unchecked_t		conn_flags;	/* flags to copy to conn */
  	atomic_t		weight;		/* server weight */
  
- 	atomic_t		refcnt;		/* reference counter */
+ 	refcount_t		refcnt;		/* reference counter */
 @@ -931,11 +931,11 @@ struct netns_ipvs {
  	/* ip_vs_lblc */
  	int			sysctl_lblc_expiration;

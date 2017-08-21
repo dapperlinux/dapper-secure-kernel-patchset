@@ -43,12 +43,12 @@ index 50436f5..435d355 100644
  
  # clean - Delete most, but leave enough to build external modules
  #
-@@ -1314,7 +1319,7 @@ distclean: mrproper
+@@ -1333,7 +1333,7 @@ distclean: mrproper
  	@find $(srctree) $(RCS_FIND_IGNORE) \
  		\( -name '*.orig' -o -name '*.rej' -o -name '*~' \
- 		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
--		-o -name '.*.rej' -o -name '*%'  -o -name 'core' \) \
-+		-o -name '.*.rej' -o -name '*.so' -o -name '*%' -o -name 'core' \) \
+ 		-o -name '*.bak' -o -name '#*#' -o -name '*%' \
+-		-o -name 'core' \) \
++		-o -name '*.so' -o -name 'core' \) \
  		-type f -print | xargs rm -f
  
  

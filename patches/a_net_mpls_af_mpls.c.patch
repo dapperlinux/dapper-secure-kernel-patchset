@@ -11,15 +11,6 @@ index 1309e2c..6e543c6 100644
  	int i;
  
  	table = kmemdup(&mpls_dev_table, sizeof(mpls_dev_table), GFP_KERNEL);
-@@ -995,7 +995,7 @@ static void mpls_ifup(struct net_device *dev, unsigned int nh_flags)
- 			nh->nh_flags &= ~nh_flags;
- 		} endfor_nexthops(rt);
- 
--		ACCESS_ONCE(rt->rt_nhn_alive) = alive;
-+		ACCESS_ONCE_RW(rt->rt_nhn_alive) = alive;
- 	}
- }
- 
 @@ -1622,7 +1622,7 @@ static int mpls_platform_labels(struct ctl_table *table, int write,
  	struct net *net = table->data;
  	int platform_labels = net->mpls.platform_labels;
@@ -29,12 +20,12 @@ index 1309e2c..6e543c6 100644
  		.procname	= table->procname,
  		.data		= &platform_labels,
  		.maxlen		= sizeof(int),
-@@ -1652,7 +1652,7 @@ static const struct ctl_table mpls_table[] = {
+@@ -2149,7 +2149,7 @@ static const struct ctl_table mpls_table[] = {
  
  static int mpls_net_init(struct net *net)
  {
 -	struct ctl_table *table;
 +	ctl_table_no_const *table;
+ 	int i;
  
  	net->mpls.platform_labels = 0;
- 	net->mpls.platform_label = NULL;
