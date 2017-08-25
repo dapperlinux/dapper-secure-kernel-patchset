@@ -1,6 +1,6 @@
 DATE=`date +%Y-%m-%d`
 KERNEL_MAJOR_VERSION=4.12
-KERNEL_VERSION=4.12.8
+KERNEL_VERSION=4.12.9
 
 echo "Removing old kernels..."
 rm -rf test
