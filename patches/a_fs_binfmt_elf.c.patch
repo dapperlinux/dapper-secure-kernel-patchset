@@ -2,8 +2,25 @@ diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
 index 5075fd5..d819753 100644
 --- a/fs/binfmt_elf.c
 +++ b/fs/binfmt_elf.c
-@@ -40,6 +40,7 @@
- #include <linux/sched/cputime.h>
+@@ -9,6 +9,10 @@
+  * Copyright 1993, 1994: Eric Youngdale (ericy@cais.com).
+  */
+ 
++#include <linux/sched.h>
++#include <linux/sched/coredump.h>
++#include <linux/sched/task_stack.h>
++#include <linux/sched/cputime.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/fs.h>
+@@ -34,12 +38,9 @@
+ #include <linux/elf-randomize.h>
+ #include <linux/utsname.h>
+ #include <linux/coredump.h>
+-#include <linux/sched.h>
+-#include <linux/sched/coredump.h>
+-#include <linux/sched/task_stack.h>
+-#include <linux/sched/cputime.h>
  #include <linux/cred.h>
  #include <linux/dax.h>
 +#include <linux/xattr.h>
