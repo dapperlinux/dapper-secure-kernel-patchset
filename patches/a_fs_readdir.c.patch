@@ -2,10 +2,10 @@ diff --git a/fs/readdir.c b/fs/readdir.c
 index 9d0212c..da1afd1 100644
 --- a/fs/readdir.c
 +++ b/fs/readdir.c
-@@ -18,6 +18,7 @@
- #include <linux/security.h>
+@@ -19,6 +19,7 @@
  #include <linux/syscalls.h>
  #include <linux/unistd.h>
+ #include <linux/compat.h>
 +#include <linux/namei.h>
  
  #include <linux/uaccess.h>
@@ -99,3 +99,57 @@ index 9d0212c..da1afd1 100644
  			error = -EFAULT;
  		else
  			error = count - buf.count;
+@@ -337,6 +338,7 @@ struct compat_old_linux_dirent {
+ struct compat_readdir_callback {
+ 	struct dir_context ctx;
+ 	struct compat_old_linux_dirent __user *dirent;
++	struct file * file;
+ 	int result;
+ };
+ 
+@@ -356,6 +358,10 @@ static int compat_fillonedir(struct dir_context *ctx, const char *name,
+ 		buf->result = -EOVERFLOW;
+ 		return -EOVERFLOW;
+ 	}
++
++	if (!gr_acl_handle_filldir(buf->file, name, namlen, ino))
++		return 0;
++
+ 	buf->result++;
+ 	dirent = buf->dirent;
+ 	if (!access_ok(VERIFY_WRITE, dirent,
+@@ -387,6 +393,7 @@ COMPAT_SYSCALL_DEFINE3(old_readdir, unsigned int, fd,
+ 	if (!f.file)
+ 		return -EBADF;
+ 
++	buf.file = f.file;
+ 	error = iterate_dir(f.file, &buf.ctx);
+ 	if (buf.result)
+ 		error = buf.result;
+@@ -406,6 +413,7 @@ struct compat_getdents_callback {
+ 	struct dir_context ctx;
+ 	struct compat_linux_dirent __user *current_dir;
+ 	struct compat_linux_dirent __user *previous;
++	struct file * file;
+ 	int count;
+ 	int error;
+ };
+@@ -428,6 +436,10 @@ static int compat_filldir(struct dir_context *ctx, const char *name, int namlen,
+ 		buf->error = -EOVERFLOW;
+ 		return -EOVERFLOW;
+ 	}
++
++	if (!gr_acl_handle_filldir(buf->file, name, namlen, ino))
++		return 0;
++
+ 	dirent = buf->previous;
+ 	if (dirent) {
+ 		if (signal_pending(current))
+@@ -475,6 +487,7 @@ COMPAT_SYSCALL_DEFINE3(getdents, unsigned int, fd,
+ 	if (!f.file)
+ 		return -EBADF;
+ 
++	buf.file = f.file;
+ 	error = iterate_dir(f.file, &buf.ctx);
+ 	if (error >= 0)
+ 		error = buf.error;

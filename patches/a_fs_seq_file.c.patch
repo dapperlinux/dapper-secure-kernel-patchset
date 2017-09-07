@@ -11,24 +11,15 @@ index 368bfb9..5b43f37 100644
  
  #include <linux/uaccess.h>
  #include <asm/page.h>
-@@ -26,7 +28,7 @@ static void seq_set_overflow(struct seq_file *m)
+@@ -25,7 +25,7 @@ static void seq_set_overflow(struct seq_file *m)
+ 
  static void *seq_buf_alloc(unsigned long size)
  {
- 	void *buf;
--	gfp_t gfp = GFP_KERNEL;
-+	gfp_t gfp = GFP_KERNEL | GFP_USERCOPY;
- 
- 	/*
- 	 * For high order allocations, use __GFP_NORETRY to avoid oom-killing -
-@@ -38,7 +40,7 @@ static void *seq_buf_alloc(unsigned long size)
- 		gfp |= __GFP_NORETRY | __GFP_NOWARN;
- 	buf = kmalloc(size, gfp);
- 	if (!buf && size > PAGE_SIZE)
--		buf = vmalloc(size);
-+		buf = vmalloc_usercopy(size);
- 	return buf;
+-	return kvmalloc(size, GFP_KERNEL);
++	return kvmalloc(size, GFP_KERNEL | GFP_USERCOPY);
  }
  
+ /**
 @@ -77,6 +79,10 @@ int seq_open(struct file *file, const struct seq_operations *op)
  	// to the lifetime of the file.
  	p->file = file;

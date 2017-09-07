@@ -71,8 +71,8 @@ index 4485a48..2cdeaf6 100644
  	rcu_read_lock();
  	if (likely(fast_dput(dentry))) {
  		rcu_read_unlock();
-@@ -783,7 +783,7 @@ void dput(struct dentry *dentry)
- 		dentry->d_flags |= DCACHE_REFERENCED;
+@@ -810,7 +810,7 @@ void dput(struct dentry *dentry)
+ 
  	dentry_lru_add(dentry);
  
 -	dentry->d_lockref.count--;

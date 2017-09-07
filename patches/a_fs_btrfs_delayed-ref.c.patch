@@ -11,7 +11,7 @@ index 8d93854..48ba245 100644
  	delayed_refs = &trans->transaction->delayed_refs;
  
  	/* first set the basic ref node struct up */
-@@ -715,7 +715,7 @@ add_delayed_data_ref(struct btrfs_fs_info *fs_info,
+@@ -736,7 +736,7 @@ add_delayed_data_ref(struct btrfs_fs_info *fs_info,
  	delayed_refs = &trans->transaction->delayed_refs;
  
  	if (is_fstree(ref_root))
@@ -19,4 +19,4 @@ index 8d93854..48ba245 100644
 +		seq = atomic64_read_unchecked(&fs_info->tree_mod_seq);
  
  	/* first set the basic ref node struct up */
- 	atomic_set(&ref->refs, 1);
+ 	refcount_set(&ref->refs, 1);

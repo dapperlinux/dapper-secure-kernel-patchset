@@ -11,7 +11,7 @@ index d5e5140..32d72d1 100644
  
  	/*
  	 * Do the basic permission checks.
-@@ -338,17 +340,50 @@ int generic_permission(struct inode *inode, int mask)
+@@ -338,12 +338,24 @@ int generic_permission(struct inode *inode, int mask)
  	if (ret != -EACCES)
  		return ret;
  
@@ -26,6 +26,10 @@ index d5e5140..32d72d1 100644
 +
  	if (S_ISDIR(inode->i_mode)) {
  		/* DACs are overridable for directories */
+-		if (!(mask & MAY_WRITE))
+-			if (capable_wrt_inode_uidgid(inode,
+-						     CAP_DAC_READ_SEARCH))
+-				return 0;
 +		if (!(mask & MAY_WRITE)) {
 +			if (!has_cap_dac_override || (has_cap_dac_override && has_cap_dac_read_search)) {
 +				if (capable_wrt_inode_uidgid(inode, CAP_DAC_READ_SEARCH))
@@ -35,16 +39,14 @@ index d5e5140..32d72d1 100644
 +		}
  		if (capable_wrt_inode_uidgid(inode, CAP_DAC_OVERRIDE))
  			return 0;
--		if (!(mask & MAY_WRITE))
--			if (capable_wrt_inode_uidgid(inode,
--						     CAP_DAC_READ_SEARCH))
--				return 0;
  		return -EACCES;
- 	}
- 	/*
-+	 * Searching includes executable on directories, else just read.
-+	 */
-+	mask &= MAY_READ | MAY_WRITE | MAY_EXEC;
+@@ -353,9 +365,23 @@ int generic_permission(struct inode *inode, int mask)
+ 	 * Searching includes executable on directories, else just read.
+ 	 */
+ 	mask &= MAY_READ | MAY_WRITE | MAY_EXEC;
+-	if (mask == MAY_READ)
+-		if (capable_wrt_inode_uidgid(inode, CAP_DAC_READ_SEARCH))
+-			return 0;
 +	if (mask == MAY_READ) {
 +		/* this part is a little different, as when we don't override here and return,
 +		   we do want to have both caps logged/learned
@@ -62,25 +64,9 @@ index d5e5140..32d72d1 100644
 +		}
 +	}
 +
-+	/*
+ 	/*
  	 * Read/write DACs are always overridable.
  	 * Executable DACs are overridable when there is
- 	 * at least one exec bit set.
-@@ -357,14 +392,6 @@ int generic_permission(struct inode *inode, int mask)
- 		if (capable_wrt_inode_uidgid(inode, CAP_DAC_OVERRIDE))
- 			return 0;
- 
--	/*
--	 * Searching includes executable on directories, else just read.
--	 */
--	mask &= MAY_READ | MAY_WRITE | MAY_EXEC;
--	if (mask == MAY_READ)
--		if (capable_wrt_inode_uidgid(inode, CAP_DAC_READ_SEARCH))
--			return 0;
--
- 	return -EACCES;
- }
- EXPORT_SYMBOL(generic_permission);
 @@ -524,12 +551,35 @@ struct nameidata {
  	struct inode	*link_inode;
  	unsigned	root_seq;

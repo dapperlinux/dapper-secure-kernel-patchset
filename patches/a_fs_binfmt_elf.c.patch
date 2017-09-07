@@ -488,17 +488,17 @@ index 5075fd5..d819753 100644
  /*
   * These are the functions used to load ELF style executables and shared
   * libraries.  There is no binary dependent code anywhere else.
-@@ -666,6 +1023,11 @@ static unsigned long randomize_stack_top(unsigned long stack_top)
+@@ -665,6 +665,11 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+ static unsigned long randomize_stack_top(unsigned long stack_top)
  {
  	unsigned long random_variable = 0;
- 
++	
 +#ifdef CONFIG_PAX_RANDUSTACK
 +	if (current->mm->pax_flags & MF_PAX_RANDMMAP)
 +		return stack_top - current->mm->delta_stack;
 +#endif
-+
- 	if ((current->flags & PF_RANDOMIZE) &&
- 		!(current->personality & ADDR_NO_RANDOMIZE)) {
+ 
+ 	if (current->flags & PF_RANDOMIZE) {
  		random_variable = get_random_long();
 @@ -685,7 +1047,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
   	unsigned long load_addr = 0, load_bias = 0;
@@ -595,10 +595,10 @@ index 5075fd5..d819753 100644
  	if (elf_read_implies_exec(loc->elf_ex, executable_stack))
  		current->personality |= READ_IMPLIES_EXEC;
  
-@@ -938,8 +1372,21 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 			if (current->flags & PF_RANDOMIZE)
- 				load_bias += arch_mmap_rnd();
- 			load_bias = ELF_PAGESTART(load_bias);
+@@ -980,8 +985,21 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 			 */
+ 			load_bias = ELF_PAGESTART(load_bias - vaddr);
+ 
 -			total_size = total_mapping_size(elf_phdata,
 -							loc->elf_ex.e_phnum);
 +

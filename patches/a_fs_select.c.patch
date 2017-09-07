@@ -27,3 +27,12 @@ index 3d4f85d..98af557 100644
  	if (nfds > rlimit(RLIMIT_NOFILE))
  		return -EINVAL;
  
+@@ -1327,7 +1327,7 @@ COMPAT_SYSCALL_DEFINE5(select, int, n, compat_ulong_t __user *, inp,
+ }
+ 
+ struct compat_sel_arg_struct {
+-	compat_ulong_t n;
++	compat_long_t n;
+ 	compat_uptr_t inp;
+ 	compat_uptr_t outp;
+ 	compat_uptr_t exp;

@@ -2,15 +2,6 @@ diff --git a/fs/overlayfs/util.c b/fs/overlayfs/util.c
 index 6e610a2..70796c7 100644
 --- a/fs/overlayfs/util.c
 +++ b/fs/overlayfs/util.c
-@@ -100,7 +100,7 @@ void ovl_path_lower(struct dentry *dentry, struct path *path)
- {
- 	struct ovl_entry *oe = dentry->d_fsdata;
- 
--	*path = oe->numlower ? oe->lowerstack[0] : (struct path) { NULL, NULL };
-+	*path = oe->numlower ? oe->lowerstack[0] : (struct path) { .dentry = NULL, .mnt = NULL };
- }
- 
- enum ovl_path_type ovl_path_real(struct dentry *dentry, struct path *path)
 @@ -223,8 +223,8 @@ void ovl_dentry_update(struct dentry *dentry, struct dentry *upperdentry)
  
  void ovl_inode_init(struct inode *inode, struct inode *realinode, bool is_upper)

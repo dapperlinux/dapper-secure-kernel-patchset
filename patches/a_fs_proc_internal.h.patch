@@ -14,8 +14,8 @@ index c5ae09b..d12c004 100644
  
  union proc_op {
  	int (*proc_get_link)(struct dentry *, struct path *);
-@@ -70,7 +71,7 @@ struct proc_inode {
- 	struct list_head sysctl_inodes;
+@@ -70,7 +70,7 @@ struct proc_inode {
+ 	struct hlist_node sysctl_inodes;
  	const struct proc_ns_operations *ns_ops;
  	struct inode vfs_inode;
 -};
