@@ -2,63 +2,68 @@ diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
 index 50fee76..f71f17e 100644
 --- a/kernel/rcu/tree.c
 +++ b/kernel/rcu/tree.c
-@@ -297,7 +297,7 @@ static void rcu_dynticks_eqs_enter(void)
+@@ -320,7 +320,7 @@ static void rcu_dynticks_eqs_enter(void)
  	 * critical sections, and we also must force ordering with the
  	 * next idle sojourn.
  	 */
--	special = atomic_inc_return(&rdtp->dynticks);
-+	special = atomic_inc_return_unchecked(&rdtp->dynticks);
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && special & 0x1);
- }
- 
-@@ -315,7 +315,7 @@ static void rcu_dynticks_eqs_exit(void)
+-	seq = atomic_add_return(RCU_DYNTICK_CTRL_CTR, &rdtp->dynticks);
++	seq = atomic_add_return_unchecked(RCU_DYNTICK_CTRL_CTR, &rdtp->dynticks);
+ 	/* Better be in an extended quiescent state! */
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
+ 		     (seq & RCU_DYNTICK_CTRL_CTR));
+@@ -343,11 +343,11 @@ static void rcu_dynticks_eqs_exit(void)
  	 * and we also must force ordering with the next RCU read-side
  	 * critical section.
  	 */
--	special = atomic_inc_return(&rdtp->dynticks);
-+	special = atomic_inc_return_unchecked(&rdtp->dynticks);
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !(special & 0x1));
- }
- 
-@@ -333,9 +333,9 @@ static void rcu_dynticks_eqs_online(void)
+-	seq = atomic_add_return(RCU_DYNTICK_CTRL_CTR, &rdtp->dynticks);
++	seq = atomic_add_return_unchecked(RCU_DYNTICK_CTRL_CTR, &rdtp->dynticks);
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
+ 		     !(seq & RCU_DYNTICK_CTRL_CTR));
+ 	if (seq & RCU_DYNTICK_CTRL_MASK) {
+-		atomic_andnot(RCU_DYNTICK_CTRL_MASK, &rdtp->dynticks);
++		atomic_andnot_unchecked(RCU_DYNTICK_CTRL_MASK, &rdtp->dynticks);
+ 		smp_mb__after_atomic(); /* _exit after clearing mask. */
+ 		/* Prefer duplicate flushes to losing a flush. */
+ 		rcu_eqs_special_exit();
+@@ -368,9 +368,9 @@ static void rcu_dynticks_eqs_online(void)
  {
  	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
  
--	if (atomic_read(&rdtp->dynticks) & 0x1)
-+	if (atomic_read_unchecked(&rdtp->dynticks) & 0x1)
+-	if (atomic_read(&rdtp->dynticks) & RCU_DYNTICK_CTRL_CTR)
++	if (atomic_read_unchecked(&rdtp->dynticks) & RCU_DYNTICK_CTRL_CTR)
  		return;
--	atomic_add(0x1, &rdtp->dynticks);
-+	atomic_add_unchecked(0x1, &rdtp->dynticks);
+-	atomic_add(RCU_DYNTICK_CTRL_CTR, &rdtp->dynticks);
++	atomic_add_unchecked(RCU_DYNTICK_CTRL_CTR, &rdtp->dynticks);
  }
  
  /*
-@@ -347,7 +347,7 @@ bool rcu_dynticks_curr_cpu_in_eqs(void)
+@@ -382,7 +382,7 @@ bool rcu_dynticks_curr_cpu_in_eqs(void)
  {
  	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
  
--	return !(atomic_read(&rdtp->dynticks) & 0x1);
-+	return !(atomic_read_unchecked(&rdtp->dynticks) & 0x1);
+-	return !(atomic_read(&rdtp->dynticks) & RCU_DYNTICK_CTRL_CTR);
++	return !(atomic_read_unchecked(&rdtp->dynticks) & RCU_DYNTICK_CTRL_CTR);
  }
  
  /*
-@@ -356,7 +356,7 @@ bool rcu_dynticks_curr_cpu_in_eqs(void)
+@@ -391,7 +391,7 @@ bool rcu_dynticks_curr_cpu_in_eqs(void)
   */
  int rcu_dynticks_snap(struct rcu_dynticks *rdtp)
  {
 -	int snap = atomic_add_return(0, &rdtp->dynticks);
 +	int snap = atomic_add_return_unchecked(0, &rdtp->dynticks);
  
- 	return snap;
+ 	return snap & ~RCU_DYNTICK_CTRL_MASK;
  }
-@@ -387,7 +387,7 @@ static bool rcu_dynticks_in_eqs_since(struct rcu_dynticks *rdtp, int snap)
+@@ -422,7 +422,7 @@ static bool rcu_dynticks_in_eqs_since(struct rcu_dynticks *rdtp, int snap)
  static void rcu_dynticks_momentary_idle(void)
  {
  	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
--	int special = atomic_add_return(2, &rdtp->dynticks);
-+	int special = atomic_add_return_unchecked(2, &rdtp->dynticks);
+-	int special = atomic_add_return(2 * RCU_DYNTICK_CTRL_CTR,
++	int special = atomic_add_return_unchecked(2 * RCU_DYNTICK_CTRL_CTR,
+ 					&rdtp->dynticks);
  
  	/* It is illegal to call this from idle state. */
- 	WARN_ON_ONCE(!(special & 0x1));
 @@ -3115,7 +3115,7 @@ __rcu_process_callbacks(struct rcu_state *rsp)
  /*
   * Do RCU core processing for the current CPU.

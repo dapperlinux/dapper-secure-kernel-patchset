@@ -2,10 +2,10 @@ diff --git a/mm/page_alloc.c b/mm/page_alloc.c
 index e5b159b..90fc606 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -66,6 +66,7 @@
- #include <linux/kthread.h>
+@@ -67,6 +67,7 @@
  #include <linux/memcontrol.h>
  #include <linux/ftrace.h>
+ #include <linux/nmi.h>
 +#include <linux/random.h>
  
  #include <asm/sections.h>

@@ -66,8 +66,8 @@ index 1c6a1bd..93e9698 100644
  
  #define ATOMIC_FETCH_OP(op)						\
  ENTRY(atomic_fetch_##op) /* %o0 = increment, %o1 = atomic_ptr */	\
-@@ -77,13 +95,16 @@ ATOMIC_OPS(xor)
- #undef ATOMIC_OPS
+@@ -81,13 +81,16 @@ ATOMIC_FETCH_OP(xor)
+ 
  #undef ATOMIC_FETCH_OP
  #undef ATOMIC_OP_RETURN
 +#undef __ATOMIC_OP_RETURN
@@ -124,8 +124,8 @@ index 1c6a1bd..93e9698 100644
  
  #define ATOMIC64_FETCH_OP(op)						\
  ENTRY(atomic64_fetch_##op) /* %o0 = increment, %o1 = atomic_ptr */	\
-@@ -139,7 +167,12 @@ ATOMIC64_OPS(xor)
- #undef ATOMIC64_OPS
+@@ -147,7 +150,12 @@ ATOMIC64_FETCH_OP(xor)
+ 
  #undef ATOMIC64_FETCH_OP
  #undef ATOMIC64_OP_RETURN
 +#undef __ATOMIC64_OP_RETURN
