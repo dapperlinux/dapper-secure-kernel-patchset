@@ -1,5 +1,5 @@
 diff --git a/include/uapi/linux/bcache.h b/include/uapi/linux/bcache.h
-index e3bb063..ae3c46c 100644
+index 22b6ad3..aeba37e 100644
 --- a/include/uapi/linux/bcache.h
 +++ b/include/uapi/linux/bcache.h
 @@ -5,6 +5,7 @@
@@ -7,7 +7,7 @@ index e3bb063..ae3c46c 100644
   */
  
 +#include <linux/compiler.h>
- #include <linux/types.h>
+ #include <asm/types.h>
  
  #define BITMASK(name, type, field, offset, size)		\
 @@ -20,8 +21,8 @@ static inline void SET_##name(type *k, __u64 v)			\

@@ -1,8 +1,8 @@
 diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
-index 4de2ec9..6773eab 100644
+index 965f7e3..daa74100 100644
 --- a/net/l2tp/l2tp_eth.c
 +++ b/net/l2tp/l2tp_eth.c
-@@ -45,12 +45,12 @@ struct l2tp_eth {
+@@ -42,12 +42,12 @@ struct l2tp_eth {
  	struct sock		*tunnel_sock;
  	struct l2tp_session	*session;
  	struct list_head	list;
@@ -21,7 +21,7 @@ index 4de2ec9..6773eab 100644
  };
  
  /* via l2tp_session_priv() */
-@@ -93,7 +93,7 @@ static void l2tp_eth_dev_uninit(struct net_device *dev)
+@@ -90,7 +90,7 @@ static void l2tp_eth_dev_uninit(struct net_device *dev)
  	dev_put(dev);
  }
  
@@ -30,7 +30,7 @@ index 4de2ec9..6773eab 100644
  {
  	struct l2tp_eth *priv = netdev_priv(dev);
  	struct l2tp_session *session = priv->session;
-@@ -101,10 +101,10 @@ static int l2tp_eth_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -98,10 +98,10 @@ static int l2tp_eth_dev_xmit(struct sk_buff *skb, struct net_device *dev)
  	int ret = l2tp_xmit_skb(session, skb, session->hdr_len);
  
  	if (likely(ret == NET_XMIT_SUCCESS)) {
@@ -44,26 +44,26 @@ index 4de2ec9..6773eab 100644
  	}
  	return NETDEV_TX_OK;
  }
-@@ -114,12 +114,12 @@ static void l2tp_eth_get_stats64(struct net_device *dev,
+@@ -111,12 +111,12 @@ static void l2tp_eth_get_stats64(struct net_device *dev,
  {
  	struct l2tp_eth *priv = netdev_priv(dev);
  
--	stats->tx_bytes   = (unsigned long) atomic_long_read(&priv->tx_bytes);
--	stats->tx_packets = (unsigned long) atomic_long_read(&priv->tx_packets);
--	stats->tx_dropped = (unsigned long) atomic_long_read(&priv->tx_dropped);
--	stats->rx_bytes   = (unsigned long) atomic_long_read(&priv->rx_bytes);
--	stats->rx_packets = (unsigned long) atomic_long_read(&priv->rx_packets);
--	stats->rx_errors  = (unsigned long) atomic_long_read(&priv->rx_errors);
-+	stats->tx_bytes   = (unsigned long) atomic_long_read_unchecked(&priv->tx_bytes);
-+	stats->tx_packets = (unsigned long) atomic_long_read_unchecked(&priv->tx_packets);
-+	stats->tx_dropped = (unsigned long) atomic_long_read_unchecked(&priv->tx_dropped);
-+	stats->rx_bytes   = (unsigned long) atomic_long_read_unchecked(&priv->rx_bytes);
-+	stats->rx_packets = (unsigned long) atomic_long_read_unchecked(&priv->rx_packets);
-+	stats->rx_errors  = (unsigned long) atomic_long_read_unchecked(&priv->rx_errors);
- 
+-	stats->tx_bytes   = atomic_long_read(&priv->tx_bytes);
+-	stats->tx_packets = atomic_long_read(&priv->tx_packets);
+-	stats->tx_dropped = atomic_long_read(&priv->tx_dropped);
+-	stats->rx_bytes   = atomic_long_read(&priv->rx_bytes);
+-	stats->rx_packets = atomic_long_read(&priv->rx_packets);
+-	stats->rx_errors  = atomic_long_read(&priv->rx_errors);
++	stats->tx_bytes   = atomic_long_read_unchecked(&priv->tx_bytes);
++	stats->tx_packets = atomic_long_read_unchecked(&priv->tx_packets);
++	stats->tx_dropped = atomic_long_read_unchecked(&priv->tx_dropped);
++	stats->rx_bytes   = atomic_long_read_unchecked(&priv->rx_bytes);
++	stats->rx_packets = atomic_long_read_unchecked(&priv->rx_packets);
++	stats->rx_errors  = atomic_long_read_unchecked(&priv->rx_errors);
  }
  
-@@ -174,15 +174,15 @@ static void l2tp_eth_dev_recv(struct l2tp_session *session, struct sk_buff *skb,
+ static const struct net_device_ops l2tp_eth_netdev_ops = {
+@@ -167,15 +167,15 @@ static void l2tp_eth_dev_recv(struct l2tp_session *session, struct sk_buff *skb,
  	nf_reset(skb);
  
  	if (dev_forward_skb(dev, skb) == NET_RX_SUCCESS) {

@@ -1,8 +1,8 @@
 diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index 110ce82..ea284d1 100644
+index cb85222..bebbc92 100644
 --- a/arch/x86/events/intel/core.c
 +++ b/arch/x86/events/intel/core.c
-@@ -2444,6 +2444,8 @@ __intel_get_event_constraints(struct cpu_hw_events *cpuc, int idx,
+@@ -2411,6 +2411,8 @@ __intel_get_event_constraints(struct cpu_hw_events *cpuc, int idx,
  }
  
  static void
@@ -11,7 +11,7 @@ index 110ce82..ea284d1 100644
  intel_start_scheduling(struct cpu_hw_events *cpuc)
  {
  	struct intel_excl_cntrs *excl_cntrs = cpuc->excl_cntrs;
-@@ -2453,14 +2455,18 @@ intel_start_scheduling(struct cpu_hw_events *cpuc)
+@@ -2420,14 +2422,18 @@ intel_start_scheduling(struct cpu_hw_events *cpuc)
  	/*
  	 * nothing needed if in group validation mode
  	 */
@@ -32,7 +32,7 @@ index 110ce82..ea284d1 100644
  
  	xl = &excl_cntrs->states[tid];
  
-@@ -2500,6 +2506,8 @@ static void intel_commit_scheduling(struct cpu_hw_events *cpuc, int idx, int cnt
+@@ -2467,6 +2473,8 @@ static void intel_commit_scheduling(struct cpu_hw_events *cpuc, int idx, int cnt
  }
  
  static void
@@ -41,7 +41,7 @@ index 110ce82..ea284d1 100644
  intel_stop_scheduling(struct cpu_hw_events *cpuc)
  {
  	struct intel_excl_cntrs *excl_cntrs = cpuc->excl_cntrs;
-@@ -2509,13 +2517,18 @@ intel_stop_scheduling(struct cpu_hw_events *cpuc)
+@@ -2476,13 +2484,18 @@ intel_stop_scheduling(struct cpu_hw_events *cpuc)
  	/*
  	 * nothing needed if in group validation mode
  	 */
@@ -62,7 +62,7 @@ index 110ce82..ea284d1 100644
  
  	xl = &excl_cntrs->states[tid];
  
-@@ -2698,19 +2711,22 @@ static void intel_put_excl_constraints(struct cpu_hw_events *cpuc,
+@@ -2665,19 +2678,22 @@ static void intel_put_excl_constraints(struct cpu_hw_events *cpuc,
  	 * unused now.
  	 */
  	if (hwc->idx >= 0) {
@@ -87,7 +87,7 @@ index 110ce82..ea284d1 100644
  			raw_spin_unlock(&excl_cntrs->lock);
  	}
  }
-@@ -3653,10 +3669,10 @@ __init int intel_pmu_init(void)
+@@ -3617,10 +3633,10 @@ __init int intel_pmu_init(void)
  	}
  
  	if (boot_cpu_has(X86_FEATURE_PDCM)) {

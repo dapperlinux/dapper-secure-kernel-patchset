@@ -1,16 +1,16 @@
 diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
-index a4eb279..88d0328 100644
+index 8402907..b0e4a72 100644
 --- a/arch/x86/kernel/tboot.c
 +++ b/arch/x86/kernel/tboot.c
 @@ -44,6 +44,7 @@
  #include <asm/setup.h>
- #include <asm/e820/api.h>
+ #include <asm/e820.h>
  #include <asm/io.h>
 +#include <asm/tlbflush.h>
  
  #include "../realmode/rm/wakeup.h"
  
-@@ -149,6 +150,10 @@ static int map_tboot_pages(unsigned long vaddr, unsigned long start_pfn,
+@@ -145,6 +146,10 @@ static int map_tboot_pages(unsigned long vaddr, unsigned long start_pfn,
  	if (!tboot_pg_dir)
  		return -1;
  
@@ -21,7 +21,7 @@ index a4eb279..88d0328 100644
  	for (; nr > 0; nr--, vaddr += PAGE_SIZE, start_pfn++) {
  		if (map_tboot_page(vaddr, start_pfn, PAGE_KERNEL_EXEC))
  			return -1;
-@@ -219,8 +224,6 @@ static int tboot_setup_sleep(void)
+@@ -215,8 +220,6 @@ static int tboot_setup_sleep(void)
  
  void tboot_shutdown(u32 shutdown_type)
  {
@@ -30,7 +30,7 @@ index a4eb279..88d0328 100644
  	if (!tboot_enabled())
  		return;
  
-@@ -240,9 +243,12 @@ void tboot_shutdown(u32 shutdown_type)
+@@ -236,9 +239,12 @@ void tboot_shutdown(u32 shutdown_type)
  	tboot->shutdown_type = shutdown_type;
  
  	switch_to_tboot_pt();
@@ -45,7 +45,7 @@ index a4eb279..88d0328 100644
  
  	/* should not reach here */
  	while (1)
-@@ -308,7 +314,7 @@ static int tboot_extended_sleep(u8 sleep_state, u32 val_a, u32 val_b)
+@@ -304,7 +310,7 @@ static int tboot_extended_sleep(u8 sleep_state, u32 val_a, u32 val_b)
  	return -ENODEV;
  }
  
@@ -54,7 +54,7 @@ index a4eb279..88d0328 100644
  
  static int tboot_wait_for_aps(int num_aps)
  {
-@@ -329,9 +335,9 @@ static int tboot_wait_for_aps(int num_aps)
+@@ -325,9 +331,9 @@ static int tboot_wait_for_aps(int num_aps)
  
  static int tboot_dying_cpu(unsigned int cpu)
  {
@@ -66,7 +66,7 @@ index a4eb279..88d0328 100644
  			return -EBUSY;
  	}
  	return 0;
-@@ -411,7 +417,7 @@ static __init int tboot_late_init(void)
+@@ -407,7 +407,7 @@ static __init int tboot_late_init(void)
  
  	tboot_create_trampoline();
  

@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hisax/diva.c b/drivers/isdn/hisax/diva.c
-index 079336e..6630336 100644
+index 4fc90de..fda68cd 100644
 --- a/drivers/isdn/hisax/diva.c
 +++ b/drivers/isdn/hisax/diva.c
 @@ -796,8 +796,9 @@ reset_diva(struct IsdnCardState *cs)
@@ -26,8 +26,8 @@ index 079336e..6630336 100644
  		printk(KERN_INFO "Diva: IPACX Design Id: %x\n",
  		       MemReadISAC_IPACX(cs, IPACX_ID) & 0x3F);
  	} else { /* DIVA 2.0 */
--		setup_timer(&cs->hw.diva.tl, (void *)diva_led_handler,
-+		setup_timer(&cs->hw.diva.tl,diva_led_handler,
- 			    (long)cs);
+-		cs->hw.diva.tl.function = (void *) diva_led_handler;
++		cs->hw.diva.tl.function = diva_led_handler;
+ 		cs->hw.diva.tl.data = (long) cs;
+ 		init_timer(&cs->hw.diva.tl);
  		cs->readisac  = &ReadISAC;
- 		cs->writeisac = &WriteISAC;

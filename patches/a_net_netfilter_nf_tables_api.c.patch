@@ -1,8 +1,8 @@
 diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index da314be..3ff61ec 100644
+index e5194f6f..ad76273 100644
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -545,7 +545,7 @@ static int nf_tables_gettable(struct net *net, struct sock *nlsk,
+@@ -506,7 +506,7 @@ static int nf_tables_gettable(struct net *net, struct sock *nlsk,
  	int err;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
@@ -11,7 +11,7 @@ index da314be..3ff61ec 100644
  			.dump = nf_tables_dump_tables,
  		};
  		return netlink_dump_start(nlsk, skb, nlh, &c);
-@@ -1135,7 +1135,7 @@ static int nf_tables_getchain(struct net *net, struct sock *nlsk,
+@@ -1092,7 +1092,7 @@ static int nf_tables_getchain(struct net *net, struct sock *nlsk,
  	int err;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
@@ -20,7 +20,7 @@ index da314be..3ff61ec 100644
  			.dump = nf_tables_dump_chains,
  		};
  		return netlink_dump_start(nlsk, skb, nlh, &c);
-@@ -2051,7 +2051,7 @@ static int nf_tables_getrule(struct net *net, struct sock *nlsk,
+@@ -2001,7 +2001,7 @@ static int nf_tables_getrule(struct net *net, struct sock *nlsk,
  	int err;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
@@ -29,7 +29,7 @@ index da314be..3ff61ec 100644
  			.dump = nf_tables_dump_rules,
  			.done = nf_tables_dump_rules_done,
  		};
-@@ -2831,20 +2831,17 @@ static int nf_tables_getset(struct net *net, struct sock *nlsk,
+@@ -2724,20 +2724,17 @@ static int nf_tables_getset(struct net *net, struct sock *nlsk,
  		return err;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
@@ -53,16 +53,16 @@ index da314be..3ff61ec 100644
  	}
  
  	/* Only accept unspec with dump */
-@@ -3486,7 +3483,7 @@ static int nf_tables_getsetelem(struct net *net, struct sock *nlsk,
+@@ -3330,7 +3327,7 @@ static int nf_tables_getsetelem(struct net *net, struct sock *nlsk,
  		return PTR_ERR(set);
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
 -		struct netlink_dump_control c = {
 +		static struct netlink_dump_control c = {
  			.dump = nf_tables_dump_set,
- 			.done = nf_tables_dump_set_done,
  		};
-@@ -4485,7 +4482,7 @@ static int nf_tables_getobj(struct net *net, struct sock *nlsk,
+ 		return netlink_dump_start(nlsk, skb, nlh, &c);
+@@ -4354,7 +4354,7 @@ static int nf_tables_getobj(struct net *net, struct sock *nlsk,
  	int err;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {

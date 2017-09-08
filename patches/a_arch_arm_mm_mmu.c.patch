@@ -1,8 +1,8 @@
 diff --git a/arch/arm/mm/mmu.c b/arch/arm/mm/mmu.c
-index e46a6a4..898f3c9 100644
+index 4001dd1..c6dce7b 100644
 --- a/arch/arm/mm/mmu.c
 +++ b/arch/arm/mm/mmu.c
-@@ -245,6 +245,14 @@ __setup("noalign", noalign_setup);
+@@ -243,6 +243,14 @@ __setup("noalign", noalign_setup);
  #define PROT_PTE_S2_DEVICE	PROT_PTE_DEVICE
  #define PROT_SECT_DEVICE	PMD_TYPE_SECT|PMD_SECT_AP_WRITE
  
@@ -17,7 +17,7 @@ index e46a6a4..898f3c9 100644
  static struct mem_type mem_types[] __ro_after_init = {
  	[MT_DEVICE] = {		  /* Strongly ordered / ARMv6 shared device */
  		.prot_pte	= PROT_PTE_DEVICE | L_PTE_MT_DEV_SHARED |
-@@ -274,19 +282,19 @@ static struct mem_type mem_types[] __ro_after_init = {
+@@ -272,19 +280,19 @@ static struct mem_type mem_types[] __ro_after_init = {
  		.prot_sect	= PROT_SECT_DEVICE,
  		.domain		= DOMAIN_IO,
  	},
@@ -42,7 +42,7 @@ index e46a6a4..898f3c9 100644
  		.domain    = DOMAIN_KERNEL,
  	},
  #endif
-@@ -302,7 +310,7 @@ static struct mem_type mem_types[] __ro_after_init = {
+@@ -300,7 +308,7 @@ static struct mem_type mem_types[] __ro_after_init = {
  		.prot_l1   = PMD_TYPE_TABLE,
  		.domain    = DOMAIN_VECTORS,
  	},
@@ -51,7 +51,7 @@ index e46a6a4..898f3c9 100644
  		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY,
  		.prot_l1   = PMD_TYPE_TABLE,
  		.prot_sect = PMD_TYPE_SECT | PMD_SECT_AP_WRITE,
-@@ -315,17 +323,30 @@ static struct mem_type mem_types[] __ro_after_init = {
+@@ -313,17 +321,30 @@ static struct mem_type mem_types[] __ro_after_init = {
  		.prot_sect = PMD_TYPE_SECT | PMD_SECT_AP_WRITE,
  		.domain    = DOMAIN_KERNEL,
  	},
@@ -85,7 +85,7 @@ index e46a6a4..898f3c9 100644
  	[MT_MEMORY_RW_DTCM] = {
  		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY |
  				L_PTE_XN,
-@@ -333,9 +354,10 @@ static struct mem_type mem_types[] __ro_after_init = {
+@@ -331,9 +352,10 @@ static struct mem_type mem_types[] __ro_after_init = {
  		.prot_sect = PMD_TYPE_SECT | PMD_SECT_XN,
  		.domain    = DOMAIN_KERNEL,
  	},
@@ -98,7 +98,7 @@ index e46a6a4..898f3c9 100644
  		.domain    = DOMAIN_KERNEL,
  	},
  	[MT_MEMORY_RW_SO] = {
-@@ -593,9 +615,14 @@ static void __init build_mem_type_table(void)
+@@ -586,9 +608,14 @@ static void __init build_mem_type_table(void)
  		 * Mark cache clean areas and XIP ROM read only
  		 * from SVC mode and no access from userspace.
  		 */
@@ -116,7 +116,7 @@ index e46a6a4..898f3c9 100644
  #endif
  
  		/*
-@@ -612,13 +639,17 @@ static void __init build_mem_type_table(void)
+@@ -605,13 +632,17 @@ static void __init build_mem_type_table(void)
  			mem_types[MT_DEVICE_WC].prot_pte |= L_PTE_SHARED;
  			mem_types[MT_DEVICE_CACHED].prot_sect |= PMD_SECT_S;
  			mem_types[MT_DEVICE_CACHED].prot_pte |= L_PTE_SHARED;
@@ -138,7 +138,7 @@ index e46a6a4..898f3c9 100644
  		}
  	}
  
-@@ -629,15 +660,20 @@ static void __init build_mem_type_table(void)
+@@ -622,15 +653,20 @@ static void __init build_mem_type_table(void)
  	if (cpu_arch >= CPU_ARCH_ARMv6) {
  		if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
  			/* Non-cacheable Normal is XCB = 001 */
@@ -162,7 +162,7 @@ index e46a6a4..898f3c9 100644
  	}
  
  #ifdef CONFIG_ARM_LPAE
-@@ -658,6 +694,8 @@ static void __init build_mem_type_table(void)
+@@ -651,6 +687,8 @@ static void __init build_mem_type_table(void)
  	user_pgprot |= PTE_EXT_PXN;
  #endif
  
@@ -171,7 +171,7 @@ index e46a6a4..898f3c9 100644
  	for (i = 0; i < 16; i++) {
  		pteval_t v = pgprot_val(protection_map[i]);
  		protection_map[i] = __pgprot(v | user_pgprot);
-@@ -675,21 +713,24 @@ static void __init build_mem_type_table(void)
+@@ -668,21 +706,24 @@ static void __init build_mem_type_table(void)
  
  	mem_types[MT_LOW_VECTORS].prot_l1 |= ecc_mask;
  	mem_types[MT_HIGH_VECTORS].prot_l1 |= ecc_mask;
@@ -202,7 +202,7 @@ index e46a6a4..898f3c9 100644
  		break;
  	}
  	pr_info("Memory policy: %sData cache %s\n",
-@@ -966,7 +1007,7 @@ static void __init create_mapping(struct map_desc *md)
+@@ -959,7 +1000,7 @@ static void __init create_mapping(struct map_desc *md)
  		return;
  	}
  
@@ -211,7 +211,7 @@ index e46a6a4..898f3c9 100644
  	    md->virtual >= PAGE_OFFSET && md->virtual < FIXADDR_START &&
  	    (md->virtual < VMALLOC_START || md->virtual >= VMALLOC_END)) {
  		pr_warn("BUG: mapping for 0x%08llx at 0x%08lx out of vmalloc space\n",
-@@ -1312,18 +1353,15 @@ void __init arm_mm_memblock_reserve(void)
+@@ -1320,18 +1361,15 @@ void __init arm_mm_memblock_reserve(void)
   * Any other function or debugging method which may touch any device _will_
   * crash the kernel.
   */
@@ -234,7 +234,7 @@ index e46a6a4..898f3c9 100644
  
  	/*
  	 * Clear page table except top pmd used by early fixmaps
-@@ -1339,7 +1377,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
+@@ -1347,7 +1385,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
  	map.pfn = __phys_to_pfn(CONFIG_XIP_PHYS_ADDR & SECTION_MASK);
  	map.virtual = MODULES_VADDR;
  	map.length = ((unsigned long)_exiprom - map.virtual + ~SECTION_MASK) & SECTION_MASK;
@@ -243,7 +243,7 @@ index e46a6a4..898f3c9 100644
  	create_mapping(&map);
  #endif
  
-@@ -1350,14 +1388,14 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
+@@ -1358,14 +1396,14 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
  	map.pfn = __phys_to_pfn(FLUSH_BASE_PHYS);
  	map.virtual = FLUSH_BASE;
  	map.length = SZ_1M;
@@ -260,7 +260,7 @@ index e46a6a4..898f3c9 100644
  	create_mapping(&map);
  #endif
  
-@@ -1366,7 +1404,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
+@@ -1374,7 +1412,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
  	 * location (0xffff0000).  If we aren't using high-vectors, also
  	 * create a mapping at the low-vectors virtual address.
  	 */
@@ -269,7 +269,7 @@ index e46a6a4..898f3c9 100644
  	map.virtual = 0xffff0000;
  	map.length = PAGE_SIZE;
  #ifdef CONFIG_KUSER_HELPERS
-@@ -1429,8 +1467,10 @@ static void __init kmap_init(void)
+@@ -1422,8 +1422,10 @@ static void __init kmap_init(void)
  static void __init map_lowmem(void)
  {
  	struct memblock_region *reg;
@@ -280,7 +280,7 @@ index e46a6a4..898f3c9 100644
  
  	/* Map all the lowmem memory banks. */
  	for_each_memblock(memory, reg) {
-@@ -1446,11 +1486,48 @@ static void __init map_lowmem(void)
+@@ -1458,11 +1498,48 @@ static void __init map_lowmem(void)
  		if (start >= end)
  			break;
  
@@ -330,7 +330,7 @@ index e46a6a4..898f3c9 100644
  
  			create_mapping(&map);
  		} else if (start >= kernel_x_end) {
-@@ -1474,7 +1551,7 @@ static void __init map_lowmem(void)
+@@ -1486,7 +1563,7 @@ static void __init map_lowmem(void)
  			map.pfn = __phys_to_pfn(kernel_x_start);
  			map.virtual = __phys_to_virt(kernel_x_start);
  			map.length = kernel_x_end - kernel_x_start;
@@ -339,7 +339,7 @@ index e46a6a4..898f3c9 100644
  
  			create_mapping(&map);
  
-@@ -1487,6 +1564,7 @@ static void __init map_lowmem(void)
+@@ -1499,6 +1576,7 @@ static void __init map_lowmem(void)
  				create_mapping(&map);
  			}
  		}

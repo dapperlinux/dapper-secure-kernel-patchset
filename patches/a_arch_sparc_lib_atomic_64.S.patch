@@ -36,12 +36,12 @@ index 1c6a1bd..93e9698 100644
 -EXPORT_SYMBOL(atomic_##op);
 +ENDPROC(atomic_##op##suffix);						\
 +EXPORT_SYMBOL(atomic_##op##suffix);
-+
-+#define ATOMIC_OP(op) __ATOMIC_OP(op, , op, ) \
-+		      __ATOMIC_OP(op, _unchecked, __REFCOUNT_OP(op), __OVERFLOW_IOP)
  
 -#define ATOMIC_OP_RETURN(op)						\
 -ENTRY(atomic_##op##_return) /* %o0 = increment, %o1 = atomic_ptr */	\
++#define ATOMIC_OP(op) __ATOMIC_OP(op, , op, ) \
++		      __ATOMIC_OP(op, _unchecked, __REFCOUNT_OP(op), __OVERFLOW_IOP)
++
 +#define __ATOMIC_OP_RETURN(op, suffix, asm_op, post_op)			\
 +ENTRY(atomic_##op##_return##suffix) /* %o0 = increment, %o1 = atomic_ptr */\
  	BACKOFF_SETUP(%o2);						\
@@ -94,12 +94,12 @@ index 1c6a1bd..93e9698 100644
 -EXPORT_SYMBOL(atomic64_##op);
 +ENDPROC(atomic64_##op##suffix);						\
 +EXPORT_SYMBOL(atomic64_##op##suffix);
-+
-+#define ATOMIC64_OP(op) __ATOMIC64_OP(op, , op, ) \
-+			__ATOMIC64_OP(op, _unchecked, __REFCOUNT_OP(op), __OVERFLOW_XOP)
  
 -#define ATOMIC64_OP_RETURN(op)						\
 -ENTRY(atomic64_##op##_return) /* %o0 = increment, %o1 = atomic_ptr */	\
++#define ATOMIC64_OP(op) __ATOMIC64_OP(op, , op, ) \
++			__ATOMIC64_OP(op, _unchecked, __REFCOUNT_OP(op), __OVERFLOW_XOP)
++
 +#define __ATOMIC64_OP_RETURN(op, suffix, asm_op, post_op)		\
 +ENTRY(atomic64_##op##_return##suffix) /* %o0 = increment, %o1 = atomic_ptr */\
  	BACKOFF_SETUP(%o2);						\

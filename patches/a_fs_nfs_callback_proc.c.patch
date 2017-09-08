@@ -1,5 +1,5 @@
 diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index 52479f1..43c4891 100644
+index e9aa235e..e492c43 100644
 --- a/fs/nfs/callback_proc.c
 +++ b/fs/nfs/callback_proc.c
 @@ -19,10 +19,12 @@
@@ -17,7 +17,7 @@ index 52479f1..43c4891 100644
  	struct nfs_delegation *delegation;
  	struct nfs_inode *nfsi;
  	struct inode *inode;
-@@ -68,9 +70,10 @@ out:
+@@ -68,9 +70,10 @@ __be32 nfs4_callback_getattr(struct cb_getattrargs *args,
  	return res->status;
  }
  
@@ -29,16 +29,16 @@ index 52479f1..43c4891 100644
  	struct inode *inode;
  	__be32 res;
  	
-@@ -324,7 +327,7 @@ static u32 do_callback_layoutrecall(struct nfs_client *clp,
- 	return initiate_bulk_draining(clp, args);
+@@ -294,7 +297,7 @@ static u32 do_callback_layoutrecall(struct nfs_client *clp,
+ 
  }
  
 -__be32 nfs4_callback_layoutrecall(struct cb_layoutrecallargs *args,
 +__be32 nfs4_callback_layoutrecall(void *args,
  				  void *dummy, struct cb_process_state *cps)
  {
- 	u32 res = NFS4ERR_OP_NOT_IN_SESSION;
-@@ -345,9 +348,10 @@ static void pnfs_recall_all_layouts(struct nfs_client *clp)
+ 	u32 res;
+@@ -321,9 +324,10 @@ static void pnfs_recall_all_layouts(struct nfs_client *clp)
  	do_callback_layoutrecall(clp, &args);
  }
  
@@ -50,7 +50,7 @@ index 52479f1..43c4891 100644
  	int i;
  	__be32 res = 0;
  	struct nfs_client *clp = cps->clp;
-@@ -469,10 +473,12 @@ out:
+@@ -465,10 +469,12 @@ static bool referring_call_exists(struct nfs_client *clp,
  	return status;
  }
  
@@ -65,7 +65,7 @@ index 52479f1..43c4891 100644
  	struct nfs4_slot_table *tbl;
  	struct nfs4_slot *slot;
  	struct nfs_client *clp;
-@@ -571,9 +577,10 @@ validate_bitmap_values(unsigned long mask)
+@@ -569,9 +575,10 @@ validate_bitmap_values(unsigned long mask)
  	return (mask & ~RCA4_TYPE_MASK_ALL) == 0;
  }
  
@@ -77,7 +77,7 @@ index 52479f1..43c4891 100644
  	__be32 status;
  	fmode_t flags = 0;
  
-@@ -606,9 +613,10 @@ out:
+@@ -604,9 +611,10 @@ __be32 nfs4_callback_recallany(struct cb_recallanyargs *args, void *dummy,
  }
  
  /* Reduce the fore channel's max_slots to the target value */
@@ -89,7 +89,7 @@ index 52479f1..43c4891 100644
  	struct nfs4_slot_table *fc_tbl;
  	__be32 status;
  
-@@ -631,9 +639,10 @@ out:
+@@ -629,9 +637,10 @@ __be32 nfs4_callback_recallslot(struct cb_recallslotargs *args, void *dummy,
  	return status;
  }
  

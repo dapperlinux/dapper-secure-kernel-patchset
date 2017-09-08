@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/cmpxchg.h b/arch/x86/include/asm/cmpxchg.h
-index d90296d..fe748da 100644
+index 97848cd..9ccfae9 100644
 --- a/arch/x86/include/asm/cmpxchg.h
 +++ b/arch/x86/include/asm/cmpxchg.h
 @@ -15,8 +15,12 @@ extern void __cmpxchg_wrong_size(void)
@@ -48,7 +48,7 @@ index d90296d..fe748da 100644
  /*
   * Note: no "lock" prefix even on SMP: xchg always implies lock anyway.
   * Since this is generally used to protect other memory information, we
-@@ -232,6 +262,9 @@ extern void __add_wrong_size(void)
+@@ -162,6 +192,9 @@ extern void __add_wrong_size(void)
  #define __xadd(ptr, inc, lock)	__xchg_op((ptr), (inc), xadd, lock)
  #define xadd(ptr, inc)		__xadd((ptr), (inc), LOCK_PREFIX)
  

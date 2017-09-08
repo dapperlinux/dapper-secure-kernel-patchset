@@ -1,5 +1,5 @@
 diff --git a/fs/btrfs/raid56.c b/fs/btrfs/raid56.c
-index d8ea0eb..11df68e 100644
+index d016d4a..0c6d6ab 100644
 --- a/fs/btrfs/raid56.c
 +++ b/fs/btrfs/raid56.c
 @@ -153,7 +153,7 @@ struct btrfs_raid_bio {
@@ -11,7 +11,7 @@ index d8ea0eb..11df68e 100644
  	/*
  	 * these are two arrays of pointers.  We allocate the
  	 * rbio big enough to hold them both and setup their
-@@ -913,7 +913,7 @@ static void raid_write_end_io(struct bio *bio)
+@@ -916,7 +916,7 @@ static void raid_write_end_io(struct bio *bio)
  	/* OK, we have read all the stripes we need to. */
  	max_errors = (rbio->operation == BTRFS_RBIO_PARITY_SCRUB) ?
  		     0 : rbio->bbio->max_errors;
@@ -20,16 +20,16 @@ index d8ea0eb..11df68e 100644
  		err = -EIO;
  
  	rbio_orig_end_io(rbio, err);
-@@ -997,7 +997,7 @@ static struct btrfs_raid_bio *alloc_rbio(struct btrfs_fs_info *fs_info,
+@@ -999,7 +999,7 @@ static struct btrfs_raid_bio *alloc_rbio(struct btrfs_root *root,
  	rbio->faila = -1;
  	rbio->failb = -1;
- 	refcount_set(&rbio->refs, 1);
+ 	atomic_set(&rbio->refs, 1);
 -	atomic_set(&rbio->error, 0);
 +	atomic_set_unchecked(&rbio->error, 0);
  	atomic_set(&rbio->stripes_pending, 0);
  
  	/*
-@@ -1204,7 +1204,7 @@ static noinline void finish_rmw(struct btrfs_raid_bio *rbio)
+@@ -1208,7 +1208,7 @@ static noinline void finish_rmw(struct btrfs_raid_bio *rbio)
  	set_bit(RBIO_RMW_LOCKED_BIT, &rbio->flags);
  	spin_unlock_irq(&rbio->bio_list_lock);
  
@@ -38,7 +38,7 @@ index d8ea0eb..11df68e 100644
  
  	/*
  	 * now that we've set rmw_locked, run through the
-@@ -1394,11 +1394,11 @@ static int fail_rbio_index(struct btrfs_raid_bio *rbio, int failed)
+@@ -1398,11 +1398,11 @@ static int fail_rbio_index(struct btrfs_raid_bio *rbio, int failed)
  	if (rbio->faila == -1) {
  		/* first failure on this rbio */
  		rbio->faila = failed;
@@ -52,7 +52,7 @@ index d8ea0eb..11df68e 100644
  	} else {
  		ret = -EIO;
  	}
-@@ -1458,7 +1458,7 @@ static void raid_rmw_end_io(struct bio *bio)
+@@ -1464,7 +1464,7 @@ static void raid_rmw_end_io(struct bio *bio)
  	if (!atomic_dec_and_test(&rbio->stripes_pending))
  		return;
  
@@ -61,7 +61,7 @@ index d8ea0eb..11df68e 100644
  		goto cleanup;
  
  	/*
-@@ -1509,7 +1509,7 @@ static int raid56_rmw_stripe(struct btrfs_raid_bio *rbio)
+@@ -1519,7 +1519,7 @@ static int raid56_rmw_stripe(struct btrfs_raid_bio *rbio)
  
  	index_rbio_pages(rbio);
  
@@ -70,7 +70,7 @@ index d8ea0eb..11df68e 100644
  	/*
  	 * build a list of bios to read all the missing parts of this
  	 * stripe
-@@ -2000,7 +2000,7 @@ static void raid_recover_end_io(struct bio *bio)
+@@ -2012,7 +2012,7 @@ static void raid_recover_end_io(struct bio *bio)
  	if (!atomic_dec_and_test(&rbio->stripes_pending))
  		return;
  
@@ -79,7 +79,7 @@ index d8ea0eb..11df68e 100644
  		rbio_orig_end_io(rbio, -EIO);
  	else
  		__raid_recover_end_io(rbio);
-@@ -2029,7 +2029,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
+@@ -2041,7 +2041,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
  	if (ret)
  		goto cleanup;
  
@@ -88,7 +88,7 @@ index d8ea0eb..11df68e 100644
  
  	/*
  	 * read everything that hasn't failed.  Thanks to the
-@@ -2038,7 +2038,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
+@@ -2050,7 +2050,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
  	 */
  	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
  		if (rbio->faila == stripe || rbio->failb == stripe) {
@@ -97,7 +97,7 @@ index d8ea0eb..11df68e 100644
  			continue;
  		}
  
-@@ -2068,7 +2068,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
+@@ -2080,7 +2080,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
  		 * were up to date, or we might have no bios to read because
  		 * the devices were gone.
  		 */

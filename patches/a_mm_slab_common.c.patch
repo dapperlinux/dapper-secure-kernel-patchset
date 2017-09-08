@@ -1,5 +1,5 @@
 diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 01a0fe2..008b991 100644
+index 5d2f24f..cb5d8a4 100644
 --- a/mm/slab_common.c
 +++ b/mm/slab_common.c
 @@ -25,11 +25,35 @@
@@ -39,7 +39,7 @@ index 01a0fe2..008b991 100644
  static LIST_HEAD(slab_caches_to_rcu_destroy);
  static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work);
  static DECLARE_WORK(slab_caches_to_rcu_destroy_work,
-@@ -49,7 +73,7 @@ static DECLARE_WORK(slab_caches_to_rcu_destroy_work,
+@@ -44,7 +68,7 @@ struct kmem_cache *kmem_cache;
   * Merge control. If this is set then no merging of slab caches will occur.
   * (Could be removed. This was introduced to pacify the merge skeptics.)
   */
@@ -48,7 +48,7 @@ index 01a0fe2..008b991 100644
  
  static int __init setup_slab_nomerge(char *str)
  {
-@@ -276,7 +300,7 @@ int slab_unmergeable(struct kmem_cache *s)
+@@ -244,7 +268,7 @@ int slab_unmergeable(struct kmem_cache *s)
  	/*
  	 * We may have set a slab to be unmergeable during bootstrap.
  	 */
@@ -57,7 +57,7 @@ index 01a0fe2..008b991 100644
  		return 1;
  
  	return 0;
-@@ -358,12 +382,15 @@ unsigned long calculate_alignment(unsigned long flags,
+@@ -323,12 +347,15 @@ unsigned long calculate_alignment(unsigned long flags,
  
  static struct kmem_cache *create_cache(const char *name,
  		size_t object_size, size_t size, size_t align,
@@ -74,7 +74,7 @@ index 01a0fe2..008b991 100644
  	err = -ENOMEM;
  	s = kmem_cache_zalloc(kmem_cache, GFP_KERNEL);
  	if (!s)
-@@ -374,6 +401,8 @@ static struct kmem_cache *create_cache(const char *name,
+@@ -339,6 +366,8 @@ static struct kmem_cache *create_cache(const char *name,
  	s->size = size;
  	s->align = align;
  	s->ctor = ctor;
@@ -83,7 +83,7 @@ index 01a0fe2..008b991 100644
  
  	err = init_memcg_params(s, memcg, root_cache);
  	if (err)
-@@ -383,7 +412,7 @@ static struct kmem_cache *create_cache(const char *name,
+@@ -383,7 +383,7 @@ static struct kmem_cache *create_cache(const char *name,
  	if (err)
  		goto out_free_cache;
  
@@ -92,7 +92,7 @@ index 01a0fe2..008b991 100644
  	list_add(&s->list, &slab_caches);
  	memcg_link_cache(s);
  out:
-@@ -398,11 +427,13 @@ out_free_cache:
+@@ -362,11 +391,13 @@ static struct kmem_cache *create_cache(const char *name,
  }
  
  /*
@@ -107,7 +107,7 @@ index 01a0fe2..008b991 100644
   * @ctor: A constructor for the objects.
   *
   * Returns a ptr to the cache on success, NULL on failure.
-@@ -421,9 +452,10 @@ out_free_cache:
+@@ -385,9 +416,10 @@ static struct kmem_cache *create_cache(const char *name,
   * cacheline.  This can be beneficial if you're counting cycles as closely
   * as davem.
   */
@@ -121,7 +121,7 @@ index 01a0fe2..008b991 100644
  {
  	struct kmem_cache *s = NULL;
  	const char *cache_name;
-@@ -454,7 +486,10 @@ kmem_cache_create(const char *name, size_t size, size_t align,
+@@ -412,7 +444,10 @@ kmem_cache_create(const char *name, size_t size, size_t align,
  	 */
  	flags &= CACHE_CREATE_MASK;
  
@@ -133,7 +133,7 @@ index 01a0fe2..008b991 100644
  	if (s)
  		goto out_unlock;
  
-@@ -466,7 +501,7 @@ kmem_cache_create(const char *name, size_t size, size_t align,
+@@ -424,7 +459,7 @@ kmem_cache_create(const char *name, size_t size, size_t align,
  
  	s = create_cache(cache_name, size, size,
  			 calculate_alignment(flags, align, size),
@@ -142,7 +142,7 @@ index 01a0fe2..008b991 100644
  	if (IS_ERR(s)) {
  		err = PTR_ERR(s);
  		kfree_const(cache_name);
-@@ -492,8 +527,26 @@ out_unlock:
+@@ -492,8 +516,26 @@ kmem_cache_create(const char *name, size_t size, size_t align,
  	}
  	return s;
  }
@@ -169,7 +169,7 @@ index 01a0fe2..008b991 100644
  static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work)
  {
  	LIST_HEAD(to_destroy);
-@@ -518,7 +571,7 @@ static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work)
+@@ -518,7 +518,7 @@ static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work)
  	rcu_barrier();
  
  	list_for_each_entry_safe(s, s2, &to_destroy, list) {
@@ -178,7 +178,7 @@ index 01a0fe2..008b991 100644
  		sysfs_slab_release(s);
  #else
  		slab_kmem_cache_release(s);
-@@ -541,7 +594,7 @@ static int shutdown_cache(struct kmem_cache *s)
+@@ -541,7 +541,7 @@ static int shutdown_cache(struct kmem_cache *s)
  		list_add_tail(&s->list, &slab_caches_to_rcu_destroy);
  		schedule_work(&slab_caches_to_rcu_destroy_work);
  	} else {
@@ -187,7 +187,7 @@ index 01a0fe2..008b991 100644
  		sysfs_slab_release(s);
  #else
  		slab_kmem_cache_release(s);
-@@ -604,6 +657,7 @@ void memcg_create_kmem_cache(struct mem_cgroup *memcg,
+@@ -534,6 +586,7 @@ void memcg_create_kmem_cache(struct mem_cgroup *memcg,
  	s = create_cache(cache_name, root_cache->object_size,
  			 root_cache->size, root_cache->align,
  			 root_cache->flags & CACHE_CREATE_MASK,
@@ -195,7 +195,7 @@ index 01a0fe2..008b991 100644
  			 root_cache->ctor, memcg, root_cache);
  	/*
  	 * If we could not create a memcg cache, do not complain, because
-@@ -821,8 +875,7 @@ void kmem_cache_destroy(struct kmem_cache *s)
+@@ -821,8 +821,7 @@ void kmem_cache_destroy(struct kmem_cache *s)
  
  	mutex_lock(&slab_mutex);
  
@@ -205,7 +205,7 @@ index 01a0fe2..008b991 100644
  		goto out_unlock;
  
  	err = shutdown_memcg_caches(s);
-@@ -871,13 +924,15 @@ bool slab_is_available(void)
+@@ -793,13 +845,15 @@ bool slab_is_available(void)
  #ifndef CONFIG_SLOB
  /* Create a cache during boot when no slab services are available yet */
  void __init create_boot_cache(struct kmem_cache *s, const char *name, size_t size,
@@ -222,7 +222,7 @@ index 01a0fe2..008b991 100644
  
  	slab_init_memcg_params(s);
  
-@@ -887,24 +942,31 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name, size_t siz
+@@ -887,24 +929,31 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name, size_t siz
  		panic("Creation of kmalloc slab %s size=%zu failed. Reason %d\n",
  					name, size, err);
  
@@ -259,7 +259,7 @@ index 01a0fe2..008b991 100644
  struct kmem_cache *kmalloc_caches[KMALLOC_SHIFT_HIGH + 1];
  EXPORT_SYMBOL(kmalloc_caches);
  
-@@ -913,6 +975,11 @@ struct kmem_cache *kmalloc_dma_caches[KMALLOC_SHIFT_HIGH + 1];
+@@ -834,6 +894,11 @@ struct kmem_cache *kmalloc_dma_caches[KMALLOC_SHIFT_HIGH + 1];
  EXPORT_SYMBOL(kmalloc_dma_caches);
  #endif
  
@@ -271,7 +271,7 @@ index 01a0fe2..008b991 100644
  /*
   * Conversion table for small slabs sizes / 8 to the index in the
   * kmalloc array. This is necessary for slabs < 192 since we have non power
-@@ -977,6 +1044,13 @@ struct kmem_cache *kmalloc_slab(size_t size, gfp_t flags)
+@@ -898,6 +963,13 @@ struct kmem_cache *kmalloc_slab(size_t size, gfp_t flags)
  		return kmalloc_dma_caches[index];
  
  #endif
@@ -285,7 +285,7 @@ index 01a0fe2..008b991 100644
  	return kmalloc_caches[index];
  }
  
-@@ -1051,8 +1125,8 @@ void __init setup_kmalloc_cache_index_table(void)
+@@ -975,8 +1047,8 @@ void __init setup_kmalloc_cache_index_table(void)
  
  static void __init new_kmalloc_cache(int idx, unsigned long flags)
  {
@@ -296,7 +296,7 @@ index 01a0fe2..008b991 100644
  }
  
  /*
-@@ -1097,6 +1171,23 @@ void __init create_kmalloc_caches(unsigned long flags)
+@@ -1021,6 +1093,23 @@ void __init create_kmalloc_caches(unsigned long flags)
  		}
  	}
  #endif
@@ -320,7 +320,7 @@ index 01a0fe2..008b991 100644
  }
  #endif /* !CONFIG_SLOB */
  
-@@ -1112,6 +1203,12 @@ void *kmalloc_order(size_t size, gfp_t flags, unsigned int order)
+@@ -1036,6 +1125,12 @@ void *kmalloc_order(size_t size, gfp_t flags, unsigned int order)
  
  	flags |= __GFP_COMP;
  	page = alloc_pages(flags, order);
@@ -333,7 +333,7 @@ index 01a0fe2..008b991 100644
  	ret = page ? page_address(page) : NULL;
  	kmemleak_alloc(ret, size, 1, flags);
  	kasan_kmalloc_large(ret, size, flags);
-@@ -1201,6 +1298,9 @@ static void print_slabinfo_header(struct seq_file *m)
+@@ -1125,6 +1220,9 @@ static void print_slabinfo_header(struct seq_file *m)
  #ifdef CONFIG_DEBUG_SLAB
  	seq_puts(m, " : globalstat <listallocs> <maxobjs> <grown> <reaped> <error> <maxfreeable> <nodeallocs> <remotefrees> <alienoverflow>");
  	seq_puts(m, " : cpustat <allochit> <allocmiss> <freehit> <freemiss>");
@@ -343,7 +343,7 @@ index 01a0fe2..008b991 100644
  #endif
  	seq_putc(m, '\n');
  }
-@@ -1349,7 +1449,7 @@ static int __init slab_proc_init(void)
+@@ -1254,7 +1352,7 @@ static int __init slab_proc_init(void)
  module_init(slab_proc_init);
  #endif /* CONFIG_SLABINFO */
  

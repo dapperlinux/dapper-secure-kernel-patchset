@@ -1,8 +1,8 @@
 diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-index a28b671..910a1ab 100644
+index 83db0ea..0ad5d22 100644
 --- a/arch/x86/include/asm/processor.h
 +++ b/arch/x86/include/asm/processor.h
-@@ -129,7 +129,7 @@ struct cpuinfo_x86 {
+@@ -136,7 +136,7 @@ struct cpuinfo_x86 {
  	/* Index into per_cpu list: */
  	u16			cpu_index;
  	u32			microcode;
@@ -11,7 +11,7 @@ index a28b671..910a1ab 100644
  
  struct cpuid_regs {
  	u32 eax, ebx, ecx, edx;
-@@ -164,7 +164,7 @@ extern __u32			cpu_caps_cleared[NCAPINTS];
+@@ -160,7 +160,7 @@ extern __u32			cpu_caps_cleared[NCAPINTS];
  extern __u32			cpu_caps_set[NCAPINTS];
  
  #ifdef CONFIG_SMP
@@ -20,7 +20,7 @@ index a28b671..910a1ab 100644
  #define cpu_data(cpu)		per_cpu(cpu_info, cpu)
  #else
  #define cpu_info		boot_cpu_data
-@@ -231,9 +231,13 @@ native_cpuid_reg(ebx)
+@@ -238,9 +238,13 @@ native_cpuid_reg(ebx)
  native_cpuid_reg(ecx)
  native_cpuid_reg(edx)
  
@@ -35,7 +35,7 @@ index a28b671..910a1ab 100644
  }
  
  #ifdef CONFIG_X86_32
-@@ -333,7 +337,7 @@ struct tss_struct {
+@@ -340,7 +340,7 @@ struct tss_struct {
  
  } ____cacheline_aligned;
  
@@ -44,7 +44,7 @@ index a28b671..910a1ab 100644
  
  /*
   * sizeof(unsigned long) coming from an extra "long" at the end
-@@ -345,9 +349,7 @@ DECLARE_PER_CPU_SHARED_ALIGNED(struct tss_struct, cpu_tss);
+@@ -352,9 +352,7 @@ DECLARE_PER_CPU_SHARED_ALIGNED(struct tss_struct, cpu_tss);
  #define __KERNEL_TSS_LIMIT	\
  	(IO_BITMAP_OFFSET + IO_BITMAP_BYTES + sizeof(unsigned long) - 1)
  
@@ -54,7 +54,7 @@ index a28b671..910a1ab 100644
  
  /*
   * Save the original ist values for checking stack pointers during debugging
-@@ -376,6 +378,7 @@ DECLARE_PER_CPU_FIRST(union irq_stack_union, irq_stack_union) __visible;
+@@ -341,6 +343,7 @@ DECLARE_PER_CPU_FIRST(union irq_stack_union, irq_stack_union) __visible;
  DECLARE_INIT_PER_CPU(irq_stack_union);
  
  DECLARE_PER_CPU(char *, irq_stack_ptr);
@@ -62,7 +62,7 @@ index a28b671..910a1ab 100644
  DECLARE_PER_CPU(unsigned int, irq_count);
  extern asmlinkage void ignore_sysret(void);
  #else	/* X86_64 */
-@@ -424,6 +427,7 @@ struct thread_struct {
+@@ -389,6 +392,7 @@ struct thread_struct {
  	unsigned short		ds;
  	unsigned short		fsindex;
  	unsigned short		gsindex;
@@ -70,7 +70,7 @@ index a28b671..910a1ab 100644
  #endif
  
  	u32			status;		/* thread synchronous flags */
-@@ -440,6 +444,9 @@ struct thread_struct {
+@@ -405,6 +409,9 @@ struct thread_struct {
  	unsigned long gs;
  #endif
  
@@ -80,7 +80,7 @@ index a28b671..910a1ab 100644
  	/* Save middle states of ptrace breakpoints */
  	struct perf_event	*ptrace_bps[HBP_NUM];
  	/* Debug status used for traps, single steps, etc... */
-@@ -461,17 +468,11 @@ struct thread_struct {
+@@ -426,17 +433,11 @@ struct thread_struct {
  	unsigned		io_bitmap_max;
  
  	mm_segment_t		addr_limit;
@@ -100,7 +100,7 @@ index a28b671..910a1ab 100644
  
  /*
   * Thread-synchronous status.
-@@ -523,12 +524,8 @@ static inline void native_swapgs(void)
+@@ -488,12 +489,8 @@ static inline void native_swapgs(void)
  
  static inline unsigned long current_top_of_stack(void)
  {
@@ -113,7 +113,7 @@ index a28b671..910a1ab 100644
  }
  
  #ifdef CONFIG_PARAVIRT
-@@ -788,6 +785,8 @@ static inline void spin_lock_prefetch(const void *x)
+@@ -718,20 +715,30 @@ static inline void spin_lock_prefetch(const void *x)
  #define TOP_OF_INIT_STACK ((unsigned long)&init_stack + sizeof(init_stack) - \
  			   TOP_OF_KERNEL_STACK_PADDING)
  
@@ -122,8 +122,7 @@ index a28b671..910a1ab 100644
  #ifdef CONFIG_X86_32
  /*
   * User space process size: 3GB (default).
-@@ -795,14 +794,22 @@ static inline void spin_lock_prefetch(const void *x)
- #define IA32_PAGE_OFFSET	PAGE_OFFSET
+  */
  #define TASK_SIZE		PAGE_OFFSET
  #define TASK_SIZE_MAX		TASK_SIZE
 +
@@ -146,7 +145,7 @@ index a28b671..910a1ab 100644
  }
  
  /*
-@@ -815,12 +822,7 @@ static inline void spin_lock_prefetch(const void *x)
+@@ -744,12 +751,7 @@ static inline void spin_lock_prefetch(const void *x)
   * "struct pt_regs" is possible, but they may contain the
   * completely wrong values.
   */
@@ -160,7 +159,7 @@ index a28b671..910a1ab 100644
  
  #define KSTK_ESP(task)		(task_pt_regs(task)->sp)
  
-@@ -834,13 +836,13 @@ static inline void spin_lock_prefetch(const void *x)
+@@ -763,13 +765,13 @@ static inline void spin_lock_prefetch(const void *x)
   * particular problem by preventing anything from being mapped
   * at the maximum canonical address.
   */
@@ -176,7 +175,7 @@ index a28b671..910a1ab 100644
  
  #define TASK_SIZE		(test_thread_flag(TIF_ADDR32) ? \
  					IA32_PAGE_OFFSET : TASK_SIZE_MAX)
-@@ -853,6 +855,7 @@ static inline void spin_lock_prefetch(const void *x)
+@@ -782,6 +784,7 @@ static inline void spin_lock_prefetch(const void *x)
  #define INIT_THREAD  {						\
  	.sp0			= TOP_OF_INIT_STACK,		\
  	.addr_limit		= KERNEL_DS,			\
@@ -184,9 +183,9 @@ index a28b671..910a1ab 100644
  }
  
  #define task_pt_regs(tsk)	((struct pt_regs *)(tsk)->thread.sp0 - 1)
-@@ -870,6 +873,10 @@ extern void start_thread(struct pt_regs *regs, unsigned long new_ip,
- #define __TASK_UNMAPPED_BASE(task_size)	(PAGE_ALIGN(task_size / 3))
- #define TASK_UNMAPPED_BASE		__TASK_UNMAPPED_BASE(TASK_SIZE)
+@@ -800,6 +803,10 @@ extern void start_thread(struct pt_regs *regs, unsigned long new_ip,
+  */
+ #define TASK_UNMAPPED_BASE	(PAGE_ALIGN(TASK_SIZE / 3))
  
 +#ifdef CONFIG_PAX_SEGMEXEC
 +#define SEGMEXEC_TASK_UNMAPPED_BASE	(PAGE_ALIGN(SEGMEXEC_TASK_SIZE / 3))
@@ -195,7 +194,7 @@ index a28b671..910a1ab 100644
  #define KSTK_EIP(task)		(task_pt_regs(task)->ip)
  
  /* Get/set a process' ability to use the timestamp counter instruction */
-@@ -917,7 +924,7 @@ static inline uint32_t hypervisor_cpuid_base(const char *sig, uint32_t leaves)
+@@ -845,7 +852,7 @@ static inline uint32_t hypervisor_cpuid_base(const char *sig, uint32_t leaves)
  	return 0;
  }
  
@@ -204,7 +203,7 @@ index a28b671..910a1ab 100644
  extern void free_init_pages(char *what, unsigned long begin, unsigned long end);
  
  void default_idle(void);
-@@ -927,6 +934,6 @@ bool xen_set_default_idle(void);
+@@ -855,6 +862,6 @@ bool xen_set_default_idle(void);
  #define xen_set_default_idle 0
  #endif
  

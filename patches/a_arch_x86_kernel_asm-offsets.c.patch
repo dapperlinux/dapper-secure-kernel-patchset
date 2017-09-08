@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-index de827d6..62c62f6 100644
+index c62e015..2abc97c 100644
 --- a/arch/x86/kernel/asm-offsets.c
 +++ b/arch/x86/kernel/asm-offsets.c
 @@ -30,6 +30,9 @@
@@ -28,16 +28,16 @@ index de827d6..62c62f6 100644
 +
 +#ifdef CONFIG_PAX_KERNEXEC
 +	OFFSET(PV_CPU_write_cr0, pv_cpu_ops, write_cr0);
-+#endif
-+
+ #endif
+ 
 +#ifdef CONFIG_PAX_MEMORY_UDEREF
 +	OFFSET(PV_MMU_read_cr3, pv_mmu_ops, read_cr3);
 +	OFFSET(PV_MMU_write_cr3, pv_mmu_ops, write_cr3);
 +#ifdef CONFIG_X86_64
 +	OFFSET(PV_MMU_set_pgd_batched, pv_mmu_ops, set_pgd_batched);
 +#endif
- #endif
- 
++#endif
++
 +#endif
 +
 +	BLANK();
@@ -48,7 +48,7 @@ index de827d6..62c62f6 100644
  #ifdef CONFIG_XEN
  	BLANK();
  	OFFSET(XEN_vcpu_info_mask, vcpu_info, evtchn_upcall_mask);
-@@ -92,4 +115,5 @@ void common(void) {
+@@ -91,4 +114,5 @@ void common(void) {
  
  	BLANK();
  	DEFINE(PTREGS_SIZE, sizeof(struct pt_regs));

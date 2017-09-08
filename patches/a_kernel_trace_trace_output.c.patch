@@ -1,8 +1,8 @@
 diff --git a/kernel/trace/trace_output.c b/kernel/trace/trace_output.c
-index 08f9bab..b887008 100644
+index 3fc2042..afd22a2 100644
 --- a/kernel/trace/trace_output.c
 +++ b/kernel/trace/trace_output.c
-@@ -768,14 +768,16 @@ int register_trace_event(struct trace_event *event)
+@@ -717,14 +717,16 @@ int register_trace_event(struct trace_event *event)
  			goto out;
  	}
  

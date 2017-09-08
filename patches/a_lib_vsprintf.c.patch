@@ -1,5 +1,5 @@
 diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 2d41de3..b6049b3 100644
+index 0967771..2871684 100644
 --- a/lib/vsprintf.c
 +++ b/lib/vsprintf.c
 @@ -16,6 +16,9 @@
@@ -43,7 +43,7 @@ index 2d41de3..b6049b3 100644
  
  /*
   * Show a '%p' thing.  A kernel extension is that the '%p' is followed
-@@ -1484,8 +1491,10 @@ int kptr_restrict __read_mostly;
+@@ -1481,8 +1488,10 @@ int kptr_restrict __read_mostly;
   *
   * - 'F' For symbolic function descriptor pointers with offset
   * - 'f' For simple symbolic function names without offset
@@ -54,7 +54,7 @@ index 2d41de3..b6049b3 100644
   * - '[FfSs]R' as above with __builtin_extract_return_addr() translation
   * - 'B' For backtraced symbolic direct pointers with offset
   * - 'R' For decoded struct resource, e.g., [mem 0x0-0x1f 64bit pref]
-@@ -1573,7 +1582,7 @@ int kptr_restrict __read_mostly;
+@@ -1570,7 +1579,7 @@ int kptr_restrict __read_mostly;
   * function pointers are really function descriptors, which contain a
   * pointer to the real address.
   */
@@ -63,7 +63,7 @@ index 2d41de3..b6049b3 100644
  char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  	      struct printf_spec spec)
  {
-@@ -1581,12 +1590,12 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+@@ -1578,12 +1587,12 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  
  	if (!ptr && *fmt != 'K') {
  		/*
@@ -78,7 +78,7 @@ index 2d41de3..b6049b3 100644
  	}
  
  	switch (*fmt) {
-@@ -1596,6 +1605,14 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+@@ -1593,6 +1602,14 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  		/* Fallthrough */
  	case 'S':
  	case 's':
@@ -93,7 +93,7 @@ index 2d41de3..b6049b3 100644
  	case 'B':
  		return symbol_string(buf, end, ptr, spec, fmt);
  	case 'R':
-@@ -1660,6 +1677,8 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+@@ -1657,6 +1674,8 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  			va_end(va);
  			return buf;
  		}
@@ -102,7 +102,7 @@ index 2d41de3..b6049b3 100644
  	case 'K':
  		switch (kptr_restrict) {
  		case 0:
-@@ -1689,6 +1708,9 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+@@ -1686,6 +1705,9 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  			 */
  			cred = current_cred();
  			if (!has_capability_noaudit(current, CAP_SYSLOG) ||
@@ -112,7 +112,7 @@ index 2d41de3..b6049b3 100644
  			    !uid_eq(cred->euid, cred->uid) ||
  			    !gid_eq(cred->egid, cred->gid))
  				ptr = NULL;
-@@ -1722,6 +1744,22 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+@@ -1719,6 +1741,22 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
  	case 'G':
  		return flags_string(buf, end, ptr, fmt);
  	}
@@ -135,7 +135,7 @@ index 2d41de3..b6049b3 100644
  	spec.flags |= SMALL;
  	if (spec.field_width == -1) {
  		spec.field_width = default_width;
-@@ -1753,7 +1791,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+@@ -1749,7 +1787,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
   * @precision: precision of a number
   * @qualifier: qualifier of a number (long, size_t, ...)
   */
@@ -144,7 +144,7 @@ index 2d41de3..b6049b3 100644
  int format_decode(const char *fmt, struct printf_spec *spec)
  {
  	const char *start = fmt;
-@@ -2423,11 +2461,11 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
+@@ -2419,11 +2457,11 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
  	typeof(type) value;						\
  	if (sizeof(type) == 8) {					\
  		args = PTR_ALIGN(args, sizeof(u32));			\
@@ -159,7 +159,7 @@ index 2d41de3..b6049b3 100644
  	}								\
  	args += sizeof(type);						\
  	value;								\
-@@ -2490,7 +2528,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
+@@ -2486,7 +2524,7 @@ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
  		case FORMAT_TYPE_STR: {
  			const char *str_arg = args;
  			args += strlen(str_arg) + 1;

@@ -1,8 +1,8 @@
 diff --git a/arch/arm/include/asm/uaccess.h b/arch/arm/include/asm/uaccess.h
-index 2577405..2bcae32 100644
+index 1f59ea05..81245f0 100644
 --- a/arch/arm/include/asm/uaccess.h
 +++ b/arch/arm/include/asm/uaccess.h
-@@ -16,6 +16,7 @@
+@@ -18,6 +18,7 @@
  #include <asm/domain.h>
  #include <asm/unified.h>
  #include <asm/compiler.h>
@@ -10,8 +10,8 @@ index 2577405..2bcae32 100644
  
  #ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
  #include <asm-generic/uaccess-unaligned.h>
-@@ -27,6 +28,59 @@
- #include <asm/extable.h>
+@@ -50,6 +51,59 @@ struct exception_table_entry
+ extern int fixup_exception(struct pt_regs *regs);
  
  /*
 + * These two are intentionally not defined anywhere - if the kernel
@@ -70,7 +70,7 @@ index 2577405..2bcae32 100644
   * These two functions allow hooking accesses to userspace to increase
   * system integrity by ensuring that the kernel can not inadvertantly
   * perform such accesses (eg, via list poison values) which could then
-@@ -43,6 +97,7 @@ static inline unsigned int uaccess_save_and_enable(void)
+@@ -66,6 +120,7 @@ static inline unsigned int uaccess_save_and_enable(void)
  
  	return old_domain;
  #else
@@ -78,7 +78,7 @@ index 2577405..2bcae32 100644
  	return 0;
  #endif
  }
-@@ -52,35 +107,11 @@ static inline void uaccess_restore(unsigned int flags)
+@@ -75,35 +130,11 @@ static inline void uaccess_restore(unsigned int flags)
  #ifdef CONFIG_CPU_SW_DOMAIN_PAN
  	/* Restore the user access mask */
  	set_domain(flags);
@@ -116,7 +116,7 @@ index 2577405..2bcae32 100644
  /* We use 33-bit arithmetic here... */
  #define __range_ok(addr, size) ({ \
  	unsigned long flag, roksum; \
-@@ -245,6 +276,7 @@ static inline void set_fs(mm_segment_t fs)
+@@ -268,6 +299,7 @@ static inline void set_fs(mm_segment_t fs)
  
  #endif /* CONFIG_MMU */
  
@@ -124,7 +124,7 @@ index 2577405..2bcae32 100644
  #define access_ok(type, addr, size)	(__range_ok(addr, size) == 0)
  
  #define user_addr_max() \
-@@ -451,10 +483,10 @@ do {									\
+@@ -474,10 +474,10 @@ do {									\
  
  
  #ifdef CONFIG_MMU
@@ -134,10 +134,10 @@ index 2577405..2bcae32 100644
  
 -static inline unsigned long __must_check
 +static inline unsigned long __must_check __size_overflow(3)
- raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+ __arch_copy_from_user(void *to, const void __user *from, unsigned long n)
  {
  	unsigned int __ua_flags;
-@@ -465,9 +497,9 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+@@ -489,9 +521,9 @@ __copy_from_user(void *to, const void __user *from, unsigned long n)
  	return n;
  }
  
@@ -149,7 +149,7 @@ index 2577405..2bcae32 100644
  __copy_to_user_std(void __user *to, const void *from, unsigned long n);
  
  static inline unsigned long __must_check
-@@ -484,9 +516,9 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+@@ -511,9 +543,9 @@ __copy_to_user(void __user *to, const void *from, unsigned long n)
  #endif
  }
  

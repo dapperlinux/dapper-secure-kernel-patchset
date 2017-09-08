@@ -1,8 +1,8 @@
 diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index da49a83..92f6656 100644
+index e023066..a28458a 100644
 --- a/drivers/base/power/domain.c
 +++ b/drivers/base/power/domain.c
-@@ -2069,8 +2069,10 @@ int genpd_dev_pm_attach(struct device *dev)
+@@ -2057,8 +2057,10 @@ int genpd_dev_pm_attach(struct device *dev)
  		goto out;
  	}
  

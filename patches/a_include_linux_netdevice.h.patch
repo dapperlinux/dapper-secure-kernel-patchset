@@ -1,8 +1,8 @@
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 4ed952c..cdbceb8 100644
+index bb9b102..1969a64 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1327,6 +1327,7 @@ struct net_device_ops {
+@@ -1324,6 +1324,7 @@ struct net_device_ops {
  	int			(*ndo_xdp)(struct net_device *dev,
  					   struct netdev_xdp *xdp);
  };
@@ -10,7 +10,7 @@ index 4ed952c..cdbceb8 100644
  
  /**
   * enum net_device_priv_flags - &struct net_device priv_flags
-@@ -1655,7 +1656,7 @@ struct net_device {
+@@ -1652,7 +1653,7 @@ struct net_device {
  	unsigned long		base_addr;
  	int			irq;
  
@@ -19,7 +19,7 @@ index 4ed952c..cdbceb8 100644
  
  	/*
  	 *	Some hardware also needs these fields (state,dev_list,
-@@ -1690,9 +1691,9 @@ struct net_device {
+@@ -1692,9 +1693,9 @@ struct net_device {
  
  	struct net_device_stats	stats;
  
@@ -32,7 +32,7 @@ index 4ed952c..cdbceb8 100644
  
  #ifdef CONFIG_WIRELESS_EXT
  	const struct iw_handler_def *wireless_handlers;
-@@ -3315,7 +3316,7 @@ static __always_inline int ____dev_forward_skb(struct net_device *dev,
+@@ -3368,7 +3369,7 @@ static __always_inline int ____dev_forward_skb(struct net_device *dev,
  {
  	if (skb_orphan_frags(skb, GFP_ATOMIC) ||
  	    unlikely(!is_skb_forwardable(dev, skb))) {
@@ -41,7 +41,7 @@ index 4ed952c..cdbceb8 100644
  		kfree_skb(skb);
  		return NET_RX_DROP;
  	}
-@@ -4248,7 +4249,7 @@ static inline bool netif_reduces_vlan_mtu(struct net_device *dev)
+@@ -4294,7 +4295,7 @@ static inline bool netif_reduces_vlan_mtu(struct net_device *dev)
  	return dev->priv_flags & IFF_MACSEC;
  }
  

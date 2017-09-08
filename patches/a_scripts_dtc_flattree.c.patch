@@ -1,17 +1,17 @@
 diff --git a/scripts/dtc/flattree.c b/scripts/dtc/flattree.c
-index fcf7154..3efc449 100644
+index ec14954..dff184d 100644
 --- a/scripts/dtc/flattree.c
 +++ b/scripts/dtc/flattree.c
-@@ -170,7 +170,7 @@ static void asm_emit_data(void *e, struct data d)
+@@ -178,7 +178,7 @@ static void asm_emit_data(void *e, struct data d)
  	for_each_marker_of_type(m, LABEL)
  		emit_offset_label(f, m->ref, m->offset);
  
 -	while ((d.len - off) >= sizeof(uint32_t)) {
 +	while ((d.len - off) >= (int)sizeof(uint32_t)) {
- 		asm_emit_cell(e, fdt32_to_cpu(*((fdt32_t *)(d.val+off))));
+ 		asm_emit_cell(e, fdt32_to_cpu(*((uint32_t *)(d.val+off))));
  		off += sizeof(uint32_t);
  	}
-@@ -360,7 +360,7 @@ static void make_fdt_header(struct fdt_header *fdt,
+@@ -369,7 +369,7 @@ static void make_fdt_header(struct fdt_header *fdt,
  void dt_to_blob(FILE *f, struct dt_info *dti, int version)
  {
  	struct version_info *vi = NULL;
@@ -20,7 +20,7 @@ index fcf7154..3efc449 100644
  	struct data blob       = empty_data;
  	struct data reservebuf = empty_data;
  	struct data dtbuf      = empty_data;
-@@ -461,7 +461,7 @@ static void dump_stringtable_asm(FILE *f, struct data strbuf)
+@@ -470,7 +470,7 @@ static void dump_stringtable_asm(FILE *f, struct data strbuf)
  void dt_to_asm(FILE *f, struct dt_info *dti, int version)
  {
  	struct version_info *vi = NULL;
@@ -29,9 +29,9 @@ index fcf7154..3efc449 100644
  	struct data strbuf = empty_data;
  	struct reserve_info *re;
  	const char *symprefix = "dt";
-@@ -541,7 +541,7 @@ void dt_to_asm(FILE *f, struct dt_info *dti, int version)
- 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->size >> 32));
- 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->size & 0xffffffff));
+@@ -543,7 +543,7 @@ void dt_to_asm(FILE *f, struct boot_info *bi, int version)
+ 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->re.size >> 32));
+ 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->re.size & 0xffffffff));
  	}
 -	for (i = 0; i < reservenum; i++) {
 +	for (i = 0; i < (size_t)reservenum; i++) {

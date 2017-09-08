@@ -1,5 +1,5 @@
 diff --git a/arch/powerpc/kernel/vdso.c b/arch/powerpc/kernel/vdso.c
-index 22b01a3..78fd365 100644
+index 4111d30..fa5e7be 100644
 --- a/arch/powerpc/kernel/vdso.c
 +++ b/arch/powerpc/kernel/vdso.c
 @@ -35,6 +35,7 @@

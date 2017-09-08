@@ -1,16 +1,13 @@
 diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index ba38262..c1baee5 100644
+index e99a523..08cba8b 100644
 --- a/kernel/rcu/tree.h
 +++ b/kernel/rcu/tree.h
-@@ -41,14 +41,14 @@ struct rcu_dynticks {
+@@ -111,11 +111,11 @@ struct rcu_dynticks {
  	long long dynticks_nesting; /* Track irq/process nesting level. */
  				    /* Process level is worth LLONG_MAX/2. */
  	int dynticks_nmi_nesting;   /* Track NMI nesting level. */
 -	atomic_t dynticks;	    /* Even value for idle, else odd. */
 +	atomic_unchecked_t dynticks;/* Even value for idle, else odd. */
- 	bool rcu_need_heavy_qs;     /* GP old, need heavy quiescent state. */
- 	unsigned long rcu_qs_ctr;   /* Light universal quiescent state ctr. */
- 	bool rcu_urgent_qs;	    /* GP old need light quiescent state. */
  #ifdef CONFIG_NO_HZ_FULL_SYSIDLE
  	long long dynticks_idle_nesting;
  				    /* irq/process nesting level from idle. */
@@ -19,7 +16,7 @@ index ba38262..c1baee5 100644
  				    /*  "Idle" excludes userspace execution. */
  	unsigned long dynticks_idle_jiffies;
  				    /* End of last non-NMI non-idle period. */
-@@ -273,10 +273,10 @@ struct rcu_data {
+@@ -401,10 +401,10 @@ struct rcu_data {
  #ifdef CONFIG_RCU_FAST_NO_HZ
  	struct rcu_head oom_head;
  #endif /* #ifdef CONFIG_RCU_FAST_NO_HZ */
@@ -34,7 +31,7 @@ index ba38262..c1baee5 100644
  	int exp_dynticks_snap;		/* Double-check need for IPI. */
  
  	/* 7) Callback offloading. */
-@@ -381,7 +381,7 @@ struct rcu_state {
+@@ -513,7 +513,7 @@ struct rcu_state {
  	/* End of fields guarded by orphan_lock. */
  
  	struct mutex barrier_mutex;		/* Guards barrier fields. */
@@ -43,7 +40,7 @@ index ba38262..c1baee5 100644
  	struct completion barrier_completion;	/* Wake at barrier end. */
  	unsigned long barrier_sequence;		/* ++ at start and end of */
  						/*  _rcu_barrier(). */
-@@ -390,7 +390,7 @@ struct rcu_state {
+@@ -522,7 +522,7 @@ struct rcu_state {
  	struct mutex exp_mutex;			/* Serialize expedited GP. */
  	struct mutex exp_wake_mutex;		/* Serialize wakeup. */
  	unsigned long expedited_sequence;	/* Take a ticket. */

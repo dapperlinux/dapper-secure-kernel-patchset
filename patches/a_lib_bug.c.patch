@@ -1,8 +1,8 @@
 diff --git a/lib/bug.c b/lib/bug.c
-index a6a1137..31d8a02 100644
+index bc3656e..470f3ab 100644
 --- a/lib/bug.c
 +++ b/lib/bug.c
-@@ -149,6 +149,8 @@ enum bug_trap_type report_bug(unsigned long bugaddr, struct pt_regs *regs)
+@@ -148,6 +148,8 @@ enum bug_trap_type report_bug(unsigned long bugaddr, struct pt_regs *regs)
  		return BUG_TRAP_TYPE_NONE;
  
  	bug = find_bug(bugaddr);

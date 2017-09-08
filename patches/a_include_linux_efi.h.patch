@@ -1,8 +1,8 @@
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ec36f42..66e81f2 100644
+index cba7177..36d2b60 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -1211,6 +1211,7 @@ struct efivar_operations {
+@@ -1167,6 +1167,7 @@ struct efivar_operations {
  	efi_set_variable_t *set_variable_nonblocking;
  	efi_query_variable_store_t *query_variable_store;
  };

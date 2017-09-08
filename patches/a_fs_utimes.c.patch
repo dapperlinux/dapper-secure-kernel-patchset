@@ -1,16 +1,16 @@
 diff --git a/fs/utimes.c b/fs/utimes.c
-index 6571d8c..c2daba8 100644
+index 22307cd..87b5f86 100644
 --- a/fs/utimes.c
 +++ b/fs/utimes.c
 @@ -1,6 +1,7 @@
+ #include <linux/compiler.h>
  #include <linux/file.h>
+ #include <linux/fs.h>
++#include <linux/security.h>
+ #include <linux/linkage.h>
  #include <linux/mount.h>
  #include <linux/namei.h>
-+#include <linux/security.h>
- #include <linux/utime.h>
- #include <linux/syscalls.h>
- #include <linux/uaccess.h>
-@@ -86,6 +87,12 @@ static int utimes_common(const struct path *path, struct timespec *times)
+@@ -90,6 +91,12 @@ static int utimes_common(struct path *path, struct timespec *times)
  		newattrs.ia_valid |= ATTR_TOUCH;
  	}
  retry_deleg:
@@ -23,7 +23,7 @@ index 6571d8c..c2daba8 100644
  	inode_lock(inode);
  	error = notify_change(path->dentry, &newattrs, &delegated_inode);
  	inode_unlock(inode);
-@@ -95,6 +102,7 @@ retry_deleg:
+@@ -99,6 +106,7 @@ static int utimes_common(struct path *path, struct timespec *times)
  			goto retry_deleg;
  	}
  

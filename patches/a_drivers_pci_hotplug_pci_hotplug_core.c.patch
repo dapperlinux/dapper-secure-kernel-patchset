@@ -1,8 +1,8 @@
 diff --git a/drivers/pci/hotplug/pci_hotplug_core.c b/drivers/pci/hotplug/pci_hotplug_core.c
-index 7b0e97b..59137ec 100644
+index fea0b8b..0d3e890 100644
 --- a/drivers/pci/hotplug/pci_hotplug_core.c
 +++ b/drivers/pci/hotplug/pci_hotplug_core.c
-@@ -431,8 +431,10 @@ int __pci_hp_register(struct hotplug_slot *slot, struct pci_bus *bus,
+@@ -434,8 +434,10 @@ int __pci_hp_register(struct hotplug_slot *slot, struct pci_bus *bus,
  		return -EINVAL;
  	}
  

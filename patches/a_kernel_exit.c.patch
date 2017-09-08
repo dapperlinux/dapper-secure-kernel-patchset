@@ -1,8 +1,8 @@
 diff --git a/kernel/exit.c b/kernel/exit.c
-index 516acdb..d36757c 100644
+index 3076f30..28d8eb4 100644
 --- a/kernel/exit.c
 +++ b/kernel/exit.c
-@@ -186,6 +186,10 @@ void release_task(struct task_struct *p)
+@@ -170,6 +170,10 @@ void release_task(struct task_struct *p)
  	struct task_struct *leader;
  	int zap_leader;
  repeat:
@@ -13,7 +13,7 @@ index 516acdb..d36757c 100644
  	/* don't need to get the RCU readlock here - the process is dead and
  	 * can't be modifying its own credentials. But shut RCU-lockdep up */
  	rcu_read_lock();
-@@ -570,9 +574,8 @@ static struct task_struct *find_alive_thread(struct task_struct *p)
+@@ -525,9 +529,8 @@ static struct task_struct *find_alive_thread(struct task_struct *p)
  	return NULL;
  }
  
@@ -24,7 +24,7 @@ index 516acdb..d36757c 100644
  {
  	struct pid_namespace *pid_ns = task_active_pid_ns(father);
  	struct task_struct *reaper = pid_ns->child_reaper;
-@@ -672,6 +675,8 @@ static void reparent_leader(struct task_struct *father, struct task_struct *p,
+@@ -624,6 +627,8 @@ static void reparent_leader(struct task_struct *father, struct task_struct *p,
   *	jobs, send them a SIGHUP and then a SIGCONT.  (POSIX 3.2.2.2)
   */
  static void forget_original_parent(struct task_struct *father,
@@ -33,7 +33,7 @@ index 516acdb..d36757c 100644
  					struct list_head *dead)
  {
  	struct task_struct *p, *t, *reaper;
-@@ -779,6 +784,15 @@ void __noreturn do_exit(long code)
+@@ -731,6 +736,15 @@ void __noreturn do_exit(long code)
  	int group_dead;
  	TASKS_RCU(int tasks_rcu_i);
  
@@ -49,7 +49,7 @@ index 516acdb..d36757c 100644
  	profile_task_exit(tsk);
  	kcov_task_exit(tsk);
  
-@@ -789,15 +803,6 @@ void __noreturn do_exit(long code)
+@@ -741,15 +755,6 @@ void __noreturn do_exit(long code)
  	if (unlikely(!tsk->pid))
  		panic("Attempted to kill the idle task!");
  
@@ -65,7 +65,7 @@ index 516acdb..d36757c 100644
  	ptrace_event(PTRACE_EVENT_EXIT, code);
  
  	validate_creds_for_do_exit(tsk);
-@@ -862,6 +867,8 @@ void __noreturn do_exit(long code)
+@@ -862,6 +862,8 @@ void __noreturn do_exit(long code)
  	tsk->exit_code = code;
  	taskstats_exit(tsk, group_dead);
  
@@ -74,7 +74,7 @@ index 516acdb..d36757c 100644
  	exit_mm();
  
  	if (group_dead)
-@@ -955,7 +962,7 @@ SYSCALL_DEFINE1(exit, int, error_code)
+@@ -905,7 +913,7 @@ SYSCALL_DEFINE1(exit, int, error_code)
   * Take down every thread in the group.  This is called by fatal signals
   * as well as by sys_exit_group (below).
   */
@@ -83,7 +83,7 @@ index 516acdb..d36757c 100644
  do_group_exit(int exit_code)
  {
  	struct signal_struct *sig = current->signal;
-@@ -1083,6 +1090,7 @@ static int wait_noreap_copyout(struct wait_opts *wo, struct task_struct *p,
+@@ -1033,6 +1041,7 @@ static int wait_noreap_copyout(struct wait_opts *wo, struct task_struct *p,
   * the lock and this task is uninteresting.  If we return nonzero, we have
   * released the lock and the system call should return.
   */
@@ -91,7 +91,7 @@ index 516acdb..d36757c 100644
  static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
  {
  	int state, retval, status;
-@@ -1099,6 +1107,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
+@@ -1049,6 +1058,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
  
  		get_task_struct(p);
  		read_unlock(&tasklist_lock);
@@ -99,7 +99,7 @@ index 516acdb..d36757c 100644
  		sched_annotate_sleep();
  
  		if ((exit_code & 0x7f) == 0) {
-@@ -1121,6 +1130,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
+@@ -1071,6 +1081,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
  	 * We own this thread, nobody else can reap it.
  	 */
  	read_unlock(&tasklist_lock);
@@ -107,7 +107,7 @@ index 516acdb..d36757c 100644
  	sched_annotate_sleep();
  
  	/*
-@@ -1263,6 +1273,8 @@ static int *task_stopped_code(struct task_struct *p, bool ptrace)
+@@ -1213,6 +1224,8 @@ static int *task_stopped_code(struct task_struct *p, bool ptrace)
   * search should terminate.
   */
  static int wait_task_stopped(struct wait_opts *wo,
@@ -116,7 +116,7 @@ index 516acdb..d36757c 100644
  				int ptrace, struct task_struct *p)
  {
  	struct siginfo __user *infop;
-@@ -1310,6 +1322,7 @@ unlock_sig:
+@@ -1260,6 +1273,7 @@ static int wait_task_stopped(struct wait_opts *wo,
  	pid = task_pid_vnr(p);
  	why = ptrace ? CLD_TRAPPED : CLD_STOPPED;
  	read_unlock(&tasklist_lock);
@@ -124,7 +124,7 @@ index 516acdb..d36757c 100644
  	sched_annotate_sleep();
  
  	if (unlikely(wo->wo_flags & WNOWAIT))
-@@ -1347,6 +1360,7 @@ unlock_sig:
+@@ -1297,6 +1311,7 @@ static int wait_task_stopped(struct wait_opts *wo,
   * the lock and this task is uninteresting.  If we return nonzero, we have
   * released the lock and the system call should return.
   */
@@ -132,7 +132,7 @@ index 516acdb..d36757c 100644
  static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
  {
  	int retval;
-@@ -1373,6 +1387,7 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
+@@ -1323,6 +1338,7 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
  	pid = task_pid_vnr(p);
  	get_task_struct(p);
  	read_unlock(&tasklist_lock);
@@ -140,7 +140,7 @@ index 516acdb..d36757c 100644
  	sched_annotate_sleep();
  
  	if (!wo->wo_info) {
-@@ -1402,6 +1417,8 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
+@@ -1402,6 +1402,8 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
   * or still -ECHILD.
   */
  static int wait_consider_task(struct wait_opts *wo, int ptrace,
@@ -149,7 +149,7 @@ index 516acdb..d36757c 100644
  				struct task_struct *p)
  {
  	/*
-@@ -1513,6 +1530,7 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
+@@ -1513,6 +1515,7 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
   * ->notask_error is 0 if there were any eligible children,
   * or still -ECHILD.
   */
@@ -157,7 +157,7 @@ index 516acdb..d36757c 100644
  static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)
  {
  	struct task_struct *p;
-@@ -1527,6 +1545,7 @@ static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)
+@@ -1491,6 +1510,7 @@ static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)
  	return 0;
  }
  
@@ -165,7 +165,7 @@ index 516acdb..d36757c 100644
  static int ptrace_do_wait(struct wait_opts *wo, struct task_struct *tsk)
  {
  	struct task_struct *p;
-@@ -1590,12 +1609,16 @@ repeat:
+@@ -1554,12 +1574,16 @@ static long do_wait(struct wait_opts *wo)
  	tsk = current;
  	do {
  		retval = do_wait_thread(wo, tsk);

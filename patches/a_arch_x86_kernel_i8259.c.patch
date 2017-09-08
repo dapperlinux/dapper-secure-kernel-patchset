@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/i8259.c b/arch/x86/kernel/i8259.c
-index 4e3b8a5..fb69bde 100644
+index be22f5a..a04fa14 100644
 --- a/arch/x86/kernel/i8259.c
 +++ b/arch/x86/kernel/i8259.c
 @@ -110,7 +110,7 @@ static int i8259A_irq_pending(unsigned int irq)
@@ -11,7 +11,7 @@ index 4e3b8a5..fb69bde 100644
  	irq_set_chip_and_handler(irq, &i8259A_chip, handle_level_irq);
  	enable_irq(irq);
  }
-@@ -208,7 +208,7 @@ spurious_8259A_irq:
+@@ -208,7 +208,7 @@ static void mask_and_ack_8259A(struct irq_data *data)
  			       "spurious 8259A interrupt: IRQ%d.\n", irq);
  			spurious_irq_mask |= irqmask;
  		}

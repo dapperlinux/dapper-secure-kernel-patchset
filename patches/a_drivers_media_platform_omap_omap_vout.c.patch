@@ -1,5 +1,5 @@
 diff --git a/drivers/media/platform/omap/omap_vout.c b/drivers/media/platform/omap/omap_vout.c
-index 4d29860..4d2ff89 100644
+index a31b95c..485cc47 100644
 --- a/drivers/media/platform/omap/omap_vout.c
 +++ b/drivers/media/platform/omap/omap_vout.c
 @@ -63,7 +63,6 @@ enum omap_vout_channels {
@@ -10,7 +10,7 @@ index 4d29860..4d2ff89 100644
  /* Variables configurable through module params*/
  static u32 video1_numbuffers = 3;
  static u32 video2_numbuffers = 3;
-@@ -1002,6 +1001,12 @@ static int omap_vout_open(struct file *file)
+@@ -1001,6 +1000,12 @@ static int omap_vout_open(struct file *file)
  {
  	struct videobuf_queue *q;
  	struct omap_vout_device *vout = NULL;
@@ -23,7 +23,7 @@ index 4d29860..4d2ff89 100644
  
  	vout = video_drvdata(file);
  	v4l2_dbg(1, debug, &vout->vid_dev->v4l2_dev, "Entering %s\n", __func__);
-@@ -1019,10 +1024,6 @@ static int omap_vout_open(struct file *file)
+@@ -1018,10 +1023,6 @@ static int omap_vout_open(struct file *file)
  	vout->type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
  
  	q = &vout->vbq;

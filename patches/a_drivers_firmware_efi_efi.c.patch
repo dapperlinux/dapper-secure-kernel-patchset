@@ -1,8 +1,8 @@
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index b372aad..bafa653 100644
+index a4944e2..a5e9cad 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
-@@ -185,15 +185,17 @@ static struct attribute_group efi_subsys_attr_group = {
+@@ -181,15 +181,17 @@ static struct attribute_group efi_subsys_attr_group = {
  };
  
  static struct efivars generic_efivars;

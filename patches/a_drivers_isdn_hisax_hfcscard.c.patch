@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hisax/hfcscard.c b/drivers/isdn/hisax/hfcscard.c
-index 4672870..d7b4496 100644
+index 394da64..85f5f63 100644
 --- a/drivers/isdn/hisax/hfcscard.c
 +++ b/drivers/isdn/hisax/hfcscard.c
 @@ -41,8 +41,10 @@ hfcs_interrupt(int intno, void *dev_id)
@@ -18,8 +18,8 @@ index 4672870..d7b4496 100644
  		outb(0x57, cs->hw.hfcD.addr | 1);
  	}
  	set_cs_func(cs);
--	setup_timer(&cs->hw.hfcD.timer, (void *)hfcs_Timer, (long)cs);
-+	setup_timer(&cs->hw.hfcD.timer,hfcs_Timer, (long)cs);
+-	cs->hw.hfcD.timer.function = (void *) hfcs_Timer;
++	cs->hw.hfcD.timer.function = hfcs_Timer;
+ 	cs->hw.hfcD.timer.data = (long) cs;
+ 	init_timer(&cs->hw.hfcD.timer);
  	cs->cardmsg = &hfcs_card_msg;
- 	cs->irq_func = &hfcs_interrupt;
- 	return (1);

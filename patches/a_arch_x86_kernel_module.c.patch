@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index f67bd32..00d4399 100644
+index 477ae80..a280c67 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
 @@ -76,17 +76,17 @@ static unsigned long int get_module_load_offset(void)
@@ -17,9 +17,9 @@ index f67bd32..00d4399 100644
  
  	p = __vmalloc_node_range(size, MODULE_ALIGN,
  				    MODULES_VADDR + get_module_load_offset(),
--				    MODULES_END, GFP_KERNEL,
+-				    MODULES_END, GFP_KERNEL | __GFP_HIGHMEM,
 -				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
-+				    MODULES_END, GFP_KERNEL | __GFP_ZERO,
++				    MODULES_END, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO,
 +				    prot, 0, NUMA_NO_NODE,
  				    __builtin_return_address(0));
  	if (p && (kasan_module_alloc(p, size) < 0)) {

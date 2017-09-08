@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index 4842867..e14dbed 100644
+index 923150d..4470b43 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
-@@ -52,7 +52,7 @@
+@@ -51,7 +51,7 @@
  #include "intel_drv.h"
  #include "intel_uc.h"
  
@@ -11,7 +11,7 @@ index 4842867..e14dbed 100644
  
  static unsigned int i915_load_fail_count;
  
-@@ -537,7 +537,7 @@ static bool i915_switcheroo_can_switch(struct pci_dev *pdev)
+@@ -519,7 +519,7 @@ static bool i915_switcheroo_can_switch(struct pci_dev *pdev)
  	 * locking inversion with the driver load path. And the access here is
  	 * completely racy anyway. So don't bother with locking for now.
  	 */
@@ -20,20 +20,20 @@ index 4842867..e14dbed 100644
  }
  
  static const struct vga_switcheroo_client_ops i915_switcheroo_ops = {
-@@ -1215,8 +1215,11 @@ int i915_driver_load(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -1179,8 +1179,11 @@ int i915_driver_load(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	struct drm_i915_private *dev_priv;
+ 	int ret;
  
- 	/* Enable nuclear pageflip on ILK+, except vlv/chv */
- 	if (!i915.nuclear_pageflip &&
--	    (match_info->gen < 5 || match_info->has_gmch_display))
-+	    (match_info->gen < 5 || match_info->has_gmch_display)) {
+-	if (i915.nuclear_pageflip)
++	if (i915.nuclear_pageflip) {
 +		pax_open_kernel();
- 		driver.driver_features &= ~DRIVER_ATOMIC;
+ 		driver.driver_features |= DRIVER_ATOMIC;
 +		pax_close_kernel();
 +	}
  
  	ret = -ENOMEM;
  	dev_priv = kzalloc(sizeof(*dev_priv), GFP_KERNEL);
-@@ -2616,7 +2619,7 @@ static const struct drm_ioctl_desc i915_ioctls[] = {
+@@ -2566,7 +2566,7 @@ static const struct drm_ioctl_desc i915_ioctls[] = {
  	DRM_IOCTL_DEF_DRV(I915_PERF_OPEN, i915_perf_open_ioctl, DRM_RENDER_ALLOW),
  };
  

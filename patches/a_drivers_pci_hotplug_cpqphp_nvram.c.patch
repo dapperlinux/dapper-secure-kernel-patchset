@@ -1,5 +1,5 @@
 diff --git a/drivers/pci/hotplug/cpqphp_nvram.c b/drivers/pci/hotplug/cpqphp_nvram.c
-index daae807..1d73117 100644
+index c25fc90..b054774 100644
 --- a/drivers/pci/hotplug/cpqphp_nvram.c
 +++ b/drivers/pci/hotplug/cpqphp_nvram.c
 @@ -425,8 +425,10 @@ static u32 store_HRT(void __iomem *rom_start)

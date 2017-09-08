@@ -1,5 +1,5 @@
 diff --git a/arch/powerpc/include/asm/spinlock.h b/arch/powerpc/include/asm/spinlock.h
-index 8c1b913..bc043e7 100644
+index fa37fe9..867d3cf 100644
 --- a/arch/powerpc/include/asm/spinlock.h
 +++ b/arch/powerpc/include/asm/spinlock.h
 @@ -27,6 +27,7 @@
@@ -10,7 +10,7 @@ index 8c1b913..bc043e7 100644
  
  #ifdef CONFIG_PPC64
  /* use 0x800000yy when locked, where yy == CPU number */
-@@ -236,13 +237,29 @@ static inline long __arch_read_trylock(arch_rwlock_t *rw)
+@@ -228,13 +229,29 @@ static inline long __arch_read_trylock(arch_rwlock_t *rw)
  	__asm__ __volatile__(
  "1:	" PPC_LWARX(%0,0,%1,1) "\n"
  	__DO_SIGN_EXTEND
@@ -43,7 +43,7 @@ index 8c1b913..bc043e7 100644
  	: "r" (&rw->lock)
  	: "cr0", "xer", "memory");
  
-@@ -318,11 +335,27 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
+@@ -310,11 +327,27 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
  	__asm__ __volatile__(
  	"# read_unlock\n\t"
  	PPC_RELEASE_BARRIER

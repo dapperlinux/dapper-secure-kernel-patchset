@@ -1,10 +1,10 @@
 diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
-index eb8dff1..d08e74c 100644
+index 2f25a36..3caf893 100644
 --- a/arch/x86/platform/efi/efi_64.c
 +++ b/arch/x86/platform/efi/efi_64.c
-@@ -134,6 +134,11 @@ pgd_t * __init efi_call_phys_prolog(void)
- 			}
- 		}
+@@ -93,6 +93,11 @@ pgd_t * __init efi_call_phys_prolog(void)
+ 		vaddress = (unsigned long)__va(pgd * PGDIR_SIZE);
+ 		set_pgd(pgd_offset_k(pgd * PGDIR_SIZE), *pgd_offset_k(vaddress));
  	}
 +
 +#ifdef CONFIG_PAX_PER_CPU_PGD
@@ -14,7 +14,7 @@ index eb8dff1..d08e74c 100644
  out:
  	__flush_tlb_all();
  
-@@ -183,6 +188,10 @@ void __init efi_call_phys_epilog(pgd_t *save_pgd)
+@@ -120,6 +125,10 @@ void __init efi_call_phys_epilog(pgd_t *save_pgd)
  
  	kfree(save_pgd);
  
@@ -25,7 +25,7 @@ index eb8dff1..d08e74c 100644
  	__flush_tlb_all();
  	early_code_mapping_set_exec(0);
  }
-@@ -332,8 +341,23 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
+@@ -248,8 +257,23 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
  	unsigned npages;
  	pgd_t *pgd;
  

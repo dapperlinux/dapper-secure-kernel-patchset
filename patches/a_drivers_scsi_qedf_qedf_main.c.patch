@@ -1,5 +1,5 @@
 diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
-index a5c9734..cbc7ffe 100644
+index cceddd9..5669ed7 100644
 --- a/drivers/scsi/qedf/qedf_main.c
 +++ b/drivers/scsi/qedf/qedf_main.c
 @@ -3288,7 +3288,9 @@ static int __init qedf_init(void)

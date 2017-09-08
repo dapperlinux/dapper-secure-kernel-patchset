@@ -1,8 +1,8 @@
 diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index ec0f951..afc85b9 100644
+index cce6057..2c080d8 100644
 --- a/drivers/md/raid5.c
 +++ b/drivers/md/raid5.c
-@@ -1230,23 +1230,23 @@ async_copy_data(int frombio, struct bio *bio, struct page **page,
+@@ -1120,23 +1120,23 @@ async_copy_data(int frombio, struct bio *bio, struct page **page,
  	struct bio_vec bvl;
  	struct bvec_iter iter;
  	struct page *bio_page;
@@ -32,7 +32,7 @@ index ec0f951..afc85b9 100644
  
  		if (page_offset < 0) {
  			b_offset = -page_offset;
-@@ -2186,6 +2186,10 @@ static int grow_one_stripe(struct r5conf *conf, gfp_t gfp)
+@@ -2040,6 +2040,10 @@ static int grow_one_stripe(struct r5conf *conf, gfp_t gfp)
  	return 1;
  }
  
@@ -43,7 +43,7 @@ index ec0f951..afc85b9 100644
  static int grow_stripes(struct r5conf *conf, int num)
  {
  	struct kmem_cache *sc;
-@@ -2196,7 +2200,11 @@ static int grow_stripes(struct r5conf *conf, int num)
+@@ -2050,7 +2054,11 @@ static int grow_stripes(struct r5conf *conf, int num)
  			"raid%d-%s", conf->level, mdname(conf->mddev));
  	else
  		sprintf(conf->cache_name[0],
@@ -55,7 +55,7 @@ index ec0f951..afc85b9 100644
  	sprintf(conf->cache_name[1], "%s-alt", conf->cache_name[0]);
  
  	conf->active_name = 0;
-@@ -2508,7 +2516,7 @@ static void raid5_end_read_request(struct bio * bi)
+@@ -2422,7 +2422,7 @@ static void raid5_end_read_request(struct bio * bi)
  				mdname(conf->mddev), STRIPE_SECTORS,
  				(unsigned long long)s,
  				bdevname(rdev->bdev, b));
@@ -64,7 +64,7 @@ index ec0f951..afc85b9 100644
  			clear_bit(R5_ReadError, &sh->dev[i].flags);
  			clear_bit(R5_ReWrite, &sh->dev[i].flags);
  		} else if (test_bit(R5_ReadNoMerge, &sh->dev[i].flags))
-@@ -2521,15 +2529,15 @@ static void raid5_end_read_request(struct bio * bi)
+@@ -2435,15 +2435,15 @@ static void raid5_end_read_request(struct bio * bi)
  			 */
  			set_bit(R5_OrigPageUPTDODATE, &sh->dev[i].flags);
  
@@ -83,7 +83,7 @@ index ec0f951..afc85b9 100644
  		if (test_bit(R5_ReadRepl, &sh->dev[i].flags))
  			pr_warn_ratelimited(
  				"md/raid:%s: read error on replacement device (sector %llu on %s).\n",
-@@ -2551,7 +2559,7 @@ static void raid5_end_read_request(struct bio * bi)
+@@ -2465,7 +2465,7 @@ static void raid5_end_read_request(struct bio * bi)
  				mdname(conf->mddev),
  				(unsigned long long)s,
  				bdn);
@@ -92,21 +92,21 @@ index ec0f951..afc85b9 100644
  			 > conf->max_nr_stripes)
  			pr_warn("md/raid:%s: Too many read errors, failing device %s.\n",
  			       mdname(conf->mddev), bdn);
-@@ -4084,7 +4092,7 @@ static void handle_parity_checks5(struct r5conf *conf, struct stripe_head *sh,
+@@ -3763,7 +3771,7 @@ static void handle_parity_checks5(struct r5conf *conf, struct stripe_head *sh,
  			 */
  			set_bit(STRIPE_INSYNC, &sh->state);
  		else {
 -			atomic64_add(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
 +			atomic64_add_unchecked(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
- 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery)) {
+ 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery))
  				/* don't try to repair!! */
  				set_bit(STRIPE_INSYNC, &sh->state);
-@@ -4241,7 +4249,7 @@ static void handle_parity_checks6(struct r5conf *conf, struct stripe_head *sh,
+@@ -3915,7 +3923,7 @@ static void handle_parity_checks6(struct r5conf *conf, struct stripe_head *sh,
  				 */
  			}
  		} else {
 -			atomic64_add(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
 +			atomic64_add_unchecked(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
- 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery)) {
+ 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery))
  				/* don't try to repair!! */
  				set_bit(STRIPE_INSYNC, &sh->state);

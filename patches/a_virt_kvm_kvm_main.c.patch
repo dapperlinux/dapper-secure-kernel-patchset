@@ -1,8 +1,8 @@
 diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index f0fe9d0..192bb88 100644
+index f4c6d4f..07aea88 100644
 --- a/virt/kvm/kvm_main.c
 +++ b/virt/kvm/kvm_main.c
-@@ -98,12 +98,17 @@ LIST_HEAD(vm_list);
+@@ -93,12 +93,17 @@ LIST_HEAD(vm_list);
  
  static cpumask_var_t cpus_hardware_enabled;
  static int kvm_usage_count;
@@ -22,7 +22,7 @@ index f0fe9d0..192bb88 100644
  
  struct dentry *kvm_debugfs_dir;
  EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
-@@ -591,6 +596,10 @@ static int kvm_create_vm_debugfs(struct kvm *kvm, int fd)
+@@ -572,6 +577,10 @@ static int kvm_create_vm_debugfs(struct kvm *kvm, int fd)
  	struct kvm_stat_data *stat_data;
  	struct kvm_stats_debugfs_item *p;
  
@@ -33,7 +33,7 @@ index f0fe9d0..192bb88 100644
  	if (!debugfs_initialized())
  		return 0;
  
-@@ -934,7 +943,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
+@@ -914,7 +923,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
  	/* We can read the guest memory with __xxx_user() later on. */
  	if ((id < KVM_USER_MEM_SLOTS) &&
  	    ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
@@ -42,7 +42,7 @@ index f0fe9d0..192bb88 100644
  			(void __user *)(unsigned long)mem->userspace_addr,
  			mem->memory_size)))
  		goto out;
-@@ -2032,9 +2041,17 @@ EXPORT_SYMBOL_GPL(kvm_read_guest_cached);
+@@ -2028,9 +2037,17 @@ EXPORT_SYMBOL_GPL(kvm_read_guest_cached);
  
  int kvm_clear_guest_page(struct kvm *kvm, gfn_t gfn, int offset, int len)
  {
@@ -62,7 +62,7 @@ index f0fe9d0..192bb88 100644
  }
  EXPORT_SYMBOL_GPL(kvm_clear_guest_page);
  
-@@ -2390,7 +2407,7 @@ static int kvm_vcpu_release(struct inode *inode, struct file *filp)
+@@ -2382,7 +2399,7 @@ static int kvm_vcpu_release(struct inode *inode, struct file *filp)
  	return 0;
  }
  
@@ -71,7 +71,7 @@ index f0fe9d0..192bb88 100644
  	.release        = kvm_vcpu_release,
  	.unlocked_ioctl = kvm_vcpu_ioctl,
  #ifdef CONFIG_KVM_COMPAT
-@@ -3154,7 +3171,7 @@ static long kvm_vm_compat_ioctl(struct file *filp,
+@@ -3147,7 +3164,7 @@ static long kvm_vm_compat_ioctl(struct file *filp,
  }
  #endif
  
@@ -80,7 +80,7 @@ index f0fe9d0..192bb88 100644
  	.release        = kvm_vm_release,
  	.unlocked_ioctl = kvm_vm_ioctl,
  #ifdef CONFIG_KVM_COMPAT
-@@ -3241,7 +3258,7 @@ out:
+@@ -3234,7 +3251,7 @@ static long kvm_dev_ioctl(struct file *filp,
  	return r;
  }
  
@@ -89,7 +89,7 @@ index f0fe9d0..192bb88 100644
  	.unlocked_ioctl = kvm_dev_ioctl,
  	.compat_ioctl   = kvm_dev_ioctl,
  	.llseek		= noop_llseek,
-@@ -3267,7 +3284,7 @@ static void hardware_enable_nolock(void *junk)
+@@ -3260,7 +3277,7 @@ static void hardware_enable_nolock(void *junk)
  
  	if (r) {
  		cpumask_clear_cpu(cpu, cpus_hardware_enabled);
@@ -98,7 +98,7 @@ index f0fe9d0..192bb88 100644
  		pr_info("kvm: enabling virtualization on CPU%d failed\n", cpu);
  	}
  }
-@@ -3324,10 +3341,10 @@ static int hardware_enable_all(void)
+@@ -3317,10 +3334,10 @@ static int hardware_enable_all(void)
  
  	kvm_usage_count++;
  	if (kvm_usage_count == 1) {
@@ -111,7 +111,7 @@ index f0fe9d0..192bb88 100644
  			hardware_disable_all_nolock();
  			r = -EBUSY;
  		}
-@@ -3968,8 +3985,9 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+@@ -3895,8 +3912,9 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
  	/* A kmem cache lets us meet the alignment requirements of fx_save. */
  	if (!vcpu_align)
  		vcpu_align = __alignof__(struct kvm_vcpu);
@@ -123,7 +123,7 @@ index f0fe9d0..192bb88 100644
  	if (!kvm_vcpu_cache) {
  		r = -ENOMEM;
  		goto out_free_3;
-@@ -3979,9 +3997,11 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+@@ -3906,9 +3924,11 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
  	if (r)
  		goto out_free;
  
@@ -135,7 +135,7 @@ index f0fe9d0..192bb88 100644
  
  	r = misc_register(&kvm_dev);
  	if (r) {
-@@ -3991,9 +4011,6 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+@@ -3918,9 +3938,6 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
  
  	register_syscore_ops(&kvm_syscore_ops);
  

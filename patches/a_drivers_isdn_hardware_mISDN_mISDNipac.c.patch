@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hardware/mISDN/mISDNipac.c b/drivers/isdn/hardware/mISDN/mISDNipac.c
-index 6742b0d..2840691 100644
+index 8d338ba..f0cb4af 100644
 --- a/drivers/isdn/hardware/mISDN/mISDNipac.c
 +++ b/drivers/isdn/hardware/mISDN/mISDNipac.c
 @@ -727,8 +727,9 @@ isac_release(struct isac_hw *isac)
@@ -17,8 +17,8 @@ index 6742b0d..2840691 100644
  	}
  	isac->mon_tx = NULL;
  	isac->mon_rx = NULL;
--	setup_timer(&isac->dch.timer, (void *)dbusy_timer_handler,
-+	setup_timer(&isac->dch.timer,dbusy_timer_handler,
- 		    (long)isac);
+-	isac->dch.timer.function = (void *) dbusy_timer_handler;
++	isac->dch.timer.function = dbusy_timer_handler;
+ 	isac->dch.timer.data = (long)isac;
+ 	init_timer(&isac->dch.timer);
  	isac->mocr = 0xaa;
- 	if (isac->type & IPAC_TYPE_ISACX) {

@@ -1,8 +1,8 @@
 diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
-index 38dfa27..7571236 100644
+index ec87ef9..dac8bcd 100644
 --- a/arch/mips/kernel/traps.c
 +++ b/arch/mips/kernel/traps.c
-@@ -706,7 +706,18 @@ asmlinkage void do_ov(struct pt_regs *regs)
+@@ -702,7 +702,18 @@ asmlinkage void do_ov(struct pt_regs *regs)
  	};
  
  	prev_state = exception_enter();

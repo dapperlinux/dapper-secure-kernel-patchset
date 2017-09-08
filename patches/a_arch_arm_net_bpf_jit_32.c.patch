@@ -1,16 +1,16 @@
 diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index d5b9fa1..4bc4b1a 100644
+index 93d0b6d..2db6d99 100644
 --- a/arch/arm/net/bpf_jit_32.c
 +++ b/arch/arm/net/bpf_jit_32.c
-@@ -21,6 +21,7 @@
- #include <asm/set_memory.h>
+@@ -20,6 +20,7 @@
+ #include <asm/cacheflush.h>
  #include <asm/hwcap.h>
  #include <asm/opcodes.h>
 +#include <asm/pgtable.h>
  
  #include "bpf_jit_32.h"
  
-@@ -73,54 +74,38 @@ struct jit_ctx {
+@@ -72,54 +73,38 @@ struct jit_ctx {
  #endif
  };
  
@@ -75,7 +75,7 @@ index d5b9fa1..4bc4b1a 100644
  
  	return (u64)err << 32 | ntohl(ret);
  }
-@@ -192,8 +177,10 @@ static void jit_fill_hole(void *area, unsigned int size)
+@@ -191,8 +176,10 @@ static void jit_fill_hole(void *area, unsigned int size)
  {
  	u32 *ptr;
  	/* We are guaranteed to have aligned memory. */
@@ -86,7 +86,7 @@ index d5b9fa1..4bc4b1a 100644
  }
  
  static void build_prologue(struct jit_ctx *ctx)
-@@ -555,6 +542,9 @@ static int build_body(struct jit_ctx *ctx)
+@@ -554,6 +541,9 @@ static int build_body(struct jit_ctx *ctx)
  		case BPF_LD | BPF_B | BPF_ABS:
  			load_order = 0;
  load:
@@ -96,7 +96,7 @@ index d5b9fa1..4bc4b1a 100644
  			emit_mov_i(r_off, k, ctx);
  load_common:
  			ctx->seen |= SEEN_DATA | SEEN_CALL;
-@@ -569,18 +559,6 @@ load_common:
+@@ -568,18 +558,6 @@ static int build_body(struct jit_ctx *ctx)
  				condt = ARM_COND_HI;
  			}
  

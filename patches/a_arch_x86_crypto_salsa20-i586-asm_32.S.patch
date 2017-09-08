@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/salsa20-i586-asm_32.S b/arch/x86/crypto/salsa20-i586-asm_32.S
-index 329452b..f136500 100644
+index 329452b8..f136500 100644
 --- a/arch/x86/crypto/salsa20-i586-asm_32.S
 +++ b/arch/x86/crypto/salsa20-i586-asm_32.S
 @@ -3,6 +3,7 @@

@@ -1,8 +1,8 @@
 diff --git a/include/drm/drm_drv.h b/include/drm/drm_drv.h
-index 53b9832..19864aa 100644
+index 5699f42..dd1ad66 100644
 --- a/include/drm/drm_drv.h
 +++ b/include/drm/drm_drv.h
-@@ -520,9 +520,10 @@ struct drm_driver {
+@@ -434,9 +434,10 @@ struct drm_driver {
  	int (*dma_quiescent) (struct drm_device *);
  	int (*context_dtor) (struct drm_device *dev, int context);
  	int dev_priv_size;
@@ -10,8 +10,8 @@ index 53b9832..19864aa 100644
 +} __do_const;
 +typedef struct drm_driver __no_const drm_driver_no_const;
  
--__printf(6, 7)
-+__printf(6, 7) __nocapture(4, 5)
+-extern __printf(6, 7)
++extern __printf(6, 7) __nocapture(4, 5)
  void drm_dev_printk(const struct device *dev, const char *level,
  		    unsigned int category, const char *function_name,
  		    const char *prefix, const char *format, ...);

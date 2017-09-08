@@ -1,8 +1,8 @@
 diff --git a/drivers/cpufreq/acpi-cpufreq.c b/drivers/cpufreq/acpi-cpufreq.c
-index 3a2ca0f..7a126a1 100644
+index 297e912..d5661fb 100644
 --- a/drivers/cpufreq/acpi-cpufreq.c
 +++ b/drivers/cpufreq/acpi-cpufreq.c
-@@ -675,8 +675,11 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
+@@ -694,8 +694,11 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
  	data->acpi_perf_cpu = cpu;
  	policy->driver_data = data;
  
@@ -16,7 +16,7 @@ index 3a2ca0f..7a126a1 100644
  
  	result = acpi_processor_register_performance(perf, cpu);
  	if (result)
-@@ -814,7 +817,9 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
+@@ -833,7 +836,9 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
  		policy->cur = acpi_cpufreq_guess_freq(data, policy->cpu);
  		break;
  	case ACPI_ADR_SPACE_FIXED_HARDWARE:
@@ -27,7 +27,7 @@ index 3a2ca0f..7a126a1 100644
  		break;
  	default:
  		break;
-@@ -912,8 +917,10 @@ static void __init acpi_cpufreq_boost_init(void)
+@@ -912,8 +912,10 @@ static void __init acpi_cpufreq_boost_init(void)
  	if (!(boot_cpu_has(X86_FEATURE_CPB) || boot_cpu_has(X86_FEATURE_IDA)))
  		return;
  

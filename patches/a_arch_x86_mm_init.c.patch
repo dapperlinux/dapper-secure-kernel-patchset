@@ -1,5 +1,5 @@
 diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
-index 9b3f9fa..8c1d8fb 100644
+index 889e761..0e55866 100644
 --- a/arch/x86/mm/init.c
 +++ b/arch/x86/mm/init.c
 @@ -4,6 +4,7 @@
@@ -8,8 +8,8 @@ index 9b3f9fa..8c1d8fb 100644
  #include <linux/bootmem.h>	/* for max_low_pfn */
 +#include <linux/tboot.h>
  
- #include <asm/set_memory.h>
- #include <asm/e820/api.h>
+ #include <asm/cacheflush.h>
+ #include <asm/e820.h>
 @@ -18,6 +19,7 @@
  #include <asm/dma.h>		/* for MAX_DMA_PFN */
  #include <asm/microcode.h>
@@ -109,6 +109,6 @@ index 9b3f9fa..8c1d8fb 100644
  {
 +	gr_init_ebda();
 +
- 	e820__reallocate_tables();
+ 	e820_reallocate_tables();
  
  	free_init_pages("unused kernel",

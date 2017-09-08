@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/pgtable_64.h b/arch/x86/include/asm/pgtable_64.h
-index 9991224..75a4c63 100644
+index 1cc82ec..ba29fd8 100644
 --- a/arch/x86/include/asm/pgtable_64.h
 +++ b/arch/x86/include/asm/pgtable_64.h
 @@ -16,11 +16,17 @@
@@ -23,7 +23,7 @@ index 9991224..75a4c63 100644
  
  #define swapper_pg_dir init_level4_pgt
  
-@@ -69,7 +75,9 @@ static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
+@@ -62,7 +68,9 @@ static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
  
  static inline void native_set_pmd(pmd_t *pmdp, pmd_t pmd)
  {
@@ -33,7 +33,7 @@ index 9991224..75a4c63 100644
  }
  
  static inline void native_pmd_clear(pmd_t *pmd)
-@@ -105,7 +113,9 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
+@@ -98,7 +106,9 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
  
  static inline void native_set_pud(pud_t *pudp, pud_t pud)
  {
@@ -43,7 +43,7 @@ index 9991224..75a4c63 100644
  }
  
  static inline void native_pud_clear(pud_t *pud)
-@@ -144,6 +154,13 @@ static inline void native_p4d_clear(p4d_t *p4d)
+@@ -108,6 +118,13 @@ static inline void native_pud_clear(pud_t *pud)
  
  static inline void native_set_pgd(pgd_t *pgdp, pgd_t pgd)
  {

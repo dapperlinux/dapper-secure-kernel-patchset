@@ -1,8 +1,8 @@
 diff --git a/arch/arm/mm/alignment.c b/arch/arm/mm/alignment.c
-index 2c96190..92b2e66 100644
+index 7d5f4c7..c6a0816 100644
 --- a/arch/arm/mm/alignment.c
 +++ b/arch/arm/mm/alignment.c
-@@ -779,6 +779,7 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+@@ -778,6 +778,7 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
  	u16 tinstr = 0;
  	int isize = 4;
  	int thumb2_32b = 0;
@@ -10,7 +10,7 @@ index 2c96190..92b2e66 100644
  
  	if (interrupts_enabled(regs))
  		local_irq_enable();
-@@ -787,14 +788,24 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+@@ -786,14 +787,24 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
  
  	if (thumb_mode(regs)) {
  		u16 *ptr = (u16 *)(instrptr & ~1);
@@ -37,7 +37,7 @@ index 2c96190..92b2e66 100644
  				tinst2 = __mem_to_opcode_thumb16(tinst2);
  				instr = __opcode_thumb32_compose(tinstr, tinst2);
  				thumb2_32b = 1;
-@@ -804,7 +815,12 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+@@ -803,7 +814,12 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
  			}
  		}
  	} else {
@@ -51,7 +51,7 @@ index 2c96190..92b2e66 100644
  		instr = __mem_to_opcode_arm(instr);
  	}
  
-@@ -813,7 +829,7 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+@@ -812,7 +828,7 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
  		goto bad_or_fault;
  	}
  

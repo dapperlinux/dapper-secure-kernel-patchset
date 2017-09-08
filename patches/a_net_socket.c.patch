@@ -1,5 +1,5 @@
 diff --git a/net/socket.c b/net/socket.c
-index c2564eb..3fc3468 100644
+index 6bbccf0..1991a22 100644
 --- a/net/socket.c
 +++ b/net/socket.c
 @@ -89,6 +89,7 @@
@@ -27,7 +27,7 @@ index c2564eb..3fc3468 100644
  
  /*
   *	Statistics counters of the socket lists
-@@ -367,7 +369,7 @@ static struct dentry *sockfs_mount(struct file_system_type *fs_type,
+@@ -369,7 +371,7 @@ static struct dentry *sockfs_mount(struct file_system_type *fs_type,
  				  &sockfs_dentry_operations, SOCKFS_MAGIC);
  }
  
@@ -36,7 +36,7 @@ index c2564eb..3fc3468 100644
  
  static struct file_system_type sock_fs_type = {
  	.name =		"sockfs",
-@@ -1148,6 +1150,8 @@ int __sock_create(struct net *net, int family, int type, int protocol,
+@@ -1108,6 +1110,8 @@ int __sock_create(struct net *net, int family, int type, int protocol,
  		return -EAFNOSUPPORT;
  	if (type < 0 || type >= SOCK_MAX)
  		return -EINVAL;
@@ -45,7 +45,7 @@ index c2564eb..3fc3468 100644
  
  	/* Compatibility.
  
-@@ -1164,6 +1168,20 @@ int __sock_create(struct net *net, int family, int type, int protocol,
+@@ -1124,6 +1128,20 @@ int __sock_create(struct net *net, int family, int type, int protocol,
  	if (err)
  		return err;
  
@@ -66,7 +66,7 @@ index c2564eb..3fc3468 100644
  	/*
  	 *	Allocate the socket and allow the family to set things up. if
  	 *	the protocol is 0, the family is instructed to select an appropriate
-@@ -1415,6 +1433,14 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
+@@ -1375,6 +1393,14 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
  	if (sock) {
  		err = move_addr_to_kernel(umyaddr, addrlen, &address);
  		if (err >= 0) {
@@ -81,7 +81,7 @@ index c2564eb..3fc3468 100644
  			err = security_socket_bind(sock,
  						   (struct sockaddr *)&address,
  						   addrlen);
-@@ -1423,6 +1449,7 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
+@@ -1383,6 +1409,7 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
  						      (struct sockaddr *)
  						      &address, addrlen);
  		}
@@ -89,7 +89,7 @@ index c2564eb..3fc3468 100644
  		fput_light(sock->file, fput_needed);
  	}
  	return err;
-@@ -1446,10 +1473,20 @@ SYSCALL_DEFINE2(listen, int, fd, int, backlog)
+@@ -1406,10 +1433,20 @@ SYSCALL_DEFINE2(listen, int, fd, int, backlog)
  		if ((unsigned int)backlog > somaxconn)
  			backlog = somaxconn;
  
@@ -110,7 +110,7 @@ index c2564eb..3fc3468 100644
  		fput_light(sock->file, fput_needed);
  	}
  	return err;
-@@ -1493,6 +1530,18 @@ SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
+@@ -1453,6 +1490,18 @@ SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
  	newsock->type = sock->type;
  	newsock->ops = sock->ops;
  
@@ -129,7 +129,7 @@ index c2564eb..3fc3468 100644
  	/*
  	 * We don't need try_module_get here, as the listening socket (sock)
  	 * has the protocol module (sock->ops->owner) held.
-@@ -1538,6 +1587,8 @@ SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
+@@ -1498,6 +1547,8 @@ SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
  	fd_install(newfd, newfile);
  	err = newfd;
  
@@ -138,7 +138,7 @@ index c2564eb..3fc3468 100644
  out_put:
  	fput_light(sock->file, fput_needed);
  out:
-@@ -1570,6 +1621,7 @@ SYSCALL_DEFINE3(connect, int, fd, struct sockaddr __user *, uservaddr,
+@@ -1530,6 +1581,7 @@ SYSCALL_DEFINE3(connect, int, fd, struct sockaddr __user *, uservaddr,
  		int, addrlen)
  {
  	struct socket *sock;
@@ -146,7 +146,7 @@ index c2564eb..3fc3468 100644
  	struct sockaddr_storage address;
  	int err, fput_needed;
  
-@@ -1580,6 +1632,17 @@ SYSCALL_DEFINE3(connect, int, fd, struct sockaddr __user *, uservaddr,
+@@ -1540,6 +1592,17 @@ SYSCALL_DEFINE3(connect, int, fd, struct sockaddr __user *, uservaddr,
  	if (err < 0)
  		goto out_put;
  
@@ -164,7 +164,7 @@ index c2564eb..3fc3468 100644
  	err =
  	    security_socket_connect(sock, (struct sockaddr *)&address, addrlen);
  	if (err)
-@@ -1602,7 +1665,7 @@ SYSCALL_DEFINE3(getsockname, int, fd, struct sockaddr __user *, usockaddr,
+@@ -1562,7 +1625,7 @@ SYSCALL_DEFINE3(getsockname, int, fd, struct sockaddr __user *, usockaddr,
  		int __user *, usockaddr_len)
  {
  	struct socket *sock;
@@ -173,7 +173,7 @@ index c2564eb..3fc3468 100644
  	int len, err, fput_needed;
  
  	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-@@ -1633,7 +1696,7 @@ SYSCALL_DEFINE3(getpeername, int, fd, struct sockaddr __user *, usockaddr,
+@@ -1593,7 +1656,7 @@ SYSCALL_DEFINE3(getpeername, int, fd, struct sockaddr __user *, usockaddr,
  		int __user *, usockaddr_len)
  {
  	struct socket *sock;
@@ -182,7 +182,7 @@ index c2564eb..3fc3468 100644
  	int len, err, fput_needed;
  
  	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-@@ -1661,6 +1724,8 @@ SYSCALL_DEFINE3(getpeername, int, fd, struct sockaddr __user *, usockaddr,
+@@ -1621,6 +1684,8 @@ SYSCALL_DEFINE3(getpeername, int, fd, struct sockaddr __user *, usockaddr,
   *	the protocol.
   */
  
@@ -191,7 +191,7 @@ index c2564eb..3fc3468 100644
  SYSCALL_DEFINE6(sendto, int, fd, void __user *, buff, size_t, len,
  		unsigned int, flags, struct sockaddr __user *, addr,
  		int, addr_len)
-@@ -1724,7 +1789,7 @@ SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, ubuf, size_t, size,
+@@ -1684,7 +1749,7 @@ SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, ubuf, size_t, size,
  	struct socket *sock;
  	struct iovec iov;
  	struct msghdr msg;
@@ -200,7 +200,7 @@ index c2564eb..3fc3468 100644
  	int err, err2;
  	int fput_needed;
  
-@@ -1972,7 +2037,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
+@@ -1929,7 +1994,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
  		 * checking falls down on this.
  		 */
  		if (copy_from_user(ctl_buf,
@@ -209,7 +209,7 @@ index c2564eb..3fc3468 100644
  				   ctl_len))
  			goto out_freectl;
  		msg_sys->msg_control = ctl_buf;
-@@ -2130,7 +2195,7 @@ static int ___sys_recvmsg(struct socket *sock, struct user_msghdr __user *msg,
+@@ -2087,7 +2152,7 @@ static int ___sys_recvmsg(struct socket *sock, struct user_msghdr __user *msg,
  	ssize_t err;
  
  	/* kernel mode address */
@@ -218,7 +218,7 @@ index c2564eb..3fc3468 100644
  
  	/* user mode address pointers */
  	struct sockaddr __user *uaddr;
-@@ -2778,7 +2843,7 @@ static int ethtool_ioctl(struct net *net, struct compat_ifreq __user *ifr32)
+@@ -2735,7 +2800,7 @@ static int ethtool_ioctl(struct net *net, struct compat_ifreq __user *ifr32)
  	ifr = compat_alloc_user_space(buf_size);
  	rxnfc = (void __user *)ifr + ALIGN(sizeof(struct ifreq), 8);
  
@@ -227,7 +227,7 @@ index c2564eb..3fc3468 100644
  		return -EFAULT;
  
  	if (put_user(convert_in ? rxnfc : compat_ptr(data),
-@@ -2889,7 +2954,7 @@ static int bond_ioctl(struct net *net, unsigned int cmd,
+@@ -2846,7 +2911,7 @@ static int bond_ioctl(struct net *net, unsigned int cmd,
  		old_fs = get_fs();
  		set_fs(KERNEL_DS);
  		err = dev_ioctl(net, cmd,
@@ -236,7 +236,7 @@ index c2564eb..3fc3468 100644
  		set_fs(old_fs);
  
  		return err;
-@@ -2982,7 +3047,7 @@ static int compat_sioc_ifmap(struct net *net, unsigned int cmd,
+@@ -2939,7 +3004,7 @@ static int compat_sioc_ifmap(struct net *net, unsigned int cmd,
  
  	old_fs = get_fs();
  	set_fs(KERNEL_DS);
@@ -245,7 +245,7 @@ index c2564eb..3fc3468 100644
  	set_fs(old_fs);
  
  	if (cmd == SIOCGIFMAP && !err) {
-@@ -3066,7 +3131,7 @@ static int routing_ioctl(struct net *net, struct socket *sock,
+@@ -3023,7 +3088,7 @@ static int routing_ioctl(struct net *net, struct socket *sock,
  		ret |= get_user(rtdev, &(ur4->rt_dev));
  		if (rtdev) {
  			ret |= copy_from_user(devname, compat_ptr(rtdev), 15);
@@ -254,7 +254,7 @@ index c2564eb..3fc3468 100644
  			devname[15] = 0;
  		} else
  			r4.rt_dev = NULL;
-@@ -3294,8 +3359,8 @@ int kernel_getsockopt(struct socket *sock, int level, int optname,
+@@ -3250,8 +3315,8 @@ int kernel_getsockopt(struct socket *sock, int level, int optname,
  	int __user *uoptlen;
  	int err;
  
@@ -265,7 +265,7 @@ index c2564eb..3fc3468 100644
  
  	set_fs(KERNEL_DS);
  	if (level == SOL_SOCKET)
-@@ -3315,7 +3380,7 @@ int kernel_setsockopt(struct socket *sock, int level, int optname,
+@@ -3271,7 +3336,7 @@ int kernel_setsockopt(struct socket *sock, int level, int optname,
  	char __user *uoptval;
  	int err;
  

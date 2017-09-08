@@ -1,5 +1,5 @@
 diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
-index b99769f..77d7f50 100644
+index 1b5d450..b6042f8 100644
 --- a/drivers/power/reset/at91-reset.c
 +++ b/drivers/power/reset/at91-reset.c
 @@ -17,6 +17,7 @@
@@ -10,7 +10,7 @@ index b99769f..77d7f50 100644
  
  #include <soc/at91/at91sam9_ddrsdr.h>
  #include <soc/at91/at91sam9_sdramc.h>
-@@ -217,7 +218,9 @@ static int __init at91_reset_probe(struct platform_device *pdev)
+@@ -206,7 +207,9 @@ static int __init at91_reset_probe(struct platform_device *pdev)
  	}
  
  	match = of_match_node(at91_reset_of_match, pdev->dev.of_node);

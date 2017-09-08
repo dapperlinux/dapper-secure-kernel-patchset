@@ -1,5 +1,5 @@
 diff --git a/drivers/net/wireless/ti/wl1251/sdio.c b/drivers/net/wireless/ti/wl1251/sdio.c
-index b661f89..ebea675 100644
+index b661f896..ebea675 100644
 --- a/drivers/net/wireless/ti/wl1251/sdio.c
 +++ b/drivers/net/wireless/ti/wl1251/sdio.c
 @@ -282,13 +282,17 @@ static int wl1251_sdio_probe(struct sdio_func *func,

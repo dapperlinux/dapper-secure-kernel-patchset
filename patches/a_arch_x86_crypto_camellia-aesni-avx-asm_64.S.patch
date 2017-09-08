@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/camellia-aesni-avx-asm_64.S b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-index f7c495e..d140405 100644
+index aa9e8bd..7e68f75 100644
 --- a/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 @@ -17,6 +17,7 @@
@@ -46,7 +46,7 @@ index f7c495e..d140405 100644
  	\
  	store_ab(x0, x1, x2, x3, x4, x5, x6, x7, mem_ab);
  
-@@ -786,7 +787,7 @@ __camellia_enc_blk16:
+@@ -783,7 +784,7 @@ __camellia_enc_blk16:
  		    %xmm15, (key_table)(CTX, %r8, 8), (%rax), 1 * 16(%rax));
  
  	FRAME_END
@@ -55,7 +55,7 @@ index f7c495e..d140405 100644
  
  .align 8
  .Lenc_max32:
-@@ -873,7 +874,7 @@ __camellia_dec_blk16:
+@@ -870,7 +871,7 @@ __camellia_dec_blk16:
  		    %xmm15, (key_table)(CTX), (%rax), 1 * 16(%rax));
  
  	FRAME_END
@@ -64,7 +64,7 @@ index f7c495e..d140405 100644
  
  .align 8
  .Ldec_max32:
-@@ -892,7 +893,7 @@ __camellia_dec_blk16:
+@@ -889,7 +890,7 @@ __camellia_dec_blk16:
  	jmp .Ldec_max24;
  ENDPROC(__camellia_dec_blk16)
  
@@ -73,7 +73,7 @@ index f7c495e..d140405 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -907,17 +908,17 @@ ENTRY(camellia_ecb_enc_16way)
+@@ -904,17 +905,17 @@ ENTRY(camellia_ecb_enc_16way)
  	/* now dst can be used as temporary buffer (even in src == dst case) */
  	movq	%rsi, %rax;
  
@@ -94,7 +94,7 @@ index f7c495e..d140405 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -937,17 +938,17 @@ ENTRY(camellia_ecb_dec_16way)
+@@ -934,17 +935,17 @@ ENTRY(camellia_ecb_dec_16way)
  	/* now dst can be used as temporary buffer (even in src == dst case) */
  	movq	%rsi, %rax;
  
@@ -115,7 +115,7 @@ index f7c495e..d140405 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -971,7 +972,7 @@ ENTRY(camellia_cbc_dec_16way)
+@@ -968,7 +969,7 @@ ENTRY(camellia_cbc_dec_16way)
  	subq $(16 * 16), %rsp;
  	movq %rsp, %rax;
  
@@ -124,7 +124,7 @@ index f7c495e..d140405 100644
  
  	addq $(16 * 16), %rsp;
  
-@@ -995,7 +996,7 @@ ENTRY(camellia_cbc_dec_16way)
+@@ -992,7 +993,7 @@ ENTRY(camellia_cbc_dec_16way)
  		     %xmm8, %rsi);
  
  	FRAME_END
@@ -133,7 +133,7 @@ index f7c495e..d140405 100644
  ENDPROC(camellia_cbc_dec_16way)
  
  #define inc_le128(x, minus_one, tmp) \
-@@ -1004,7 +1005,7 @@ ENDPROC(camellia_cbc_dec_16way)
+@@ -1001,7 +1002,7 @@ ENDPROC(camellia_cbc_dec_16way)
  	vpslldq $8, tmp, tmp; \
  	vpsubq tmp, x, x;
  
@@ -142,7 +142,7 @@ index f7c495e..d140405 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -1083,7 +1084,7 @@ ENTRY(camellia_ctr_16way)
+@@ -1080,7 +1081,7 @@ ENTRY(camellia_ctr_16way)
  	vpxor 14 * 16(%rax), %xmm15, %xmm14;
  	vpxor 15 * 16(%rax), %xmm15, %xmm15;
  
@@ -151,7 +151,7 @@ index f7c495e..d140405 100644
  
  	addq $(16 * 16), %rsp;
  
-@@ -1108,7 +1109,7 @@ ENTRY(camellia_ctr_16way)
+@@ -1105,7 +1106,7 @@ ENTRY(camellia_ctr_16way)
  		     %xmm8, %rsi);
  
  	FRAME_END
@@ -160,7 +160,7 @@ index f7c495e..d140405 100644
  ENDPROC(camellia_ctr_16way)
  
  #define gf128mul_x_ble(iv, mask, tmp) \
-@@ -1227,7 +1228,7 @@ camellia_xts_crypt_16way:
+@@ -1224,7 +1225,7 @@ camellia_xts_crypt_16way:
  	vpxor 14 * 16(%rax), %xmm15, %xmm14;
  	vpxor 15 * 16(%rax), %xmm15, %xmm15;
  
@@ -169,7 +169,7 @@ index f7c495e..d140405 100644
  
  	addq $(16 * 16), %rsp;
  
-@@ -1252,10 +1253,10 @@ camellia_xts_crypt_16way:
+@@ -1249,10 +1250,10 @@ camellia_xts_crypt_16way:
  		     %xmm8, %rsi);
  
  	FRAME_END
@@ -182,7 +182,7 @@ index f7c495e..d140405 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -1269,7 +1270,7 @@ ENTRY(camellia_xts_enc_16way)
+@@ -1266,7 +1267,7 @@ ENTRY(camellia_xts_enc_16way)
  	jmp camellia_xts_crypt_16way;
  ENDPROC(camellia_xts_enc_16way)
  

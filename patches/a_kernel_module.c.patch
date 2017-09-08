@@ -1,8 +1,8 @@
 diff --git a/kernel/module.c b/kernel/module.c
-index 4a3665f..0008d19 100644
+index 0e54d5b..f9d983b 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -66,6 +66,7 @@
+@@ -63,6 +63,7 @@
  #include <linux/bsearch.h>
  #include <linux/dynamic_debug.h>
  #include <linux/audit.h>
@@ -10,7 +10,7 @@ index 4a3665f..0008d19 100644
  #include <uapi/linux/module.h>
  #include "module-internal.h"
  
-@@ -113,16 +114,32 @@ static LIST_HEAD(modules);
+@@ -108,16 +109,32 @@ static LIST_HEAD(modules);
  
  static __always_inline unsigned long __mod_tree_val(struct latch_tree_node *n)
  {
@@ -34,20 +34,20 @@ index 4a3665f..0008d19 100644
 -	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
 +	struct mod_tree_node *mtn = container_of(n, struct mod_tree_node, node);
 +	struct module *mod = mtn->mod;
-+
+ 
+-	return (unsigned long)layout->size;
 +	if (unlikely(mtn == &mod->init_layout.mtn_rw))
 +		return (unsigned long)mod->init_layout.size_rw;
 +	if (unlikely(mtn == &mod->init_layout.mtn_rx))
 +		return (unsigned long)mod->init_layout.size_rx;
- 
--	return (unsigned long)layout->size;
++
 +	if (unlikely(mtn == &mod->core_layout.mtn_rw))
 +		return (unsigned long)mod->core_layout.size_rw;
 +	return (unsigned long)mod->core_layout.size_rx;
  }
  
  static __always_inline bool
-@@ -155,14 +172,19 @@ static const struct latch_tree_ops mod_tree_ops = {
+@@ -150,14 +167,19 @@ static const struct latch_tree_ops mod_tree_ops = {
  
  static struct mod_tree_root {
  	struct latch_tree_root root;
@@ -72,7 +72,7 @@ index 4a3665f..0008d19 100644
  
  static noinline void __mod_tree_insert(struct mod_tree_node *node)
  {
-@@ -180,23 +202,31 @@ static void __mod_tree_remove(struct mod_tree_node *node)
+@@ -175,23 +197,31 @@ static void __mod_tree_remove(struct mod_tree_node *node)
   */
  static void mod_tree_insert(struct module *mod)
  {
@@ -112,7 +112,7 @@ index 4a3665f..0008d19 100644
  	mod_tree_remove_init(mod);
  }
  
-@@ -213,7 +243,8 @@ static struct module *mod_find(unsigned long addr)
+@@ -208,7 +238,8 @@ static struct module *mod_find(unsigned long addr)
  
  #else /* MODULES_TREE_LOOKUP */
  
@@ -122,23 +122,12 @@ index 4a3665f..0008d19 100644
  
  static void mod_tree_insert(struct module *mod) { }
  static void mod_tree_remove_init(struct module *mod) { }
-@@ -237,22 +268,36 @@ static struct module *mod_find(unsigned long addr)
+@@ -232,22 +263,36 @@ static struct module *mod_find(unsigned long addr)
   * Bounds of module text, for speeding up __module_address.
   * Protected by module_mutex.
   */
 -static void __mod_update_bounds(void *base, unsigned int size)
 +static void __mod_update_bounds_rx(void *base, unsigned int size)
-+{
-+	unsigned long min = (unsigned long)base;
-+	unsigned long max = min + size;
-+
-+	if (min < module_addr_min_rx)
-+		module_addr_min_rx = min;
-+	if (max > module_addr_max_rx)
-+		module_addr_max_rx = max;
-+}
-+
-+static void __mod_update_bounds_rw(void *base, unsigned int size)
  {
  	unsigned long min = (unsigned long)base;
  	unsigned long max = min + size;
@@ -147,6 +136,17 @@ index 4a3665f..0008d19 100644
 -		module_addr_min = min;
 -	if (max > module_addr_max)
 -		module_addr_max = max;
++	if (min < module_addr_min_rx)
++		module_addr_min_rx = min;
++	if (max > module_addr_max_rx)
++		module_addr_max_rx = max;
++}
++
++static void __mod_update_bounds_rw(void *base, unsigned int size)
++{
++	unsigned long min = (unsigned long)base;
++	unsigned long max = min + size;
++
 +	if (min < module_addr_min_rw)
 +		module_addr_min_rw = min;
 +	if (max > module_addr_max_rw)
@@ -167,7 +167,7 @@ index 4a3665f..0008d19 100644
  }
  
  #ifdef CONFIG_KGDB_KDB
-@@ -281,7 +326,7 @@ module_param(sig_enforce, bool_enable_only, 0644);
+@@ -276,7 +321,7 @@ module_param(sig_enforce, bool_enable_only, 0644);
  #endif /* !CONFIG_MODULE_SIG_FORCE */
  
  /* Block module loading/unloading? */
@@ -176,7 +176,7 @@ index 4a3665f..0008d19 100644
  core_param(nomodule, modules_disabled, bint, 0);
  
  /* Waiting for a module to finish initializing? */
-@@ -462,7 +507,7 @@ bool each_symbol_section(bool (*fn)(const struct symsearch *arr,
+@@ -454,7 +499,7 @@ bool each_symbol_section(bool (*fn)(const struct symsearch *arr,
  		return true;
  
  	list_for_each_entry_rcu(mod, &modules, list) {
@@ -185,7 +185,7 @@ index 4a3665f..0008d19 100644
  			{ mod->syms, mod->syms + mod->num_syms, mod->crcs,
  			  NOT_GPL_ONLY, false },
  			{ mod->gpl_syms, mod->gpl_syms + mod->num_gpl_syms,
-@@ -487,7 +532,7 @@ bool each_symbol_section(bool (*fn)(const struct symsearch *arr,
+@@ -479,7 +524,7 @@ bool each_symbol_section(bool (*fn)(const struct symsearch *arr,
  		if (mod->state == MODULE_STATE_UNFORMED)
  			continue;
  
@@ -194,7 +194,7 @@ index 4a3665f..0008d19 100644
  			return true;
  	}
  	return false;
-@@ -633,7 +678,7 @@ static int percpu_modalloc(struct module *mod, struct load_info *info)
+@@ -625,7 +670,7 @@ static int percpu_modalloc(struct module *mod, struct load_info *info)
  	if (!pcpusec->sh_size)
  		return 0;
  
@@ -203,7 +203,7 @@ index 4a3665f..0008d19 100644
  		pr_warn("%s: per-cpu alignment %li > %li\n",
  			mod->name, align, PAGE_SIZE);
  		align = PAGE_SIZE;
-@@ -1215,7 +1260,7 @@ struct module_attribute module_uevent =
+@@ -1200,7 +1245,7 @@ struct module_attribute module_uevent =
  static ssize_t show_coresize(struct module_attribute *mattr,
  			     struct module_kobject *mk, char *buffer)
  {
@@ -212,7 +212,7 @@ index 4a3665f..0008d19 100644
  }
  
  static struct module_attribute modinfo_coresize =
-@@ -1224,7 +1269,7 @@ static struct module_attribute modinfo_coresize =
+@@ -1209,7 +1254,7 @@ static struct module_attribute modinfo_coresize =
  static ssize_t show_initsize(struct module_attribute *mattr,
  			     struct module_kobject *mk, char *buffer)
  {
@@ -221,7 +221,7 @@ index 4a3665f..0008d19 100644
  }
  
  static struct module_attribute modinfo_initsize =
-@@ -1316,13 +1361,29 @@ static int check_version(Elf_Shdr *sechdrs,
+@@ -1301,13 +1346,29 @@ static int check_version(Elf_Shdr *sechdrs,
  		goto bad_version;
  	}
  
@@ -252,7 +252,7 @@ index 4a3665f..0008d19 100644
  	return 0;
  }
  
-@@ -1447,7 +1508,7 @@ resolve_symbol_wait(struct module *mod,
+@@ -1435,7 +1496,7 @@ resolve_symbol_wait(struct module *mod,
   */
  #ifdef CONFIG_SYSFS
  
@@ -261,7 +261,7 @@ index 4a3665f..0008d19 100644
  static inline bool sect_empty(const Elf_Shdr *sect)
  {
  	return !(sect->sh_flags & SHF_ALLOC) || sect->sh_size == 0;
-@@ -1585,7 +1646,7 @@ static void add_notes_attrs(struct module *mod, const struct load_info *info)
+@@ -1573,7 +1634,7 @@ static void add_notes_attrs(struct module *mod, const struct load_info *info)
  {
  	unsigned int notes, loaded, i;
  	struct module_notes_attrs *notes_attrs;
@@ -270,7 +270,7 @@ index 4a3665f..0008d19 100644
  
  	/* failed to create section attributes, so can't create notes */
  	if (!mod->sect_attrs)
-@@ -1697,7 +1758,7 @@ static void del_usage_links(struct module *mod)
+@@ -1685,7 +1746,7 @@ static void del_usage_links(struct module *mod)
  static int module_add_modinfo_attrs(struct module *mod)
  {
  	struct module_attribute *attr;
@@ -279,7 +279,7 @@ index 4a3665f..0008d19 100644
  	int error = 0;
  	int i;
  
-@@ -1884,40 +1945,40 @@ static void mod_sysfs_teardown(struct module *mod)
+@@ -1872,40 +1933,40 @@ static void mod_sysfs_teardown(struct module *mod)
  static void frob_text(const struct module_layout *layout,
  		      int (*set_memory)(unsigned long start, int num_pages))
  {
@@ -335,7 +335,7 @@ index 4a3665f..0008d19 100644
  }
  
  /* livepatching wants to disable read-only so it can frob module. */
-@@ -2022,7 +2083,15 @@ static void disable_ro_nx(const struct module_layout *layout)
+@@ -1990,7 +2051,15 @@ static void disable_ro_nx(const struct module_layout *layout)
  }
  
  #else
@@ -352,7 +352,7 @@ index 4a3665f..0008d19 100644
  static void module_enable_nx(const struct module *mod) { }
  static void module_disable_nx(const struct module *mod) { }
  #endif
-@@ -2159,16 +2228,19 @@ static void free_module(struct module *mod)
+@@ -2127,16 +2196,19 @@ static void free_module(struct module *mod)
  	/* This may be empty, but that's OK */
  	disable_ro_nx(&mod->init_layout);
  	module_arch_freeing_init(mod);
@@ -375,7 +375,7 @@ index 4a3665f..0008d19 100644
  
  #ifdef CONFIG_MPU
  	update_protections(current->mm);
-@@ -2237,9 +2309,31 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
+@@ -2205,9 +2277,31 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
  	int ret = 0;
  	const struct kernel_symbol *ksym;
  
@@ -407,7 +407,7 @@ index 4a3665f..0008d19 100644
  		switch (sym[i].st_shndx) {
  		case SHN_COMMON:
  			/* Ignore common symbols */
-@@ -2268,7 +2362,9 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
+@@ -2236,7 +2330,9 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
  			ksym = resolve_symbol_wait(mod, info, name);
  			/* Ok if resolved.  */
  			if (ksym && !IS_ERR(ksym)) {
@@ -417,7 +417,7 @@ index 4a3665f..0008d19 100644
  				break;
  			}
  
-@@ -2287,11 +2383,20 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
+@@ -2255,11 +2351,20 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
  				secbase = (unsigned long)mod_percpu(mod);
  			else
  				secbase = info->sechdrs[sym[i].st_shndx].sh_addr;
@@ -438,7 +438,7 @@ index 4a3665f..0008d19 100644
  	return ret;
  }
  
-@@ -2380,26 +2485,12 @@ static void layout_sections(struct module *mod, struct load_info *info)
+@@ -2348,26 +2453,12 @@ static void layout_sections(struct module *mod, struct load_info *info)
  			    || s->sh_entsize != ~0UL
  			    || strstarts(sname, ".init"))
  				continue;
@@ -469,7 +469,7 @@ index 4a3665f..0008d19 100644
  	}
  
  	pr_debug("Init section allocation order:\n");
-@@ -2413,30 +2504,13 @@ static void layout_sections(struct module *mod, struct load_info *info)
+@@ -2381,30 +2472,13 @@ static void layout_sections(struct module *mod, struct load_info *info)
  			    || s->sh_entsize != ~0UL
  			    || !strstarts(sname, ".init"))
  				continue;
@@ -505,7 +505,7 @@ index 4a3665f..0008d19 100644
  	}
  }
  
-@@ -2614,7 +2688,7 @@ static void layout_symtab(struct module *mod, struct load_info *info)
+@@ -2582,7 +2656,7 @@ static void layout_symtab(struct module *mod, struct load_info *info)
  
  	/* Put symbol section at end of init part of module. */
  	symsect->sh_flags |= SHF_ALLOC;
@@ -514,7 +514,7 @@ index 4a3665f..0008d19 100644
  					 info->index.sym) | INIT_OFFSET_MASK;
  	pr_debug("\t%s\n", info->secstrings + symsect->sh_name);
  
-@@ -2632,23 +2706,23 @@ static void layout_symtab(struct module *mod, struct load_info *info)
+@@ -2600,23 +2674,23 @@ static void layout_symtab(struct module *mod, struct load_info *info)
  	}
  
  	/* Append room for core symbols at end of core part. */
@@ -547,7 +547,7 @@ index 4a3665f..0008d19 100644
  }
  
  /*
-@@ -2665,7 +2739,9 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
+@@ -2633,7 +2707,9 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
  	Elf_Shdr *symsec = &info->sechdrs[info->index.sym];
  
  	/* Set up to point into init section. */
@@ -558,7 +558,7 @@ index 4a3665f..0008d19 100644
  
  	mod->kallsyms->symtab = (void *)symsec->sh_addr;
  	mod->kallsyms->num_symtab = symsec->sh_size / sizeof(Elf_Sym);
-@@ -2678,8 +2754,8 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
+@@ -2646,8 +2722,8 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
  			= elf_type(&mod->kallsyms->symtab[i], info);
  
  	/* Now populate the cut down core kallsyms for after init. */
@@ -569,7 +569,7 @@ index 4a3665f..0008d19 100644
  	src = mod->kallsyms->symtab;
  	for (ndst = i = 0; i < mod->kallsyms->num_symtab; i++) {
  		if (i == 0 || is_livepatch_module(mod) ||
-@@ -2692,6 +2768,8 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
+@@ -2660,6 +2736,8 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
  		}
  	}
  	mod->core_kallsyms.num_symtab = ndst;
@@ -578,7 +578,7 @@ index 4a3665f..0008d19 100644
  }
  #else
  static inline void layout_symtab(struct module *mod, struct load_info *info)
-@@ -2964,7 +3042,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
+@@ -2930,7 +3008,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
  	mod = (void *)info->sechdrs[info->index.mod].sh_addr;
  
  	if (info->index.sym == 0) {
@@ -594,7 +594,7 @@ index 4a3665f..0008d19 100644
  		return ERR_PTR(-ENOEXEC);
  	}
  
-@@ -2980,8 +3066,16 @@ static struct module *setup_load_info(struct load_info *info, int flags)
+@@ -2946,8 +3032,16 @@ static struct module *setup_load_info(struct load_info *info, int flags)
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -611,7 +611,7 @@ index 4a3665f..0008d19 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -3014,7 +3108,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -2980,7 +3074,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  		return err;
  
  	/* Set up license info based on the info section */
@@ -620,7 +620,7 @@ index 4a3665f..0008d19 100644
  
  	return 0;
  }
-@@ -3111,7 +3205,7 @@ static int move_module(struct module *mod, struct load_info *info)
+@@ -3077,7 +3171,7 @@ static int move_module(struct module *mod, struct load_info *info)
  	void *ptr;
  
  	/* Do the allocs. */
@@ -629,7 +629,7 @@ index 4a3665f..0008d19 100644
  	/*
  	 * The pointer to this block is stored in the module structure
  	 * which is inside the block. Just mark it as not being a
-@@ -3121,11 +3215,11 @@ static int move_module(struct module *mod, struct load_info *info)
+@@ -3087,11 +3181,11 @@ static int move_module(struct module *mod, struct load_info *info)
  	if (!ptr)
  		return -ENOMEM;
  
@@ -645,7 +645,7 @@ index 4a3665f..0008d19 100644
  		/*
  		 * The pointer to this block is stored in the module structure
  		 * which is inside the block. This block doesn't need to be
-@@ -3134,13 +3228,45 @@ static int move_module(struct module *mod, struct load_info *info)
+@@ -3100,13 +3194,45 @@ static int move_module(struct module *mod, struct load_info *info)
  		 */
  		kmemleak_ignore(ptr);
  		if (!ptr) {
@@ -695,7 +695,7 @@ index 4a3665f..0008d19 100644
  
  	/* Transfer each section which specifies SHF_ALLOC */
  	pr_debug("final section addresses:\n");
-@@ -3151,16 +3277,45 @@ static int move_module(struct module *mod, struct load_info *info)
+@@ -3117,16 +3243,45 @@ static int move_module(struct module *mod, struct load_info *info)
  		if (!(shdr->sh_flags & SHF_ALLOC))
  			continue;
  
@@ -748,7 +748,7 @@ index 4a3665f..0008d19 100644
  		pr_debug("\t0x%lx %s\n",
  			 (long)shdr->sh_addr, info->secstrings + shdr->sh_name);
  	}
-@@ -3222,12 +3377,12 @@ static void flush_module_icache(const struct module *mod)
+@@ -3188,12 +3343,12 @@ static void flush_module_icache(const struct module *mod)
  	 * Do it before processing of module parameters, so the module
  	 * can provide parameter accessor functions of its own.
  	 */
@@ -767,7 +767,7 @@ index 4a3665f..0008d19 100644
  
  	set_fs(old_fs);
  }
-@@ -3319,8 +3474,10 @@ static void module_deallocate(struct module *mod, struct load_info *info)
+@@ -3285,8 +3440,10 @@ static void module_deallocate(struct module *mod, struct load_info *info)
  {
  	percpu_modfree(mod);
  	module_arch_freeing_init(mod);
@@ -780,7 +780,7 @@ index 4a3665f..0008d19 100644
  }
  
  int __weak module_finalize(const Elf_Ehdr *hdr,
-@@ -3333,7 +3490,9 @@ int __weak module_finalize(const Elf_Ehdr *hdr,
+@@ -3299,7 +3456,9 @@ int __weak module_finalize(const Elf_Ehdr *hdr,
  static int post_relocation(struct module *mod, const struct load_info *info)
  {
  	/* Sort exception table now relocations are done. */
@@ -790,7 +790,7 @@ index 4a3665f..0008d19 100644
  
  	/* Copy relocated percpu area over. */
  	percpu_modcopy(mod, (void *)info->sechdrs[info->index.pcpu].sh_addr,
-@@ -3381,13 +3540,15 @@ static void do_mod_ctors(struct module *mod)
+@@ -3347,13 +3506,15 @@ static void do_mod_ctors(struct module *mod)
  /* For freeing module_init on success, in case kallsyms traversing */
  struct mod_initfree {
  	struct rcu_head rcu;
@@ -808,7 +808,7 @@ index 4a3665f..0008d19 100644
  	kfree(m);
  }
  
-@@ -3407,7 +3568,8 @@ static noinline int do_init_module(struct module *mod)
+@@ -3373,7 +3534,8 @@ static noinline int do_init_module(struct module *mod)
  		ret = -ENOMEM;
  		goto fail;
  	}
@@ -818,7 +818,7 @@ index 4a3665f..0008d19 100644
  
  	/*
  	 * We want to find out whether @mod uses async during init.  Clear
-@@ -3467,11 +3629,10 @@ static noinline int do_init_module(struct module *mod)
+@@ -3433,11 +3595,10 @@ static noinline int do_init_module(struct module *mod)
  	mod_tree_remove_init(mod);
  	disable_ro_nx(&mod->init_layout);
  	module_arch_freeing_init(mod);
@@ -834,7 +834,7 @@ index 4a3665f..0008d19 100644
  	/*
  	 * We want to free module_init, but be aware that kallsyms may be
  	 * walking this with preempt disabled.  In all the failure paths, we
-@@ -3672,9 +3833,38 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -3636,9 +3797,38 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	if (err)
  		goto free_unload;
  
@@ -873,7 +873,7 @@ index 4a3665f..0008d19 100644
  	/* Fix up syms, so that st_value is a pointer to location. */
  	err = simplify_symbols(mod, info);
  	if (err < 0)
-@@ -3690,13 +3880,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -3654,13 +3844,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
  
  	flush_module_icache(mod);
  
@@ -887,7 +887,7 @@ index 4a3665f..0008d19 100644
  	dynamic_debug_setup(info->debug, info->num_debug);
  
  	/* Ftrace init must be called in the MODULE_STATE_UNFORMED state */
-@@ -3763,11 +3946,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -3725,11 +3908,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
   ddebug_cleanup:
  	dynamic_debug_remove(info->debug);
  	synchronize_sched();
@@ -900,7 +900,7 @@ index 4a3665f..0008d19 100644
   free_unload:
  	module_unload_free(mod);
   unlink_mod:
-@@ -3787,7 +3969,8 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -3749,7 +3931,8 @@ static int load_module(struct load_info *info, const char __user *uargs,
  	 */
  	ftrace_release_mod(mod);
  	/* Free lock-classes; relies on the preceding sync_rcu() */
@@ -910,7 +910,7 @@ index 4a3665f..0008d19 100644
  
  	module_deallocate(mod, info);
   free_copy:
-@@ -3875,10 +4058,16 @@ static const char *get_ksymbol(struct module *mod,
+@@ -3837,10 +4020,16 @@ static const char *get_ksymbol(struct module *mod,
  	struct mod_kallsyms *kallsyms = rcu_dereference_sched(mod->kallsyms);
  
  	/* At worse, next value is at end of module */
@@ -930,7 +930,7 @@ index 4a3665f..0008d19 100644
  
  	/* Scan for closest preceding symbol, and next symbol. (ELF
  	   starts real symbols at 1). */
-@@ -4135,7 +4324,7 @@ static int m_show(struct seq_file *m, void *p)
+@@ -4093,7 +4282,7 @@ static int m_show(struct seq_file *m, void *p)
  		return 0;
  
  	seq_printf(m, "%s %u",
@@ -939,7 +939,7 @@ index 4a3665f..0008d19 100644
  	print_unload_info(m, mod);
  
  	/* Informative for users. */
-@@ -4144,7 +4333,7 @@ static int m_show(struct seq_file *m, void *p)
+@@ -4102,7 +4291,7 @@ static int m_show(struct seq_file *m, void *p)
  		   mod->state == MODULE_STATE_COMING ? "Loading" :
  		   "Live");
  	/* Used by oprofile and other similar tools. */
@@ -948,7 +948,7 @@ index 4a3665f..0008d19 100644
  
  	/* Taints info */
  	if (mod->taints)
-@@ -4180,7 +4369,17 @@ static const struct file_operations proc_modules_operations = {
+@@ -4138,7 +4327,17 @@ static const struct file_operations proc_modules_operations = {
  
  static int __init proc_modules_init(void)
  {
@@ -966,7 +966,7 @@ index 4a3665f..0008d19 100644
  	return 0;
  }
  module_init(proc_modules_init);
-@@ -4242,7 +4441,15 @@ struct module *__module_address(unsigned long addr)
+@@ -4199,7 +4398,15 @@ struct module *__module_address(unsigned long addr)
  {
  	struct module *mod;
  
@@ -983,7 +983,7 @@ index 4a3665f..0008d19 100644
  		return NULL;
  
  	module_assert_mutex_or_preempt();
-@@ -4285,11 +4492,21 @@ bool is_module_text_address(unsigned long addr)
+@@ -4242,11 +4449,21 @@ bool is_module_text_address(unsigned long addr)
   */
  struct module *__module_text_address(unsigned long addr)
  {
@@ -1008,7 +1008,7 @@ index 4a3665f..0008d19 100644
  			mod = NULL;
  	}
  	return mod;
-@@ -4319,7 +4536,7 @@ void print_modules(void)
+@@ -4276,7 +4493,7 @@ void print_modules(void)
  #ifdef CONFIG_MODVERSIONS
  /* Generate the signature for all relevant module structures here.
   * If these change, we don't want to try to parse the module. */

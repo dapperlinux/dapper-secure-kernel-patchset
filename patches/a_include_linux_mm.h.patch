@@ -1,8 +1,8 @@
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 6f543a4..750eb55 100644
+index 0b5b2e4..8f2773e 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -113,6 +113,7 @@ extern int mmap_rnd_compat_bits __read_mostly;
+@@ -107,6 +107,7 @@ extern int mmap_rnd_compat_bits __read_mostly;
  #define DEFAULT_MAX_MAP_COUNT	(USHRT_MAX - MAPCOUNT_ELF_CORE_MARGIN)
  
  extern int sysctl_max_map_count;
@@ -10,7 +10,7 @@ index 6f543a4..750eb55 100644
  
  extern unsigned long sysctl_user_reserve_kbytes;
  extern unsigned long sysctl_admin_reserve_kbytes;
-@@ -188,6 +189,11 @@ extern unsigned int kobjsize(const void *objp);
+@@ -182,6 +183,11 @@ extern unsigned int kobjsize(const void *objp);
  #define VM_ACCOUNT	0x00100000	/* Is a VM accounted object */
  #define VM_NORESERVE	0x00200000	/* should the VM suppress accounting */
  #define VM_HUGETLB	0x00400000	/* Huge TLB Page VM */
@@ -22,7 +22,7 @@ index 6f543a4..750eb55 100644
  #define VM_ARCH_1	0x01000000	/* Architecture-specific flag */
  #define VM_ARCH_2	0x02000000
  #define VM_DONTDUMP	0x04000000	/* Do not include in the core dump */
-@@ -377,8 +383,8 @@ struct vm_operations_struct {
+@@ -364,8 +370,8 @@ struct vm_operations_struct {
  	/* called by access_process_vm when get_user_pages() fails, typically
  	 * for use by special VMAs that can switch between memory and hardware
  	 */
@@ -33,7 +33,7 @@ index 6f543a4..750eb55 100644
  
  	/* Called by the /proc/PID/maps code to ask the vma whether it
  	 * has a special name.  Returning non-NULL will also cause this
-@@ -416,6 +422,7 @@ struct vm_operations_struct {
+@@ -403,6 +409,7 @@ struct vm_operations_struct {
  	struct page *(*find_special_page)(struct vm_area_struct *vma,
  					  unsigned long addr);
  };
@@ -41,7 +41,7 @@ index 6f543a4..750eb55 100644
  
  struct mmu_gather;
  struct inode;
-@@ -1265,8 +1272,8 @@ int follow_pfn(struct vm_area_struct *vma, unsigned long address,
+@@ -1225,8 +1232,8 @@ int follow_pfn(struct vm_area_struct *vma, unsigned long address,
  	unsigned long *pfn);
  int follow_phys(struct vm_area_struct *vma, unsigned long address,
  		unsigned int flags, unsigned long *prot, resource_size_t *phys);
@@ -52,7 +52,7 @@ index 6f543a4..750eb55 100644
  
  static inline void unmap_shared_mapping_range(struct address_space *mapping,
  		loff_t const holebegin, loff_t const holelen)
-@@ -1306,12 +1313,12 @@ static inline int fixup_user_fault(struct task_struct *tsk,
+@@ -1266,12 +1273,12 @@ static inline int fixup_user_fault(struct task_struct *tsk,
  }
  #endif
  
@@ -70,7 +70,7 @@ index 6f543a4..750eb55 100644
  
  long get_user_pages_remote(struct task_struct *tsk, struct mm_struct *mm,
  			    unsigned long start, unsigned long nr_pages,
-@@ -1562,8 +1569,15 @@ static inline int __pud_alloc(struct mm_struct *mm, p4d_t *p4d,
+@@ -1578,8 +1550,15 @@ static inline int __pud_alloc(struct mm_struct *mm, p4d_t *p4d,
  {
  	return 0;
  }
@@ -86,7 +86,7 @@ index 6f543a4..750eb55 100644
  #endif
  
  #if defined(__PAGETABLE_PMD_FOLDED) || !defined(CONFIG_MMU)
-@@ -1573,6 +1587,12 @@ static inline int __pmd_alloc(struct mm_struct *mm, pud_t *pud,
+@@ -1544,6 +1530,12 @@ static inline int __pmd_alloc(struct mm_struct *mm, pud_t *pud,
  	return 0;
  }
  
@@ -99,7 +99,7 @@ index 6f543a4..750eb55 100644
  static inline void mm_nr_pmds_init(struct mm_struct *mm) {}
  
  static inline unsigned long mm_nr_pmds(struct mm_struct *mm)
-@@ -1585,6 +1605,7 @@ static inline void mm_dec_nr_pmds(struct mm_struct *mm) {}
+@@ -1556,6 +1548,7 @@ static inline void mm_dec_nr_pmds(struct mm_struct *mm) {}
  
  #else
  int __pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address);
@@ -107,7 +107,7 @@ index 6f543a4..750eb55 100644
  
  static inline void mm_nr_pmds_init(struct mm_struct *mm)
  {
-@@ -1624,6 +1645,12 @@ static inline p4d_t *p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
+@@ -1640,6 +1640,12 @@ static inline p4d_t *p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
  		NULL : p4d_offset(pgd, address);
  }
  
@@ -120,7 +120,7 @@ index 6f543a4..750eb55 100644
  static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
  		unsigned long address)
  {
-@@ -1631,12 +1658,23 @@ static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
+@@ -1647,12 +1653,23 @@ static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
  		NULL : pud_offset(p4d, address);
  }
  #endif /* !__ARCH_HAS_5LEVEL_HACK */
@@ -144,7 +144,7 @@ index 6f543a4..750eb55 100644
  #endif /* CONFIG_MMU && !__ARCH_HAS_4LEVEL_HACK */
  
  #if USE_SPLIT_PTE_PTLOCKS
-@@ -2051,12 +2089,23 @@ extern struct vm_area_struct *copy_vma(struct vm_area_struct **,
+@@ -1989,12 +1994,23 @@ extern struct vm_area_struct *copy_vma(struct vm_area_struct **,
  	bool *need_rmap_locks);
  extern void exit_mmap(struct mm_struct *);
  
@@ -168,7 +168,7 @@ index 6f543a4..750eb55 100644
  	if (rlim < RLIM_INFINITY) {
  		if (((new - start) + (end_data - start_data)) > rlim)
  			return -ENOSPC;
-@@ -2097,6 +2146,7 @@ extern unsigned long do_mmap(struct file *file, unsigned long addr,
+@@ -2113,6 +2092,7 @@ extern unsigned long do_mmap(struct file *file, unsigned long addr,
  	struct list_head *uf);
  extern int do_munmap(struct mm_struct *, unsigned long, size_t,
  		     struct list_head *uf);
@@ -176,7 +176,7 @@ index 6f543a4..750eb55 100644
  
  static inline unsigned long
  do_mmap_pgoff(struct file *file, unsigned long addr,
-@@ -2135,10 +2185,11 @@ struct vm_unmapped_area_info {
+@@ -2068,10 +2085,11 @@ struct vm_unmapped_area_info {
  	unsigned long high_limit;
  	unsigned long align_mask;
  	unsigned long align_offset;
@@ -190,7 +190,7 @@ index 6f543a4..750eb55 100644
  
  /*
   * Search for an unmapped address range.
-@@ -2150,7 +2201,7 @@ extern unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info);
+@@ -2083,7 +2101,7 @@ extern unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info);
   * - satisfies (begin_addr & align_mask) == (align_offset & align_mask)
   */
  static inline unsigned long
@@ -199,7 +199,7 @@ index 6f543a4..750eb55 100644
  {
  	if (info->flags & VM_UNMAPPED_AREA_TOPDOWN)
  		return unmapped_area_topdown(info);
-@@ -2212,6 +2263,9 @@ extern struct vm_area_struct * find_vma(struct mm_struct * mm, unsigned long add
+@@ -2144,6 +2162,9 @@ extern struct vm_area_struct * find_vma(struct mm_struct * mm, unsigned long add
  extern struct vm_area_struct * find_vma_prev(struct mm_struct * mm, unsigned long addr,
  					     struct vm_area_struct **pprev);
  
@@ -209,7 +209,7 @@ index 6f543a4..750eb55 100644
  /* Look up the first VMA which intersects the interval start_addr..end_addr-1,
     NULL if none.  Assume start_addr < end_addr. */
  static inline struct vm_area_struct * find_vma_intersection(struct mm_struct * mm, unsigned long start_addr, unsigned long end_addr)
-@@ -2265,10 +2319,10 @@ static inline struct vm_area_struct *find_exact_vma(struct mm_struct *mm,
+@@ -2173,10 +2194,10 @@ static inline struct vm_area_struct *find_exact_vma(struct mm_struct *mm,
  }
  
  #ifdef CONFIG_MMU
@@ -222,7 +222,7 @@ index 6f543a4..750eb55 100644
  {
  	return __pgprot(0);
  }
-@@ -2466,7 +2520,7 @@ extern int get_hwpoison_page(struct page *page);
+@@ -2362,7 +2383,7 @@ extern int get_hwpoison_page(struct page *page);
  extern int sysctl_memory_failure_early_kill;
  extern int sysctl_memory_failure_recovery;
  extern void shake_page(struct page *p, int access);
@@ -231,7 +231,7 @@ index 6f543a4..750eb55 100644
  extern int soft_offline_page(struct page *page, int flags);
  
  
-@@ -2557,5 +2611,11 @@ void __init setup_nr_node_ids(void);
+@@ -2450,5 +2471,11 @@ void __init setup_nr_node_ids(void);
  static inline void setup_nr_node_ids(void) {}
  #endif
  

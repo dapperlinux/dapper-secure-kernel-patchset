@@ -1,5 +1,5 @@
 diff --git a/arch/sparc/kernel/kprobes.c b/arch/sparc/kernel/kprobes.c
-index 2d13a4f..f92b092 100644
+index b0377db..1da3b53 100644
 --- a/arch/sparc/kernel/kprobes.c
 +++ b/arch/sparc/kernel/kprobes.c
 @@ -499,6 +499,7 @@ int __kprobes longjmp_break_handler(struct kprobe *p, struct pt_regs *regs)

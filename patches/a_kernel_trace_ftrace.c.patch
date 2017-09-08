@@ -1,8 +1,8 @@
 diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index b308be3..24ec4f6 100644
+index 221eb59..055ddca 100644
 --- a/kernel/trace/ftrace.c
 +++ b/kernel/trace/ftrace.c
-@@ -122,8 +122,9 @@ static void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
+@@ -120,8 +120,9 @@ static void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
  				 struct ftrace_ops *op, struct pt_regs *regs);
  #else
  /* See comment below, where ftrace_ops_list_func is defined */
@@ -14,7 +14,7 @@ index b308be3..24ec4f6 100644
  #endif
  
  /*
-@@ -2512,13 +2513,18 @@ ftrace_code_disable(struct module *mod, struct dyn_ftrace *rec)
+@@ -2498,13 +2499,18 @@ ftrace_code_disable(struct module *mod, struct dyn_ftrace *rec)
  	if (unlikely(ftrace_disabled))
  		return 0;
  
@@ -35,7 +35,7 @@ index b308be3..24ec4f6 100644
  }
  
  /*
-@@ -5256,8 +5262,10 @@ static int ftrace_process_locs(struct module *mod,
+@@ -4890,8 +4896,10 @@ static int ftrace_process_locs(struct module *mod,
  	if (!count)
  		return 0;
  
@@ -46,7 +46,7 @@ index b308be3..24ec4f6 100644
  
  	start_pg = ftrace_allocate_pages(count);
  	if (!start_pg)
-@@ -5706,7 +5714,8 @@ static void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
+@@ -5307,7 +5315,8 @@ static void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
  	__ftrace_ops_list_func(ip, parent_ip, NULL, regs);
  }
  #else
@@ -56,7 +56,7 @@ index b308be3..24ec4f6 100644
  {
  	__ftrace_ops_list_func(ip, parent_ip, NULL, NULL);
  }
-@@ -6175,8 +6184,12 @@ int ftrace_graph_entry_stub(struct ftrace_graph_ent *trace)
+@@ -5739,8 +5748,12 @@ int ftrace_graph_entry_stub(struct ftrace_graph_ent *trace)
  }
  
  /* The callbacks that hook a function */
@@ -71,7 +71,7 @@ index b308be3..24ec4f6 100644
  trace_func_graph_ent_t ftrace_graph_entry = ftrace_graph_entry_stub;
  static trace_func_graph_ent_t __ftrace_graph_entry = ftrace_graph_entry_stub;
  
-@@ -6209,7 +6222,7 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
+@@ -5773,7 +5786,7 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
  
  		if (t->ret_stack == NULL) {
  			atomic_set(&t->tracing_graph_pause, 0);
@@ -80,7 +80,7 @@ index b308be3..24ec4f6 100644
  			t->curr_ret_stack = -1;
  			/* Make sure the tasks see the -1 first: */
  			smp_wmb();
-@@ -6404,7 +6417,7 @@ void unregister_ftrace_graph(void)
+@@ -5968,7 +5981,7 @@ void unregister_ftrace_graph(void)
  		goto out;
  
  	ftrace_graph_active--;
@@ -89,7 +89,7 @@ index b308be3..24ec4f6 100644
  	ftrace_graph_entry = ftrace_graph_entry_stub;
  	__ftrace_graph_entry = ftrace_graph_entry_stub;
  	ftrace_shutdown(&graph_ops, FTRACE_STOP_FUNC_RET);
-@@ -6432,7 +6445,7 @@ static void
+@@ -5996,7 +6009,7 @@ static void
  graph_init_task(struct task_struct *t, struct ftrace_ret_stack *ret_stack)
  {
  	atomic_set(&t->tracing_graph_pause, 0);

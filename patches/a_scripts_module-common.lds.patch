@@ -1,5 +1,5 @@
 diff --git a/scripts/module-common.lds b/scripts/module-common.lds
-index d61b9e8..c9ae005 100644
+index 73a2c7d..df11b31 100644
 --- a/scripts/module-common.lds
 +++ b/scripts/module-common.lds
 @@ -8,6 +8,11 @@ SECTIONS {

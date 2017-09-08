@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/tegra/sor.c b/drivers/gpu/drm/tegra/sor.c
-index a8f5289..83cc6ee 100644
+index 74d0540..f5277db 100644
 --- a/drivers/gpu/drm/tegra/sor.c
 +++ b/drivers/gpu/drm/tegra/sor.c
-@@ -1261,8 +1261,11 @@ static int tegra_sor_debugfs_init(struct tegra_sor *sor,
+@@ -1263,8 +1263,11 @@ static int tegra_sor_debugfs_init(struct tegra_sor *sor,
  		goto remove;
  	}
  

@@ -1,5 +1,5 @@
 diff --git a/arch/sh/kernel/kprobes.c b/arch/sh/kernel/kprobes.c
-index 52a5e11..e2629d8 100644
+index 83acbf3..fa67491 100644
 --- a/arch/sh/kernel/kprobes.c
 +++ b/arch/sh/kernel/kprobes.c
 @@ -72,6 +72,7 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)

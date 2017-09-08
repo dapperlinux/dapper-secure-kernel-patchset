@@ -1,8 +1,8 @@
 diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index cdefcfd..a551d6a 100644
+index bdd9cc5..486d4bf 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -44,6 +44,21 @@ __visible inline void enter_from_user_mode(void)
+@@ -42,6 +42,21 @@ __visible inline void enter_from_user_mode(void)
  static inline void enter_from_user_mode(void) {}
  #endif
  
@@ -24,7 +24,7 @@ index cdefcfd..a551d6a 100644
  static void do_audit_syscall_entry(struct pt_regs *regs, u32 arch)
  {
  #ifdef CONFIG_X86_64
-@@ -58,6 +73,10 @@ static void do_audit_syscall_entry(struct pt_regs *regs, u32 arch)
+@@ -56,6 +71,10 @@ static void do_audit_syscall_entry(struct pt_regs *regs, u32 arch)
  	}
  }
  
@@ -35,7 +35,7 @@ index cdefcfd..a551d6a 100644
  /*
   * Returns the syscall nr to run (which should match regs->orig_ax) or -1
   * to skip the syscall.
-@@ -76,12 +95,19 @@ static long syscall_trace_enter(struct pt_regs *regs)
+@@ -74,12 +93,19 @@ static long syscall_trace_enter(struct pt_regs *regs)
  
  	work = ACCESS_ONCE(ti->flags) & _TIF_WORK_SYSCALL_ENTRY;
  
@@ -56,7 +56,7 @@ index cdefcfd..a551d6a 100644
  
  	if (emulated)
  		return -1L;
-@@ -115,9 +141,11 @@ static long syscall_trace_enter(struct pt_regs *regs)
+@@ -113,9 +139,11 @@ static long syscall_trace_enter(struct pt_regs *regs)
  			sd.args[5] = regs->bp;
  		}
  
@@ -70,7 +70,7 @@ index cdefcfd..a551d6a 100644
  	}
  #endif
  
-@@ -126,6 +154,7 @@ static long syscall_trace_enter(struct pt_regs *regs)
+@@ -124,6 +152,7 @@ static long syscall_trace_enter(struct pt_regs *regs)
  
  	do_audit_syscall_entry(regs, arch);
  
@@ -78,7 +78,7 @@ index cdefcfd..a551d6a 100644
  	return ret ?: regs->orig_ax;
  }
  
-@@ -233,7 +262,7 @@ static void syscall_slow_exit_work(struct pt_regs *regs, u32 cached_flags)
+@@ -229,7 +258,7 @@ static void syscall_slow_exit_work(struct pt_regs *regs, u32 cached_flags)
  	step = unlikely(
  		(cached_flags & (_TIF_SINGLESTEP | _TIF_SYSCALL_EMU))
  		== _TIF_SINGLESTEP);
@@ -87,7 +87,7 @@ index cdefcfd..a551d6a 100644
  		tracehook_report_syscall_exit(regs, step);
  }
  
-@@ -252,6 +281,11 @@ __visible inline void syscall_return_slowpath(struct pt_regs *regs)
+@@ -248,6 +277,11 @@ __visible inline void syscall_return_slowpath(struct pt_regs *regs)
  	    WARN(irqs_disabled(), "syscall %ld left IRQs disabled", regs->orig_ax))
  		local_irq_enable();
  
@@ -99,7 +99,7 @@ index cdefcfd..a551d6a 100644
  	/*
  	 * First do one-time work.  If these work items are enabled, we
  	 * want to run them exactly once per syscall exit with IRQs on.
-@@ -350,6 +384,7 @@ __visible long do_fast_syscall_32(struct pt_regs *regs)
+@@ -346,6 +380,7 @@ __visible long do_fast_syscall_32(struct pt_regs *regs)
  
  	unsigned long landing_pad = (unsigned long)current->mm->context.vdso +
  		vdso_image_32.sym_int80_landing_pad;
@@ -107,7 +107,7 @@ index cdefcfd..a551d6a 100644
  
  	/*
  	 * SYSENTER loses EIP, and even SYSCALL32 needs us to skip forward
-@@ -369,11 +404,9 @@ __visible long do_fast_syscall_32(struct pt_regs *regs)
+@@ -365,11 +400,9 @@ __visible long do_fast_syscall_32(struct pt_regs *regs)
  		 * Micro-optimization: the pointer we're following is explicitly
  		 * 32 bits, so it can't be out of range.
  		 */

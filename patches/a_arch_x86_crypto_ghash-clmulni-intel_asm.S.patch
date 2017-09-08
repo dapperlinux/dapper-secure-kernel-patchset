@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/ghash-clmulni-intel_asm.S b/arch/x86/crypto/ghash-clmulni-intel_asm.S
-index f94375a..ad311fd 100644
+index eed55c8..18f64dc 100644
 --- a/arch/x86/crypto/ghash-clmulni-intel_asm.S
 +++ b/arch/x86/crypto/ghash-clmulni-intel_asm.S
 @@ -19,6 +19,7 @@
@@ -10,7 +10,7 @@ index f94375a..ad311fd 100644
  
  .section	.rodata.cst16.bswap_mask, "aM", @progbits, 16
  .align 16
-@@ -89,7 +90,7 @@ __clmul_gf128mul_ble:
+@@ -90,7 +91,7 @@ __clmul_gf128mul_ble:
  	psrlq $1, T2
  	pxor T2, T1
  	pxor T1, DATA
@@ -19,7 +19,7 @@ index f94375a..ad311fd 100644
  ENDPROC(__clmul_gf128mul_ble)
  
  /* void clmul_ghash_mul(char *dst, const u128 *shash) */
-@@ -99,11 +100,11 @@ ENTRY(clmul_ghash_mul)
+@@ -100,11 +101,11 @@ ENTRY(clmul_ghash_mul)
  	movups (%rsi), SHASH
  	movaps .Lbswap_mask, BSWAP
  	PSHUFB_XMM BSWAP DATA
@@ -33,7 +33,7 @@ index f94375a..ad311fd 100644
  ENDPROC(clmul_ghash_mul)
  
  /*
-@@ -123,7 +124,7 @@ ENTRY(clmul_ghash_update)
+@@ -124,7 +125,7 @@ ENTRY(clmul_ghash_update)
  	movups (%rsi), IN1
  	PSHUFB_XMM BSWAP IN1
  	pxor IN1, DATA
@@ -42,7 +42,7 @@ index f94375a..ad311fd 100644
  	sub $16, %rdx
  	add $16, %rsi
  	cmp $16, %rdx
-@@ -132,5 +133,5 @@ ENTRY(clmul_ghash_update)
+@@ -133,5 +134,5 @@ ENTRY(clmul_ghash_update)
  	movups DATA, (%rdi)
  .Lupdate_just_ret:
  	FRAME_END

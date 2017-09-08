@@ -1,8 +1,8 @@
 diff --git a/arch/Kconfig b/arch/Kconfig
-index 6c00e5b..e9c7437 100644
+index 659bdd0..4179181 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -172,6 +172,7 @@ config ARCH_USE_BUILTIN_BSWAP
+@@ -164,6 +164,7 @@ config ARCH_USE_BUILTIN_BSWAP
  config KRETPROBES
  	def_bool y
  	depends on KPROBES && HAVE_KRETPROBES
@@ -10,7 +10,7 @@ index 6c00e5b..e9c7437 100644
  
  config USER_RETURN_NOTIFIER
  	bool
-@@ -370,7 +371,7 @@ config HAVE_GCC_PLUGINS
+@@ -355,7 +356,7 @@ config HAVE_GCC_PLUGINS
  menuconfig GCC_PLUGINS
  	bool "GCC plugins"
  	depends on HAVE_GCC_PLUGINS
@@ -19,7 +19,7 @@ index 6c00e5b..e9c7437 100644
  	help
  	  GCC plugins are loadable modules that provide extra features to the
  	  compiler. They are useful for runtime instrumentation and static analysis.
-@@ -820,6 +821,7 @@ config VMAP_STACK
+@@ -759,6 +760,7 @@ config VMAP_STACK
  	default y
  	bool "Use a virtually-mapped stack"
  	depends on HAVE_ARCH_VMAP_STACK && !KASAN
@@ -27,7 +27,7 @@ index 6c00e5b..e9c7437 100644
  	---help---
  	  Enable this if you want the use virtually-mapped kernel stacks
  	  with guard pages.  This causes kernel stack overflows to be
-@@ -857,7 +859,7 @@ config ARCH_HAS_STRICT_MODULE_RWX
+@@ -837,7 +837,7 @@ config ARCH_HAS_STRICT_MODULE_RWX
  
  config STRICT_MODULE_RWX
  	bool "Set loadable kernel module data as NX and text as RO" if ARCH_OPTIONAL_KERNEL_RWX

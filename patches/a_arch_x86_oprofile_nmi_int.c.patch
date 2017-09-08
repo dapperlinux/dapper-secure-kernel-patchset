@@ -1,5 +1,5 @@
 diff --git a/arch/x86/oprofile/nmi_int.c b/arch/x86/oprofile/nmi_int.c
-index ffdbc48..3d21f8a 100644
+index 28c0412..568d0a4 100644
 --- a/arch/x86/oprofile/nmi_int.c
 +++ b/arch/x86/oprofile/nmi_int.c
 @@ -23,6 +23,7 @@
@@ -10,7 +10,7 @@ index ffdbc48..3d21f8a 100644
  
  #include "op_counter.h"
  #include "op_x86_model.h"
-@@ -592,7 +593,7 @@ enum __force_cpu_type {
+@@ -615,7 +616,7 @@ enum __force_cpu_type {
  
  static int force_cpu_type;
  
@@ -19,7 +19,7 @@ index ffdbc48..3d21f8a 100644
  {
  	if (!strcmp(str, "timer")) {
  		force_cpu_type = timer;
-@@ -763,8 +764,11 @@ int __init op_nmi_init(struct oprofile_operations *ops)
+@@ -786,8 +787,11 @@ int __init op_nmi_init(struct oprofile_operations *ops)
  	if (ret)
  		return ret;
  

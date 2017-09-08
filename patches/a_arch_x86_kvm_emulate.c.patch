@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 80890de..51b6c4a 100644
+index 9f676ad..7024de4 100644
 --- a/arch/x86/kvm/emulate.c
 +++ b/arch/x86/kvm/emulate.c
 @@ -25,6 +25,7 @@
@@ -10,7 +10,7 @@ index 80890de..51b6c4a 100644
  
  #include "x86.h"
  #include "tss.h"
-@@ -222,7 +223,7 @@ struct opcode {
+@@ -220,7 +221,7 @@ struct opcode {
  		void (*fastop)(struct fastop *fake);
  	} u;
  	int (*check_perm)(struct x86_emulate_ctxt *ctxt);
@@ -19,7 +19,7 @@ index 80890de..51b6c4a 100644
  
  struct group_dual {
  	struct opcode mod012[8];
-@@ -427,25 +428,6 @@ static int fastop(struct x86_emulate_ctxt *ctxt, void (*fop)(struct fastop *));
+@@ -425,25 +426,6 @@ static int fastop(struct x86_emulate_ctxt *ctxt, void (*fop)(struct fastop *));
  asm(".global kvm_fastop_exception \n"
      "kvm_fastop_exception: xor %esi, %esi; ret");
  
@@ -45,7 +45,7 @@ index 80890de..51b6c4a 100644
  FOP_START(salc) "pushf; sbb %al, %al; popf \n\t" FOP_RET
  FOP_END;
  
-@@ -1010,14 +992,82 @@ static int em_bsr_c(struct x86_emulate_ctxt *ctxt)
+@@ -1006,14 +988,82 @@ static int em_bsr_c(struct x86_emulate_ctxt *ctxt)
  	return fastop(ctxt, em_bsr);
  }
  
@@ -134,7 +134,7 @@ index 80890de..51b6c4a 100644
  	return rc;
  }
  
-@@ -1963,7 +2013,7 @@ static int em_push_sreg(struct x86_emulate_ctxt *ctxt)
+@@ -1959,7 +2009,7 @@ static int em_push_sreg(struct x86_emulate_ctxt *ctxt)
  static int em_pop_sreg(struct x86_emulate_ctxt *ctxt)
  {
  	int seg = ctxt->src2.val;
@@ -143,7 +143,7 @@ index 80890de..51b6c4a 100644
  	int rc;
  
  	rc = emulate_pop(ctxt, &selector, 2);
-@@ -1975,7 +2025,7 @@ static int em_pop_sreg(struct x86_emulate_ctxt *ctxt)
+@@ -1971,7 +2021,7 @@ static int em_pop_sreg(struct x86_emulate_ctxt *ctxt)
  	if (ctxt->op_bytes > 2)
  		rsp_increment(ctxt, ctxt->op_bytes - 2);
  
@@ -152,7 +152,7 @@ index 80890de..51b6c4a 100644
  	return rc;
  }
  
-@@ -4071,7 +4121,7 @@ static int check_cr_write(struct x86_emulate_ctxt *ctxt)
+@@ -4059,7 +4109,7 @@ static int check_cr_write(struct x86_emulate_ctxt *ctxt)
  	int cr = ctxt->modrm_reg;
  	u64 efer = 0;
  
@@ -161,7 +161,7 @@ index 80890de..51b6c4a 100644
  		0xffffffff00000000ULL,
  		0, 0, 0, /* CR3 checked later */
  		CR4_RESERVED_BITS,
-@@ -5159,7 +5209,10 @@ done_prefixes:
+@@ -5147,7 +5197,10 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
  	if (ctxt->d == 0)
  		return EMULATION_FAILED;
  
@@ -173,7 +173,7 @@ index 80890de..51b6c4a 100644
  
  	if (unlikely(ctxt->ud) && likely(!(ctxt->d & EmulateOnUD)))
  		return EMULATION_FAILED;
-@@ -5298,7 +5351,7 @@ static int fastop(struct x86_emulate_ctxt *ctxt, void (*fop)(struct fastop *))
+@@ -5286,7 +5339,7 @@ static int fastop(struct x86_emulate_ctxt *ctxt, void (*fop)(struct fastop *))
  	if (!(ctxt->d & ByteOp))
  		fop += __ffs(ctxt->dst.bytes) * FASTOP_SIZE;
  
@@ -182,7 +182,7 @@ index 80890de..51b6c4a 100644
  	    : "+a"(ctxt->dst.val), "+d"(ctxt->src.val), [flags]"+D"(flags),
  	      [fastop]"+S"(fop), "+r"(__sp)
  	    : "c"(ctxt->src2.val));
-@@ -5468,15 +5521,14 @@ special_insn:
+@@ -5454,15 +5507,14 @@ int x86_emulate_insn(struct x86_emulate_ctxt *ctxt)
  	else
  		ctxt->eflags &= ~X86_EFLAGS_RF;
  

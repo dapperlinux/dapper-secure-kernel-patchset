@@ -1,8 +1,8 @@
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 8a53205..e2c870a 100644
+index b32ad7d..05f6420 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -26,7 +26,7 @@ static ssize_t __init xwrite(int fd, const char *p, size_t count)
+@@ -25,7 +25,7 @@ static ssize_t __init xwrite(int fd, const char *p, size_t count)
  
  	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
  	while (count) {
@@ -11,7 +11,7 @@ index 8a53205..e2c870a 100644
  
  		if (rv < 0) {
  			if (rv == -EINTR || rv == -EAGAIN)
-@@ -108,7 +108,7 @@ static void __init free_hash(void)
+@@ -107,7 +107,7 @@ static void __init free_hash(void)
  	}
  }
  
@@ -20,7 +20,7 @@ index 8a53205..e2c870a 100644
  {
  	struct timespec t[2];
  
-@@ -143,7 +143,7 @@ static void __init dir_utime(void)
+@@ -142,7 +142,7 @@ static void __init dir_utime(void)
  	struct dir_entry *de, *tmp;
  	list_for_each_entry_safe(de, tmp, &dir_list, list) {
  		list_del(&de->list);
@@ -29,7 +29,7 @@ index 8a53205..e2c870a 100644
  		kfree(de->name);
  		kfree(de);
  	}
-@@ -305,7 +305,7 @@ static int __init maybe_link(void)
+@@ -304,7 +304,7 @@ static int __init maybe_link(void)
  	if (nlink >= 2) {
  		char *old = find_link(major, minor, ino, mode, collected);
  		if (old)
@@ -38,13 +38,13 @@ index 8a53205..e2c870a 100644
  	}
  	return 0;
  }
-@@ -314,11 +314,11 @@ static void __init clean_path(char *path, umode_t fmode)
+@@ -313,11 +313,11 @@ static void __init clean_path(char *path, umode_t fmode)
  {
- 	struct kstat st;
+ 	struct stat st;
  
--	if (!vfs_lstat(path, &st) && (st.mode ^ fmode) & S_IFMT) {
-+	if (!vfs_lstat((char __force_user *)path, (struct stat __force_user *)&st) && (st.mode ^ fmode) & S_IFMT) {
- 		if (S_ISDIR(st.mode))
+-	if (!sys_newlstat(path, &st) && (st.st_mode ^ fmode) & S_IFMT) {
++	if (!sys_newlstat((char __force_user *)path, (struct stat __force_user *)&st) && (st.st_mode ^ fmode) & S_IFMT) {
+ 		if (S_ISDIR(st.st_mode))
 -			sys_rmdir(path);
 +			sys_rmdir((char __force_user *)path);
  		else
@@ -53,7 +53,7 @@ index 8a53205..e2c870a 100644
  	}
  }
  
-@@ -339,7 +339,7 @@ static int __init do_name(void)
+@@ -338,7 +338,7 @@ static int __init do_name(void)
  			int openflags = O_WRONLY|O_CREAT;
  			if (ml != 1)
  				openflags |= O_TRUNC;
@@ -62,7 +62,7 @@ index 8a53205..e2c870a 100644
  
  			if (wfd >= 0) {
  				sys_fchown(wfd, uid, gid);
-@@ -351,17 +351,17 @@ static int __init do_name(void)
+@@ -350,17 +350,17 @@ static int __init do_name(void)
  			}
  		}
  	} else if (S_ISDIR(mode)) {
@@ -87,7 +87,7 @@ index 8a53205..e2c870a 100644
  		}
  	}
  	return 0;
-@@ -373,7 +373,7 @@ static int __init do_copy(void)
+@@ -372,7 +372,7 @@ static int __init do_copy(void)
  		if (xwrite(wfd, victim, body_len) != body_len)
  			error("write error");
  		sys_close(wfd);
@@ -96,7 +96,7 @@ index 8a53205..e2c870a 100644
  		kfree(vcollected);
  		eat(body_len);
  		state = SkipIt;
-@@ -391,9 +391,9 @@ static int __init do_symlink(void)
+@@ -390,9 +390,9 @@ static int __init do_symlink(void)
  {
  	collected[N_ALIGN(name_len) + body_len] = '\0';
  	clean_path(collected, 0);

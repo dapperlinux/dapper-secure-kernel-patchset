@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
-index 9bef1bb..f62b27b 100644
+index 8639bb2..aaa97ae 100644
 --- a/arch/x86/kernel/ftrace.c
 +++ b/arch/x86/kernel/ftrace.c
 @@ -89,7 +89,7 @@ static unsigned long text_ip_addr(unsigned long ip)
@@ -38,25 +38,21 @@ index 9bef1bb..f62b27b 100644
  		return -EFAULT;
  
  	ftrace_expected = old;
-@@ -687,7 +689,7 @@ static unsigned char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
+@@ -681,11 +683,11 @@ static unsigned char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
  /* Module allocation simplifies allocating memory for code */
  static inline void *alloc_tramp(unsigned long size)
  {
 -	return module_alloc(size);
 +	return module_alloc_exec(size);
  }
- static inline void tramp_free(void *tramp, int size)
+ static inline void tramp_free(void *tramp)
  {
-@@ -695,7 +697,7 @@ static inline void tramp_free(void *tramp, int size)
- 
- 	set_memory_nx((unsigned long)tramp, npages);
- 	set_memory_rw((unsigned long)tramp, npages);
 -	module_memfree(tramp);
 +	module_memfree_exec(tramp);
  }
  #else
  /* Trampolines can only be created if modules are supported */
-@@ -773,7 +775,9 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
+@@ -763,7 +765,9 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
  	*tramp_size = size + MCOUNT_INSN_SIZE + sizeof(void *);
  
  	/* Copy ftrace_caller onto the trampoline memory */
@@ -64,9 +60,9 @@ index 9bef1bb..f62b27b 100644
  	ret = probe_kernel_read(trampoline, (void *)start_offset, size);
 +	pax_close_kernel();
  	if (WARN_ON(ret < 0)) {
- 		tramp_free(trampoline, *tramp_size);
+ 		tramp_free(trampoline);
  		return 0;
-@@ -783,6 +787,7 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
+@@ -773,6 +777,7 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
  
  	/* The trampoline ends with a jmp to ftrace_epilogue */
  	jmp = ftrace_jmp_replace(ip, (unsigned long)ftrace_epilogue);
@@ -74,7 +70,7 @@ index 9bef1bb..f62b27b 100644
  	memcpy(trampoline + size, jmp, MCOUNT_INSN_SIZE);
  
  	/*
-@@ -795,6 +800,7 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
+@@ -785,6 +790,7 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
  
  	ptr = (unsigned long *)(trampoline + size + MCOUNT_INSN_SIZE);
  	*ptr = (unsigned long)ops;
@@ -82,7 +78,7 @@ index 9bef1bb..f62b27b 100644
  
  	op_offset -= start_offset;
  	memcpy(&op_ptr, trampoline + op_offset, OP_REF_SIZE);
-@@ -812,7 +818,9 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
+@@ -802,7 +808,9 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
  	op_ptr.offset = offset;
  
  	/* put in the new offset to the ftrace_ops */

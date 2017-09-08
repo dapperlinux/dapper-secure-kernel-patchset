@@ -1,8 +1,8 @@
 diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index 32ec221..9e08cc8 100644
+index 040c48f..d133dce 100644
 --- a/arch/parisc/mm/fault.c
 +++ b/arch/parisc/mm/fault.c
-@@ -17,6 +17,7 @@
+@@ -16,6 +16,7 @@
  #include <linux/interrupt.h>
  #include <linux/extable.h>
  #include <linux/uaccess.h>
@@ -10,7 +10,7 @@ index 32ec221..9e08cc8 100644
  
  #include <asm/traps.h>
  
-@@ -51,7 +52,7 @@ int show_unhandled_signals = 1;
+@@ -50,7 +51,7 @@ int show_unhandled_signals = 1;
  static unsigned long
  parisc_acctyp(unsigned long code, unsigned int inst)
  {
@@ -19,7 +19,7 @@ index 32ec221..9e08cc8 100644
  	    return VM_EXEC;
  
  	switch (inst & 0xf0000000) {
-@@ -137,6 +138,116 @@ parisc_acctyp(unsigned long code, unsigned int inst)
+@@ -136,6 +137,116 @@ parisc_acctyp(unsigned long code, unsigned int inst)
  			}
  #endif
  
@@ -136,7 +136,7 @@ index 32ec221..9e08cc8 100644
  int fixup_exception(struct pt_regs *regs)
  {
  	const struct exception_table_entry *fix;
-@@ -299,8 +410,33 @@ retry:
+@@ -298,8 +409,33 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
  
  good_area:
  

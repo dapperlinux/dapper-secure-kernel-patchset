@@ -1,8 +1,8 @@
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index 93de8ea..d8c2251 100644
+index aa8b067..f9da224 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
-@@ -68,9 +68,9 @@ struct aesni_xts_ctx {
+@@ -71,9 +71,9 @@ struct aesni_xts_ctx {
  
  asmlinkage int aesni_set_key(struct crypto_aes_ctx *ctx, const u8 *in_key,
  			     unsigned int key_len);
@@ -14,7 +14,7 @@ index 93de8ea..d8c2251 100644
  			  const u8 *in);
  asmlinkage void aesni_ecb_enc(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len);
-@@ -80,6 +80,15 @@ asmlinkage void aesni_cbc_enc(struct crypto_aes_ctx *ctx, u8 *out,
+@@ -83,6 +83,15 @@ asmlinkage void aesni_cbc_enc(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len, u8 *iv);
  asmlinkage void aesni_cbc_dec(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len, u8 *iv);
@@ -30,7 +30,7 @@ index 93de8ea..d8c2251 100644
  
  int crypto_fpu_init(void);
  void crypto_fpu_exit(void);
-@@ -93,6 +102,8 @@ static void (*aesni_ctr_enc_tfm)(struct crypto_aes_ctx *ctx, u8 *out,
+@@ -96,6 +105,8 @@ static void (*aesni_ctr_enc_tfm)(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len, u8 *iv);
  asmlinkage void aesni_ctr_enc(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len, u8 *iv);

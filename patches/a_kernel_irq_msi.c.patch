@@ -1,5 +1,5 @@
 diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index ddc2f54..91ee2c5 100644
+index 8a3e8727..8560eca 100644
 --- a/kernel/irq/msi.c
 +++ b/kernel/irq/msi.c
 @@ -15,6 +15,7 @@
@@ -10,7 +10,7 @@ index ddc2f54..91ee2c5 100644
  
  /**
   * alloc_msi_entry - Allocate an initialize msi_entry
-@@ -234,16 +235,18 @@ static void msi_domain_update_dom_ops(struct msi_domain_info *info)
+@@ -236,16 +236,18 @@ static void msi_domain_update_dom_ops(struct msi_domain_info *info)
  		return;
  	}
  
@@ -34,7 +34,7 @@ index ddc2f54..91ee2c5 100644
  }
  
  static void msi_domain_update_chip_ops(struct msi_domain_info *info)
-@@ -251,8 +254,11 @@ static void msi_domain_update_chip_ops(struct msi_domain_info *info)
+@@ -253,8 +255,11 @@ static void msi_domain_update_chip_ops(struct msi_domain_info *info)
  	struct irq_chip *chip = info->chip;
  
  	BUG_ON(!chip || !chip->irq_mask || !chip->irq_unmask);

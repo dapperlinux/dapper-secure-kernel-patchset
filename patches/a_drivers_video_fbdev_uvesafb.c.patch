@@ -88,7 +88,7 @@ index 98af9e0..1089416 100644
  }
  
  static void uvesafb_init_mtrr(struct fb_info *info)
-@@ -1786,6 +1816,11 @@ out_mode:
+@@ -1786,6 +1816,11 @@ static int uvesafb_probe(struct platform_device *dev)
  out:
  	kfree(par->vbe_modes);
  

@@ -1,5 +1,5 @@
 diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index b7cd9aa..d8b2090 100644
+index 0df2aa6..7db59f7 100644
 --- a/net/core/sysctl_net_core.c
 +++ b/net/core/sysctl_net_core.c
 @@ -36,7 +36,7 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
@@ -11,7 +11,7 @@ index b7cd9aa..d8b2090 100644
  		.data = &size,
  		.maxlen = sizeof(size),
  		.mode = table->mode
-@@ -207,7 +207,7 @@ static int set_default_qdisc(struct ctl_table *table, int write,
+@@ -204,7 +204,7 @@ static int set_default_qdisc(struct ctl_table *table, int write,
  			     void __user *buffer, size_t *lenp, loff_t *ppos)
  {
  	char id[IFNAMSIZ];
@@ -20,7 +20,7 @@ index b7cd9aa..d8b2090 100644
  		.data = id,
  		.maxlen = IFNAMSIZ,
  	};
-@@ -240,7 +240,7 @@ static int proc_do_dev_weight(struct ctl_table *table, int write,
+@@ -222,7 +222,7 @@ static int set_default_qdisc(struct ctl_table *table, int write,
  static int proc_do_rss_key(struct ctl_table *table, int write,
  			   void __user *buffer, size_t *lenp, loff_t *ppos)
  {
@@ -29,7 +29,7 @@ index b7cd9aa..d8b2090 100644
  	char buf[NETDEV_RSS_KEY_LEN * 3];
  
  	snprintf(buf, sizeof(buf), "%*phC", NETDEV_RSS_KEY_LEN, netdev_rss_key);
-@@ -318,7 +318,7 @@ static struct ctl_table net_core_table[] = {
+@@ -286,7 +286,7 @@ static struct ctl_table net_core_table[] = {
  		.mode		= 0444,
  		.proc_handler	= proc_do_rss_key,
  	},
@@ -38,12 +38,14 @@ index b7cd9aa..d8b2090 100644
  	{
  		.procname	= "bpf_jit_enable",
  		.data		= &bpf_jit_enable,
-@@ -477,11 +477,10 @@ static struct ctl_table netns_core_table[] = {
+@@ -428,13 +428,12 @@ static struct ctl_table netns_core_table[] = {
  
  static __net_init int sysctl_core_net_init(struct net *net)
  {
 -	struct ctl_table *tbl;
 +	ctl_table_no_const *tbl = NULL;
+ 
+ 	net->core.sysctl_somaxconn = SOMAXCONN;
  
 -	tbl = netns_core_table;
  	if (!net_eq(net, &init_net)) {
@@ -52,7 +54,7 @@ index b7cd9aa..d8b2090 100644
  		if (tbl == NULL)
  			goto err_dup;
  
-@@ -491,17 +490,16 @@ static __net_init int sysctl_core_net_init(struct net *net)
+@@ -444,17 +443,16 @@ static __net_init int sysctl_core_net_init(struct net *net)
  		if (net->user_ns != &init_user_ns) {
  			tbl[0].procname = NULL;
  		}
@@ -74,7 +76,7 @@ index b7cd9aa..d8b2090 100644
  err_dup:
  	return -ENOMEM;
  }
-@@ -516,7 +514,7 @@ static __net_exit void sysctl_core_net_exit(struct net *net)
+@@ -469,7 +467,7 @@ static __net_exit void sysctl_core_net_exit(struct net *net)
  	kfree(tbl);
  }
  

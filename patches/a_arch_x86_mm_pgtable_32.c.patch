@@ -1,8 +1,8 @@
 diff --git a/arch/x86/mm/pgtable_32.c b/arch/x86/mm/pgtable_32.c
-index b9bd5b8..cc46567 100644
+index 9adce77..b698e8be 100644
 --- a/arch/x86/mm/pgtable_32.c
 +++ b/arch/x86/mm/pgtable_32.c
-@@ -52,10 +52,13 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
+@@ -46,10 +46,13 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
  		return;
  	}
  	pte = pte_offset_kernel(pmd, vaddr);

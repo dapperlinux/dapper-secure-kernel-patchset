@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 43e10d6..6dc6777 100644
+index edbbfc8..d4d75ef 100644
 --- a/arch/x86/kernel/kvm.c
 +++ b/arch/x86/kernel/kvm.c
-@@ -530,7 +530,7 @@ static uint32_t __init kvm_detect(void)
+@@ -533,7 +533,7 @@ static uint32_t __init kvm_detect(void)
  	return kvm_cpuid_base();
  }
  

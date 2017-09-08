@@ -1,8 +1,8 @@
 diff --git a/include/linux/cpufreq.h b/include/linux/cpufreq.h
-index a5ce0bb..47cbf86 100644
+index 32dc0cbd..6e18583 100644
 --- a/include/linux/cpufreq.h
 +++ b/include/linux/cpufreq.h
-@@ -228,6 +228,7 @@ struct freq_attr {
+@@ -221,6 +221,7 @@ struct freq_attr {
  	ssize_t (*show)(struct cpufreq_policy *, char *);
  	ssize_t (*store)(struct cpufreq_policy *, const char *, size_t count);
  };
@@ -10,7 +10,7 @@ index a5ce0bb..47cbf86 100644
  
  #define cpufreq_freq_attr_ro(_name)		\
  static struct freq_attr _name =			\
-@@ -248,10 +249,11 @@ __ATTR(_name, 0200, NULL, store_##_name)
+@@ -237,10 +237,11 @@ __ATTR(_name, 0644, show_##_name, store_##_name)
  struct global_attr {
  	struct attribute attr;
  	ssize_t (*show)(struct kobject *kobj,
@@ -24,7 +24,7 @@ index a5ce0bb..47cbf86 100644
  
  #define define_one_global_ro(_name)		\
  static struct global_attr _name =		\
-@@ -334,7 +336,7 @@ struct cpufreq_driver {
+@@ -323,7 +324,7 @@ struct cpufreq_driver {
  	/* platform specific boost support code */
  	bool		boost_enabled;
  	int		(*set_boost)(int state);

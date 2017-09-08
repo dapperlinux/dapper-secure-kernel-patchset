@@ -290,7 +290,7 @@ index 4714061..bad7f9a 100644
  static noinline void do_fault_siginfo(int code, int sig, struct pt_regs *regs,
  				      int text_fault)
  {
-@@ -226,6 +500,24 @@ good_area:
+@@ -226,6 +500,24 @@ asmlinkage void do_sparc_fault(struct pt_regs *regs, int text_fault, int write,
  		if (!(vma->vm_flags & VM_WRITE))
  			goto bad_area;
  	} else {

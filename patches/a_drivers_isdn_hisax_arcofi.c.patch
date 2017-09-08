@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hisax/arcofi.c b/drivers/isdn/hisax/arcofi.c
-index 9826bad..bd16dd8 100644
+index 29ec2df..9c7123c 100644
 --- a/drivers/isdn/hisax/arcofi.c
 +++ b/drivers/isdn/hisax/arcofi.c
 @@ -112,7 +112,8 @@ arcofi_fsm(struct IsdnCardState *cs, int event, void *data) {
@@ -16,8 +16,8 @@ index 9826bad..bd16dd8 100644
  
  void
  init_arcofi(struct IsdnCardState *cs) {
--	setup_timer(&cs->dc.isac.arcofitimer, (void *)arcofi_timer, (long)cs);
-+	setup_timer(&cs->dc.isac.arcofitimer,arcofi_timer, (long)cs);
+-	cs->dc.isac.arcofitimer.function = (void *) arcofi_timer;
++	cs->dc.isac.arcofitimer.function = arcofi_timer;
+ 	cs->dc.isac.arcofitimer.data = (long) cs;
+ 	init_timer(&cs->dc.isac.arcofitimer);
  	init_waitqueue_head(&cs->dc.isac.arcofi_wait);
- 	test_and_set_bit(HW_ARCOFI, &cs->HW_Flags);
- }

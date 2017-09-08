@@ -1,5 +1,5 @@
 diff --git a/drivers/uio/uio.c b/drivers/uio/uio.c
-index ff04b7f..efcd4c3 100644
+index fba021f..977a54e 100644
 --- a/drivers/uio/uio.c
 +++ b/drivers/uio/uio.c
 @@ -25,6 +25,7 @@

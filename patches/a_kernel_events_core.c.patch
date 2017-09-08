@@ -1,8 +1,8 @@
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 6c4e523..7f158b3 100644
+index 07c0dc8..26e0271 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -396,8 +396,15 @@ static struct srcu_struct pmus_srcu;
+@@ -389,8 +389,15 @@ static struct srcu_struct pmus_srcu;
   *   0 - disallow raw tracepoint access for unpriv
   *   1 - disallow cpu events for unpriv
   *   2 - disallow kernel profiling for unpriv
@@ -19,7 +19,7 @@ index 6c4e523..7f158b3 100644
  
  /* Minimum for 512 kiB + 1 user control page */
  int sysctl_perf_event_mlock __read_mostly = 512 + (PAGE_SIZE / 1024); /* 'free' kiB per user */
-@@ -552,7 +559,7 @@ void perf_sample_event_took(u64 sample_len_ns)
+@@ -545,7 +552,7 @@ void perf_sample_event_took(u64 sample_len_ns)
  	}
  }
  
@@ -28,7 +28,7 @@ index 6c4e523..7f158b3 100644
  
  static void cpu_ctx_sched_out(struct perf_cpu_context *cpuctx,
  			      enum event_type_t event_type);
-@@ -1048,8 +1055,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
+@@ -1052,8 +1059,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
  	timer->function = perf_mux_hrtimer_handler;
  }
  
@@ -39,7 +39,7 @@ index 6c4e523..7f158b3 100644
  	struct hrtimer *timer = &cpuctx->hrtimer;
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
-@@ -3235,7 +3243,7 @@ void __perf_event_task_sched_in(struct task_struct *prev,
+@@ -3156,7 +3164,7 @@ void __perf_event_task_sched_in(struct task_struct *prev,
  		perf_pmu_sched_task(prev, task, true);
  }
  
@@ -48,7 +48,7 @@ index 6c4e523..7f158b3 100644
  {
  	u64 frequency = event->attr.sample_freq;
  	u64 sec = NSEC_PER_SEC;
-@@ -4358,9 +4366,9 @@ u64 perf_event_read_value(struct perf_event *event, u64 *enabled, u64 *running)
+@@ -4272,9 +4280,9 @@ u64 perf_event_read_value(struct perf_event *event, u64 *enabled, u64 *running)
  	total += perf_event_count(event);
  
  	*enabled += event->total_time_enabled +
@@ -60,7 +60,7 @@ index 6c4e523..7f158b3 100644
  
  	list_for_each_entry(child, &event->child_list, child_list) {
  		(void)perf_event_read(child, false);
-@@ -4392,12 +4400,12 @@ static int __perf_read_group_add(struct perf_event *leader,
+@@ -4306,12 +4314,12 @@ static int __perf_read_group_add(struct perf_event *leader,
  	 */
  	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED) {
  		values[n++] += leader->total_time_enabled +
@@ -75,7 +75,7 @@ index 6c4e523..7f158b3 100644
  	}
  
  	/*
-@@ -4920,10 +4928,10 @@ void perf_event_update_userpage(struct perf_event *event)
+@@ -4834,10 +4842,10 @@ void perf_event_update_userpage(struct perf_event *event)
  		userpg->offset -= local64_read(&event->hw.prev_count);
  
  	userpg->time_enabled = enabled +
@@ -88,7 +88,7 @@ index 6c4e523..7f158b3 100644
  
  	arch_perf_update_userpage(event, userpg, now);
  
-@@ -5626,7 +5634,7 @@ perf_output_sample_ustack(struct perf_output_handle *handle, u64 dump_size,
+@@ -5540,7 +5548,7 @@ perf_output_sample_ustack(struct perf_output_handle *handle, u64 dump_size,
  
  		/* Data. */
  		sp = perf_user_stack_pointer(regs);
@@ -97,7 +97,7 @@ index 6c4e523..7f158b3 100644
  		dyn_size = dump_size - rem;
  
  		perf_output_skip(handle, rem);
-@@ -5717,11 +5725,11 @@ static void perf_output_read_one(struct perf_output_handle *handle,
+@@ -5631,11 +5639,11 @@ static void perf_output_read_one(struct perf_output_handle *handle,
  	values[n++] = perf_event_count(event);
  	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED) {
  		values[n++] = enabled +
@@ -111,7 +111,7 @@ index 6c4e523..7f158b3 100644
  	}
  	if (read_format & PERF_FORMAT_ID)
  		values[n++] = primary_event_id(event);
-@@ -8947,8 +8955,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
+@@ -8710,8 +8718,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
  		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
  		cpuctx->hrtimer_interval = ns_to_ktime(NSEC_PER_MSEC * timer);
  
@@ -121,7 +121,7 @@ index 6c4e523..7f158b3 100644
  	}
  	put_online_cpus();
  	mutex_unlock(&mux_interval_mutex);
-@@ -9402,7 +9409,7 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
+@@ -9157,7 +9164,7 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
  	event->parent		= parent_event;
  
  	event->ns		= get_pid_ns(task_active_pid_ns(current));
@@ -130,7 +130,7 @@ index 6c4e523..7f158b3 100644
  
  	event->state		= PERF_EVENT_STATE_INACTIVE;
  
-@@ -9837,6 +9844,11 @@ SYSCALL_DEFINE5(perf_event_open,
+@@ -9592,6 +9599,11 @@ SYSCALL_DEFINE5(perf_event_open,
  	if (flags & ~PERF_FLAG_ALL)
  		return -EINVAL;
  
@@ -142,7 +142,7 @@ index 6c4e523..7f158b3 100644
  	err = perf_copy_attr(attr_uptr, &attr);
  	if (err)
  		return err;
-@@ -10375,10 +10387,10 @@ static void sync_child_event(struct perf_event *child_event,
+@@ -10131,10 +10143,10 @@ static void sync_child_event(struct perf_event *child_event,
  	/*
  	 * Add back the child's count to the parent's count:
  	 */

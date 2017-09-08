@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index ac9d327..418aadf 100644
+index b4421cc..8326c69 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -20,6 +20,8 @@
@@ -24,7 +24,7 @@ index ac9d327..418aadf 100644
  
  	.text
  	__HEAD
-@@ -94,11 +102,36 @@ startup_64:
+@@ -99,11 +107,36 @@ startup_64:
  	 * Fixup the physical addresses in the page table
  	 */
  	addq	%rbp, early_level4_pgt + (L4_START_KERNEL*8)(%rip)
@@ -36,26 +36,26 @@ index ac9d327..418aadf 100644
 +	addq	%rbp, init_level4_pgt + (L4_VMALLOC_END*8)(%rip)
 +	addq	%rbp, init_level4_pgt + (L4_VMEMMAP_START*8)(%rip)
 +	addq	%rbp, init_level4_pgt + (L4_START_KERNEL*8)(%rip)
-+
+ 
+-	addq	%rbp, level3_kernel_pgt + (510*8)(%rip)
+-	addq	%rbp, level3_kernel_pgt + (511*8)(%rip)
 +	addq	%rbp, level3_ident_pgt + (0*8)(%rip)
 +#ifndef CONFIG_XEN
 +	addq	%rbp, level3_ident_pgt + (1*8)(%rip)
 +#endif
-+
+ 
 +	addq	%rbp, level3_vmemmap_pgt + (L3_VMEMMAP_START*8)(%rip)
 +
 +	addq	%rbp, level3_kernel_pgt + (L3_START_KERNEL*8)(%rip)
 +	addq	%rbp, level3_kernel_pgt + ((L3_START_KERNEL+1)*8)(%rip)
 +
 +	addq	%rbp, level2_ident_pgt + (0*8)(%rip)
- 
--	addq	%rbp, level3_kernel_pgt + (510*8)(%rip)
--	addq	%rbp, level3_kernel_pgt + (511*8)(%rip)
++
 +	addq	%rbp, level2_fixmap_pgt + (0*8)(%rip)
 +	addq	%rbp, level2_fixmap_pgt + (1*8)(%rip)
 +	addq	%rbp, level2_fixmap_pgt + (2*8)(%rip)
 +	addq	%rbp, level2_fixmap_pgt + (3*8)(%rip)
- 
++
 +	addq	%rbp, level2_fixmap_pgt + (504*8)(%rip)
 +	addq	%rbp, level2_fixmap_pgt + (505*8)(%rip)
  	addq	%rbp, level2_fixmap_pgt + (506*8)(%rip)
@@ -63,7 +63,7 @@ index ac9d327..418aadf 100644
  
  	/*
  	 * Set up the identity mapping for the switchover.  These
-@@ -186,11 +219,12 @@ ENTRY(secondary_startup_64)
+@@ -187,11 +220,12 @@ ENTRY(secondary_startup_64)
  	/* Sanitize CPU configuration */
  	call verify_cpu
  
@@ -78,7 +78,7 @@ index ac9d327..418aadf 100644
  	movq	%rcx, %cr4
  
  	/* Setup early boot stage 4 level pagetables. */
-@@ -211,10 +245,24 @@ ENTRY(secondary_startup_64)
+@@ -212,10 +246,24 @@ ENTRY(secondary_startup_64)
  	movl	$MSR_EFER, %ecx
  	rdmsr
  	btsl	$_EFER_SCE, %eax	/* Enable System Call */
@@ -104,7 +104,7 @@ index ac9d327..418aadf 100644
  1:	wrmsr				/* Make changes effective */
  
  	/* Setup cr0 */
-@@ -298,9 +346,9 @@ ENTRY(secondary_startup_64)
+@@ -300,9 +300,9 @@ ENTRY(start_cpu)
  	 */
  	pushq	$.Lafter_lret	# put return address on stack for unwinder
  	xorq	%rbp, %rbp	# clear frame pointer
@@ -115,8 +115,8 @@ index ac9d327..418aadf 100644
 +	pushq	initial_code(%rip) # target address in negative space
  	lretq
  .Lafter_lret:
- ENDPROC(secondary_startup_64)
-@@ -385,13 +433,13 @@ early_idt_handler_common:
+ ENDPROC(start_cpu)
+@@ -382,13 +429,13 @@ early_idt_handler_common:
  	cmpq $14,%rsi		/* Page fault? */
  	jnz 10f
  	GET_CR2_INTO(%rdi)	/* Can clobber any volatile register if pv */
@@ -132,7 +132,7 @@ index ac9d327..418aadf 100644
  
  20:
  	decl early_recursion_flag(%rip)
-@@ -419,40 +467,71 @@ GLOBAL(name)
+@@ -416,40 +463,71 @@ GLOBAL(name)
  	__INITDATA
  NEXT_PAGE(early_level4_pgt)
  	.fill	511,8,0
@@ -216,7 +216,7 @@ index ac9d327..418aadf 100644
  
  NEXT_PAGE(level2_kernel_pgt)
  	/*
-@@ -469,23 +548,73 @@ NEXT_PAGE(level2_kernel_pgt)
+@@ -466,23 +544,73 @@ NEXT_PAGE(level2_kernel_pgt)
  		KERNEL_IMAGE_SIZE/PMD_SIZE)
  
  NEXT_PAGE(level2_fixmap_pgt)
@@ -296,7 +296,7 @@ index ac9d327..418aadf 100644
  
  ENTRY(phys_base)
  	/* This must match the first entry in level2_kernel_pgt */
-@@ -493,8 +622,8 @@ ENTRY(phys_base)
+@@ -490,8 +618,8 @@ ENTRY(phys_base)
  EXPORT_SYMBOL(phys_base)
  
  #include "../../x86/xen/xen-head.S"

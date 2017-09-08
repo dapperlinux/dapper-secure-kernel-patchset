@@ -1,5 +1,5 @@
 diff --git a/drivers/mtd/nand/denali.c b/drivers/mtd/nand/denali.c
-index 16634df..926c0c3 100644
+index 0476ae8..8d320ef 100644
 --- a/drivers/mtd/nand/denali.c
 +++ b/drivers/mtd/nand/denali.c
 @@ -23,6 +23,7 @@

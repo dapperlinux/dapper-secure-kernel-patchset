@@ -1,8 +1,8 @@
 diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index ce93124..874f4ee 100644
+index ffb93f49..ced8233 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
-@@ -1315,10 +1315,11 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
+@@ -1300,10 +1300,11 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
     generic version except that we know how to honor ADDR_LIMIT_32BIT.  */
  
  static unsigned long
@@ -16,7 +16,7 @@ index ce93124..874f4ee 100644
  
  	info.flags = 0;
  	info.length = len;
-@@ -1326,6 +1327,7 @@ arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
+@@ -1311,6 +1312,7 @@ arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
  	info.high_limit = limit;
  	info.align_mask = 0;
  	info.align_offset = 0;
@@ -24,7 +24,7 @@ index ce93124..874f4ee 100644
  	return vm_unmapped_area(&info);
  }
  
-@@ -1358,20 +1360,24 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+@@ -1343,20 +1345,24 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
  	   merely specific addresses, but regions of memory -- perhaps
  	   this feature should be incorporated into all ports?  */
  

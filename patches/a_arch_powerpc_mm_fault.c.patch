@@ -1,8 +1,8 @@
 diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
-index 3a7d580..6e42854 100644
+index d0b137d..af92bde 100644
 --- a/arch/powerpc/mm/fault.c
 +++ b/arch/powerpc/mm/fault.c
-@@ -35,6 +35,10 @@
+@@ -34,6 +34,10 @@
  #include <linux/context_tracking.h>
  #include <linux/hugetlb.h>
  #include <linux/uaccess.h>
@@ -13,7 +13,7 @@ index 3a7d580..6e42854 100644
  
  #include <asm/firmware.h>
  #include <asm/page.h>
-@@ -69,6 +73,33 @@ static inline int notify_page_fault(struct pt_regs *regs)
+@@ -68,6 +72,33 @@ static inline int notify_page_fault(struct pt_regs *regs)
  }
  #endif
  
@@ -47,7 +47,7 @@ index 3a7d580..6e42854 100644
  /*
   * Check whether the instruction at regs->nip is a store using
   * an update addressing form which will update r1.
-@@ -217,7 +248,7 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
+@@ -227,7 +258,7 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
  	 * indicate errors in DSISR but can validly be set in SRR1.
  	 */
  	if (trap == 0x400)
@@ -56,7 +56,7 @@ index 3a7d580..6e42854 100644
  	else
  		is_write = error_code & DSISR_ISSTORE;
  #else
-@@ -377,12 +408,16 @@ good_area:
+@@ -384,12 +415,16 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
           * "undefined".  Of those that can be set, this is the only
           * one which seems bad.
           */
@@ -74,7 +74,7 @@ index 3a7d580..6e42854 100644
  		/*
  		 * Allow execution from readable areas if the MMU does not
  		 * provide separate controls over reading and executing.
-@@ -510,6 +545,23 @@ bad_area:
+@@ -484,6 +519,23 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
  bad_area_nosemaphore:
  	/* User mode accesses cause a SIGSEGV */
  	if (user_mode(regs)) {

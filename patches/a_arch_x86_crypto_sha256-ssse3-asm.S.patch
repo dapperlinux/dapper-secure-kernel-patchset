@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/sha256-ssse3-asm.S b/arch/x86/crypto/sha256-ssse3-asm.S
-index 39b83c9..e1f817f 100644
+index 2cedc44..35ed999 100644
 --- a/arch/x86/crypto/sha256-ssse3-asm.S
 +++ b/arch/x86/crypto/sha256-ssse3-asm.S
 @@ -47,6 +47,7 @@
@@ -21,7 +21,7 @@ index 39b83c9..e1f817f 100644
  	pushq   %rbx
  	pushq   %rbp
  	pushq   %r13
-@@ -471,7 +470,7 @@ done_hash:
+@@ -471,7 +471,7 @@ done_hash:
  	popq    %rbp
  	popq    %rbx
  

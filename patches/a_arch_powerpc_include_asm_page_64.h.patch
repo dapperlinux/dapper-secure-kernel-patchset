@@ -1,8 +1,8 @@
 diff --git a/arch/powerpc/include/asm/page_64.h b/arch/powerpc/include/asm/page_64.h
-index c4d9654..a91a392 100644
+index dd5f071..0470718 100644
 --- a/arch/powerpc/include/asm/page_64.h
 +++ b/arch/powerpc/include/asm/page_64.h
-@@ -155,15 +155,18 @@ do {						\
+@@ -169,15 +169,18 @@ do {						\
   * stack by default, so in the absence of a PT_GNU_STACK program header
   * we turn execute permission off.
   */

@@ -1,8 +1,8 @@
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 357348a..af149e3 100644
+index 4c6b6e6..2f72a22 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -212,7 +212,7 @@ struct futex_pi_state {
+@@ -210,7 +210,7 @@ struct futex_pi_state {
  	atomic_t refcount;
  
  	union futex_key key;
@@ -11,7 +11,7 @@ index 357348a..af149e3 100644
  
  /**
   * struct futex_q - The hashed futex queue entry, one per waiting task
-@@ -246,7 +246,7 @@ struct futex_q {
+@@ -244,7 +244,7 @@ struct futex_q {
  	struct rt_mutex_waiter *rt_waiter;
  	union futex_key *requeue_pi_key;
  	u32 bitset;
@@ -20,7 +20,7 @@ index 357348a..af149e3 100644
  
  static const struct futex_q futex_q_init = {
  	/* list gets initialized in queue_me()*/
-@@ -505,6 +505,11 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, int rw)
+@@ -503,6 +503,11 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, int rw)
  	struct address_space *mapping;
  	int err, ro = 0;
  
@@ -32,7 +32,7 @@ index 357348a..af149e3 100644
  	/*
  	 * The futex address must be "naturally" aligned.
  	 */
-@@ -3457,6 +3462,7 @@ static void __init futex_detect_cmpxchg(void)
+@@ -3283,6 +3288,7 @@ static void __init futex_detect_cmpxchg(void)
  {
  #ifndef CONFIG_HAVE_FUTEX_CMPXCHG
  	u32 curval;
@@ -40,7 +40,7 @@ index 357348a..af149e3 100644
  
  	/*
  	 * This will fail and we want it. Some arch implementations do
-@@ -3468,8 +3474,11 @@ static void __init futex_detect_cmpxchg(void)
+@@ -3294,8 +3300,11 @@ static void __init futex_detect_cmpxchg(void)
  	 * implementation, the non-functional ones will return
  	 * -ENOSYS.
  	 */

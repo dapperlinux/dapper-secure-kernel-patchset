@@ -52,14 +52,14 @@ index 0ab176b..c4469a4 100644
 +{
 +	WRITE_ONCE(v->counter, i);
 +}
-+
+ 
+-#define ATOMIC_OP(op, c_op, asm_op)					      \
+-static __inline__ void atomic_##op(int i, atomic_t * v)			      \
 +static inline void atomic_set_unchecked(atomic_unchecked_t *v, int i)
 +{
 +	WRITE_ONCE(v->counter, i);
 +}
- 
--#define ATOMIC_OP(op, c_op, asm_op)					      \
--static __inline__ void atomic_##op(int i, atomic_t * v)			      \
++
 +#ifdef CONFIG_PAX_REFCOUNT
 +#define __OVERFLOW_POST				\
 +	"	b	4f		\n"	\

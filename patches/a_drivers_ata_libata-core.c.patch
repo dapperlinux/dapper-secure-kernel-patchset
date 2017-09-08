@@ -1,5 +1,5 @@
 diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index e157a0e..cead639 100644
+index 33e363d..1694417 100644
 --- a/drivers/ata/libata-core.c
 +++ b/drivers/ata/libata-core.c
 @@ -105,7 +105,7 @@ static unsigned int ata_dev_set_xfermode(struct ata_device *dev);
@@ -11,7 +11,7 @@ index e157a0e..cead639 100644
  
  struct ata_force_param {
  	const char	*name;
-@@ -5039,7 +5039,7 @@ void ata_qc_free(struct ata_queued_cmd *qc)
+@@ -4990,7 +4990,7 @@ void ata_qc_free(struct ata_queued_cmd *qc)
  	struct ata_port *ap;
  	unsigned int tag;
  
@@ -20,7 +20,7 @@ index e157a0e..cead639 100644
  	ap = qc->ap;
  
  	qc->flags = 0;
-@@ -5056,7 +5056,7 @@ void __ata_qc_complete(struct ata_queued_cmd *qc)
+@@ -5007,7 +5007,7 @@ void __ata_qc_complete(struct ata_queued_cmd *qc)
  	struct ata_port *ap;
  	struct ata_link *link;
  
@@ -29,7 +29,7 @@ index e157a0e..cead639 100644
  	WARN_ON_ONCE(!(qc->flags & ATA_QCFLAG_ACTIVE));
  	ap = qc->ap;
  	link = qc->dev->link;
-@@ -6168,6 +6168,7 @@ static void ata_finalize_port_ops(struct ata_port_operations *ops)
+@@ -6119,6 +6119,7 @@ static void ata_finalize_port_ops(struct ata_port_operations *ops)
  		return;
  
  	spin_lock(&lock);
@@ -37,7 +37,7 @@ index e157a0e..cead639 100644
  
  	for (cur = ops->inherits; cur; cur = cur->inherits) {
  		void **inherit = (void **)cur;
-@@ -6181,8 +6182,9 @@ static void ata_finalize_port_ops(struct ata_port_operations *ops)
+@@ -6132,8 +6133,9 @@ static void ata_finalize_port_ops(struct ata_port_operations *ops)
  		if (IS_ERR(*pp))
  			*pp = NULL;
  
@@ -48,7 +48,7 @@ index e157a0e..cead639 100644
  	spin_unlock(&lock);
  }
  
-@@ -6378,7 +6380,7 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
+@@ -6329,7 +6331,7 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
  
  	/* give ports names and add SCSI hosts */
  	for (i = 0; i < host->n_ports; i++) {

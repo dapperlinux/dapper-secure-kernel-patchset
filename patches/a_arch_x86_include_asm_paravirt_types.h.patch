@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index 7465d6f..9ccd043 100644
+index 0f400c0..3e5329e 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
 @@ -39,6 +39,7 @@
@@ -68,7 +68,7 @@ index 7465d6f..9ccd043 100644
  
  struct pv_cpu_ops {
  	/* hooks for various privileged instructions */
-@@ -175,7 +191,7 @@ struct pv_cpu_ops {
+@@ -177,7 +193,7 @@ struct pv_cpu_ops {
  
  	void (*start_context_switch)(struct task_struct *prev);
  	void (*end_context_switch)(struct task_struct *next);
@@ -77,7 +77,7 @@ index 7465d6f..9ccd043 100644
  
  struct pv_irq_ops {
  	/*
-@@ -187,10 +203,10 @@ struct pv_irq_ops {
+@@ -189,10 +205,10 @@ struct pv_irq_ops {
  	 * NOTE: These functions callers expect the callee to preserve
  	 * more registers than the standard C calling convention.
  	 */
@@ -92,7 +92,7 @@ index 7465d6f..9ccd043 100644
  
  	void (*safe_halt)(void);
  	void (*halt)(void);
-@@ -198,7 +214,7 @@ struct pv_irq_ops {
+@@ -200,7 +216,7 @@ struct pv_irq_ops {
  #ifdef CONFIG_X86_64
  	void (*adjust_exception_frame)(void);
  #endif
@@ -101,7 +101,7 @@ index 7465d6f..9ccd043 100644
  
  struct pv_mmu_ops {
  	unsigned long (*read_cr2)(void);
-@@ -261,11 +277,11 @@ struct pv_mmu_ops {
+@@ -259,11 +275,11 @@ struct pv_mmu_ops {
  	void (*ptep_modify_prot_commit)(struct mm_struct *mm, unsigned long addr,
  					pte_t *ptep, pte_t pte);
  
@@ -117,7 +117,7 @@ index 7465d6f..9ccd043 100644
  
  #if CONFIG_PGTABLE_LEVELS >= 3
  #ifdef CONFIG_X86_PAE
-@@ -278,12 +294,12 @@ struct pv_mmu_ops {
+@@ -276,14 +292,15 @@ struct pv_mmu_ops {
  
  	void (*set_pud)(pud_t *pudp, pud_t pudval);
  
@@ -126,23 +126,18 @@ index 7465d6f..9ccd043 100644
 +	union paravirt_callee_save pmd_val;
 +	union paravirt_callee_save make_pmd;
  
- #if CONFIG_PGTABLE_LEVELS >= 4
+ #if CONFIG_PGTABLE_LEVELS == 4
 -	struct paravirt_callee_save pud_val;
 -	struct paravirt_callee_save make_pud;
 +	union paravirt_callee_save pud_val;
 +	union paravirt_callee_save make_pud;
  
- 	void (*set_p4d)(p4d_t *p4dp, p4d_t p4dval);
- 
-@@ -292,6 +308,7 @@ struct pv_mmu_ops {
- 	struct paravirt_callee_save make_p4d;
- 
- 	void (*set_pgd)(pgd_t *pgdp, pgd_t pgdval);
+ 	void (*set_pgd)(pgd_t *pudp, pgd_t pgdval);
 +	void (*set_pgd_batched)(pgd_t *pudp, pgd_t pgdval);
- #endif	/* CONFIG_PGTABLE_LEVELS >= 5 */
+ #endif	/* CONFIG_PGTABLE_LEVELS == 4 */
+ #endif	/* CONFIG_PGTABLE_LEVELS >= 3 */
  
- #endif	/* CONFIG_PGTABLE_LEVELS >= 4 */
-@@ -306,7 +323,13 @@ struct pv_mmu_ops {
+@@ -295,7 +312,13 @@ struct pv_mmu_ops {
  	   an mfn.  We can tell which is which from the index. */
  	void (*set_fixmap)(unsigned /* enum fixed_addresses */ idx,
  			   phys_addr_t phys, pgprot_t flags);
@@ -157,7 +152,7 @@ index 7465d6f..9ccd043 100644
  
  struct arch_spinlock;
  #ifdef CONFIG_SMP
-@@ -317,17 +340,20 @@ struct qspinlock;
+@@ -306,17 +306,20 @@ struct qspinlock;
  
  struct pv_lock_ops {
  	void (*queued_spin_lock_slowpath)(struct qspinlock *lock, u32 val);
@@ -181,7 +176,7 @@ index 7465d6f..9ccd043 100644
  struct paravirt_patch_template {
  	struct pv_init_ops pv_init_ops;
  	struct pv_time_ops pv_time_ops;
-@@ -335,7 +361,7 @@ struct paravirt_patch_template {
+@@ -322,7 +348,7 @@ struct paravirt_patch_template {
  	struct pv_irq_ops pv_irq_ops;
  	struct pv_mmu_ops pv_mmu_ops;
  	struct pv_lock_ops pv_lock_ops;
@@ -190,7 +185,7 @@ index 7465d6f..9ccd043 100644
  
  extern struct pv_info pv_info;
  extern struct pv_init_ops pv_init_ops;
-@@ -404,7 +430,7 @@ int paravirt_disable_iospace(void);
+@@ -391,7 +417,7 @@ int paravirt_disable_iospace(void);
   * offset into the paravirt_patch_template structure, and can therefore be
   * freely converted back into a structure offset.
   */
@@ -199,7 +194,7 @@ index 7465d6f..9ccd043 100644
  
  /*
   * These macros are intended to wrap calls through one of the paravirt
-@@ -543,7 +569,7 @@ int paravirt_disable_iospace(void);
+@@ -518,7 +544,7 @@ int paravirt_disable_iospace(void);
  		/* since this condition will never hold */		\
  		if (sizeof(rettype) > sizeof(unsigned long)) {		\
  			asm volatile(pre				\
@@ -208,7 +203,7 @@ index 7465d6f..9ccd043 100644
  				     post				\
  				     : call_clbr, "+r" (__sp)		\
  				     : paravirt_type(op),		\
-@@ -553,7 +579,7 @@ int paravirt_disable_iospace(void);
+@@ -528,7 +554,7 @@ int paravirt_disable_iospace(void);
  			__ret = (rettype)((((u64)__edx) << 32) | __eax); \
  		} else {						\
  			asm volatile(pre				\
@@ -217,7 +212,7 @@ index 7465d6f..9ccd043 100644
  				     post				\
  				     : call_clbr, "+r" (__sp)		\
  				     : paravirt_type(op),		\
-@@ -569,8 +595,8 @@ int paravirt_disable_iospace(void);
+@@ -544,8 +570,8 @@ int paravirt_disable_iospace(void);
  	____PVOP_CALL(rettype, op, CLBR_ANY, PVOP_CALL_CLOBBERS,	\
  		      EXTRA_CLOBBERS, pre, post, ##__VA_ARGS__)
  
@@ -228,7 +223,7 @@ index 7465d6f..9ccd043 100644
  		      PVOP_CALLEE_CLOBBERS, ,				\
  		      pre, post, ##__VA_ARGS__)
  
-@@ -580,7 +606,7 @@ int paravirt_disable_iospace(void);
+@@ -555,7 +581,7 @@ int paravirt_disable_iospace(void);
  		PVOP_VCALL_ARGS;					\
  		PVOP_TEST_NULL(op);					\
  		asm volatile(pre					\
@@ -237,7 +232,7 @@ index 7465d6f..9ccd043 100644
  			     post					\
  			     : call_clbr, "+r" (__sp)			\
  			     : paravirt_type(op),			\
-@@ -594,8 +620,8 @@ int paravirt_disable_iospace(void);
+@@ -569,8 +595,8 @@ int paravirt_disable_iospace(void);
  		       VEXTRA_CLOBBERS,					\
  		       pre, post, ##__VA_ARGS__)
  
@@ -248,7 +243,7 @@ index 7465d6f..9ccd043 100644
  		      PVOP_VCALLEE_CLOBBERS, ,				\
  		      pre, post, ##__VA_ARGS__)
  
-@@ -606,10 +632,10 @@ int paravirt_disable_iospace(void);
+@@ -581,10 +607,10 @@ int paravirt_disable_iospace(void);
  #define PVOP_VCALL0(op)							\
  	__PVOP_VCALL(op, "", "")
  
@@ -263,7 +258,7 @@ index 7465d6f..9ccd043 100644
  
  
  #define PVOP_CALL1(rettype, op, arg1)					\
-@@ -617,10 +643,10 @@ int paravirt_disable_iospace(void);
+@@ -592,10 +618,10 @@ int paravirt_disable_iospace(void);
  #define PVOP_VCALL1(op, arg1)						\
  	__PVOP_VCALL(op, "", "", PVOP_CALL_ARG1(arg1))
  
@@ -278,7 +273,7 @@ index 7465d6f..9ccd043 100644
  
  
  #define PVOP_CALL2(rettype, op, arg1, arg2)				\
-@@ -630,11 +656,11 @@ int paravirt_disable_iospace(void);
+@@ -605,11 +631,11 @@ int paravirt_disable_iospace(void);
  	__PVOP_VCALL(op, "", "", PVOP_CALL_ARG1(arg1),			\
  		     PVOP_CALL_ARG2(arg2))
  

@@ -1,5 +1,5 @@
 diff --git a/arch/x86/realmode/rm/Makefile b/arch/x86/realmode/rm/Makefile
-index 4463fa7..8dfe9a8 100644
+index 25012ab..424eb9a 100644
 --- a/arch/x86/realmode/rm/Makefile
 +++ b/arch/x86/realmode/rm/Makefile
 @@ -8,6 +8,7 @@

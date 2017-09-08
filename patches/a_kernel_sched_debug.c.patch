@@ -1,8 +1,8 @@
 diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index 38f0193..e3cd0b2 100644
+index fa178b6..4e6c67e 100644
 --- a/kernel/sched/debug.c
 +++ b/kernel/sched/debug.c
-@@ -194,7 +194,7 @@ late_initcall(sched_init_debug);
+@@ -193,7 +193,7 @@ late_initcall(sched_init_debug);
  
  #ifdef CONFIG_SYSCTL
  
@@ -11,7 +11,7 @@ index 38f0193..e3cd0b2 100644
  	{
  		.procname	= "sched_domain",
  		.mode		= 0555,
-@@ -211,17 +211,17 @@ static struct ctl_table sd_ctl_root[] = {
+@@ -210,17 +210,17 @@ static struct ctl_table sd_ctl_root[] = {
  	{}
  };
  
@@ -33,7 +33,7 @@ index 38f0193..e3cd0b2 100644
  
  	/*
  	 * In the intermediate directories, both the child directory and
-@@ -229,22 +229,25 @@ static void sd_free_ctl_entry(struct ctl_table **tablep)
+@@ -228,22 +228,25 @@ static void sd_free_ctl_entry(struct ctl_table **tablep)
  	 * will always be set. In the lowest directory the names are
  	 * static strings and all have proc handlers.
  	 */
@@ -65,7 +65,7 @@ index 38f0193..e3cd0b2 100644
  		const char *procname, void *data, int maxlen,
  		umode_t mode, proc_handler *proc_handler,
  		bool load_idx)
-@@ -261,10 +264,10 @@ set_table_entry(struct ctl_table *entry,
+@@ -260,10 +263,10 @@ set_table_entry(struct ctl_table *entry,
  	}
  }
  
@@ -78,7 +78,7 @@ index 38f0193..e3cd0b2 100644
  
  	if (table == NULL)
  		return NULL;
-@@ -302,9 +305,9 @@ sd_alloc_ctl_domain_table(struct sched_domain *sd)
+@@ -301,9 +304,9 @@ sd_alloc_ctl_domain_table(struct sched_domain *sd)
  	return table;
  }
  
@@ -90,7 +90,7 @@ index 38f0193..e3cd0b2 100644
  	struct sched_domain *sd;
  	int domain_num = 0, i;
  	char buf[32];
-@@ -331,11 +334,13 @@ static struct ctl_table_header *sd_sysctl_header;
+@@ -330,11 +333,13 @@ static struct ctl_table_header *sd_sysctl_header;
  void register_sched_domain_sysctl(void)
  {
  	int i, cpu_num = num_possible_cpus();
@@ -105,7 +105,7 @@ index 38f0193..e3cd0b2 100644
  
  	if (entry == NULL)
  		return;
-@@ -357,8 +362,12 @@ void unregister_sched_domain_sysctl(void)
+@@ -356,8 +361,12 @@ void unregister_sched_domain_sysctl(void)
  {
  	unregister_sysctl_table(sd_sysctl_header);
  	sd_sysctl_header = NULL;
@@ -120,7 +120,7 @@ index 38f0193..e3cd0b2 100644
  }
  #endif /* CONFIG_SYSCTL */
  #endif /* CONFIG_SMP */
-@@ -805,7 +814,11 @@ static int __init init_sched_debug_procfs(void)
+@@ -804,7 +813,11 @@ static int __init init_sched_debug_procfs(void)
  {
  	struct proc_dir_entry *pe;
  

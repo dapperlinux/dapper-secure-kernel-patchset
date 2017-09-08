@@ -1,5 +1,5 @@
 diff --git a/sound/drivers/portman2x4.c b/sound/drivers/portman2x4.c
-index ec8a943..a046ca0 100644
+index 189e3e7..a873a71 100644
 --- a/sound/drivers/portman2x4.c
 +++ b/sound/drivers/portman2x4.c
 @@ -48,6 +48,7 @@

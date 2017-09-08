@@ -1,5 +1,5 @@
 diff --git a/drivers/md/dm-mpath.c b/drivers/md/dm-mpath.c
-index 3df056b..18d863f 100644
+index e477af8..a5b1fce 100644
 --- a/drivers/md/dm-mpath.c
 +++ b/drivers/md/dm-mpath.c
 @@ -88,7 +88,7 @@ struct multipath {
@@ -9,9 +9,9 @@ index 3df056b..18d863f 100644
 -	atomic_t pg_init_count;		/* Number of times pg_init called */
 +	atomic_unchecked_t pg_init_count;/* Number of times pg_init called */
  
- 	enum dm_queue_mode queue_mode;
+ 	unsigned queue_mode;
  
-@@ -196,7 +196,7 @@ static struct multipath *alloc_multipath(struct dm_target *ti)
+@@ -203,7 +203,7 @@ static struct multipath *alloc_multipath(struct dm_target *ti)
  		set_bit(MPATHF_QUEUE_IO, &m->flags);
  		atomic_set(&m->nr_valid_paths, 0);
  		atomic_set(&m->pg_init_in_progress, 0);
@@ -20,7 +20,7 @@ index 3df056b..18d863f 100644
  		m->pg_init_delay_msecs = DM_PG_INIT_DELAY_DEFAULT;
  		INIT_WORK(&m->trigger_event, trigger_event);
  		init_waitqueue_head(&m->pg_init_wait);
-@@ -303,7 +303,7 @@ static int __pg_init_all_paths(struct multipath *m)
+@@ -351,7 +351,7 @@ static int __pg_init_all_paths(struct multipath *m)
  	if (atomic_read(&m->pg_init_in_progress) || test_bit(MPATHF_PG_INIT_DISABLED, &m->flags))
  		return 0;
  
@@ -29,7 +29,7 @@ index 3df056b..18d863f 100644
  	clear_bit(MPATHF_PG_INIT_REQUIRED, &m->flags);
  
  	/* Check here to reset pg_init_required */
-@@ -349,7 +349,7 @@ static void __switch_pg(struct multipath *m, struct priority_group *pg)
+@@ -397,7 +397,7 @@ static void __switch_pg(struct multipath *m, struct priority_group *pg)
  		clear_bit(MPATHF_QUEUE_IO, &m->flags);
  	}
  
@@ -38,7 +38,7 @@ index 3df056b..18d863f 100644
  }
  
  static struct pgpath *choose_path_in_pg(struct multipath *m,
-@@ -1327,7 +1327,7 @@ static bool pg_init_limit_reached(struct multipath *m, struct pgpath *pgpath)
+@@ -1418,7 +1418,7 @@ static bool pg_init_limit_reached(struct multipath *m, struct pgpath *pgpath)
  
  	spin_lock_irqsave(&m->lock, flags);
  
@@ -47,7 +47,7 @@ index 3df056b..18d863f 100644
  	    !test_bit(MPATHF_PG_INIT_DISABLED, &m->flags))
  		set_bit(MPATHF_PG_INIT_REQUIRED, &m->flags);
  	else
-@@ -1631,7 +1631,7 @@ static void multipath_status(struct dm_target *ti, status_type_t type,
+@@ -1736,7 +1736,7 @@ static void multipath_status(struct dm_target *ti, status_type_t type,
  	/* Features */
  	if (type == STATUSTYPE_INFO)
  		DMEMIT("2 %u %u ", test_bit(MPATHF_QUEUE_IO, &m->flags),

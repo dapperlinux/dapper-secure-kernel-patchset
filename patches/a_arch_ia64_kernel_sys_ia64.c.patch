@@ -1,8 +1,8 @@
 diff --git a/arch/ia64/kernel/sys_ia64.c b/arch/ia64/kernel/sys_ia64.c
-index 5ce927c..9d71ed4 100644
+index 41e33f8..65180b2a 100644
 --- a/arch/ia64/kernel/sys_ia64.c
 +++ b/arch/ia64/kernel/sys_ia64.c
-@@ -30,6 +30,7 @@ arch_get_unmapped_area (struct file *filp, unsigned long addr, unsigned long len
+@@ -28,6 +28,7 @@ arch_get_unmapped_area (struct file *filp, unsigned long addr, unsigned long len
  	unsigned long align_mask = 0;
  	struct mm_struct *mm = current->mm;
  	struct vm_unmapped_area_info info;
@@ -10,7 +10,7 @@ index 5ce927c..9d71ed4 100644
  
  	if (len > RGN_MAP_LIMIT)
  		return -ENOMEM;
-@@ -45,6 +46,13 @@ arch_get_unmapped_area (struct file *filp, unsigned long addr, unsigned long len
+@@ -43,6 +44,13 @@ arch_get_unmapped_area (struct file *filp, unsigned long addr, unsigned long len
  	if (REGION_NUMBER(addr) == RGN_HPAGE)
  		addr = 0;
  #endif
@@ -24,7 +24,7 @@ index 5ce927c..9d71ed4 100644
  	if (!addr)
  		addr = TASK_UNMAPPED_BASE;
  
-@@ -63,6 +71,7 @@ arch_get_unmapped_area (struct file *filp, unsigned long addr, unsigned long len
+@@ -61,6 +69,7 @@ arch_get_unmapped_area (struct file *filp, unsigned long addr, unsigned long len
  	info.high_limit = TASK_SIZE;
  	info.align_mask = align_mask;
  	info.align_offset = 0;

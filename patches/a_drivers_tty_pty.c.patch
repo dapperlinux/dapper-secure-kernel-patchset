@@ -1,8 +1,8 @@
 diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 6579957..6b66c03 100644
+index a23fa5e..eff0d07 100644
 --- a/drivers/tty/pty.c
 +++ b/drivers/tty/pty.c
-@@ -795,7 +795,7 @@ out_free_file:
+@@ -800,7 +800,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
  	return retval;
  }
  
@@ -11,7 +11,7 @@ index 6579957..6b66c03 100644
  
  static void __init unix98_pty_init(void)
  {
-@@ -851,8 +851,10 @@ static void __init unix98_pty_init(void)
+@@ -856,8 +856,10 @@ static void __init unix98_pty_init(void)
  		panic("Couldn't register Unix98 pts driver");
  
  	/* Now create the /dev/ptmx special device */

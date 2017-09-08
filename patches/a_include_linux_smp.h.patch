@@ -1,8 +1,8 @@
 diff --git a/include/linux/smp.h b/include/linux/smp.h
-index 68123c1..f2a1b17 100644
+index 8e0cb7a..a702af8 100644
 --- a/include/linux/smp.h
 +++ b/include/linux/smp.h
-@@ -195,7 +195,9 @@ static inline int get_boot_cpu_id(void)
+@@ -183,7 +183,9 @@ static inline void smp_init(void) { }
  #endif
  
  #define get_cpu()		({ preempt_disable(); smp_processor_id(); })

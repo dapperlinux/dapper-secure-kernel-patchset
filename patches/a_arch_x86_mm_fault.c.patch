@@ -1,8 +1,8 @@
 diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index 8ad91a0..e89581d 100644
+index 9f72ca3..a076e4a 100644
 --- a/arch/x86/mm/fault.c
 +++ b/arch/x86/mm/fault.c
-@@ -15,6 +15,8 @@
+@@ -14,6 +14,8 @@
  #include <linux/prefetch.h>		/* prefetchw			*/
  #include <linux/context_tracking.h>	/* exception_enter(), ...	*/
  #include <linux/uaccess.h>		/* faulthandler_disabled()	*/
@@ -11,7 +11,7 @@ index 8ad91a0..e89581d 100644
  
  #include <asm/cpufeature.h>		/* boot_cpu_has, ...		*/
  #include <asm/traps.h>			/* dotraplinkage, ...		*/
-@@ -24,6 +26,11 @@
+@@ -23,6 +25,11 @@
  #include <asm/vsyscall.h>		/* emulate_vsyscall		*/
  #include <asm/vm86.h>			/* struct vm86			*/
  #include <asm/mmu_context.h>		/* vma_pkey()			*/
@@ -23,7 +23,7 @@ index 8ad91a0..e89581d 100644
  
  #define CREATE_TRACE_POINTS
  #include <asm/trace/exceptions.h>
-@@ -127,7 +134,10 @@ check_prefetch_opcode(struct pt_regs *regs, unsigned char *instr,
+@@ -126,7 +133,10 @@ check_prefetch_opcode(struct pt_regs *regs, unsigned char *instr,
  		return !instr_lo || (instr_lo>>1) == 1;
  	case 0x00:
  		/* Prefetch instruction is 0x0F0D or 0x0F18 */
@@ -35,7 +35,7 @@ index 8ad91a0..e89581d 100644
  			return 0;
  
  		*prefetch = (instr_lo == 0xF) &&
-@@ -152,7 +162,10 @@ is_prefetch(struct pt_regs *regs, unsigned long error_code, unsigned long addr)
+@@ -151,7 +161,10 @@ is_prefetch(struct pt_regs *regs, unsigned long error_code, unsigned long addr)
  	if (error_code & PF_INSTR)
  		return 0;
  
@@ -47,7 +47,7 @@ index 8ad91a0..e89581d 100644
  	max_instr = instr + 15;
  
  	if (user_mode(regs) && instr >= (unsigned char *)TASK_SIZE_MAX)
-@@ -161,7 +174,10 @@ is_prefetch(struct pt_regs *regs, unsigned long error_code, unsigned long addr)
+@@ -160,7 +173,10 @@ is_prefetch(struct pt_regs *regs, unsigned long error_code, unsigned long addr)
  	while (instr < max_instr) {
  		unsigned char opcode;
  
@@ -59,7 +59,7 @@ index 8ad91a0..e89581d 100644
  			break;
  
  		instr++;
-@@ -245,6 +261,34 @@ force_sig_info_fault(int si_signo, int si_code, unsigned long address,
+@@ -244,6 +260,34 @@ force_sig_info_fault(int si_signo, int si_code, unsigned long address,
  	force_sig_info(si_signo, &info, tsk);
  }
  
@@ -94,7 +94,7 @@ index 8ad91a0..e89581d 100644
  DEFINE_SPINLOCK(pgd_lock);
  LIST_HEAD(pgd_list);
  
-@@ -301,10 +345,27 @@ void vmalloc_sync_all(void)
+@@ -294,10 +338,27 @@ void vmalloc_sync_all(void)
  	for (address = VMALLOC_START & PMD_MASK;
  	     address >= TASK_SIZE_MAX && address < FIXADDR_TOP;
  	     address += PMD_SIZE) {
@@ -122,7 +122,7 @@ index 8ad91a0..e89581d 100644
  			spinlock_t *pgt_lock;
  			pmd_t *ret;
  
-@@ -312,8 +373,14 @@ void vmalloc_sync_all(void)
+@@ -305,8 +366,14 @@ void vmalloc_sync_all(void)
  			pgt_lock = &pgd_page_get_mm(page)->page_table_lock;
  
  			spin_lock(pgt_lock);
@@ -138,7 +138,7 @@ index 8ad91a0..e89581d 100644
  
  			if (!ret)
  				break;
-@@ -347,6 +414,12 @@ static noinline int vmalloc_fault(unsigned long address)
+@@ -340,6 +407,12 @@ static noinline int vmalloc_fault(unsigned long address)
  	 * an interrupt in the middle of a task switch..
  	 */
  	pgd_paddr = read_cr3();
@@ -151,7 +151,7 @@ index 8ad91a0..e89581d 100644
  	pmd_k = vmalloc_sync_one(__va(pgd_paddr), address);
  	if (!pmd_k)
  		return -1;
-@@ -451,11 +524,24 @@ static noinline int vmalloc_fault(unsigned long address)
+@@ -439,11 +512,24 @@ static noinline int vmalloc_fault(unsigned long address)
  	 * happen within a race in page table update. In the later
  	 * case just flush:
  	 */
@@ -177,7 +177,7 @@ index 8ad91a0..e89581d 100644
  	if (pgd_none(*pgd)) {
  		set_pgd(pgd, *pgd_ref);
  		arch_flush_lazy_mmu_mode();
-@@ -657,7 +743,7 @@ static int is_errata93(struct pt_regs *regs, unsigned long address)
+@@ -616,7 +702,7 @@ static int is_errata93(struct pt_regs *regs, unsigned long address)
  static int is_errata100(struct pt_regs *regs, unsigned long address)
  {
  #ifdef CONFIG_X86_64
@@ -186,7 +186,7 @@ index 8ad91a0..e89581d 100644
  		return 1;
  #endif
  	return 0;
-@@ -684,9 +770,9 @@ static int is_f00f_bug(struct pt_regs *regs, unsigned long address)
+@@ -643,9 +729,9 @@ static int is_f00f_bug(struct pt_regs *regs, unsigned long address)
  }
  
  static const char nx_warning[] = KERN_CRIT
@@ -198,7 +198,7 @@ index 8ad91a0..e89581d 100644
  
  static void
  show_fault_oops(struct pt_regs *regs, unsigned long error_code,
-@@ -695,7 +781,7 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code,
+@@ -654,7 +740,7 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code,
  	if (!oops_may_print())
  		return;
  
@@ -207,7 +207,7 @@ index 8ad91a0..e89581d 100644
  		unsigned int level;
  		pgd_t *pgd;
  		pte_t *pte;
-@@ -706,12 +792,24 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code,
+@@ -665,13 +751,25 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code,
  		pte = lookup_address_in_pgd(pgd, address, &level);
  
  		if (pte && pte_present(*pte) && !pte_exec(*pte))
@@ -218,8 +218,8 @@ index 8ad91a0..e89581d 100644
  				(__read_cr4() & X86_CR4_SMEP))
 -			printk(smep_warning, from_kuid(&init_user_ns, current_uid()));
 +			printk(smep_warning, from_kuid(&init_user_ns, current_uid()), current->comm, task_pid_nr(current));
-+	}
-+
+ 	}
+ 
 +#ifdef CONFIG_PAX_KERNEXEC
 +	if (init_mm.start_code <= address && address < init_mm.end_code) {
 +		if (current->signal->curr_ip)
@@ -229,12 +229,13 @@ index 8ad91a0..e89581d 100644
 +		else
 +			printk(KERN_EMERG "PAX: %s:%d, uid/euid: %u/%u, attempted to modify kernel code\n", current->comm, task_pid_nr(current),
 +					from_kuid_munged(&init_user_ns, current_uid()), from_kuid_munged(&init_user_ns, current_euid()));
- 	}
++	}
 +#endif
- 
++
  	printk(KERN_ALERT "BUG: unable to handle kernel ");
  	if (address < PAGE_SIZE)
-@@ -815,12 +913,9 @@ no_context(struct pt_regs *regs, unsigned long error_code,
+ 		printk(KERN_CONT "NULL pointer dereference");
+@@ -775,12 +873,9 @@ no_context(struct pt_regs *regs, unsigned long error_code,
  		 * break the console driver and lose most of the stack dump.
  		 */
  		asm volatile ("movq %[stack], %%rsp\n\t"
@@ -249,7 +250,7 @@ index 8ad91a0..e89581d 100644
  		unreachable();
  	}
  #endif
-@@ -927,6 +1022,21 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
+@@ -887,6 +982,21 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
  		}
  #endif
  
@@ -271,7 +272,7 @@ index 8ad91a0..e89581d 100644
  		/*
  		 * To avoid leaking information about the kernel page table
  		 * layout, pretend that user-mode accesses to kernel addresses
-@@ -1038,7 +1148,7 @@ do_sigbus(struct pt_regs *regs, unsigned long error_code, unsigned long address,
+@@ -998,7 +1108,7 @@ do_sigbus(struct pt_regs *regs, unsigned long error_code, unsigned long address,
  	if (fault & (VM_FAULT_HWPOISON|VM_FAULT_HWPOISON_LARGE)) {
  		printk(KERN_ERR
  	"MCE: Killing %s:%d due to hardware memory corruption fault at %lx\n",
@@ -280,7 +281,7 @@ index 8ad91a0..e89581d 100644
  		code = BUS_MCEERR_AR;
  	}
  #endif
-@@ -1097,6 +1207,109 @@ static int spurious_fault_check(unsigned long error_code, pte_t *pte)
+@@ -1057,6 +1167,109 @@ static int spurious_fault_check(unsigned long error_code, pte_t *pte)
  	return 1;
  }
  
@@ -390,7 +391,7 @@ index 8ad91a0..e89581d 100644
  /*
   * Handle a spurious fault caused by a stale TLB entry.
   *
-@@ -1193,6 +1406,9 @@ access_error(unsigned long error_code, struct vm_area_struct *vma)
+@@ -1145,6 +1358,9 @@ access_error(unsigned long error_code, struct vm_area_struct *vma)
  	/* This is only called for the current mm, so: */
  	bool foreign = false;
  
@@ -400,7 +401,7 @@ index 8ad91a0..e89581d 100644
  	/*
  	 * Read or write was blocked by protection keys.  This is
  	 * always an unconditional error and can never result in
-@@ -1272,6 +1488,22 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
+@@ -1224,6 +1440,22 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
  	tsk = current;
  	mm = tsk->mm;
  
@@ -423,7 +424,7 @@ index 8ad91a0..e89581d 100644
  	/*
  	 * Detect and handle instructions that would cause a page fault for
  	 * both a tracked kernel page and a userspace page.
-@@ -1398,6 +1630,11 @@ retry:
+@@ -1350,6 +1582,11 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
  		might_sleep();
  	}
  
@@ -435,7 +436,7 @@ index 8ad91a0..e89581d 100644
  	vma = find_vma(mm, address);
  	if (unlikely(!vma)) {
  		bad_area(regs, error_code, address);
-@@ -1409,18 +1646,24 @@ retry:
+@@ -1361,18 +1598,24 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
  		bad_area(regs, error_code, address);
  		return;
  	}
@@ -471,7 +472,7 @@ index 8ad91a0..e89581d 100644
  	if (unlikely(expand_stack(vma, address))) {
  		bad_area(regs, error_code, address);
  		return;
-@@ -1540,3 +1783,292 @@ trace_do_page_fault(struct pt_regs *regs, unsigned long error_code)
+@@ -1492,3 +1735,292 @@ trace_do_page_fault(struct pt_regs *regs, unsigned long error_code)
  }
  NOKPROBE_SYMBOL(trace_do_page_fault);
  #endif /* CONFIG_TRACING */

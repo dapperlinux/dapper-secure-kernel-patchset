@@ -1,5 +1,5 @@
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 326d4f8..6719607 100644
+index 154fd68..f95f804 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -25,6 +25,7 @@
@@ -10,7 +10,7 @@ index 326d4f8..6719607 100644
  
  #include <asm/switch_to.h>
  #include <asm/tlb.h>
-@@ -2244,7 +2245,7 @@ void set_numabalancing_state(bool enabled)
+@@ -2268,7 +2268,7 @@ void set_numabalancing_state(bool enabled)
  int sysctl_numa_balancing(struct ctl_table *table, int write,
  			 void __user *buffer, size_t *lenp, loff_t *ppos)
  {
@@ -19,7 +19,7 @@ index 326d4f8..6719607 100644
  	int err;
  	int state = static_branch_likely(&sched_numa_balancing);
  
-@@ -2319,7 +2320,7 @@ static void __init init_schedstats(void)
+@@ -2343,7 +2343,7 @@ static void __init init_schedstats(void)
  int sysctl_schedstats(struct ctl_table *table, int write,
  			 void __user *buffer, size_t *lenp, loff_t *ppos)
  {
@@ -28,7 +28,7 @@ index 326d4f8..6719607 100644
  	int err;
  	int state = static_branch_likely(&sched_schedstats);
  
-@@ -2774,7 +2775,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+@@ -2797,7 +2797,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
  /* rq->lock is NOT held, but preemption is disabled */
  static void __balance_callback(struct rq *rq)
  {
@@ -37,7 +37,7 @@ index 326d4f8..6719607 100644
  	void (*func)(struct rq *rq);
  	unsigned long flags;
  
-@@ -2782,7 +2783,7 @@ static void __balance_callback(struct rq *rq)
+@@ -2805,7 +2805,7 @@ static void __balance_callback(struct rq *rq)
  	head = rq->balance_callback;
  	rq->balance_callback = NULL;
  	while (head) {
@@ -46,7 +46,7 @@ index 326d4f8..6719607 100644
  		next = head->next;
  		head->next = NULL;
  		head = next;
-@@ -3910,6 +3911,8 @@ int can_nice(const struct task_struct *p, const int nice)
+@@ -3841,6 +3841,8 @@ int can_nice(const struct task_struct *p, const int nice)
  	/* Convert nice value [19,-20] to rlimit style value [1,40]: */
  	int nice_rlim = nice_to_rlimit(nice);
  
@@ -55,7 +55,7 @@ index 326d4f8..6719607 100644
  	return (nice_rlim <= task_rlimit(p, RLIMIT_NICE) ||
  		capable(CAP_SYS_NICE));
  }
-@@ -3936,7 +3939,8 @@ SYSCALL_DEFINE1(nice, int, increment)
+@@ -3821,7 +3823,8 @@ SYSCALL_DEFINE1(nice, int, increment)
  	nice = task_nice(current) + increment;
  
  	nice = clamp_val(nice, MIN_NICE, MAX_NICE);
@@ -65,7 +65,7 @@ index 326d4f8..6719607 100644
  		return -EPERM;
  
  	retval = security_task_setnice(current, nice);
-@@ -4244,6 +4248,7 @@ recheck:
+@@ -4176,6 +4176,7 @@ static int __sched_setscheduler(struct task_struct *p,
  			if (policy != p->policy && !rlim_rtprio)
  				return -EPERM;
  
@@ -73,7 +73,7 @@ index 326d4f8..6719607 100644
  			/* Can't increase priority: */
  			if (attr->sched_priority > p->rt_priority &&
  			    attr->sched_priority > rlim_rtprio)
-@@ -6108,6 +6113,30 @@ void __init sched_init(void)
+@@ -7591,6 +7595,30 @@ void __init sched_init(void)
  	for_each_possible_cpu(i) {
  		struct rq *rq;
  
@@ -104,7 +104,7 @@ index 326d4f8..6719607 100644
  		rq = cpu_rq(i);
  		raw_spin_lock_init(&rq->lock);
  		rq->nr_running = 0;
-@@ -6230,7 +6259,7 @@ void __might_sleep(const char *file, int line, int preempt_offset)
+@@ -7712,7 +7740,7 @@ void __might_sleep(const char *file, int line, int preempt_offset)
  	 */
  	WARN_ONCE(current->state != TASK_RUNNING && current->task_state_change,
  			"do not call blocking ops when !TASK_RUNNING; "

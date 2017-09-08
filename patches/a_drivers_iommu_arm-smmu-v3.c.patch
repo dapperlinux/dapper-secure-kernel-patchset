@@ -1,8 +1,8 @@
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 380969a..9576a67 100644
+index e6f9b2d..89c5054 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -644,7 +644,7 @@ struct arm_smmu_domain {
+@@ -633,7 +633,7 @@ struct arm_smmu_domain {
  	struct arm_smmu_device		*smmu;
  	struct mutex			init_mutex; /* Protects smmu pointer */
  
@@ -11,7 +11,7 @@ index 380969a..9576a67 100644
  	spinlock_t			pgtbl_lock;
  
  	enum arm_smmu_domain_stage	stage;
-@@ -1434,7 +1434,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+@@ -1430,7 +1430,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
  	struct arm_smmu_device *smmu = smmu_domain->smmu;
  
  	iommu_put_dma_cookie(domain);
@@ -20,7 +20,7 @@ index 380969a..9576a67 100644
  
  	/* Free the CD and ASID, if we allocated them */
  	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
-@@ -1512,7 +1512,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+@@ -1508,7 +1508,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
  	unsigned long ias, oas;
  	enum io_pgtable_fmt fmt;
  	struct io_pgtable_cfg pgtbl_cfg;
@@ -29,7 +29,7 @@ index 380969a..9576a67 100644
  	int (*finalise_stage_fn)(struct arm_smmu_domain *,
  				 struct io_pgtable_cfg *);
  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -1555,18 +1555,18 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+@@ -1546,18 +1546,18 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
  		.iommu_dev	= smmu->dev,
  	};
  
@@ -52,7 +52,7 @@ index 380969a..9576a67 100644
  
  	return ret;
  }
-@@ -1678,13 +1678,13 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+@@ -1673,13 +1673,13 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
  	int ret;
  	unsigned long flags;
  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
@@ -69,7 +69,7 @@ index 380969a..9576a67 100644
  	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
  	return ret;
  }
-@@ -1695,13 +1695,13 @@ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+@@ -1690,13 +1690,13 @@ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
  	size_t ret;
  	unsigned long flags;
  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
@@ -86,15 +86,12 @@ index 380969a..9576a67 100644
  	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
  	return ret;
  }
-@@ -1712,16 +1712,16 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+@@ -1707,13 +1707,13 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
  	phys_addr_t ret;
  	unsigned long flags;
  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
 -	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +	struct io_pgtable *iop = smmu_domain->pgtbl;
- 
- 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
- 		return iova;
  
 -	if (!ops)
 +	if (!iop)

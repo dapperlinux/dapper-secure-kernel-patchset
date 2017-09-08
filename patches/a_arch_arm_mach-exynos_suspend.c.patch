@@ -1,8 +1,8 @@
 diff --git a/arch/arm/mach-exynos/suspend.c b/arch/arm/mach-exynos/suspend.c
-index 748cfb8..6fb90c3 100644
+index 06332f6..1fa0c71 100644
 --- a/arch/arm/mach-exynos/suspend.c
 +++ b/arch/arm/mach-exynos/suspend.c
-@@ -659,8 +659,10 @@ void __init exynos_pm_init(void)
+@@ -724,8 +724,10 @@ void __init exynos_pm_init(void)
  	tmp |= pm_data->wake_disable_mask;
  	pmu_raw_writel(tmp, S5P_WAKEUP_MASK);
  

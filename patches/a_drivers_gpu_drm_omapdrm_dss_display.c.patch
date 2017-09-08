@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/omapdrm/dss/display.c b/drivers/gpu/drm/omapdrm/dss/display.c
-index 26cb59b..0c46fed 100644
+index 8dcdd7c..0e37527 100644
 --- a/drivers/gpu/drm/omapdrm/dss/display.c
 +++ b/drivers/gpu/drm/omapdrm/dss/display.c
-@@ -111,12 +111,14 @@ int omapdss_register_display(struct omap_dss_device *dssdev)
+@@ -112,12 +112,14 @@ int omapdss_register_display(struct omap_dss_device *dssdev)
  	if (dssdev->name == NULL)
  		dssdev->name = dssdev->alias;
  
@@ -19,4 +19,4 @@ index 26cb59b..0c46fed 100644
 +	pax_close_kernel();
  
  	mutex_lock(&panel_list_mutex);
- 	list_for_each(cur, &panel_list) {
+ 	list_add_tail(&dssdev->panel_list, &panel_list);

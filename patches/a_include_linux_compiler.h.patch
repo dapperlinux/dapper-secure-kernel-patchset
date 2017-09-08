@@ -1,5 +1,5 @@
 diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index f811005..56a26af 100644
+index cf0fa5d..a7444a7 100644
 --- a/include/linux/compiler.h
 +++ b/include/linux/compiler.h
 @@ -5,11 +5,14 @@
@@ -17,7 +17,7 @@ index f811005..56a26af 100644
  # define __must_hold(x)	__attribute__((context(x,1,1)))
  # define __acquires(x)	__attribute__((context(x,0,1)))
  # define __releases(x)	__attribute__((context(x,1,0)))
-@@ -17,37 +20,76 @@
+@@ -17,37 +17,76 @@
  # define __release(x)	__context__(x,-1)
  # define __cond_lock(x,c)	((c) ? ({ __acquire(x); 1; }) : 0)
  # define __percpu	__attribute__((noderef, address_space(3)))
@@ -104,7 +104,7 @@ index f811005..56a26af 100644
  # define __private
  # define ACCESS_PRIVATE(p, member) ((p)->member)
  #endif /* __CHECKER__ */
-@@ -234,29 +276,20 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
+@@ -223,29 +269,20 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
  
  #include <uapi/linux/types.h>
  
@@ -120,8 +120,17 @@ index f811005..56a26af 100644
 -		__builtin_memcpy((void *)res, (const void *)p, size);	\
 -		barrier();						\
 -	}								\
-+#ifdef CONFIG_KASAN
-+/*
+-})
+-
+-static __always_inline
+-void __read_once_size(const volatile void *p, void *res, int size)
+-{
+-	__READ_ONCE_SIZE;
+-}
+-
+ #ifdef CONFIG_KASAN
+ /*
+- * This function is not 'inline' because __no_sanitize_address confilcts
 + * Use READ_ONCE_NOCHECK() instead of READ_ONCE() if you need
 + * to hide memory access from KASAN.
 + */
@@ -130,22 +139,14 @@ index f811005..56a26af 100644
 +	union { typeof(x) __val; char __c[sizeof(x)]; } __u;	\
 +	__read_once_size_nocheck(&(x), __u.__c, sizeof(x));	\
 +	__u.__val;						\
- })
- 
--static __always_inline
--void __read_once_size(const volatile void *p, void *res, int size)
--{
--	__READ_ONCE_SIZE;
--}
--
--#ifdef CONFIG_KASAN
- /*
-- * This function is not 'inline' because __no_sanitize_address confilcts
++})
++
++/*
 + * This function is not 'inline' because __no_sanitize_address conflicts
   * with inlining. Attempt to inline it may cause a build failure.
   * 	https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67368
   * '__maybe_unused' allows us to avoid defined-but-not-used warnings.
-@@ -264,29 +297,20 @@ void __read_once_size(const volatile void *p, void *res, int size)
+@@ -253,29 +290,20 @@ void __read_once_size(const volatile void *p, void *res, int size)
  static __no_sanitize_address __maybe_unused
  void __read_once_size_nocheck(const volatile void *p, void *res, int size)
  {
@@ -183,7 +184,7 @@ index f811005..56a26af 100644
  
  /*
   * Prevent the compiler from merging or refetching reads or writes. The
-@@ -311,29 +335,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -300,29 +328,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
   * required ordering.
   */
  
@@ -220,7 +221,7 @@ index f811005..56a26af 100644
  })
  
  #endif /* __KERNEL__ */
-@@ -444,6 +454,46 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -433,6 +447,46 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  # define __latent_entropy
  #endif
  
@@ -267,7 +268,7 @@ index f811005..56a26af 100644
  /*
   * Tell gcc if a function is cold. The compiler will assume any path
   * directly leading to the call is unlikely.
-@@ -453,6 +503,22 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -442,6 +496,22 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  #define __cold
  #endif
  
@@ -290,7 +291,7 @@ index f811005..56a26af 100644
  /* Simple shorthand for a section definition */
  #ifndef __section
  # define __section(S) __attribute__ ((__section__(#S)))
-@@ -475,6 +541,8 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -464,6 +534,8 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  # define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
  #endif
  
@@ -299,7 +300,7 @@ index f811005..56a26af 100644
  /* Is this type a native word size -- useful for atomic operations */
  #ifndef __native_word
  # define __native_word(t) (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-@@ -554,8 +622,9 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -543,8 +615,9 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
   */
  #define __ACCESS_ONCE(x) ({ \
  	 __maybe_unused typeof(x) __var = (__force typeof(x)) 0; \

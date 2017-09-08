@@ -1,5 +1,5 @@
 diff --git a/drivers/scsi/bfa/bfad_drv.h b/drivers/scsi/bfa/bfad_drv.h
-index cfcfff4..18a01f7 100644
+index f9e8620..807a983 100644
 --- a/drivers/scsi/bfa/bfad_drv.h
 +++ b/drivers/scsi/bfa/bfad_drv.h
 @@ -187,8 +187,10 @@ union bfad_tmp_buf {

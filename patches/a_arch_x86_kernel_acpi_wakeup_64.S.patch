@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/acpi/wakeup_64.S b/arch/x86/kernel/acpi/wakeup_64.S
-index 50b8ed0..7d2b43e 100644
+index 169963f..55a72f5 100644
 --- a/arch/x86/kernel/acpi/wakeup_64.S
 +++ b/arch/x86/kernel/acpi/wakeup_64.S
 @@ -6,6 +6,7 @@

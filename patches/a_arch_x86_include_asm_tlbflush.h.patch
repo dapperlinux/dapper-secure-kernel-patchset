@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-index 6ed9ea4..76595ef 100644
+index fc5abff..58c5feb 100644
 --- a/arch/x86/include/asm/tlbflush.h
 +++ b/arch/x86/include/asm/tlbflush.h
 @@ -89,7 +89,9 @@ static inline void cr4_set_bits(unsigned long mask)
@@ -22,7 +22,7 @@ index 6ed9ea4..76595ef 100644
  	if ((cr4 & ~mask) != cr4) {
  		cr4 &= ~mask;
  		this_cpu_write(cpu_tlbstate.cr4, cr4);
-@@ -123,6 +127,7 @@ static inline void cr4_toggle_bits(unsigned long mask)
+@@ -113,6 +117,7 @@ static inline void cr4_clear_bits(unsigned long mask)
  /* Read the CR4 shadow. */
  static inline unsigned long cr4_read_shadow(void)
  {
@@ -30,7 +30,7 @@ index 6ed9ea4..76595ef 100644
  	return this_cpu_read(cpu_tlbstate.cr4);
  }
  
-@@ -145,6 +150,22 @@ static inline void cr4_set_bits_and_update_boot(unsigned long mask)
+@@ -135,6 +140,22 @@ static inline void cr4_set_bits_and_update_boot(unsigned long mask)
  
  static inline void __native_flush_tlb(void)
  {
@@ -53,7 +53,7 @@ index 6ed9ea4..76595ef 100644
  	/*
  	 * If current->mm == NULL then we borrow a mm which may change during a
  	 * task switch and therefore we must not be preempted while we write CR3
-@@ -160,6 +181,7 @@ static inline void __native_flush_tlb_global_irq_disabled(void)
+@@ -150,6 +171,7 @@ static inline void __native_flush_tlb_global_irq_disabled(void)
  	unsigned long cr4;
  
  	cr4 = this_cpu_read(cpu_tlbstate.cr4);
@@ -61,7 +61,7 @@ index 6ed9ea4..76595ef 100644
  	/* clear PGE */
  	native_write_cr4(cr4 & ~X86_CR4_PGE);
  	/* write old PGE again and flush TLBs */
-@@ -193,6 +215,40 @@ static inline void __native_flush_tlb_global(void)
+@@ -183,6 +205,40 @@ static inline void __native_flush_tlb_global(void)
  
  static inline void __native_flush_tlb_single(unsigned long addr)
  {

@@ -1,8 +1,8 @@
 diff --git a/drivers/isdn/mISDN/l1oip_core.c b/drivers/isdn/mISDN/l1oip_core.c
-index 6be2041..66e82cb 100644
+index 67c2187..fc71e33 100644
 --- a/drivers/isdn/mISDN/l1oip_core.c
 +++ b/drivers/isdn/mISDN/l1oip_core.c
-@@ -842,7 +842,7 @@ l1oip_send_bh(struct work_struct *work)
+@@ -840,7 +840,7 @@ l1oip_send_bh(struct work_struct *work)
   * timer stuff
   */
  static void
@@ -11,7 +11,7 @@ index 6be2041..66e82cb 100644
  {
  	struct l1oip *hc = (struct l1oip *)data;
  
-@@ -850,7 +850,7 @@ l1oip_keepalive(void *data)
+@@ -848,7 +848,7 @@ l1oip_keepalive(void *data)
  }
  
  static void
@@ -20,7 +20,7 @@ index 6be2041..66e82cb 100644
  {
  	struct l1oip			*hc = (struct l1oip *)data;
  	struct dchannel		*dch = hc->chan[hc->d_idx].dch;
-@@ -1437,13 +1437,13 @@ init_card(struct l1oip *hc, int pri, int bundle)
+@@ -1435,13 +1435,13 @@ init_card(struct l1oip *hc, int pri, int bundle)
  	if (ret)
  		return ret;
  
@@ -31,8 +31,8 @@ index 6be2041..66e82cb 100644
  	hc->keep_tl.expires = jiffies + 2 * HZ; /* two seconds first time */
  	add_timer(&hc->keep_tl);
  
--	setup_timer(&hc->timeout_tl, (void *)l1oip_timeout, (ulong)hc);
-+	setup_timer(&hc->timeout_tl, l1oip_timeout, (ulong)hc);
+-	hc->timeout_tl.function = (void *)l1oip_timeout;
++	hc->timeout_tl.function = l1oip_timeout;
+ 	hc->timeout_tl.data = (ulong)hc;
+ 	init_timer(&hc->timeout_tl);
  	hc->timeout_on = 0; /* state that we have timer off */
- 
- 	return 0;

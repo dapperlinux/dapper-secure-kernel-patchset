@@ -1,8 +1,8 @@
 diff --git a/drivers/net/ethernet/hisilicon/hns/hns_ae_adapt.c b/drivers/net/ethernet/hisilicon/hns/hns_ae_adapt.c
-index ff864a1..5f54d83 100644
+index 2d0cb60..9dd45c9 100644
 --- a/drivers/net/ethernet/hisilicon/hns/hns_ae_adapt.c
 +++ b/drivers/net/ethernet/hisilicon/hns/hns_ae_adapt.c
-@@ -938,16 +938,18 @@ int hns_dsaf_ae_init(struct dsaf_device *dsaf_dev)
+@@ -845,16 +845,18 @@ int hns_dsaf_ae_init(struct dsaf_device *dsaf_dev)
  	struct hnae_ae_dev *ae_dev = &dsaf_dev->ae_dev;
  	static atomic_t id = ATOMIC_INIT(-1);
  

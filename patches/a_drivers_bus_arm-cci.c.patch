@@ -1,5 +1,5 @@
 diff --git a/drivers/bus/arm-cci.c b/drivers/bus/arm-cci.c
-index c49da15..9f271b4 100644
+index 8900823..f694867 100644
 --- a/drivers/bus/arm-cci.c
 +++ b/drivers/bus/arm-cci.c
 @@ -1472,8 +1472,10 @@ static int cci_pmu_init(struct cci_pmu *cci_pmu, struct platform_device *pdev)

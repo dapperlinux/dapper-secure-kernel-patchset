@@ -1,5 +1,5 @@
 diff --git a/arch/x86/kernel/head_32.S b/arch/x86/kernel/head_32.S
-index 1f85ee8..e38fb30 100644
+index 2dabea4..e97ebe8 100644
 --- a/arch/x86/kernel/head_32.S
 +++ b/arch/x86/kernel/head_32.S
 @@ -24,11 +24,18 @@
@@ -21,7 +21,7 @@ index 1f85ee8..e38fb30 100644
  /*
   * References to members of the new_cpu_data structure.
   */
-@@ -56,6 +63,12 @@ INIT_MAP_SIZE = PAGE_TABLE_SIZE(KERNEL_PAGES) * PAGE_SIZE
+@@ -87,6 +90,12 @@ INIT_MAP_SIZE = PAGE_TABLE_SIZE(KERNEL_PAGES) * PAGE_SIZE
  RESERVE_BRK(pagetables, INIT_MAP_SIZE)
  
  /*
@@ -34,7 +34,7 @@ index 1f85ee8..e38fb30 100644
   * 32-bit kernel entrypoint; only used by the boot CPU.  On entry,
   * %esi points to the real-mode code as a 32-bit pointer.
   * CS and DS must be 4 GB flat segments, but we don't depend on
-@@ -63,6 +76,13 @@ RESERVE_BRK(pagetables, INIT_MAP_SIZE)
+@@ -94,6 +103,13 @@ RESERVE_BRK(pagetables, INIT_MAP_SIZE)
   * can.
   */
  __HEAD
@@ -48,7 +48,7 @@ index 1f85ee8..e38fb30 100644
  ENTRY(startup_32)
  	movl pa(initial_stack),%ecx
  	
-@@ -84,6 +104,66 @@ ENTRY(startup_32)
+@@ -115,6 +131,66 @@ ENTRY(startup_32)
  2:
  	leal -__PAGE_OFFSET(%ecx),%esp
  
@@ -115,7 +115,7 @@ index 1f85ee8..e38fb30 100644
  /*
   * Clear BSS first so that there are no surprises...
   */
-@@ -124,19 +204,26 @@ ENTRY(startup_32)
+@@ -124,7 +124,7 @@ ENTRY(startup_32)
  
  #ifdef CONFIG_MICROCODE
  	/* Early load ucode on BSP. */
@@ -124,6 +124,7 @@ index 1f85ee8..e38fb30 100644
  #endif
  
  	/* Create early pagetables. */
+@@ -131,12 +131,19 @@ ENTRY(startup_32)
  	call  mk_early_pgtbl_32
  
  	/* Do early initialization of the fixmap area */
@@ -133,20 +134,20 @@ index 1f85ee8..e38fb30 100644
 -	movl %eax,pa(initial_pg_pmd+0x1000*KPMDS-8)
 +#ifdef CONFIG_COMPAT_VDSO
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR+_PAGE_USER,pa(initial_pg_pmd+0x1000*KPMDS-8)
-+#else
+ #else
+-	movl %eax,pa(initial_page_table+0xffc)
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,pa(initial_pg_pmd+0x1000*KPMDS-8)
 +#endif
 +#else
 +#ifdef CONFIG_COMPAT_VDSO
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR+_PAGE_USER,pa(initial_page_table+0xffc)
- #else
--	movl %eax,pa(initial_page_table+0xffc)
++#else
 +	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,pa(initial_page_table+0xffc)
 +#endif
  #endif
  
  #ifdef CONFIG_PARAVIRT
-@@ -150,9 +237,7 @@ ENTRY(startup_32)
+@@ -150,9 +150,7 @@ ENTRY(startup_32)
  	cmpl $num_subarch_entries, %eax
  	jae .Lbad_subarch
  
@@ -157,7 +158,7 @@ index 1f85ee8..e38fb30 100644
  
  .Lbad_subarch:
  WEAK(lguest_entry)
-@@ -164,10 +249,10 @@ WEAK(xen_entry)
+@@ -164,10 +171,10 @@ WEAK(xen_entry)
  	__INITDATA
  
  subarch_entries:
@@ -172,7 +173,7 @@ index 1f85ee8..e38fb30 100644
  num_subarch_entries = (. - subarch_entries) / 4
  .previous
  #else
-@@ -209,7 +294,7 @@ ENTRY(startup_32_smp)
+@@ -209,7 +207,7 @@ ENTRY(startup_32_smp)
  
  #ifdef CONFIG_MICROCODE
  	/* Early load ucode on AP. */
@@ -181,7 +182,7 @@ index 1f85ee8..e38fb30 100644
  #endif
  
  .Ldefault_entry:
-@@ -257,6 +342,7 @@ ENTRY(startup_32_smp)
+@@ -257,6 +255,7 @@ ENTRY(startup_32_smp)
  	movl pa(mmu_cr4_features),%eax
  	movl %eax,%cr4
  
@@ -189,7 +190,7 @@ index 1f85ee8..e38fb30 100644
  	testb $X86_CR4_PAE, %al		# check if PAE is enabled
  	jz .Lenable_paging
  
-@@ -285,6 +371,9 @@ ENTRY(startup_32_smp)
+@@ -285,6 +292,9 @@ ENTRY(startup_32_smp)
  	/* Make changes effective */
  	wrmsr
  
@@ -199,7 +200,7 @@ index 1f85ee8..e38fb30 100644
  .Lenable_paging:
  
  /*
-@@ -352,14 +441,20 @@ ENTRY(startup_32_smp)
+@@ -457,14 +541,20 @@ is486:
  1:	movl $(__KERNEL_DS),%eax	# reload all the segment registers
  	movl %eax,%ss			# after changing gdt.
  
@@ -221,7 +222,7 @@ index 1f85ee8..e38fb30 100644
  	movl %eax,%gs
  
  	xorl %eax,%eax			# Clear LDT
-@@ -417,8 +512,11 @@ setup_once:
+@@ -521,8 +611,11 @@ setup_once:
  	 * relocation.  Manually set base address in stack canary
  	 * segment descriptor.
  	 */
@@ -234,7 +235,7 @@ index 1f85ee8..e38fb30 100644
  	movw %cx, 8 * GDT_ENTRY_STACK_CANARY + 2(%eax)
  	shrl $16, %ecx
  	movb %cl, 8 * GDT_ENTRY_STACK_CANARY + 4(%eax)
-@@ -484,7 +582,7 @@ early_idt_handler_common:
+@@ -588,7 +681,7 @@ early_idt_handler_common:
  	movw	$0, PT_GS+2(%esp)
  
  	movl	%esp, %eax	/* args are pt_regs (EAX), trapnr (EDX) */
@@ -243,7 +244,7 @@ index 1f85ee8..e38fb30 100644
  
  	popl	%ebx		/* pt_regs->bx */
  	popl	%ecx		/* pt_regs->cx */
-@@ -505,8 +603,11 @@ ENDPROC(early_idt_handler_common)
+@@ -609,8 +702,11 @@ ENDPROC(early_idt_handler_common)
  /* This is the default interrupt "handler" :-) */
  	ALIGN
  ignore_int:
@@ -256,7 +257,7 @@ index 1f85ee8..e38fb30 100644
  	pushl %eax
  	pushl %ecx
  	pushl %edx
-@@ -515,17 +616,14 @@ ignore_int:
+@@ -619,17 +715,14 @@ ignore_int:
  	movl $(__KERNEL_DS),%eax
  	movl %eax,%ds
  	movl %eax,%es
@@ -276,7 +277,7 @@ index 1f85ee8..e38fb30 100644
  
  	addl $(5*4),%esp
  	popl %ds
-@@ -552,11 +650,8 @@ ENTRY(initial_code)
+@@ -552,11 +551,8 @@ ENTRY(initial_code)
  ENTRY(setup_once_ref)
  	.long setup_once
  
@@ -290,7 +291,7 @@ index 1f85ee8..e38fb30 100644
  #ifdef CONFIG_X86_PAE
  .globl initial_pg_pmd
  initial_pg_pmd:
-@@ -573,16 +668,19 @@ empty_zero_page:
+@@ -676,16 +766,19 @@ empty_zero_page:
  	.fill 4096,1,0
  .globl swapper_pg_dir
  swapper_pg_dir:
@@ -314,7 +315,7 @@ index 1f85ee8..e38fb30 100644
  ENTRY(initial_page_table)
  	.long	pa(initial_pg_pmd+PGD_IDENT_ATTR),0	/* low identity map */
  # if KPMDS == 3
-@@ -600,7 +698,16 @@ ENTRY(initial_page_table)
+@@ -600,7 +610,16 @@ ENTRY(initial_page_table)
  # else
  #  error "Kernel PMDs should be 1, 2 or 3"
  # endif
@@ -332,7 +333,7 @@ index 1f85ee8..e38fb30 100644
  #endif
  
  .data
-@@ -610,7 +717,7 @@ ENTRY(initial_stack)
+@@ -610,7 +629,7 @@ ENTRY(initial_stack)
  	 * The SIZEOF_PTREGS gap is a convention which helps the in-kernel
  	 * unwinder reliably detect the end of the stack.
  	 */
@@ -341,7 +342,7 @@ index 1f85ee8..e38fb30 100644
  	      TOP_OF_KERNEL_STACK_PADDING;
  
  __INITRODATA
-@@ -626,7 +733,7 @@ int_msg:
+@@ -724,7 +826,7 @@ int_msg:
   * segment size, and 32-bit linear address value:
   */
  
@@ -350,7 +351,7 @@ index 1f85ee8..e38fb30 100644
  .globl boot_gdt_descr
  .globl idt_descr
  
-@@ -635,7 +742,7 @@ int_msg:
+@@ -733,7 +835,7 @@ int_msg:
  	.word 0				# 32 bit align gdt_desc.address
  boot_gdt_descr:
  	.word __BOOT_DS+7
@@ -359,7 +360,7 @@ index 1f85ee8..e38fb30 100644
  
  	.word 0				# 32-bit align idt_desc.address
  idt_descr:
-@@ -646,7 +753,7 @@ idt_descr:
+@@ -744,7 +846,7 @@ idt_descr:
  	.word 0				# 32 bit align gdt_desc.address
  ENTRY(early_gdt_descr)
  	.word GDT_ENTRIES*8-1
@@ -368,7 +369,7 @@ index 1f85ee8..e38fb30 100644
  
  /*
   * The boot_gdt must mirror the equivalent in setup.S and is
-@@ -655,5 +762,67 @@ ENTRY(early_gdt_descr)
+@@ -753,5 +855,67 @@ ENTRY(early_gdt_descr)
  	.align L1_CACHE_BYTES
  ENTRY(boot_gdt)
  	.fill GDT_ENTRY_BOOT_CS,8,0

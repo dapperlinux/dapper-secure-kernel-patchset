@@ -1,8 +1,8 @@
 diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 87edc34..3b9a8a3 100644
+index 24925f2..1ae5ca4 100644
 --- a/drivers/md/md.c
 +++ b/drivers/md/md.c
-@@ -214,10 +214,10 @@ EXPORT_SYMBOL_GPL(bio_alloc_mddev);
+@@ -198,10 +198,10 @@ EXPORT_SYMBOL_GPL(bio_clone_mddev);
   *  start build, activate spare
   */
  static DECLARE_WAIT_QUEUE_HEAD(md_event_waiters);
@@ -15,7 +15,7 @@ index 87edc34..3b9a8a3 100644
  	wake_up(&md_event_waiters);
  }
  EXPORT_SYMBOL_GPL(md_new_event);
-@@ -1460,7 +1460,7 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
+@@ -1434,7 +1434,7 @@ static int super_1_load(struct md_rdev *rdev, struct md_rdev *refdev, int minor_
  	if ((le32_to_cpu(sb->feature_map) & MD_FEATURE_RESHAPE_ACTIVE) &&
  	    (le32_to_cpu(sb->feature_map) & MD_FEATURE_NEW_OFFSET))
  		rdev->new_data_offset += (s32)le32_to_cpu(sb->new_offset);
@@ -24,7 +24,7 @@ index 87edc34..3b9a8a3 100644
  
  	rdev->sb_size = le32_to_cpu(sb->max_dev) * 2 + 256;
  	bmask = queue_logical_block_size(rdev->bdev->bd_disk->queue)-1;
-@@ -1739,7 +1739,7 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
+@@ -1700,7 +1700,7 @@ static void super_1_sync(struct mddev *mddev, struct md_rdev *rdev)
  	else
  		sb->resync_offset = cpu_to_le64(0);
  
@@ -33,7 +33,7 @@ index 87edc34..3b9a8a3 100644
  
  	sb->raid_disks = cpu_to_le32(mddev->raid_disks);
  	sb->size = cpu_to_le64(mddev->dev_sectors);
-@@ -2809,7 +2809,7 @@ __ATTR_PREALLOC(state, S_IRUGO|S_IWUSR, state_show, state_store);
+@@ -2719,7 +2719,7 @@ __ATTR_PREALLOC(state, S_IRUGO|S_IWUSR, state_show, state_store);
  static ssize_t
  errors_show(struct md_rdev *rdev, char *page)
  {
@@ -42,7 +42,7 @@ index 87edc34..3b9a8a3 100644
  }
  
  static ssize_t
-@@ -2821,7 +2821,7 @@ errors_store(struct md_rdev *rdev, const char *buf, size_t len)
+@@ -2731,7 +2731,7 @@ errors_store(struct md_rdev *rdev, const char *buf, size_t len)
  	rv = kstrtouint(buf, 10, &n);
  	if (rv < 0)
  		return rv;
@@ -51,7 +51,7 @@ index 87edc34..3b9a8a3 100644
  	return len;
  }
  static struct rdev_sysfs_entry rdev_errors =
-@@ -3344,8 +3344,8 @@ int md_rdev_init(struct md_rdev *rdev)
+@@ -3180,8 +3180,8 @@ int md_rdev_init(struct md_rdev *rdev)
  	rdev->sb_loaded = 0;
  	rdev->bb_page = NULL;
  	atomic_set(&rdev->nr_pending, 0);
@@ -62,7 +62,7 @@ index 87edc34..3b9a8a3 100644
  
  	INIT_LIST_HEAD(&rdev->same_set);
  	init_waitqueue_head(&rdev->blocked_wait);
-@@ -4541,7 +4541,7 @@ mismatch_cnt_show(struct mddev *mddev, char *page)
+@@ -4403,7 +4403,7 @@ mismatch_cnt_show(struct mddev *mddev, char *page)
  {
  	return sprintf(page, "%llu\n",
  		       (unsigned long long)
@@ -71,16 +71,16 @@ index 87edc34..3b9a8a3 100644
  }
  
  static struct md_sysfs_entry md_mismatches = __ATTR_RO(mismatch_cnt);
-@@ -5312,7 +5312,7 @@ static struct kobject *md_probe(dev_t dev, int *part, void *data)
+@@ -5095,7 +5095,7 @@ static struct kobject *md_probe(dev_t dev, int *part, void *data)
  	return NULL;
  }
  
 -static int add_named_array(const char *val, struct kernel_param *kp)
 +static int add_named_array(const char *val, const struct kernel_param *kp)
  {
- 	/*
- 	 * val must be "md_*" or "mdNNN".
-@@ -5694,7 +5694,7 @@ static void md_clean(struct mddev *mddev)
+ 	/* val must be "md_*" where * is not all digits.
+ 	 * We allocate an array with a large free minor number, and
+@@ -5460,7 +5460,7 @@ static void md_clean(struct mddev *mddev)
  	mddev->new_layout = 0;
  	mddev->new_chunk_sectors = 0;
  	mddev->curr_resync = 0;
@@ -89,7 +89,7 @@ index 87edc34..3b9a8a3 100644
  	mddev->suspend_lo = mddev->suspend_hi = 0;
  	mddev->sync_speed_min = mddev->sync_speed_max = 0;
  	mddev->recovery = 0;
-@@ -6100,9 +6100,10 @@ static int get_array_info(struct mddev *mddev, void __user *arg)
+@@ -5877,9 +5877,10 @@ static int get_array_info(struct mddev *mddev, void __user *arg)
  	info.patch_version = MD_PATCHLEVEL_VERSION;
  	info.ctime         = clamp_t(time64_t, mddev->ctime, 0, U32_MAX);
  	info.level         = mddev->level;
@@ -102,7 +102,7 @@ index 87edc34..3b9a8a3 100644
  	info.nr_disks      = nr;
  	info.raid_disks    = mddev->raid_disks;
  	info.md_minor      = mddev->md_minor;
-@@ -7687,7 +7688,7 @@ static int md_seq_show(struct seq_file *seq, void *v)
+@@ -7458,7 +7459,7 @@ static int md_seq_show(struct seq_file *seq, void *v)
  
  		spin_unlock(&pers_lock);
  		seq_printf(seq, "\n");
@@ -111,7 +111,7 @@ index 87edc34..3b9a8a3 100644
  		return 0;
  	}
  	if (v == (void*)2) {
-@@ -7787,7 +7788,7 @@ static int md_seq_open(struct inode *inode, struct file *file)
+@@ -7558,7 +7559,7 @@ static int md_seq_open(struct inode *inode, struct file *file)
  		return error;
  
  	seq = file->private_data;
@@ -120,7 +120,7 @@ index 87edc34..3b9a8a3 100644
  	return error;
  }
  
-@@ -7804,7 +7805,7 @@ static unsigned int mdstat_poll(struct file *filp, poll_table *wait)
+@@ -7575,7 +7576,7 @@ static unsigned int mdstat_poll(struct file *filp, poll_table *wait)
  	/* always allow read */
  	mask = POLLIN | POLLRDNORM;
  
@@ -129,7 +129,7 @@ index 87edc34..3b9a8a3 100644
  		mask |= POLLERR | POLLPRI;
  	return mask;
  }
-@@ -7900,7 +7901,7 @@ static int is_mddev_idle(struct mddev *mddev, int init)
+@@ -7671,7 +7672,7 @@ static int is_mddev_idle(struct mddev *mddev, int init)
  		struct gendisk *disk = rdev->bdev->bd_contains->bd_disk;
  		curr_events = (int)part_stat_read(&disk->part0, sectors[0]) +
  			      (int)part_stat_read(&disk->part0, sectors[1]) -
@@ -138,7 +138,7 @@ index 87edc34..3b9a8a3 100644
  		/* sync IO will cause sync_io to increase before the disk_stats
  		 * as sync_io is counted when a request starts, and
  		 * disk_stats is counted when it completes.
-@@ -8191,7 +8192,7 @@ void md_do_sync(struct md_thread *thread)
+@@ -7941,7 +7942,7 @@ void md_do_sync(struct md_thread *thread)
  		 * which defaults to physical size, but can be virtual size
  		 */
  		max_sectors = mddev->resync_max_sectors;
@@ -147,7 +147,7 @@ index 87edc34..3b9a8a3 100644
  		/* we don't use the checkpoint if there's a bitmap */
  		if (test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery))
  			j = mddev->resync_min;
-@@ -9214,11 +9215,11 @@ static __exit void md_exit(void)
+@@ -8960,11 +8961,11 @@ static __exit void md_exit(void)
  subsys_initcall(md_init);
  module_exit(md_exit)
  

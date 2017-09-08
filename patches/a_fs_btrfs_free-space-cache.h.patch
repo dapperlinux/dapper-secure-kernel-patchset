@@ -1,5 +1,5 @@
 diff --git a/fs/btrfs/free-space-cache.h b/fs/btrfs/free-space-cache.h
-index 79eca4c..6953637 100644
+index 363fdd9..887dbe2 100644
 --- a/fs/btrfs/free-space-cache.h
 +++ b/fs/btrfs/free-space-cache.h
 @@ -48,6 +48,7 @@ struct btrfs_free_space_op {

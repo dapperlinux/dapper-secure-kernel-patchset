@@ -1,5 +1,5 @@
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index e9a59d2..b4671c1 100644
+index ca97835..4876208 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
 @@ -19,6 +19,7 @@
@@ -19,7 +19,7 @@ index e9a59d2..b4671c1 100644
  /*
   * Allocate and initialize a new local port bind bucket.
   * The bindhash mutex for snum's hash chain must be held here.
-@@ -635,6 +638,9 @@ ok:
+@@ -644,6 +647,9 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  	spin_unlock(&head->lock);
  	if (tw)
  		inet_twsk_deschedule_put(tw);

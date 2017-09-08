@@ -1,5 +1,5 @@
 diff --git a/crypto/scatterwalk.c b/crypto/scatterwalk.c
-index c16c94f..17bb2bd 100644
+index c16c94f8..8ab5bf8 100644
 --- a/crypto/scatterwalk.c
 +++ b/crypto/scatterwalk.c
 @@ -19,6 +19,7 @@
@@ -10,7 +10,7 @@ index c16c94f..17bb2bd 100644
  
  static inline void memcpy_dir(void *buf, void *sgdata, size_t nbytes, int out)
  {
-@@ -62,14 +63,20 @@ void scatterwalk_map_and_copy(void *buf, struct scatterlist *sg,
+@@ -62,14 +62,20 @@ void scatterwalk_map_and_copy(void *buf, struct scatterlist *sg,
  {
  	struct scatter_walk walk;
  	struct scatterlist tmp[2];

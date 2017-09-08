@@ -1,17 +1,17 @@
 diff --git a/drivers/isdn/mISDN/dsp_core.c b/drivers/isdn/mISDN/dsp_core.c
-index 880e9d3..738e9ef 100644
+index 0222b1a..67fb76a 100644
 --- a/drivers/isdn/mISDN/dsp_core.c
 +++ b/drivers/isdn/mISDN/dsp_core.c
 @@ -1092,7 +1092,7 @@ dspcreate(struct channel_req *crq)
  	ndsp->pcm_bank_tx = -1;
  	ndsp->hfc_conf = -1; /* current conference number */
  	/* set tone timer */
--	setup_timer(&ndsp->tone.tl, (void *)dsp_tone_timeout, (long)ndsp);
-+	setup_timer(&ndsp->tone.tl, dsp_tone_timeout, (long)ndsp);
+-	ndsp->tone.tl.function = (void *)dsp_tone_timeout;
++	ndsp->tone.tl.function = dsp_tone_timeout;
+ 	ndsp->tone.tl.data = (long) ndsp;
+ 	init_timer(&ndsp->tone.tl);
  
- 	if (dtmfthreshold < 20 || dtmfthreshold > 500)
- 		dtmfthreshold = 200;
-@@ -1202,7 +1202,7 @@ static int __init dsp_init(void)
+@@ -1204,7 +1204,7 @@ static int __init dsp_init(void)
  	}
  
  	/* set sample timer */

@@ -1,5 +1,5 @@
 diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
-index 5dc246d..48ed2db 100644
+index ff48da6..497fb7b 100644
 --- a/drivers/isdn/hardware/mISDN/hfcpci.c
 +++ b/drivers/isdn/hardware/mISDN/hfcpci.c
 @@ -301,8 +301,9 @@ reset_hfcpci(struct hfc_pci *hc)
@@ -28,21 +28,21 @@ index 5dc246d..48ed2db 100644
  inithfcpci(struct hfc_pci *hc)
  {
  	printk(KERN_DEBUG "inithfcpci: entered\n");
--	setup_timer(&hc->dch.timer, (void *)hfcpci_dbusy_timer,
-+	setup_timer(&hc->dch.timer,hfcpci_dbusy_timer,
- 		    (long)&hc->dch);
+-	hc->dch.timer.function = (void *) hfcpci_dbusy_timer;
++	hc->dch.timer.function = hfcpci_dbusy_timer;
+ 	hc->dch.timer.data = (long) &hc->dch;
+ 	init_timer(&hc->dch.timer);
  	hc->chanlimit = 2;
- 	mode_hfcpci(&hc->bch[0], 1, -1);
-@@ -2043,7 +2045,7 @@ setup_hw(struct hfc_pci *hc)
+@@ -2044,7 +2046,7 @@ setup_hw(struct hfc_pci *hc)
  	Write_hfc(hc, HFCPCI_INT_M1, hc->hw.int_m1);
  	/* At this point the needed PCI config is done */
  	/* fifos are still not enabled */
--	setup_timer(&hc->hw.timer, (void *)hfcpci_Timer, (long)hc);
-+	setup_timer(&hc->hw.timer,hfcpci_Timer, (long)hc);
+-	hc->hw.timer.function = (void *) hfcpci_Timer;
++	hc->hw.timer.function = hfcpci_Timer;
+ 	hc->hw.timer.data = (long) hc;
+ 	init_timer(&hc->hw.timer);
  	/* default PCM master */
- 	test_and_set_bit(HFC_CFG_MASTER, &hc->cfg);
- 	return 0;
-@@ -2290,9 +2292,9 @@ _hfcpci_softirq(struct device *dev, void *arg)
+@@ -2293,9 +2295,9 @@ _hfcpci_softirq(struct device *dev, void *arg)
  }
  
  static void
@@ -54,7 +54,7 @@ index 5dc246d..48ed2db 100644
  				      _hfcpci_softirq) != 0);
  
  	/* if next event would be in the past ... */
-@@ -2327,7 +2329,7 @@ HFC_init(void)
+@@ -2330,7 +2332,7 @@ HFC_init(void)
  	if (poll != HFCPCI_BTRANS_THRESHOLD) {
  		printk(KERN_INFO "%s: Using alternative poll value of %d\n",
  		       __func__, poll);

@@ -1,16 +1,16 @@
 diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index f5af95a..cf83926 100644
+index 437feb4..a4b2570 100644
 --- a/arch/x86/include/asm/pgtable.h
 +++ b/arch/x86/include/asm/pgtable.h
-@@ -53,6 +53,7 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
+@@ -54,6 +54,7 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
  
- #ifndef __PAGETABLE_P4D_FOLDED
+ #ifndef __PAGETABLE_PUD_FOLDED
  #define set_pgd(pgdp, pgd)		native_set_pgd(pgdp, pgd)
 +#define set_pgd_batched(pgdp, pgd)	native_set_pgd_batched(pgdp, pgd)
  #define pgd_clear(pgd)			native_pgd_clear(pgd)
  #endif
  
-@@ -100,12 +101,53 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
+@@ -88,12 +89,53 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
  
  #define arch_end_context_switch(prev)	do {} while(0)
  
@@ -64,8 +64,8 @@ index f5af95a..cf83926 100644
  static inline int pte_dirty(pte_t pte)
  {
  	return pte_flags(pte) & _PAGE_DIRTY;
-@@ -201,6 +243,11 @@ static inline int p4d_large(p4d_t p4d)
- 	return 0;
+@@ -168,6 +210,11 @@ static inline unsigned long pud_pfn(pud_t pud)
+ 	return (pud_val(pud) & pud_pfn_mask(pud)) >> PAGE_SHIFT;
  }
  
 +static inline unsigned long pgd_pfn(pgd_t pgd)
@@ -76,7 +76,7 @@ index f5af95a..cf83926 100644
  #define pte_page(pte)	pfn_to_page(pte_pfn(pte))
  
  static inline int pmd_large(pmd_t pte)
-@@ -276,9 +323,29 @@ static inline pte_t pte_wrprotect(pte_t pte)
+@@ -224,9 +271,29 @@ static inline pte_t pte_wrprotect(pte_t pte)
  	return pte_clear_flags(pte, _PAGE_RW);
  }
  
@@ -107,7 +107,7 @@ index f5af95a..cf83926 100644
  }
  
  static inline pte_t pte_mkdirty(pte_t pte)
-@@ -564,7 +631,7 @@ static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
+@@ -431,7 +498,7 @@ static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
  
  #define canon_pgprot(p) __pgprot(massage_pgprot(p))
  
@@ -116,7 +116,7 @@ index f5af95a..cf83926 100644
  					 enum page_cache_mode pcm,
  					 enum page_cache_mode new_pcm)
  {
-@@ -607,6 +674,16 @@ pte_t *populate_extra_pte(unsigned long vaddr);
+@@ -474,6 +541,16 @@ pte_t *populate_extra_pte(unsigned long vaddr);
  #endif
  
  #ifndef __ASSEMBLY__
@@ -133,7 +133,7 @@ index f5af95a..cf83926 100644
  #include <linux/mm_types.h>
  #include <linux/mmdebug.h>
  #include <linux/log2.h>
-@@ -854,7 +931,7 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
+@@ -675,7 +752,7 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
   * Currently stuck as a macro due to indirect forward reference to
   * linux/mmzone.h's __section_mem_map_addr() definition:
   */
@@ -141,8 +141,8 @@ index f5af95a..cf83926 100644
 +#define pgd_page(pgd)		pfn_to_page((pgd_val(pgd) & PTE_PFN_MASK) >> PAGE_SHIFT)
  
  /* to find an entry in a page-table-directory. */
- static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
-@@ -864,7 +941,7 @@ static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
+ static inline unsigned long pud_index(unsigned long address)
+@@ -690,7 +767,7 @@ static inline pud_t *pud_offset(pgd_t *pgd, unsigned long address)
  
  static inline int pgd_bad(pgd_t pgd)
  {
@@ -151,7 +151,7 @@ index f5af95a..cf83926 100644
  }
  
  static inline int pgd_none(pgd_t pgd)
-@@ -893,7 +970,12 @@ static inline int pgd_none(pgd_t pgd)
+@@ -719,7 +796,12 @@ static inline int pgd_none(pgd_t pgd)
   * pgd_offset() returns a (pgd_t *)
   * pgd_index() is used get the offset into the pgd page's array of pgd_t's;
   */
@@ -165,7 +165,7 @@ index f5af95a..cf83926 100644
  /*
   * a shortcut which implies the use of the kernel's pgd, instead
   * of a process's
-@@ -904,6 +986,25 @@ static inline int pgd_none(pgd_t pgd)
+@@ -730,6 +812,25 @@ static inline int pgd_none(pgd_t pgd)
  #define KERNEL_PGD_BOUNDARY	pgd_index(PAGE_OFFSET)
  #define KERNEL_PGD_PTRS		(PTRS_PER_PGD - KERNEL_PGD_BOUNDARY)
  
@@ -191,7 +191,7 @@ index f5af95a..cf83926 100644
  #ifndef __ASSEMBLY__
  
  extern int direct_gbpages;
-@@ -1102,11 +1203,24 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
+@@ -901,11 +1002,24 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
   * dst and src can be on the same page, but the range must not overlap,
   * and must not cross a page boundary.
   */

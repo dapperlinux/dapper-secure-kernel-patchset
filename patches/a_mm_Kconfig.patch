@@ -1,8 +1,8 @@
 diff --git a/mm/Kconfig b/mm/Kconfig
-index beb7a45..a08862a 100644
+index 86e3e0e..ab679cf 100644
 --- a/mm/Kconfig
 +++ b/mm/Kconfig
-@@ -341,10 +341,11 @@ config KSM
+@@ -342,10 +342,11 @@ config KSM
  	  root has set /sys/kernel/mm/ksm/run to 1 (if CONFIG_SYSFS is set).
  
  config DEFAULT_MMAP_MIN_ADDR
@@ -17,7 +17,7 @@ index beb7a45..a08862a 100644
  	  This is the portion of low virtual memory which should be protected
  	  from userspace allocation.  Keeping a user from writing to low pages
  	  can help reduce the impact of kernel NULL pointer bugs.
-@@ -376,8 +377,9 @@ config MEMORY_FAILURE
+@@ -377,8 +378,9 @@ config MEMORY_FAILURE
  
  config HWPOISON_INJECT
  	tristate "HWPoison pages injector"
@@ -28,7 +28,7 @@ index beb7a45..a08862a 100644
  
  config NOMMU_INITIAL_TRIM_EXCESS
  	int "Turn on mmap() excess space trimming before booting"
-@@ -543,6 +545,7 @@ config MEM_SOFT_DIRTY
+@@ -548,6 +550,7 @@ config MEM_SOFT_DIRTY
  	bool "Track memory changes"
  	depends on CHECKPOINT_RESTORE && HAVE_ARCH_SOFT_DIRTY && PROC_FS
  	select PROC_PAGE_MONITOR
@@ -36,7 +36,7 @@ index beb7a45..a08862a 100644
  	help
  	  This option enables memory changes tracking by introducing a
  	  soft-dirty bit on pte-s. This bit it set when someone writes
-@@ -627,6 +630,7 @@ config ZSMALLOC_STAT
+@@ -632,6 +635,7 @@ config ZSMALLOC_STAT
  	bool "Export zsmalloc statistics"
  	depends on ZSMALLOC
  	select DEBUG_FS

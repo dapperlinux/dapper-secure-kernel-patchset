@@ -1,8 +1,8 @@
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 265a0d8..231059f 100644
+index 237f3d6..ea9aac0 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -1002,8 +1002,16 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
+@@ -829,8 +829,16 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
  	union bpf_attr attr = {};
  	int err;
  

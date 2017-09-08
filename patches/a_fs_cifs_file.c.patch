@@ -1,5 +1,5 @@
 diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index fcef706..c1fa3e5 100644
+index 3925758..f2e78fa 100644
 --- a/fs/cifs/file.c
 +++ b/fs/cifs/file.c
 @@ -1431,7 +1431,7 @@ cifs_free_llist(struct list_head *llist)
@@ -29,12 +29,12 @@ index fcef706..c1fa3e5 100644
  		scanned = true;
  	}
  	server = cifs_sb_master_tcon(cifs_sb)->ses->server;
-@@ -2598,7 +2602,7 @@ cifs_write_from_iter(loff_t offset, size_t len, struct iov_iter *from,
+@@ -2593,7 +2597,7 @@ cifs_write_from_iter(loff_t offset, size_t len, struct iov_iter *from,
  		wdata->pid = pid;
  		wdata->bytes = cur_len;
  		wdata->pagesz = PAGE_SIZE;
 -		wdata->tailsz = cur_len - ((nr_pages - 1) * PAGE_SIZE);
 +		wdata->tailsz = cur_len - nr_pages * PAGE_SIZE + PAGE_SIZE;
  		wdata->credits = credits;
- 		wdata->ctx = ctx;
- 		kref_get(&ctx->refcount);
+ 
+ 		if (!wdata->cfile->invalidHandle ||
