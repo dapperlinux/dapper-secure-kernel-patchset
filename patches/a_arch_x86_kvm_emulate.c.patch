@@ -161,7 +161,7 @@ index 80890de..51b6c4a 100644
  		0xffffffff00000000ULL,
  		0, 0, 0, /* CR3 checked later */
  		CR4_RESERVED_BITS,
-@@ -5159,7 +5209,10 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
+@@ -5159,7 +5209,10 @@ done_prefixes:
  	if (ctxt->d == 0)
  		return EMULATION_FAILED;
  
@@ -182,7 +182,7 @@ index 80890de..51b6c4a 100644
  	    : "+a"(ctxt->dst.val), "+d"(ctxt->src.val), [flags]"+D"(flags),
  	      [fastop]"+S"(fop), "+r"(__sp)
  	    : "c"(ctxt->src2.val));
-@@ -5468,15 +5521,14 @@ int x86_emulate_insn(struct x86_emulate_ctxt *ctxt)
+@@ -5468,15 +5521,14 @@ special_insn:
  	else
  		ctxt->eflags &= ~X86_EFLAGS_RF;
  

@@ -46,7 +46,7 @@ index 5ab2aac..520eb6c 100644
  
  	if (sk->sk_state == TCP_NEW_SYN_RECV) {
  		struct request_sock *req = inet_reqsk(sk);
-@@ -1735,6 +1749,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+@@ -1735,6 +1749,10 @@ csum_error:
  bad_packet:
  		__TCP_INC_STATS(net, TCP_MIB_INERRS);
  	} else {

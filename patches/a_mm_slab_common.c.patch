@@ -92,7 +92,7 @@ index 01a0fe2..008b991 100644
  	list_add(&s->list, &slab_caches);
  	memcg_link_cache(s);
  out:
-@@ -398,11 +427,13 @@ static struct kmem_cache *create_cache(const char *name,
+@@ -398,11 +427,13 @@ out_free_cache:
  }
  
  /*
@@ -107,7 +107,7 @@ index 01a0fe2..008b991 100644
   * @ctor: A constructor for the objects.
   *
   * Returns a ptr to the cache on success, NULL on failure.
-@@ -421,9 +452,10 @@ static struct kmem_cache *create_cache(const char *name,
+@@ -421,9 +452,10 @@ out_free_cache:
   * cacheline.  This can be beneficial if you're counting cycles as closely
   * as davem.
   */
@@ -142,7 +142,7 @@ index 01a0fe2..008b991 100644
  	if (IS_ERR(s)) {
  		err = PTR_ERR(s);
  		kfree_const(cache_name);
-@@ -492,8 +527,26 @@ kmem_cache_create(const char *name, size_t size, size_t align,
+@@ -492,8 +527,26 @@ out_unlock:
  	}
  	return s;
  }

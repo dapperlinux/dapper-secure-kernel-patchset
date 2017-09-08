@@ -61,7 +61,7 @@ index a260cde..c395165 100644
  	if (err)
  		goto noconfig;
  
-@@ -205,8 +214,6 @@ static int configure_kgdboc(void)
+@@ -205,8 +214,6 @@ do_register:
  	if (err)
  		goto nmi_con_failed;
  
@@ -70,7 +70,7 @@ index a260cde..c395165 100644
  	return 0;
  
  nmi_con_failed:
-@@ -223,7 +230,7 @@ static int configure_kgdboc(void)
+@@ -223,7 +230,7 @@ noconfig:
  static int __init init_kgdboc(void)
  {
  	/* Already configured? */

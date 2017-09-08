@@ -134,7 +134,7 @@ index 1bae78d..b154442 100644
  	if (!slob_page_free(sp)) {
  		/* This slob page is about to become partially free. Easy! */
  		sp->units = units;
-@@ -424,11 +434,10 @@ static void slob_free(void *block, int size)
+@@ -424,11 +434,10 @@ out:
   */
  
  static __always_inline void *

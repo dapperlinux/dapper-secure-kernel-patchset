@@ -86,7 +86,7 @@ index 3e9f787..c2177b8 100644
  	encode_cookie(xdr, &result->cookie);
  	encode_nlm_stat(xdr, result->status);
  	encode_nlm_testrply(xdr, result);
-@@ -521,11 +527,12 @@ static int decode_nlm_testrply(struct xdr_stream *xdr,
+@@ -521,11 +527,12 @@ out:
  	return error;
  }
  
@@ -101,7 +101,7 @@ index 3e9f787..c2177b8 100644
  
  	error = decode_cookie(xdr, &result->cookie);
  	if (unlikely(error))
-@@ -541,11 +548,12 @@ static int nlm_xdr_dec_testres(struct rpc_rqst *req,
+@@ -541,11 +548,12 @@ out:
   *		nlm_stat stat;
   *	};
   */
@@ -116,7 +116,7 @@ index 3e9f787..c2177b8 100644
  
  	error = decode_cookie(xdr, &result->cookie);
  	if (unlikely(error))
-@@ -564,8 +572,8 @@ static int nlm_xdr_dec_res(struct rpc_rqst *req,
+@@ -564,8 +572,8 @@ out:
  #define PROC(proc, argtype, restype)	\
  [NLMPROC_##proc] = {							\
  	.p_proc      = NLMPROC_##proc,					\

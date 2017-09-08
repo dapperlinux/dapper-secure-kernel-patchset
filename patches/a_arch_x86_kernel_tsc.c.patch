@@ -19,7 +19,7 @@ index 714dfba..91d8040 100644
  }
  
  /*
-@@ -290,7 +291,7 @@ static void set_cyc2ns_scale(unsigned long khz, int cpu)
+@@ -290,7 +291,7 @@ done:
  /*
   * Scheduler clock - returns current time in nanosec units.
   */

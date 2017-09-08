@@ -389,7 +389,7 @@ index bb11c47..6a73ec6 100644
  
  	inc_mm_counter_fast(vma->vm_mm, MM_ANONPAGES);
  	page_add_new_anon_rmap(page, vma, vmf->address, false);
-@@ -2947,6 +3183,12 @@ static int do_anonymous_page(struct vm_fault *vmf)
+@@ -2947,6 +3183,12 @@ setpte:
  
  	/* No need to invalidate - it was non-present before */
  	update_mmu_cache(vma, vmf->address, vmf->pte);
@@ -595,7 +595,7 @@ index bb11c47..6a73ec6 100644
  #endif /* __PAGETABLE_PMD_FOLDED */
  
  static int __follow_pte_pmd(struct mm_struct *mm, unsigned long address,
-@@ -4109,8 +4437,8 @@ int follow_phys(struct vm_area_struct *vma,
+@@ -4109,8 +4437,8 @@ out:
  	return ret;
  }
  

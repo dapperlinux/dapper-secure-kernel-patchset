@@ -136,7 +136,7 @@ index 32ec221..9e08cc8 100644
  int fixup_exception(struct pt_regs *regs)
  {
  	const struct exception_table_entry *fix;
-@@ -299,8 +410,33 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
+@@ -299,8 +410,33 @@ retry:
  
  good_area:
  

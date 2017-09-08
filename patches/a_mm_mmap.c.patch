@@ -365,7 +365,7 @@ index a5e3dcd..bcc6f0c 100644
  	/* Once vma denies write, undo our temporary denial count */
  	if (file) {
  		if (vm_flags & VM_SHARED)
-@@ -1720,6 +1888,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+@@ -1720,6 +1888,7 @@ out:
  	perf_event_mmap(vma);
  
  	vm_stat_account(mm, vm_flags, len >> PAGE_SHIFT);
@@ -373,7 +373,7 @@ index a5e3dcd..bcc6f0c 100644
  	if (vm_flags & VM_LOCKED) {
  		if (!((vm_flags & VM_SPECIAL) || is_vm_hugetlb_page(vma) ||
  					vma == get_gate_vma(current->mm)))
-@@ -1757,6 +1926,12 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+@@ -1757,6 +1926,12 @@ allow_write_and_free_vma:
  	if (vm_flags & VM_DENYWRITE)
  		allow_write_access(file);
  free_vma:
@@ -386,7 +386,7 @@ index a5e3dcd..bcc6f0c 100644
  	kmem_cache_free(vm_area_cachep, vma);
  unacct_error:
  	if (charged)
-@@ -1764,7 +1939,54 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+@@ -1764,7 +1939,54 @@ unacct_error:
  	return error;
  }
  
@@ -442,7 +442,7 @@ index a5e3dcd..bcc6f0c 100644
  {
  	/*
  	 * We implement the search by looking for an rbtree node that
-@@ -1817,6 +2039,15 @@ unsigned long unmapped_area(struct vm_unmapped_area_info *info)
+@@ -1817,6 +2039,15 @@ check_current:
  		/* Check if current node has a suitable gap */
  		if (gap_start > high_limit)
  			return -ENOMEM;
@@ -458,7 +458,7 @@ index a5e3dcd..bcc6f0c 100644
  		if (gap_end >= low_limit &&
  		    gap_end > gap_start && gap_end - gap_start >= length)
  			goto found;
-@@ -1867,7 +2098,7 @@ unsigned long unmapped_area(struct vm_unmapped_area_info *info)
+@@ -1867,7 +2098,7 @@ found:
  	return gap_start;
  }
  
@@ -467,7 +467,7 @@ index a5e3dcd..bcc6f0c 100644
  {
  	struct mm_struct *mm = current->mm;
  	struct vm_area_struct *vma;
-@@ -1921,6 +2152,15 @@ unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info)
+@@ -1921,6 +2152,15 @@ check_current:
  		gap_end = vm_start_gap(vma);
  		if (gap_end < low_limit)
  			return -ENOMEM;
@@ -966,7 +966,7 @@ index a5e3dcd..bcc6f0c 100644
  	if (!vma || !(vma->vm_flags & VM_SHARED))
  		goto out;
  
-@@ -2832,16 +3295,6 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, start, unsigned long, size,
+@@ -2832,16 +3295,6 @@ out:
  	return ret;
  }
  
@@ -1121,7 +1121,7 @@ index a5e3dcd..bcc6f0c 100644
  	/*
  	 * If anonymous vma has not yet been faulted, update new pgoff
  	 * to match new location, to increase its chance of merging.
-@@ -3129,27 +3623,70 @@ struct vm_area_struct *copy_vma(struct vm_area_struct **vmap,
+@@ -3129,27 +3623,70 @@ out:
  	return NULL;
  }
  

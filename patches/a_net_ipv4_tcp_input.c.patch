@@ -34,7 +34,7 @@ index 174d437..02864fa 100644
  tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
  	     struct sk_buff *head, struct sk_buff *tail, u32 start, u32 end)
  {
-@@ -5805,6 +5807,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+@@ -5805,6 +5807,7 @@ discard:
  	    tcp_paws_reject(&tp->rx_opt, 0))
  		goto discard_and_undo;
  
@@ -42,7 +42,7 @@ index 174d437..02864fa 100644
  	if (th->syn) {
  		/* We see SYN without ACK. It is attempt of
  		 * simultaneous connect with crossed SYNs.
-@@ -5856,6 +5859,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+@@ -5856,6 +5859,7 @@ discard:
  		goto discard;
  #endif
  	}

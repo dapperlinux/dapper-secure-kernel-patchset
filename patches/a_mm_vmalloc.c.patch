@@ -329,7 +329,7 @@ index ecc97f7..0390c0f 100644
  	size = PAGE_ALIGN(size);
  
  	if (!PAGE_ALIGNED(uaddr) || !PAGE_ALIGNED(kaddr))
-@@ -2622,7 +2772,7 @@ struct vm_struct **pcpu_get_vm_areas(const unsigned long *offsets,
+@@ -2622,7 +2772,7 @@ found:
  	/* insert all vm's */
  	for (area = 0; area < nr_vms; area++)
  		setup_vmalloc_vm(vms[area], vas[area], VM_ALLOC,

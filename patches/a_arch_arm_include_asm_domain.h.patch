@@ -10,21 +10,21 @@ index 99d9f63..ec44cb5 100644
  
  /*
   * Domain types
-@@ -51,10 +50,29 @@
+@@ -51,9 +50,28 @@
  #define DOMAIN_CLIENT	1
  #ifdef CONFIG_CPU_USE_DOMAINS
  #define DOMAIN_MANAGER	3
 +#define DOMAIN_VECTORS	3
 +#define DOMAIN_USERCLIENT	DOMAIN_CLIENT
-+#else
+ #else
 +
 +#ifdef CONFIG_PAX_KERNEXEC
-+#define DOMAIN_MANAGER	1
-+#define DOMAIN_KERNEXEC	3
- #else
  #define DOMAIN_MANAGER	1
- #endif
- 
++#define DOMAIN_KERNEXEC	3
++#else
++#define DOMAIN_MANAGER	1
++#endif
++
 +#ifdef CONFIG_PAX_MEMORY_UDEREF
 +#define DOMAIN_USERCLIENT	0
 +#define DOMAIN_UDEREF		1
@@ -34,12 +34,11 @@ index 99d9f63..ec44cb5 100644
 +#define DOMAIN_VECTORS		DOMAIN_USER
 +#endif
 +
-+#endif
+ #endif
 +#define DOMAIN_KERNELCLIENT	1
-+
+ 
  #define domain_mask(dom)	((3) << (2 * (dom)))
  #define domain_val(dom,type)	((type) << (2 * (dom)))
- 
 @@ -62,13 +80,19 @@
  #define DACR_INIT \
  	(domain_val(DOMAIN_USER, DOMAIN_NOACCESS) | \
