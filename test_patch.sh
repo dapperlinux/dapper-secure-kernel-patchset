@@ -1,6 +1,6 @@
 DATE=`date +%Y-%m-%d`
-KERNEL_MAJOR_VERSION=4.12
-KERNEL_VERSION=4.12.11
+KERNEL_MAJOR_VERSION=4.13
+KERNEL_VERSION=4.13.2
 
 echo "Removing old kernels..."
 rm -rf test
@@ -27,6 +27,9 @@ grep "saving rejects" ../../test.log
 
 echo "Number of files failed..."
 grep "saving rejects" ../../test.log | wc -l
+
+echo "Number of hunks failed..."
+grep "saving rejects" ../../test.log | cut -f1 -d' ' | paste -sd+ | bc
 
 echo "Tidying up.."
 rm ../../kernel/patch-$KERNEL_VERSION
