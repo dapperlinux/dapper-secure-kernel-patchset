@@ -21,12 +21,3 @@ index a705a7d..898c675 100644
  
  extern key_ref_t find_key_to_update(key_ref_t keyring_ref,
  				    const struct keyring_index_key *index_key);
-@@ -192,7 +196,7 @@ struct request_key_auth {
- 	void			*callout_info;
- 	size_t			callout_len;
- 	pid_t			pid;
--};
-+} __randomize_layout;
- 
- extern struct key_type key_type_request_key_auth;
- extern struct key *request_key_auth_new(struct key *target,

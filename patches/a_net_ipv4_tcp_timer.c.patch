@@ -13,10 +13,11 @@ index b1e65b3..fafad47 100644
  int sysctl_tcp_thin_linear_timeouts __read_mostly;
  
  /**
-@@ -232,6 +236,13 @@ static int tcp_write_timeout(struct sock *sk)
- 		}
+@@ -228,6 +228,14 @@ static int tcp_write_timeout(struct sock *sk)
+ 		expired = retransmits_timed_out(sk, retry_until,
+ 						icsk->icsk_user_timeout);
  	}
- 
++
 +#ifdef CONFIG_GRKERNSEC_BLACKHOLE
 +	if ((sk->sk_state == TCP_LAST_ACK) &&
 +	    (grsec_lastack_retries > 0) &&
@@ -24,6 +25,6 @@ index b1e65b3..fafad47 100644
 +		retry_until = grsec_lastack_retries;
 +#endif
 +
- 	if (retransmits_timed_out(sk, retry_until,
- 				  syn_set ? 0 : icsk->icsk_user_timeout, syn_set)) {
+ 	if (expired) {
  		/* Has it gone just too far? */
+ 		tcp_write_err(sk);

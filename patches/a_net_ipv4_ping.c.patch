@@ -51,10 +51,10 @@ index 105c074..6c5033d 100644
  		else if (skb->protocol == htons(ETH_P_IP) && isk->cmsg_flags)
  			ip_cmsg_recv(msg, skb);
  #endif
-@@ -1125,7 +1125,7 @@ static void ping_v4_format_sock(struct sock *sp, struct seq_file *f,
+@@ -1128,7 +1128,7 @@ static void ping_v4_format_sock(struct sock *sp, struct seq_file *f,
  		from_kuid_munged(seq_user_ns(f), sock_i_uid(sp)),
  		0, sock_i_ino(sp),
- 		atomic_read(&sp->sk_refcnt), sp,
+ 		refcount_read(&sp->sk_refcnt), sp,
 -		atomic_read(&sp->sk_drops));
 +		atomic_read_unchecked(&sp->sk_drops));
  }

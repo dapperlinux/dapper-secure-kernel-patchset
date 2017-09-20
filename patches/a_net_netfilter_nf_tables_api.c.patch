@@ -2,7 +2,7 @@ diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
 index e5194f6f..ad76273 100644
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -506,7 +506,7 @@ static int nf_tables_gettable(struct net *net, struct sock *nlsk,
+@@ -547,7 +547,7 @@ static int nf_tables_gettable(struct net *net, struct sock *nlsk,
  	int err;
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {

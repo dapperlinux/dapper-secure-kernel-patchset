@@ -2,9 +2,9 @@ diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
 index 8615a6b..772fcdb 100644
 --- a/net/ipv4/tcp_minisocks.c
 +++ b/net/ipv4/tcp_minisocks.c
-@@ -27,6 +27,10 @@
- #include <net/inet_common.h>
+@@ -28,6 +28,10 @@
  #include <net/xfrm.h>
+ #include <net/busy_poll.h>
  
 +#ifdef CONFIG_GRKERNSEC_BLACKHOLE
 +extern int grsec_enable_blackhole;

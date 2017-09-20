@@ -57,10 +57,10 @@ index 246f29d..1b68023 100644
  	cb->min_dump_alloc = control->min_dump_alloc;
  	cb->skb = skb;
  
-@@ -2470,7 +2473,7 @@ static int netlink_seq_show(struct seq_file *seq, void *v)
+@@ -2569,7 +2569,7 @@ static int netlink_seq_show(struct seq_file *seq, void *v)
  			   sk_wmem_alloc_get(s),
  			   nlk->cb_running,
- 			   atomic_read(&s->sk_refcnt),
+ 			   refcount_read(&s->sk_refcnt),
 -			   atomic_read(&s->sk_drops),
 +			   atomic_read_unchecked(&s->sk_drops),
  			   sock_i_ino(s)

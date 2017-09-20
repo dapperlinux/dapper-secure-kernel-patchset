@@ -2,8 +2,8 @@ diff --git a/tools/include/linux/compiler.h b/tools/include/linux/compiler.h
 index e33fc1d..b41929d 100644
 --- a/tools/include/linux/compiler.h
 +++ b/tools/include/linux/compiler.h
-@@ -56,6 +56,14 @@
- # define unlikely(x)		__builtin_expect(!!(x), 0)
+@@ -81,6 +81,14 @@
+ # define noinline
  #endif
  
 +#ifndef __size_overflow

@@ -2,32 +2,6 @@ diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
 index ebc9fdf..61f491e 100644
 --- a/sound/core/oss/pcm_oss.c
 +++ b/sound/core/oss/pcm_oss.c
-@@ -1193,10 +1193,10 @@ snd_pcm_sframes_t snd_pcm_oss_write3(struct snd_pcm_substream *substream, const
- 		if (in_kernel) {
- 			mm_segment_t fs;
- 			fs = snd_enter_user();
--			ret = snd_pcm_lib_write(substream, (void __force __user *)ptr, frames);
-+			ret = snd_pcm_lib_write(substream, (void __force_user *)ptr, frames);
- 			snd_leave_user(fs);
- 		} else {
--			ret = snd_pcm_lib_write(substream, (void __force __user *)ptr, frames);
-+			ret = snd_pcm_lib_write(substream, (void __force_user *)ptr, frames);
- 		}
- 		if (ret != -EPIPE && ret != -ESTRPIPE)
- 			break;
-@@ -1236,10 +1236,10 @@ snd_pcm_sframes_t snd_pcm_oss_read3(struct snd_pcm_substream *substream, char *p
- 		if (in_kernel) {
- 			mm_segment_t fs;
- 			fs = snd_enter_user();
--			ret = snd_pcm_lib_read(substream, (void __force __user *)ptr, frames);
-+			ret = snd_pcm_lib_read(substream, (void __force_user *)ptr, frames);
- 			snd_leave_user(fs);
- 		} else {
--			ret = snd_pcm_lib_read(substream, (void __force __user *)ptr, frames);
-+			ret = snd_pcm_lib_read(substream, (void __force_user *)ptr, frames);
- 		}
- 		if (ret == -EPIPE) {
- 			if (runtime->status->state == SNDRV_PCM_STATE_DRAINING) {
 @@ -1335,7 +1335,7 @@ static ssize_t snd_pcm_oss_write2(struct snd_pcm_substream *substream, const cha
  		struct snd_pcm_plugin_channel *channels;
  		size_t oss_frame_bytes = (runtime->oss.plugin_first->src_width * runtime->oss.plugin_first->src_format.channels) / 8;
@@ -64,12 +38,3 @@ index ebc9fdf..61f491e 100644
  						runtime->oss.period_bytes, 0);
  			if (tmp <= 0)
  				goto err;
-@@ -1662,7 +1662,7 @@ static int snd_pcm_oss_sync(struct snd_pcm_oss_file *pcm_oss_file)
- 								   size1);
- 					size1 /= runtime->channels; /* frames */
- 					fs = snd_enter_user();
--					snd_pcm_lib_write(substream, (void __force __user *)runtime->oss.buffer, size1);
-+					snd_pcm_lib_write(substream, (void __force_user *)runtime->oss.buffer, size1);
- 					snd_leave_user(fs);
- 				}
- 			} else if (runtime->access == SNDRV_PCM_ACCESS_RW_NONINTERLEAVED) {

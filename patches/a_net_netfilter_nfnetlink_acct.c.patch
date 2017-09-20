@@ -2,7 +2,7 @@ diff --git a/net/netfilter/nfnetlink_acct.c b/net/netfilter/nfnetlink_acct.c
 index d44d89b..c834ed3 100644
 --- a/net/netfilter/nfnetlink_acct.c
 +++ b/net/netfilter/nfnetlink_acct.c
-@@ -28,8 +28,8 @@ MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
+@@ -29,8 +29,8 @@ MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
  MODULE_DESCRIPTION("nfacct: Extended Netfilter accounting infrastructure");
  
  struct nf_acct {
@@ -12,7 +12,7 @@ index d44d89b..c834ed3 100644
 +	atomic64_unchecked_t	bytes;
  	unsigned long		flags;
  	struct list_head	head;
- 	atomic_t		refcnt;
+ 	refcount_t		refcnt;
 @@ -76,8 +76,8 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
  	if (matching) {
  		if (nlh->nlmsg_flags & NLM_F_REPLACE) {
@@ -24,7 +24,7 @@ index d44d89b..c834ed3 100644
  			smp_mb__before_atomic();
  			/* reset overquota flag if quota is enabled. */
  			if ((matching->flags & NFACCT_F_QUOTA))
-@@ -116,11 +116,11 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
+@@ -118,11 +118,11 @@ static int nfnl_acct_new(struct net *net, struct sock *nfnl,
  	strncpy(nfacct->name, nla_data(tb[NFACCT_NAME]), NFACCT_NAME_MAX);
  
  	if (tb[NFACCT_BYTES]) {
@@ -37,7 +37,7 @@ index d44d89b..c834ed3 100644
 +		atomic64_set_unchecked(&nfacct->pkts,
  			     be64_to_cpu(nla_get_be64(tb[NFACCT_PKTS])));
  	}
- 	atomic_set(&nfacct->refcnt, 1);
+ 	refcount_set(&nfacct->refcnt, 1);
 @@ -153,14 +153,14 @@ nfnl_acct_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
  
  	old_flags = acct->flags;

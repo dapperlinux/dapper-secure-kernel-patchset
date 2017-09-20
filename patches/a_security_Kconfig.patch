@@ -1078,7 +1078,7 @@ index 118f454..3312d82 100644
  	default 65536
  	help
  	  This is the portion of low virtual memory which should be protected
-@@ -123,30 +123,15 @@ config LSM_MMAP_MIN_ADDR
+@@ -132,30 +132,15 @@ config LSM_MMAP_MIN_ADDR
  	  this low address space will need the permission specific to the
  	  systems running LSM.
  
@@ -1098,7 +1098,7 @@ index 118f454..3312d82 100644
 -	  copying memory to/from the kernel (via copy_to_user() and
 -	  copy_from_user() functions) by rejecting memory ranges that
 -	  are larger than the specified heap object, span multiple
--	  separately allocates pages, are not on the process stack,
+-	  separately allocated pages, are not on the process stack,
 -	  or are part of the kernel text. This kills entire classes
 -	  of heap overflow exploits and similar kernel memory exposures.
 +	bool

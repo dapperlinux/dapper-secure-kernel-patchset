@@ -10,8 +10,8 @@ index 3d18e45..3551829 100644
 +	size_t n = strspn(node->name, c->data);
  
  	if (n < strlen(node->name))
- 		FAIL(c, "Bad character '%c' in node %s",
-@@ -290,7 +290,7 @@ static void check_property_name_chars(struct check *c, struct dt_info *dti,
+ 		FAIL(c, dti, "Bad character '%c' in node %s",
+@@ -301,7 +301,7 @@ static void check_property_name_chars(struct check *c, struct dt_info *dti,
  	struct property *prop;
  
  	for_each_property(node, prop) {
@@ -19,14 +19,14 @@ index 3d18e45..3551829 100644
 +		size_t n = strspn(prop->name, c->data);
  
  		if (n < strlen(prop->name))
- 			FAIL(c, "Bad character '%c' in property name \"%s\", node %s",
-@@ -392,7 +392,7 @@ static cell_t check_phandle_prop(struct check *c, struct dt_info *dti,
+ 			FAIL(c, dti, "Bad character '%c' in property name \"%s\", node %s",
+@@ -435,7 +435,7 @@ static cell_t check_phandle_prop(struct check *c, struct dt_info *dti,
  
  	phandle = propval_cell(prop);
  
 -	if ((phandle == 0) || (phandle == -1)) {
 +	if ((phandle == 0) || (phandle == ~0U)) {
- 		FAIL(c, "%s has bad value (0x%x) in %s property",
+ 		FAIL(c, dti, "%s has bad value (0x%x) in %s property",
  		     node->fullpath, phandle, prop->name);
  		return 0;
 @@ -483,7 +483,7 @@ static void fixup_phandle_references(struct check *c, struct dt_info *dti,

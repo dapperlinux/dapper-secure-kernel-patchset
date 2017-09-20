@@ -27,8 +27,8 @@ index 2754045..c990e35 100644
  	}
  
  	err = ctnetlink_parse_zone(cda[CTA_ZONE], &zone);
-@@ -1340,7 +1341,7 @@ static int ctnetlink_get_ct_dying(struct net *net, struct sock *ctnl,
- 				  const struct nlattr * const cda[])
+@@ -1351,7 +1351,7 @@ static int ctnetlink_get_ct_dying(struct net *net, struct sock *ctnl,
+ 				  struct netlink_ext_ack *extack)
  {
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
 -		struct netlink_dump_control c = {
@@ -36,8 +36,8 @@ index 2754045..c990e35 100644
  			.dump = ctnetlink_dump_dying,
  			.done = ctnetlink_done_list,
  		};
-@@ -1362,7 +1363,7 @@ static int ctnetlink_get_ct_unconfirmed(struct net *net, struct sock *ctnl,
- 					const struct nlattr * const cda[])
+@@ -1374,7 +1374,7 @@ static int ctnetlink_get_ct_unconfirmed(struct net *net, struct sock *ctnl,
+ 					struct netlink_ext_ack *extack)
  {
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
 -		struct netlink_dump_control c = {
@@ -45,8 +45,8 @@ index 2754045..c990e35 100644
  			.dump = ctnetlink_dump_unconfirmed,
  			.done = ctnetlink_done_list,
  		};
-@@ -2039,7 +2040,7 @@ static int ctnetlink_stat_ct_cpu(struct net *net, struct sock *ctnl,
- 				 const struct nlattr * const cda[])
+@@ -2080,7 +2080,7 @@ static int ctnetlink_stat_ct_cpu(struct net *net, struct sock *ctnl,
+ 				 struct netlink_ext_ack *extack)
  {
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
 -		struct netlink_dump_control c = {
@@ -74,17 +74,17 @@ index 2754045..c990e35 100644
  	nf_ct_put(ct);
  
  	return err;
-@@ -2780,7 +2780,7 @@ static int ctnetlink_get_expect(struct net *net, struct sock *ctnl,
- 		if (cda[CTA_EXPECT_MASTER])
- 			return ctnetlink_dump_exp_ct(net, ctnl, skb, nlh, cda);
+@@ -2846,7 +2846,7 @@ static int ctnetlink_get_expect(struct net *net, struct sock *ctnl,
+ 			return ctnetlink_dump_exp_ct(net, ctnl, skb, nlh, cda,
+ 						     extack);
  		else {
 -			struct netlink_dump_control c = {
 +			static struct netlink_dump_control c = {
  				.dump = ctnetlink_exp_dump_table,
  				.done = ctnetlink_exp_done,
  			};
-@@ -3246,7 +3246,7 @@ static int ctnetlink_stat_exp_cpu(struct net *net, struct sock *ctnl,
- 				  const struct nlattr * const cda[])
+@@ -3312,7 +3312,7 @@ static int ctnetlink_stat_exp_cpu(struct net *net, struct sock *ctnl,
+ 				  struct netlink_ext_ack *extack)
  {
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
 -		struct netlink_dump_control c = {

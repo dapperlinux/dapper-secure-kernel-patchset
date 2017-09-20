@@ -99,16 +99,16 @@ index 17e6fbf..fdb89dc 100644
  	.init = sysctl_route_net_init,
  	.exit = sysctl_route_net_exit,
  };
-@@ -2828,14 +2828,14 @@ static __net_initdata struct pernet_operations sysctl_route_ops = {
+@@ -2985,13 +2985,13 @@ static __net_initdata struct pernet_operations sysctl_route_ops = {
  
  static __net_init int rt_genid_init(struct net *net)
  {
 -	atomic_set(&net->ipv4.rt_genid, 0);
 -	atomic_set(&net->fnhe_genid, 0);
+-	atomic_set(&net->ipv4.dev_addr_genid, get_random_int());
 +	atomic_set_unchecked(&net->ipv4.rt_genid, 0);
 +	atomic_set_unchecked(&net->fnhe_genid, 0);
- 	get_random_bytes(&net->ipv4.dev_addr_genid,
- 			 sizeof(net->ipv4.dev_addr_genid));
++	atomic_set_unchecked(&net->ipv4.dev_addr_genid, get_random_int());
  	return 0;
  }
  
