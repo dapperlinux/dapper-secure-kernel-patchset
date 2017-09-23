@@ -2,17 +2,17 @@ diff --git a/Makefile b/Makefile
 index 50436f5..435d355 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -302,7 +302,9 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
- HOSTCC       = gcc
+@@ -302,7 +302,9 @@ HOSTCC       = gcc
  HOSTCXX      = g++
- HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -std=gnu89
--HOSTCXXFLAGS = -O2
+ HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
+ 		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS)
+-HOSTCXXFLAGS := -O2 $(HOST_LFS_CFLAGS)
 +HOSTCFLAGS   = -W -Wno-unused-parameter -Wno-missing-field-initializers -fno-delete-null-pointer-checks
-+HOSTCFLAGS  += $(call cc-option, -Wno-empty-body)
-+HOSTCXXFLAGS = -O2 -Wall -W -Wno-array-bounds
++HOSTCFLAGS  += $(call cc-option, -Wno-empty-body) $(HOST_LFS_CFLAGS)
++HOSTCXXFLAGS = -O2 -Wall -W -Wno-array-bounds $(HOST_LFS_CFLAGS)
+ HOSTLDFLAGS  := $(HOST_LFS_LDFLAGS)
+ HOST_LOADLIBES := $(HOST_LFS_LIBS)
  
- ifeq ($(shell $(HOSTCC) -v 2>&1 | grep -c "clang version"), 1)
- HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
 @@ -731,7 +733,7 @@ KBUILD_CFLAGS   += $(call cc-option, -gsplit-dwarf, -g)
  else
  KBUILD_CFLAGS	+= -g

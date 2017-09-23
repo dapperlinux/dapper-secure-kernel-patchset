@@ -2,15 +2,15 @@ diff --git a/net/compat.c b/net/compat.c
 index 1cd2ec0..2650ce6 100644
 --- a/net/compat.c
 +++ b/net/compat.c
-@@ -58,7 +58,7 @@ int get_compat_msghdr(struct msghdr *kmsg,
- 
+@@ -55,7 +55,7 @@ int get_compat_msghdr(struct msghdr *kmsg,
  	if (kmsg->msg_namelen > sizeof(struct sockaddr_storage))
  		kmsg->msg_namelen = sizeof(struct sockaddr_storage);
--	kmsg->msg_control = compat_ptr(tmp3);
-+	kmsg->msg_control = (void __force_kernel *)compat_ptr(tmp3);
+ 
+-	kmsg->msg_control = compat_ptr(msg.msg_control);
++	kmsg->msg_control = (void __force_kernel *)compat_ptr(msg.msg_control);
+ 	kmsg->msg_controllen = msg.msg_controllen;
  
  	if (save_addr)
- 		*save_addr = compat_ptr(uaddr);
 @@ -98,20 +98,20 @@ int get_compat_msghdr(struct msghdr *kmsg,
  
  #define CMSG_COMPAT_FIRSTHDR(msg)			\

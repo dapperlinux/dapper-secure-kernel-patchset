@@ -53,15 +53,15 @@ index e5194f6f..ad76273 100644
  	}
  
  	/* Only accept unspec with dump */
-@@ -3330,7 +3327,7 @@ static int nf_tables_getsetelem(struct net *net, struct sock *nlsk,
+@@ -3517,7 +3517,7 @@ static int nf_tables_getsetelem(struct net *net, struct sock *nlsk,
  		return PTR_ERR(set);
  
  	if (nlh->nlmsg_flags & NLM_F_DUMP) {
 -		struct netlink_dump_control c = {
 +		static struct netlink_dump_control c = {
  			.dump = nf_tables_dump_set,
+ 			.done = nf_tables_dump_set_done,
  		};
- 		return netlink_dump_start(nlsk, skb, nlh, &c);
 @@ -4354,7 +4354,7 @@ static int nf_tables_getobj(struct net *net, struct sock *nlsk,
  	int err;
  

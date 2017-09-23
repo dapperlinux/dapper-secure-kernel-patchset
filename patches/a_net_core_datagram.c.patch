@@ -2,8 +2,8 @@ diff --git a/net/core/datagram.c b/net/core/datagram.c
 index f4947e7..5e402a7 100644
 --- a/net/core/datagram.c
 +++ b/net/core/datagram.c
-@@ -351,7 +351,7 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff *skb,
- 		spin_unlock_bh(&sk->sk_receive_queue.lock);
+@@ -372,7 +372,7 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
+ 		spin_unlock_bh(&sk_queue->lock);
  	}
  
 -	atomic_inc(&sk->sk_drops);

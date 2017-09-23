@@ -56,8 +56,8 @@ index 9901e5b..0b38f5b 100644
  	neigh_add_timer(neigh,
  			jiffies + NEIGH_VAR(neigh->parms, RETRANS_TIME));
  }
-@@ -2185,7 +2185,7 @@ static int neigh_fill_info(struct sk_buff *skb, struct neighbour *neigh,
- 	ci.ndm_refcnt	 = atomic_read(&neigh->refcnt) - 1;
+@@ -2236,7 +2236,7 @@ static int neigh_fill_info(struct sk_buff *skb, struct neighbour *neigh,
+ 	ci.ndm_refcnt	 = refcount_read(&neigh->refcnt) - 1;
  	read_unlock_bh(&neigh->lock);
  
 -	if (nla_put_u32(skb, NDA_PROBES, atomic_read(&neigh->probes)) ||

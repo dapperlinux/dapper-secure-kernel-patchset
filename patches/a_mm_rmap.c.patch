@@ -89,12 +89,12 @@ index cd37c1c..515080f 100644
  {
  	struct anon_vma_chain *avc;
  	struct anon_vma *anon_vma;
-@@ -429,10 +464,10 @@ static void anon_vma_ctor(void *data)
+@@ -430,10 +430,10 @@ static void anon_vma_ctor(void *data)
  void __init anon_vma_init(void)
  {
  	anon_vma_cachep = kmem_cache_create("anon_vma", sizeof(struct anon_vma),
--			0, SLAB_DESTROY_BY_RCU|SLAB_PANIC|SLAB_ACCOUNT,
-+			0, SLAB_DESTROY_BY_RCU|SLAB_PANIC|SLAB_ACCOUNT|SLAB_NO_SANITIZE,
+-			0, SLAB_TYPESAFE_BY_RCU|SLAB_PANIC|SLAB_ACCOUNT,
++			0, SLAB_TYPESAFE_BY_RCU|SLAB_PANIC|SLAB_ACCOUNT|SLAB_NO_SANITIZE,
  			anon_vma_ctor);
  	anon_vma_chain_cachep = KMEM_CACHE(anon_vma_chain,
 -			SLAB_PANIC|SLAB_ACCOUNT);

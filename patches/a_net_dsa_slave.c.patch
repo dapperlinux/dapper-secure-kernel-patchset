@@ -2,8 +2,8 @@ diff --git a/net/dsa/slave.c b/net/dsa/slave.c
 index 3ff9d97..a17eb98 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -1156,7 +1156,7 @@ static int dsa_slave_setup_tc(struct net_device *dev, u32 handle,
- 	return ret;
+@@ -861,7 +861,7 @@ static int dsa_slave_setup_tc(struct net_device *dev, u32 handle,
+ 	}
  }
  
 -void dsa_cpu_port_ethtool_init(struct ethtool_ops *ops)

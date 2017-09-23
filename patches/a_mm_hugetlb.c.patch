@@ -171,7 +171,7 @@ index 65c36ac..daaa161 100644
  	hugetlb_count_add(pages_per_huge_page(h), mm);
  	if ((flags & FAULT_FLAG_WRITE) && !(vma->vm_flags & VM_SHARED)) {
  		/* Optimization, do the COW without a second fault */
-@@ -3820,6 +3919,10 @@ int hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+@@ -3842,6 +3842,10 @@ int hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
  	struct address_space *mapping;
  	int need_wait_lock = 0;
  
@@ -181,7 +181,7 @@ index 65c36ac..daaa161 100644
 +
  	address &= huge_page_mask(h);
  
- 	ptep = huge_pte_offset(mm, address);
+ 	ptep = huge_pte_offset(mm, address, huge_page_size(h));
 @@ -3837,6 +3940,26 @@ int hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
  			return VM_FAULT_OOM;
  	}

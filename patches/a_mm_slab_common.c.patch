@@ -39,12 +39,12 @@ index 5d2f24f..cb5d8a4 100644
  static LIST_HEAD(slab_caches_to_rcu_destroy);
  static void slab_caches_to_rcu_destroy_workfn(struct work_struct *work);
  static DECLARE_WORK(slab_caches_to_rcu_destroy_work,
-@@ -44,7 +68,7 @@ struct kmem_cache *kmem_cache;
+@@ -48,7 +48,7 @@ static DECLARE_WORK(slab_caches_to_rcu_destroy_work,
+ /*
   * Merge control. If this is set then no merging of slab caches will occur.
-  * (Could be removed. This was introduced to pacify the merge skeptics.)
   */
--static int slab_nomerge;
-+static int slab_nomerge __read_only = 1;
+-static bool slab_nomerge = !IS_ENABLED(CONFIG_SLAB_MERGE_DEFAULT);
++static bool slab_nomerge __read_only = true;
  
  static int __init setup_slab_nomerge(char *str)
  {

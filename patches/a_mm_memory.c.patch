@@ -369,15 +369,15 @@ index cbb1e5e..e8b4bc4 100644
  unlock:
  	pte_unmap_unlock(vmf->pte, vmf->ptl);
  out:
-@@ -2863,7 +2863,7 @@ static int do_anonymous_page(struct vm_fault *vmf)
+@@ -2893,7 +2893,7 @@ static int do_anonymous_page(struct vm_fault *vmf)
  {
  	struct vm_area_struct *vma = vmf->vma;
  	struct mem_cgroup *memcg;
 -	struct page *page;
 +	struct page *page = NULL;
+ 	int ret = 0;
  	pte_t entry;
  
- 	/* File mapping without ->vm_ops ? */
 @@ -2975,6 +2976,10 @@ static int do_anonymous_page(struct vm_fault *vmf)
  		put_page(page);
  		return handle_userfault(vmf, VM_UFFD_MISSING);
@@ -389,7 +389,7 @@ index cbb1e5e..e8b4bc4 100644
  
  	inc_mm_counter_fast(vma->vm_mm, MM_ANONPAGES);
  	page_add_new_anon_rmap(page, vma, vmf->address, false);
-@@ -2985,6 +2998,12 @@ static int do_anonymous_page(struct vm_fault *vmf)
+@@ -2985,6 +2985,12 @@ static int do_anonymous_page(struct vm_fault *vmf)
  
  	/* No need to invalidate - it was non-present before */
  	update_mmu_cache(vma, vmf->address, vmf->pte);
@@ -401,7 +401,7 @@ index cbb1e5e..e8b4bc4 100644
 +
  unlock:
  	pte_unmap_unlock(vmf->pte, vmf->ptl);
- 	return 0;
+ 	return ret;
 @@ -3217,6 +3401,13 @@ int alloc_set_pte(struct vm_fault *vmf, struct mem_cgroup *memcg,
  	}
  	set_pte_at(vma->vm_mm, vmf->address, vmf->pte, entry);

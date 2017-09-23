@@ -307,7 +307,7 @@ index 58c7526..5566ff1 100644
  }
  SLAB_ATTR_RO(aliases);
  
-@@ -4980,6 +5056,22 @@ static ssize_t cache_dma_show(struct kmem_cache *s, char *buf)
+@@ -5045,6 +5045,22 @@ static ssize_t cache_dma_show(struct kmem_cache *s, char *buf)
  SLAB_ATTR_RO(cache_dma);
  #endif
  
@@ -329,7 +329,7 @@ index 58c7526..5566ff1 100644
 +
  static ssize_t destroy_by_rcu_show(struct kmem_cache *s, char *buf)
  {
- 	return sprintf(buf, "%d\n", !!(s->flags & SLAB_DESTROY_BY_RCU));
+ 	return sprintf(buf, "%d\n", !!(s->flags & SLAB_TYPESAFE_BY_RCU));
 @@ -5035,7 +5127,7 @@ static ssize_t trace_store(struct kmem_cache *s, const char *buf,
  	 * as well as cause other issues like converting a mergeable
  	 * cache into an umergeable one.
@@ -370,8 +370,8 @@ index 58c7526..5566ff1 100644
  #ifdef CONFIG_NUMA
  	&remote_node_defrag_ratio_attr.attr,
  #endif
-@@ -5563,6 +5661,7 @@ static char *create_unique_id(struct kmem_cache *s)
- 	return name;
+@@ -5653,6 +5669,7 @@ static void sysfs_slab_remove_workfn(struct work_struct *work)
+ 	kobject_put(&s->kobj);
  }
  
 +#if defined(CONFIG_SYSFS) && !defined(CONFIG_GRKERNSEC_PROC_ADD)

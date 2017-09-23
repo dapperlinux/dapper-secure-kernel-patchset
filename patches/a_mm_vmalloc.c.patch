@@ -309,15 +309,12 @@ index f2481cb..333cf43 100644
  void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot)
  {
  	return __vmalloc_node(size, 1, gfp_mask, prot, NUMA_NO_NODE,
-@@ -1858,10 +2013,9 @@ EXPORT_SYMBOL(vzalloc_node);
-  *	For tight control over page level allocator and protection flags
-  *	use __vmalloc() instead.
-  */
--
+@@ -1946,7 +1946,7 @@ EXPORT_SYMBOL(vzalloc_node);
+ 
  void *vmalloc_exec(unsigned long size)
  {
--	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL_EXEC,
-+	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO, PAGE_KERNEL_EXEC,
+-	return __vmalloc_node(size, 1, GFP_KERNEL, PAGE_KERNEL_EXEC,
++	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_ZERO, PAGE_KERNEL_EXEC,
  			      NUMA_NO_NODE, __builtin_return_address(0));
  }
  

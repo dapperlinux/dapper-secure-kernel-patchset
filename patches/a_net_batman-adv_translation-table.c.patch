@@ -2,10 +2,10 @@ diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-tab
 index 0dc85eb..82c6c12 100644
 --- a/net/batman-adv/translation-table.c
 +++ b/net/batman-adv/translation-table.c
-@@ -722,7 +722,7 @@ bool batadv_tt_local_add(struct net_device *soft_iface, const u8 *addr,
+@@ -725,7 +725,7 @@ bool batadv_tt_local_add(struct net_device *soft_iface, const u8 *addr,
  	batadv_dbg(BATADV_DBG_TT, bat_priv,
  		   "Creating new local tt entry: %pM (vid: %d, ttvn: %d)\n",
- 		   addr, BATADV_PRINT_VID(vid),
+ 		   addr, batadv_print_vid(vid),
 -		   (u8)atomic_read(&bat_priv->tt.vn));
 +		   (u8)atomic_read_unchecked(&bat_priv->tt.vn));
  

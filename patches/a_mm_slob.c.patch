@@ -199,7 +199,7 @@ index eac04d43..73c02ba 100644
  {
  	return __do_kmalloc_node(size, gfp, NUMA_NO_NODE, _RET_IP_);
  }
-@@ -491,39 +518,140 @@ void kfree(const void *block)
+@@ -491,39 +491,140 @@ void kfree(const void *block)
  		return;
  	kmemleak_free(block);
  
@@ -348,7 +348,7 @@ index eac04d43..73c02ba 100644
  {
 +	flags = pax_sanitize_slab_flags(flags);
 +
- 	if (flags & SLAB_DESTROY_BY_RCU) {
+ 	if (flags & SLAB_TYPESAFE_BY_RCU) {
  		/* leave room for rcu footer at the end of object */
  		c->size += sizeof(struct slob_rcu);
 @@ -534,23 +662,33 @@ int __kmem_cache_create(struct kmem_cache *c, unsigned long flags)
@@ -418,7 +418,7 @@ index eac04d43..73c02ba 100644
  }
  
  static void kmem_rcu_free(struct rcu_head *head)
-@@ -592,22 +735,36 @@ static void kmem_rcu_free(struct rcu_head *head)
+@@ -592,22 +693,35 @@ static void kmem_rcu_free(struct rcu_head *head)
  	struct slob_rcu *slob_rcu = (struct slob_rcu *)head;
  	void *b = (void *)slob_rcu - (slob_rcu->size - sizeof(struct slob_rcu));
  
@@ -438,7 +438,7 @@ index eac04d43..73c02ba 100644
 +#endif
 +
  	kmemleak_free_recursive(b, c->flags);
- 	if (unlikely(c->flags & SLAB_DESTROY_BY_RCU)) {
+ 	if (unlikely(c->flags & SLAB_TYPESAFE_BY_RCU)) {
  		struct slob_rcu *slob_rcu;
 -		slob_rcu = b + (c->size - sizeof(struct slob_rcu));
 -		slob_rcu->size = c->size;
@@ -455,7 +455,6 @@ index eac04d43..73c02ba 100644
 +#else
  	trace_kmem_cache_free(_RET_IP_, b);
 +#endif
-+
  }
  EXPORT_SYMBOL(kmem_cache_free);
  
