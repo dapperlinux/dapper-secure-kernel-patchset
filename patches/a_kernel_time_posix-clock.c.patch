@@ -11,30 +11,30 @@ index 9cff0ab..0e69c94 100644
  {
  	struct posix_clock_desc cd;
  	int err;
-@@ -297,7 +297,7 @@ static int pc_clock_adjtime(clockid_t id, struct timex *tx)
+@@ -265,7 +265,7 @@ static int pc_clock_adjtime(clockid_t id, struct timex *tx)
  	return err;
  }
  
--static int pc_clock_gettime(clockid_t id, struct timespec *ts)
-+static int pc_clock_gettime(const clockid_t id, struct timespec *ts)
+-static int pc_clock_gettime(clockid_t id, struct timespec64 *ts)
++static int pc_clock_gettime(const clockid_t id, struct timespec64 *ts)
  {
  	struct posix_clock_desc cd;
  	int err;
-@@ -316,7 +316,7 @@ static int pc_clock_gettime(clockid_t id, struct timespec *ts)
+@@ -284,7 +284,7 @@ static int pc_clock_gettime(clockid_t id, struct timespec64 *ts)
  	return err;
  }
  
--static int pc_clock_getres(clockid_t id, struct timespec *ts)
-+static int pc_clock_getres(const clockid_t id, struct timespec *ts)
+-static int pc_clock_getres(clockid_t id, struct timespec64 *ts)
++static int pc_clock_getres(const clockid_t id, struct timespec64 *ts)
  {
  	struct posix_clock_desc cd;
  	int err;
-@@ -335,7 +335,7 @@ static int pc_clock_getres(clockid_t id, struct timespec *ts)
+@@ -303,7 +303,7 @@ static int pc_clock_getres(clockid_t id, struct timespec64 *ts)
  	return err;
  }
  
--static int pc_clock_settime(clockid_t id, const struct timespec *ts)
-+static int pc_clock_settime(const clockid_t id, const struct timespec *ts)
+-static int pc_clock_settime(clockid_t id, const struct timespec64 *ts)
++static int pc_clock_settime(const clockid_t id, const struct timespec64 *ts)
  {
  	struct posix_clock_desc cd;
  	int err;

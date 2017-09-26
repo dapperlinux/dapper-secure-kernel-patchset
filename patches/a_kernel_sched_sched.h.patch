@@ -41,10 +41,10 @@ index 055f935..daf399df 100644
  
  static inline void put_prev_task(struct rq *rq, struct task_struct *prev)
  {
-@@ -1353,7 +1356,7 @@ extern struct dl_bandwidth def_dl_bandwidth;
- extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime);
- extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
- 
+@@ -1543,7 +1543,7 @@ extern void init_dl_rq_bw_ratio(struct dl_rq *dl_rq);
+ #define BW_SHIFT	20
+ #define BW_UNIT		(1 << BW_SHIFT)
+ #define RATIO_SHIFT	8
 -unsigned long to_ratio(u64 period, u64 runtime);
 +unsigned long __attribute_const__ to_ratio(u64 period, u64 runtime);
  

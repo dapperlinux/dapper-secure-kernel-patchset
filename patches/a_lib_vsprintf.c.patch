@@ -30,8 +30,8 @@ index 0967771..2871684 100644
  		sprint_symbol(sym, value);
  	else
  		sprint_symbol_no_offset(sym, value);
-@@ -1470,7 +1473,11 @@ char *flags_string(char *buf, char *end, void *flags_ptr, const char *fmt)
- 	return format_flags(buf, end, flags, names);
+@@ -1591,7 +1591,11 @@ char *device_node_string(char *buf, char *end, struct device_node *dn,
+ 	return widen_string(buf, buf - buf_start, end, spec);
  }
  
 -int kptr_restrict __read_mostly;
@@ -112,9 +112,9 @@ index 0967771..2871684 100644
  			    !uid_eq(cred->euid, cred->uid) ||
  			    !gid_eq(cred->egid, cred->gid))
  				ptr = NULL;
-@@ -1719,6 +1741,22 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
- 	case 'G':
- 		return flags_string(buf, end, ptr, fmt);
+@@ -1858,6 +1862,22 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
+ 			return device_node_string(buf, end, ptr, spec, fmt + 1);
+ 		}
  	}
 +
 +#ifdef CONFIG_GRKERNSEC_HIDESYM

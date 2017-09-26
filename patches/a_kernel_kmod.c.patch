@@ -30,7 +30,7 @@ index 0277d12..2d2899c 100644
  
  	info = call_usermodehelper_setup(modprobe_path, argv, envp, GFP_KERNEL,
  					 NULL, free_modprobe_argv, NULL);
-@@ -121,9 +122,8 @@ static int call_modprobe(char *module_name, int wait)
+@@ -148,9 +148,8 @@ static int call_modprobe(char *module_name, int wait)
   * If module auto-loading support is disabled then this function
   * becomes a no-operation.
   */
@@ -39,8 +39,8 @@ index 0277d12..2d2899c 100644
  {
 -	va_list args;
  	char module_name[MODULE_NAME_LEN];
- 	unsigned int max_modprobes;
  	int ret;
+ 
 @@ -142,9 +142,7 @@ int __request_module(bool wait, const char *fmt, ...)
  	if (!modprobe_path[0])
  		return 0;
@@ -52,7 +52,7 @@ index 0277d12..2d2899c 100644
  	if (ret >= MODULE_NAME_LEN)
  		return -ENAMETOOLONG;
  
-@@ -152,6 +150,20 @@ int __request_module(bool wait, const char *fmt, ...)
+@@ -175,6 +174,21 @@ int __request_module(bool wait, const char *fmt, ...)
  	if (ret)
  		return ret;
  
@@ -70,17 +70,20 @@ index 0277d12..2d2899c 100644
 +	}
 +#endif
 +
- 	/* If modprobe needs a service that is in a module, we get a recursive
- 	 * loop.  Limit the number of running kmod threads to max_threads/2 or
- 	 * MAX_KMOD_CONCURRENT, whichever is the smaller.  A cleaner method
-@@ -180,16 +192,61 @@ int __request_module(bool wait, const char *fmt, ...)
++
+ 	if (atomic_dec_if_positive(&kmod_concurrent_max) < 0) {
+ 		pr_warn_ratelimited("request_module: kmod_concurrent_max (%u) close to 0 (max_modprobes: %u), for module %s, throttling...",
+ 				    atomic_read(&kmod_concurrent_max),
+@@ -194,19 +208,64 @@ int __request_module(bool wait, const char *fmt, ...)
  
  	trace_module_request(module_name, wait, _RET_IP_);
  
 -	ret = call_modprobe(module_name, wait ? UMH_WAIT_PROC : UMH_WAIT_EXEC);
 +	ret = call_modprobe(module_name, module_param, wait ? UMH_WAIT_PROC : UMH_WAIT_EXEC);
  
- 	atomic_dec(&kmod_concurrent);
+ 	atomic_inc(&kmod_concurrent_max);
+ 	wake_up(&kmod_wq);
+ 
  	return ret;
  }
 +
@@ -125,6 +128,7 @@ index 0277d12..2d2899c 100644
 +}
 +
  EXPORT_SYMBOL(__request_module);
+ 
  #endif /* CONFIG_MODULES */
  
  static void call_usermodehelper_freeinfo(struct subprocess_info *info)

@@ -84,9 +84,9 @@ index 0b14157..3a99520 100644
  
  	spin_lock_irqsave(&t->sighand->siglock, flags);
  	action = &t->sighand->action[sig-1];
-@@ -1176,9 +1188,18 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
- 	}
- 	if (action->sa.sa_handler == SIG_DFL)
+@@ -1200,9 +1200,18 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
+ 	 */
+ 	if (action->sa.sa_handler == SIG_DFL && !t->ptrace)
  		t->signal->flags &= ~SIGNAL_UNKILLABLE;
 +	if (action->sa.sa_handler == SIG_IGN || action->sa.sa_handler == SIG_DFL)
 +		is_unhandled = 1;
@@ -182,17 +182,6 @@ index 0b14157..3a99520 100644
  	if (p && (tgid <= 0 || task_tgid_vnr(p) == tgid)) {
  		error = check_kill_permission(sig, info, p);
  		/*
-@@ -3203,8 +3238,8 @@ COMPAT_SYSCALL_DEFINE2(sigaltstack,
- 	}
- 	seg = get_fs();
- 	set_fs(KERNEL_DS);
--	ret = do_sigaltstack((stack_t __force __user *) (uss_ptr ? &uss : NULL),
--			     (stack_t __force __user *) &uoss,
-+	ret = do_sigaltstack((stack_t __force_user *) (uss_ptr ? &uss : NULL),
-+			     (stack_t __force_user *) &uoss,
- 			     compat_user_stack_pointer());
- 	set_fs(seg);
- 	if (ret >= 0 && uoss_ptr)  {
 @@ -3495,7 +3530,7 @@ SYSCALL_DEFINE1(ssetmask, int, newmask)
  SYSCALL_DEFINE2(signal, int, sig, __sighandler_t, handler)
  {

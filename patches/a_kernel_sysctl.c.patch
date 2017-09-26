@@ -245,8 +245,8 @@ index c1095cd..a6aef25 100644
  	if (copy_to_user(*buf, tmp, len))
  		return -EFAULT;
  	*size -= len;
-@@ -2296,6 +2368,44 @@ int proc_douintvec(struct ctl_table *table, int write,
- 				do_proc_douintvec_conv, NULL);
+@@ -2470,6 +2470,44 @@ int proc_douintvec(struct ctl_table *table, int write,
+ 				 do_proc_douintvec_conv, NULL);
  }
  
 +static int do_proc_dointvec_conv_secure(bool *negp, unsigned long *lvalp,
@@ -351,8 +351,8 @@ index c1095cd..a6aef25 100644
  /**
   * proc_dointvec_minmax - read a vector of integers with min/max values
   * @table: the sysctl table
-@@ -2398,6 +2532,17 @@ int proc_dointvec_minmax(struct ctl_table *table, int write,
- 				do_proc_dointvec_minmax_conv, &param);
+@@ -2631,6 +2669,17 @@ int proc_douintvec_minmax(struct ctl_table *table, int write,
+ 				 do_proc_douintvec_minmax_conv, &param);
  }
  
 +int proc_dointvec_minmax_secure(struct ctl_table *table, int write,

@@ -2,13 +2,14 @@ diff --git a/kernel/taskstats.c b/kernel/taskstats.c
 index cbb387a..99d91f6 100644
 --- a/kernel/taskstats.c
 +++ b/kernel/taskstats.c
-@@ -28,9 +28,12 @@
+@@ -28,10 +28,13 @@
  #include <linux/fs.h>
  #include <linux/file.h>
  #include <linux/pid_namespace.h>
 +#include <linux/grsecurity.h>
  #include <net/genetlink.h>
  #include <linux/atomic.h>
+ #include <linux/sched/cputime.h>
  
 +extern int gr_is_taskstats_denied(int pid);
 +

@@ -46,7 +46,7 @@ index fafd1a3..316983e 100644
  static inline int is_kernel_text(unsigned long addr)
  {
  	if ((addr >= (unsigned long)_stext && addr <= (unsigned long)_etext) ||
-@@ -74,13 +98,28 @@ static inline int is_kernel_text(unsigned long addr)
+@@ -69,13 +69,27 @@ static inline int is_kernel_text(unsigned long addr)
  
  static inline int is_kernel(unsigned long addr)
  {
@@ -59,7 +59,6 @@ index fafd1a3..316983e 100644
 +#else
  	if (addr >= (unsigned long)_stext && addr <= (unsigned long)_end)
 +#endif
-+
  		return 1;
  	return in_gate_area_no_mm(addr);
  }
@@ -72,7 +71,7 @@ index fafd1a3..316983e 100644
 +		return 0;
 +#endif
 +
- 	if (all_var)
+ 	if (IS_ENABLED(CONFIG_KALLSYMS_ALL))
  		return is_kernel(addr);
  
 @@ -458,10 +497,11 @@ int sprint_backtrace(char *buffer, unsigned long address)

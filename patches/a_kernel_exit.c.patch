@@ -83,22 +83,22 @@ index 3076f30..28d8eb4 100644
  do_group_exit(int exit_code)
  {
  	struct signal_struct *sig = current->signal;
-@@ -1033,6 +1041,7 @@ static int wait_noreap_copyout(struct wait_opts *wo, struct task_struct *p,
+@@ -1049,6 +1049,7 @@ eligible_child(struct wait_opts *wo, bool ptrace, struct task_struct *p)
   * the lock and this task is uninteresting.  If we return nonzero, we have
   * released the lock and the system call should return.
   */
 +static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p) __must_hold(&tasklist_lock);
  static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
  {
- 	int state, retval, status;
-@@ -1049,6 +1058,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
- 
+ 	int state, status;
+@@ -1063,6 +1064,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
+ 		status = p->exit_code;
  		get_task_struct(p);
  		read_unlock(&tasklist_lock);
 +		__acquire(&tasklist_lock); // XXX sparse can't model conditional release
  		sched_annotate_sleep();
- 
- 		if ((exit_code & 0x7f) == 0) {
+ 		if (wo->wo_rusage)
+ 			getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
 @@ -1071,6 +1081,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
  	 * We own this thread, nobody else can reap it.
  	 */
@@ -107,7 +107,7 @@ index 3076f30..28d8eb4 100644
  	sched_annotate_sleep();
  
  	/*
-@@ -1213,6 +1224,8 @@ static int *task_stopped_code(struct task_struct *p, bool ptrace)
+@@ -1209,6 +1211,8 @@ static int *task_stopped_code(struct task_struct *p, bool ptrace)
   * search should terminate.
   */
  static int wait_task_stopped(struct wait_opts *wo,
@@ -115,31 +115,31 @@ index 3076f30..28d8eb4 100644
 +static int wait_task_stopped(struct wait_opts *wo,
  				int ptrace, struct task_struct *p)
  {
- 	struct siginfo __user *infop;
-@@ -1260,6 +1273,7 @@ static int wait_task_stopped(struct wait_opts *wo,
+ 	struct waitid_info *infop;
+@@ -1256,6 +1260,7 @@ static int wait_task_stopped(struct wait_opts *wo,
  	pid = task_pid_vnr(p);
  	why = ptrace ? CLD_TRAPPED : CLD_STOPPED;
  	read_unlock(&tasklist_lock);
 +	__acquire(&tasklist_lock); // XXX sparse can't model conditional release
  	sched_annotate_sleep();
- 
- 	if (unlikely(wo->wo_flags & WNOWAIT))
-@@ -1297,6 +1311,7 @@ static int wait_task_stopped(struct wait_opts *wo,
+ 	if (wo->wo_rusage)
+ 		getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
+@@ -1280,6 +1285,7 @@ static int wait_task_stopped(struct wait_opts *wo,
   * the lock and this task is uninteresting.  If we return nonzero, we have
   * released the lock and the system call should return.
   */
 +static int wait_task_continued(struct wait_opts *wo, struct task_struct *p) __must_hold(&tasklist_lock);
  static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
  {
- 	int retval;
-@@ -1323,6 +1338,7 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
+ 	struct waitid_info *infop;
+@@ -1306,6 +1312,7 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
  	pid = task_pid_vnr(p);
  	get_task_struct(p);
  	read_unlock(&tasklist_lock);
 +	__acquire(&tasklist_lock); // XXX sparse can't model conditional release
  	sched_annotate_sleep();
- 
- 	if (!wo->wo_info) {
+ 	if (wo->wo_rusage)
+ 		getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
 @@ -1402,6 +1402,8 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
   * or still -ECHILD.
   */

@@ -221,7 +221,7 @@ index 0e54d5b..f9d983b 100644
  }
  
  static struct module_attribute modinfo_initsize =
-@@ -1301,13 +1346,29 @@ static int check_version(Elf_Shdr *sechdrs,
+@@ -1313,13 +1313,29 @@ static int check_version(const struct load_info *info,
  		goto bad_version;
  	}
  
@@ -233,7 +233,7 @@ index 0e54d5b..f9d983b 100644
 +	 */
 +	pr_warn_once("no symbol version for %s\n", symname);
 +#else
- 	pr_warn_once("%s: no symbol version for %s\n", mod->name, symname);
+ 	pr_warn_once("%s: no symbol version for %s\n", info->name, symname);
 +#endif
  	return 1;
  
@@ -247,7 +247,7 @@ index 0e54d5b..f9d983b 100644
 +	       symname);
 +#else
  	pr_warn("%s: disagrees about version of symbol %s\n",
- 	       mod->name, symname);
+ 	       info->name, symname);
 +#endif
  	return 0;
  }
@@ -578,8 +578,8 @@ index 0e54d5b..f9d983b 100644
  }
  #else
  static inline void layout_symtab(struct module *mod, struct load_info *info)
-@@ -2930,7 +3008,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
- 	mod = (void *)info->sechdrs[info->index.mod].sh_addr;
+@@ -2982,7 +2998,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
+ 		info->name = mod->name;
  
  	if (info->index.sym == 0) {
 +#ifdef CONFIG_GRKERNSEC_RANDSTRUCT
@@ -589,7 +589,7 @@ index 0e54d5b..f9d983b 100644
 +		 */
 +		pr_warn("module has no symbols (stripped?)\n");
 +#else
- 		pr_warn("%s: module has no symbols (stripped?)\n", mod->name);
+ 		pr_warn("%s: module has no symbols (stripped?)\n", info->name);
 +#endif
  		return ERR_PTR(-ENOEXEC);
  	}

@@ -111,7 +111,7 @@ index 07c0dc8..26e0271 100644
  	}
  	if (read_format & PERF_FORMAT_ID)
  		values[n++] = primary_event_id(event);
-@@ -8710,8 +8718,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
+@@ -8974,8 +8974,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
  		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
  		cpuctx->hrtimer_interval = ns_to_ktime(NSEC_PER_MSEC * timer);
  
@@ -119,7 +119,7 @@ index 07c0dc8..26e0271 100644
 -			(remote_function_f)perf_mux_hrtimer_restart, cpuctx);
 +		cpu_function_call(cpu, perf_mux_hrtimer_restart, cpuctx);
  	}
- 	put_online_cpus();
+ 	cpus_read_unlock();
  	mutex_unlock(&mux_interval_mutex);
 @@ -9157,7 +9164,7 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
  	event->parent		= parent_event;

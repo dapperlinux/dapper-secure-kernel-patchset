@@ -59,12 +59,12 @@ index aa6d981..d5d0272 100644
  }
  
  /* This symbol is only overridden by archs that have different
-@@ -465,7 +485,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
-  *
-  * Decode and execute eBPF instructions.
-  */
--static unsigned int __bpf_prog_run(void *ctx, const struct bpf_insn *insn)
-+unsigned int __bpf_prog_run(const struct sk_buff *ctx, const struct bpf_insn *insn)
- {
- 	u64 stack[MAX_BPF_STACK / sizeof(u64)];
- 	u64 regs[MAX_BPF_REG], tmp;
+@@ -1220,7 +1220,7 @@ STACK_FRAME_NON_STANDARD(___bpf_prog_run); /* jump table */
+ 
+ #define PROG_NAME(stack_size) __bpf_prog_run##stack_size
+ #define DEFINE_BPF_PROG_RUN(stack_size) \
+-static unsigned int PROG_NAME(stack_size)(const void *ctx, const struct bpf_insn *insn) \
++static unsigned int PROG_NAME(stack_size)(const struct sk_buff *ctx, const struct bpf_insn *insn) \
+ { \
+ 	u64 stack[stack_size / sizeof(u64)]; \
+ 	u64 regs[MAX_BPF_REG]; \

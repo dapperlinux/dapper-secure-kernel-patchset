@@ -50,11 +50,11 @@ index 2a96b06..9c16b00 100644
  	select PROBE_EVENTS
  	default y
  	help
-@@ -453,6 +459,7 @@ config UPROBE_EVENT
+@@ -455,6 +455,7 @@ config UPROBE_EVENTS
+ 	depends on PERF_EVENTS
  	select UPROBES
  	select PROBE_EVENTS
- 	select TRACING
 +	depends on !GRKERNSEC_KMEM
- 	default n
+ 	select TRACING
+ 	default y
  	help
- 	  This allows the user to add tracing events on top of userspace
