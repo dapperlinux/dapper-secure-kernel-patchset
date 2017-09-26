@@ -2,7 +2,7 @@ diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
 index ba1cad7..4217ad8 100644
 --- a/include/linux/cpuhotplug.h
 +++ b/include/linux/cpuhotplug.h
-@@ -130,9 +130,19 @@ enum cpuhp_state {
+@@ -147,9 +147,19 @@ enum cpuhp_state {
  	CPUHP_ONLINE,
  };
  
@@ -22,8 +22,8 @@ index ba1cad7..4217ad8 100644
 +			union cpuhp_step_startup startup,
 +			union cpuhp_step_teardown teardown, bool multi_instance);
  
- /**
-  * cpuhp_setup_state - Setup hotplug state callbacks with calling the callbacks
+ int __cpuhp_setup_state_cpuslocked(enum cpuhp_state state, const char *name,
+ 				   bool invoke,
 @@ -146,9 +156,12 @@ int __cpuhp_setup_state(enum cpuhp_state state,	const char *name, bool invoke,
   */
  static inline int cpuhp_setup_state(enum cpuhp_state state,

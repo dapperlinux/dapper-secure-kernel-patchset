@@ -7,7 +7,7 @@ index 22b6ad3..aeba37e 100644
   */
  
 +#include <linux/compiler.h>
- #include <asm/types.h>
+ #include <linux/types.h>
  
  #define BITMASK(name, type, field, offset, size)		\
 @@ -20,8 +21,8 @@ static inline void SET_##name(type *k, __u64 v)			\

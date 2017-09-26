@@ -2,10 +2,11 @@ diff --git a/include/linux/vermagic.h b/include/linux/vermagic.h
 index 6f8fbcf..4efc177 100644
 --- a/include/linux/vermagic.h
 +++ b/include/linux/vermagic.h
-@@ -25,9 +25,42 @@
+@@ -24,6 +24,31 @@
+ #ifndef MODULE_ARCH_VERMAGIC
  #define MODULE_ARCH_VERMAGIC ""
  #endif
- 
++
 +#ifdef CONFIG_PAX_REFCOUNT
 +#define MODULE_PAX_REFCOUNT "REFCOUNT "
 +#else
@@ -24,25 +25,20 @@ index 6f8fbcf..4efc177 100644
 +#define MODULE_STACKLEAK_PLUGIN ""
 +#endif
 +
-+#ifdef RANDSTRUCT_PLUGIN
-+#include <generated/randomize_layout_hash.h>
-+#define MODULE_RANDSTRUCT_PLUGIN "RANDSTRUCT_PLUGIN_" RANDSTRUCT_HASHED_SEED
-+#else
-+#define MODULE_RANDSTRUCT_PLUGIN
-+#endif
-+
 +#ifdef CONFIG_GRKERNSEC
 +#define MODULE_GRSEC "GRSEC "
 +#else
 +#define MODULE_GRSEC ""
 +#endif
 +
- #define VERMAGIC_STRING 						\
- 	UTS_RELEASE " "							\
+ #ifdef RANDSTRUCT_PLUGIN
+ #include <generated/randomize_layout_hash.h>
+ #define MODULE_RANDSTRUCT_PLUGIN "RANDSTRUCT_PLUGIN_" RANDSTRUCT_HASHED_SEED
+@@ -36,5 +61,7 @@
  	MODULE_VERMAGIC_SMP MODULE_VERMAGIC_PREEMPT 			\
  	MODULE_VERMAGIC_MODULE_UNLOAD MODULE_VERMAGIC_MODVERSIONS	\
--	MODULE_ARCH_VERMAGIC
-+	MODULE_ARCH_VERMAGIC						\
+ 	MODULE_ARCH_VERMAGIC						\
 +	MODULE_PAX_REFCOUNT MODULE_CONSTIFY_PLUGIN MODULE_STACKLEAK_PLUGIN \
-+	MODULE_GRSEC MODULE_RANDSTRUCT_PLUGIN
++	MODULE_GRSEC					\
+ 	MODULE_RANDSTRUCT_PLUGIN
  

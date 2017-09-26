@@ -11,7 +11,7 @@ index 5c3a5f3..84a8bef 100644
  
  /*
   * Support for hardware poisoned pages
-@@ -188,22 +188,22 @@ static inline bool test_set_page_hwpoison(struct page *page)
+@@ -188,12 +188,12 @@ static inline bool test_set_page_hwpoison(struct page *page)
  
  static inline void num_poisoned_pages_inc(void)
  {
@@ -25,16 +25,4 @@ index 5c3a5f3..84a8bef 100644
 +	atomic_long_dec_unchecked(&num_poisoned_pages);
  }
  
- static inline void num_poisoned_pages_add(long num)
- {
--	atomic_long_add(num, &num_poisoned_pages);
-+	atomic_long_add_unchecked(num, &num_poisoned_pages);
- }
- 
- static inline void num_poisoned_pages_sub(long num)
- {
--	atomic_long_sub(num, &num_poisoned_pages);
-+	atomic_long_sub_unchecked(num, &num_poisoned_pages);
- }
  #else
- 

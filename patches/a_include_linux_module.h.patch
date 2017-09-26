@@ -14,15 +14,6 @@ index 0c3207d..18808a5 100644
  
  /* In stripped ARM and x86-64 modules, ~ is surprisingly rare. */
  #define MODULE_SIG_STRING "~Module signature appended~\n"
-@@ -46,7 +48,7 @@ struct module_kobject {
- 	struct kobject *drivers_dir;
- 	struct module_param_attrs *mp;
- 	struct completion *kobj_completion;
--};
-+} __randomize_layout;
- 
- struct module_attribute {
- 	struct attribute attr;
 @@ -58,12 +60,13 @@ struct module_attribute {
  	int (*test)(struct module *);
  	void (*free)(struct module *);
@@ -77,10 +68,10 @@ index 0c3207d..18808a5 100644
  	const char *version;
  	const char *srcversion;
  	struct kobject *holders_dir;
-@@ -447,6 +449,10 @@ struct module {
+@@ -444,6 +444,10 @@ struct module {
  	unsigned int num_trace_events;
- 	struct trace_enum_map **trace_enums;
- 	unsigned int num_trace_enums;
+ 	struct trace_eval_map **trace_evals;
+ 	unsigned int num_trace_evals;
 +	struct file_operations trace_id;
 +	struct file_operations trace_enable;
 +	struct file_operations trace_format;
@@ -88,16 +79,6 @@ index 0c3207d..18808a5 100644
  #endif
  #ifdef CONFIG_FTRACE_MCOUNT_RECORD
  	unsigned int num_ftrace_callsites;
-@@ -478,7 +484,8 @@ struct module {
- 	ctor_fn_t *ctors;
- 	unsigned int num_ctors;
- #endif
--} ____cacheline_aligned;
-+} ____cacheline_aligned __randomize_layout;
-+
- #ifndef MODULE_ARCH_INIT
- #define MODULE_ARCH_INIT {}
- #endif
 @@ -499,18 +506,38 @@ bool is_module_address(unsigned long addr);
  bool is_module_percpu_address(unsigned long addr);
  bool is_module_text_address(unsigned long addr);

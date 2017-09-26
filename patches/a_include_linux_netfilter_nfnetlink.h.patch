@@ -2,8 +2,8 @@ diff --git a/include/linux/netfilter/nfnetlink.h b/include/linux/netfilter/nfnet
 index 1d82dd5..d6b384c 100644
 --- a/include/linux/netfilter/nfnetlink.h
 +++ b/include/linux/netfilter/nfnetlink.h
-@@ -19,7 +19,7 @@ struct nfnl_callback {
- 			  const struct nlattr * const cda[]);
+@@ -21,7 +21,7 @@ struct nfnl_callback {
+ 			  struct netlink_ext_ack *extack);
  	const struct nla_policy *policy;	/* netlink attribute policy */
  	const u_int16_t attr_count;		/* number of nlattr's */
 -};

@@ -18,9 +18,9 @@ index 4cf9a59..193c5fd 100644
  struct pid_namespace;
  struct pipe_inode_info;
  struct rcu_node;
-@@ -491,6 +492,9 @@ struct task_struct {
- 	/* -1 unrunnable, 0 runnable, >0 stopped: */
- 	volatile long			state;
+@@ -534,6 +534,9 @@ struct task_struct {
+ 	randomized_struct_fields_start
+ 
  	void				*stack;
 +#ifdef CONFIG_GRKERNSEC_KSTACKOVERFLOW
 +	void *lowmem_stack;
@@ -87,10 +87,10 @@ index 4cf9a59..193c5fd 100644
  #endif
  #ifdef CONFIG_LIVEPATCH
  	int patch_state;
-@@ -1060,16 +1065,36 @@ struct task_struct {
- 	/* Used by LSM modules for access restriction: */
- 	void				*security;
- #endif
+@@ -1093,16 +1096,36 @@ struct task_struct {
+ 	 */
+ 	randomized_struct_fields_end
+ 
 -	/* CPU-specific state of this task: */
 -	struct thread_struct		thread;
 +#ifdef CONFIG_GRKERNSEC

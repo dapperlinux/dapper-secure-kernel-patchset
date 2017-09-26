@@ -18,14 +18,14 @@ index adf4e51..807838b 100644
  				void __user *, size_t *, loff_t *);
 +extern int proc_dointvec_minmax_secure(struct ctl_table *, int,
 +				       void __user *, size_t *, loff_t *);
- extern int proc_dointvec_jiffies(struct ctl_table *, int,
- 				 void __user *, size_t *, loff_t *);
- extern int proc_dointvec_userhz_jiffies(struct ctl_table *, int,
-@@ -117,7 +123,8 @@ struct ctl_table
+ extern int proc_douintvec_minmax(struct ctl_table *table, int write,
+ 				 void __user *buffer, size_t *lenp,
+ 				 loff_t *ppos);
+@@ -120,7 +126,8 @@ struct ctl_table
  	struct ctl_table_poll *poll;
  	void *extra1;
  	void *extra2;
--};
+-} __randomize_layout;
 +} __do_const __randomize_layout;
 +typedef struct ctl_table __no_const ctl_table_no_const;
  

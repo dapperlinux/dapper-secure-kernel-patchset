@@ -17,18 +17,13 @@ index cf0fa5d..a7444a7 100644
  # define __must_hold(x)	__attribute__((context(x,1,1)))
  # define __acquires(x)	__attribute__((context(x,0,1)))
  # define __releases(x)	__attribute__((context(x,1,0)))
-@@ -17,37 +17,76 @@
+@@ -17,33 +17,71 @@
  # define __release(x)	__context__(x,-1)
  # define __cond_lock(x,c)	((c) ? ({ __acquire(x); 1; }) : 0)
  # define __percpu	__attribute__((noderef, address_space(3)))
 +# define __force_percpu	__force __percpu
- #ifdef CONFIG_SPARSE_RCU_POINTER
  # define __rcu		__attribute__((noderef, address_space(4)))
 +# define __force_rcu	__force __rcu
- #else /* CONFIG_SPARSE_RCU_POINTER */
- # define __rcu
-+# define __force_rcu
- #endif /* CONFIG_SPARSE_RCU_POINTER */
  # define __private	__attribute__((noderef))
  extern void __chk_user_ptr(const volatile void __user *);
  extern void __chk_io_ptr(const volatile void __iomem *);
@@ -36,7 +31,6 @@ index cf0fa5d..a7444a7 100644
  #else /* __CHECKER__ */
 -# ifdef STRUCTLEAK_PLUGIN
 -#  define __user __attribute__((user))
--# else
 +# ifdef CHECKER_PLUGIN
 +#  ifdef CHECKER_PLUGIN_USER
 +//#  define __user
@@ -44,7 +38,6 @@ index cf0fa5d..a7444a7 100644
 +//#  define __kernel
 +//#  define __force_kernel
 +#  else
- #  define __user
 +#  define __force_user
 +#  define __kernel
 +#  define __force_kernel
@@ -66,7 +59,7 @@ index cf0fa5d..a7444a7 100644
 +#  define __cond_lock(x,c) (c)
 +#  define __cond_unlock(x,c) (c)
 +#  endif
-+# else
+ # else
 +#  ifdef STRUCTLEAK_PLUGIN
 +#   define __user __attribute__((user))
 +#  else
@@ -81,6 +74,7 @@ index cf0fa5d..a7444a7 100644
 +#  define __acquire(x) (void)0
 +#  define __release(x) (void)0
 +#  define __cond_lock(x,c) (c)
+ #  define __user
  # endif
 -# define __kernel
  # define __safe
@@ -221,18 +215,10 @@ index cf0fa5d..a7444a7 100644
  })
  
  #endif /* __KERNEL__ */
-@@ -433,6 +447,46 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -444,6 +482,38 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  # define __latent_entropy
  #endif
  
-+#ifndef __randomize_layout
-+# define __randomize_layout
-+#endif
-+
-+#ifndef __no_randomize_layout
-+# define __no_randomize_layout
-+#endif
-+
 +#ifndef __no_const
 +# define __no_const
 +#endif
@@ -265,9 +251,9 @@ index cf0fa5d..a7444a7 100644
 +#define __rap_hash
 +#endif
 +
- /*
-  * Tell gcc if a function is cold. The compiler will assume any path
-  * directly leading to the call is unlikely.
+ #ifndef __randomize_layout
+ # define __randomize_layout __designated_init
+ #endif
 @@ -442,6 +496,22 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  #define __cold
  #endif

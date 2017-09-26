@@ -11,17 +11,15 @@ index 0940598..e69bc18 100644
  
  	struct list_head	list;		/* list of network namespaces */
  	struct list_head	cleanup_list;	/* namespaces on death row */
-@@ -146,8 +146,8 @@ struct net {
+@@ -147,7 +147,7 @@ struct net {
  	struct netns_can	can;
  #endif
  	struct sock		*diag_nlsk;
 -	atomic_t		fnhe_genid;
--};
-+	atomic_unchecked_t	fnhe_genid;
-+} __randomize_layout;
++	atomic_unchecked_t		fnhe_genid;
+ } __randomize_layout;
  
  #include <linux/seq_file_net.h>
- 
 @@ -278,7 +278,11 @@ static inline struct net *read_pnet(const possible_net_t *pnet)
  #define __net_init	__init
  #define __net_exit	__ref

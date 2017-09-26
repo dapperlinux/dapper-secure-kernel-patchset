@@ -2,7 +2,7 @@ diff --git a/include/linux/path.h b/include/linux/path.h
 index d137218..be0c176 100644
 --- a/include/linux/path.h
 +++ b/include/linux/path.h
-@@ -1,13 +1,15 @@
+@@ -1,6 +1,8 @@
  #ifndef _LINUX_PATH_H
  #define _LINUX_PATH_H
  
@@ -11,11 +11,3 @@ index d137218..be0c176 100644
  struct dentry;
  struct vfsmount;
  
- struct path {
- 	struct vfsmount *mnt;
- 	struct dentry *dentry;
--};
-+} __randomize_layout;
- 
- extern void path_get(const struct path *);
- extern void path_put(const struct path *);

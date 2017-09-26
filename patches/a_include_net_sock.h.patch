@@ -29,17 +29,8 @@ index 92b2697..db680f5 100644
  
  	struct percpu_counter	*orphan_count;
  
-@@ -1070,7 +1072,7 @@ struct proto {
- 	atomic_t		socks;
- #endif
- 	int			(*diag_destroy)(struct sock *sk, int err);
--};
-+} __randomize_layout;
- 
- int proto_register(struct proto *prot, int alloc_slab);
- void proto_unregister(struct proto *prot);
-@@ -1205,7 +1205,7 @@ static inline void sk_enter_memory_pressure(struct sock *sk)
- 	sk->sk_prot->enter_memory_pressure(sk);
+@@ -1199,7 +1199,7 @@ static inline bool sk_under_memory_pressure(const struct sock *sk)
+ 	return !!*sk->sk_prot->memory_pressure;
  }
  
 -static inline long

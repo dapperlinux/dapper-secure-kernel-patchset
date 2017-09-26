@@ -20,15 +20,6 @@ index 2cf4467..0aa5f8f 100644
  #ifdef CONFIG_AUDIT
  	unsigned audit_tty;
  	struct tty_audit_buf *tty_audit_buf;
-@@ -222,7 +233,7 @@ struct signal_struct {
- 	struct mutex cred_guard_mutex;	/* guard against foreign influences on
- 					 * credential calculations
- 					 * (notably. ptrace) */
--};
-+} __randomize_layout;
- 
- /*
-  * Bits in flags field of signal_struct.
 @@ -260,7 +271,7 @@ static inline int signal_group_exit(const struct signal_struct *sig)
  extern void flush_signals(struct task_struct *);
  extern void ignore_signals(struct task_struct *);

@@ -1,0 +1,13 @@
+diff --git a/drivers/devfreq/governor.h b/drivers/devfreq/governor.h
+index a4f2fa1..90839d0 100644
+--- a/drivers/devfreq/governor.h
++++ b/drivers/devfreq/governor.h
+@@ -52,7 +52,7 @@ struct devfreq_governor {
+ 	int (*get_target_freq)(struct devfreq *this, unsigned long *freq);
+ 	int (*event_handler)(struct devfreq *devfreq,
+ 				unsigned int event, void *data);
+-};
++} __do_const;
+ 
+ /* Caution: devfreq->lock must be locked before calling update_devfreq */
+ extern int update_devfreq(struct devfreq *devfreq);

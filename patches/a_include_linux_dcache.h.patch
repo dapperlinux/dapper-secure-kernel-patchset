@@ -12,15 +12,6 @@ index 5beed7b..2b3dcac 100644
  	struct list_head d_child;	/* child of parent list */
  	struct list_head d_subdirs;	/* our children */
  	/*
-@@ -112,7 +115,7 @@ struct dentry {
- 		struct hlist_bl_node d_in_lookup_hash;	/* only for in-lookup ones */
- 	 	struct rcu_head d_rcu;
- 	} d_u;
--};
-+} __randomize_layout;
- 
- /*
-  * dentry->d_lock spinlock nesting subclasses:
 @@ -279,7 +282,7 @@ extern struct dentry *__d_lookup_rcu(const struct dentry *parent,
  
  static inline unsigned d_count(const struct dentry *dentry)

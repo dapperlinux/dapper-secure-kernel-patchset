@@ -11,8 +11,8 @@ index a978d71..7e644c0 100644
  
  extern void exit_files(struct task_struct *);
  extern void exit_itimers(struct signal_struct *);
-@@ -99,11 +99,106 @@ struct task_struct *try_get_task_struct(struct task_struct **ptask);
- 
+@@ -99,11 +99,106 @@ static inline void put_task_struct(struct task_struct *t)
+ struct task_struct *task_rcu_dereference(struct task_struct **ptask);
  
  #ifdef CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT
 -extern int arch_task_struct_size __read_mostly;

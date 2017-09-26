@@ -38,9 +38,9 @@ index 31947b9..eb87bd8 100644
  	u32			priority;
  	u32			index;
  	struct xfrm_mark	mark;
-@@ -599,7 +598,7 @@ struct xfrm_mgr {
- 					   int num_bundles,
- 					   const struct xfrm_kmaddress *k);
+@@ -635,7 +635,7 @@ struct xfrm_mgr {
+ 					   const struct xfrm_kmaddress *k,
+ 					   const struct xfrm_encap_tmpl *encap);
  	bool			(*is_alive)(const struct km_event *c);
 -};
 +} __do_const;

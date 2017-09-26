@@ -32,12 +32,3 @@ index c6f0f0d..e663567 100644
  
  /**
   *	sysfs_bin_attr_init - initialize a dynamically allocated bin_attribute
-@@ -512,7 +515,7 @@ static inline void sysfs_notify_dirent(struct kernfs_node *kn)
- }
- 
- static inline struct kernfs_node *sysfs_get_dirent(struct kernfs_node *parent,
--						   const unsigned char *name)
-+						   const char *name)
- {
- 	return kernfs_find_and_get(parent, name);
- }

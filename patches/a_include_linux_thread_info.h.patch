@@ -13,20 +13,6 @@ index 2873baf..19e866c 100644
  #endif
  
  #include <linux/bitops.h>
-@@ -21,6 +21,13 @@
- #define current_thread_info() ((struct thread_info *)current)
- #endif
- 
-+enum {
-+	BAD_STACK = -1,
-+	NOT_STACK = 0,
-+	GOOD_STACK,
-+	GOOD_FRAME,
-+};
-+
- #include <linux/bitops.h>
- #include <asm/thread_info.h>
- 
 @@ -71,6 +80,22 @@ extern long do_no_restart_syscall(struct restart_block *parm);
   * - pass TIF_xxxx constants to these functions
   */
@@ -74,9 +60,9 @@ index 2873baf..19e866c 100644
  }
  #endif
  
-@@ -134,6 +160,8 @@ static inline void check_object_size(const void *ptr, unsigned long n,
- { }
- #endif /* CONFIG_HARDENED_USERCOPY */
+@@ -144,6 +144,8 @@ check_copy_size(const void *addr, size_t bytes, bool is_source)
+ static inline void arch_setup_new_exec(void) { }
+ #endif
  
 +bool __access_ok(int type, unsigned long addr, size_t size);
 +

@@ -11,9 +11,9 @@ index 10e449c..f2a0d40 100644
  
  /**
   * drm_encoder_helper_add - sets the helper vtable for an encoder
-@@ -831,6 +831,7 @@ struct drm_connector_helper_funcs {
- 	struct drm_encoder *(*atomic_best_encoder)(struct drm_connector *connector,
- 						   struct drm_connector_state *connector_state);
+@@ -988,6 +988,7 @@ struct drm_connector_helper_funcs {
+ 	int (*atomic_check)(struct drm_connector *connector,
+ 			    struct drm_connector_state *state);
  };
 +typedef struct drm_connector_helper_funcs __no_const drm_connector_helper_funcs_no_const;
  

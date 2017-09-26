@@ -9,5 +9,5 @@ index 891a658..fcd68df 100644
 -	int (*done)(struct scsi_cmnd *);
 +	unsigned int (*done)(struct scsi_cmnd *);
  	int (*eh_action)(struct scsi_cmnd *, int);
+ 	void (*eh_reset)(struct scsi_cmnd *);
  };
- #define to_scsi_driver(drv) \

@@ -1,0 +1,14 @@
+diff --git a/include/drm/drm_debugfs.h b/include/drm/drm_debugfs.h
+index ac0f75d..48fc0c8 100644
+--- a/include/drm/drm_debugfs.h
++++ b/include/drm/drm_debugfs.h
+@@ -53,7 +53,8 @@ struct drm_info_list {
+ 	u32 driver_features;
+ 	/** @data: Driver-private data, should not be device-specific. */
+ 	void *data;
+-};
++} __do_const;
++typedef struct drm_info_list __no_const drm_info_list_no_const;
+ 
+ /**
+  * struct drm_info_node - Per-minor debugfs node structure

@@ -38,13 +38,13 @@ index b32ad7d..05f6420 100644
  	}
  	return 0;
  }
-@@ -313,11 +313,11 @@ static void __init clean_path(char *path, umode_t fmode)
+@@ -314,11 +314,11 @@ static void __init clean_path(char *path, umode_t fmode)
  {
- 	struct stat st;
+ 	struct kstat st;
  
--	if (!sys_newlstat(path, &st) && (st.st_mode ^ fmode) & S_IFMT) {
-+	if (!sys_newlstat((char __force_user *)path, (struct stat __force_user *)&st) && (st.st_mode ^ fmode) & S_IFMT) {
- 		if (S_ISDIR(st.st_mode))
+-	if (!vfs_lstat(path, &st) && (st.mode ^ fmode) & S_IFMT) {
++	if (!vfs_lstat((char __force_user *)path, (struct kstat __force_user *)&st) && (st.mode ^ fmode) & S_IFMT) {
+ 		if (S_ISDIR(st.mode))
 -			sys_rmdir(path);
 +			sys_rmdir((char __force_user *)path);
  		else
