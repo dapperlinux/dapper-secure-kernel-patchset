@@ -13,12 +13,12 @@ index 53e02b8..f87205c 100644
  	struct inode	*inode = file_inode(desc->file);
  	int ret;
  
-@@ -749,7 +750,7 @@ struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
- 
- 	for (;;) {
- 		page = read_cache_page(desc->file->f_mapping,
+@@ -705,7 +705,7 @@ static
+ struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
+ {
+ 	return read_cache_page(desc->file->f_mapping,
 -			desc->page_index, (filler_t *)nfs_readdir_filler, desc);
 +			desc->page_index, nfs_readdir_filler, desc);
- 		if (IS_ERR(page) || grab_page(page))
- 			break;
- 		put_page(page);
+ }
+ 
+ /*
