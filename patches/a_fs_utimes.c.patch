@@ -2,14 +2,12 @@ diff --git a/fs/utimes.c b/fs/utimes.c
 index 22307cd..87b5f86 100644
 --- a/fs/utimes.c
 +++ b/fs/utimes.c
-@@ -1,6 +1,7 @@
- #include <linux/compiler.h>
+@@ -1,4 +1,5 @@
  #include <linux/file.h>
- #include <linux/fs.h>
 +#include <linux/security.h>
- #include <linux/linkage.h>
  #include <linux/mount.h>
  #include <linux/namei.h>
+ #include <linux/utime.h>
 @@ -90,6 +91,12 @@ static int utimes_common(struct path *path, struct timespec *times)
  		newattrs.ia_valid |= ATTR_TOUCH;
  	}

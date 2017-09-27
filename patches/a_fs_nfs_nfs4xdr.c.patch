@@ -1375,14 +1375,3 @@ index c9c4d985..5134393 100644
  	struct compound_hdr hdr;
  	int status;
  
-@@ -7470,8 +7567,8 @@ nfs4_stat_to_errno(int stat)
- #define PROC(proc, argtype, restype)				\
- [NFSPROC4_CLNT_##proc] = {					\
- 	.p_proc   = NFSPROC4_COMPOUND,				\
--	.p_encode = (kxdreproc_t)nfs4_xdr_##argtype,		\
--	.p_decode = (kxdrdproc_t)nfs4_xdr_##restype,		\
-+	.p_encode = nfs4_xdr_##argtype,				\
-+	.p_decode = nfs4_xdr_##restype,				\
- 	.p_arglen = NFS4_##argtype##_sz,			\
- 	.p_replen = NFS4_##restype##_sz,			\
- 	.p_statidx = NFSPROC4_CLNT_##proc,			\

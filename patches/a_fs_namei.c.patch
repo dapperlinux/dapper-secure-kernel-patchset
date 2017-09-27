@@ -67,19 +67,18 @@ index d5e5140..32d72d1 100644
  	/*
  	 * Read/write DACs are always overridable.
  	 * Executable DACs are overridable when there is
-@@ -524,12 +551,35 @@ struct nameidata {
+@@ -524,12 +524,35 @@ struct nameidata {
  	struct inode	*link_inode;
  	unsigned	root_seq;
  	int		dfd;
--};
 +#ifdef CONFIG_GRKERNSEC_SYMLINKOWN
 +	struct path	*symlinkown_stack;
 +	struct path 	symlinkown_internal[EMBEDDED_LEVELS];
 +	unsigned	symlinkown_depth;
 +	int		symlinkown_enabled;
 +#endif
-+} __randomize_layout;
-+
+ } __randomize_layout;
+ 
 +static int gr_handle_nameidata_symlinkowner(const struct nameidata *nd, const struct inode *target)
 +{
 +#ifdef CONFIG_GRKERNSEC_SYMLINKOWN
@@ -92,7 +91,7 @@ index d5e5140..32d72d1 100644
 +#endif
 +	return 0;
 +}
- 
++
  static void set_nameidata(struct nameidata *p, int dfd, struct filename *name)
  {
  	struct nameidata *old = current->nameidata;

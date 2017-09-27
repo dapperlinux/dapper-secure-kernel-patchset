@@ -2,14 +2,14 @@ diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
 index b1517b6..b1aa804 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
-@@ -16,12 +16,19 @@
- #include <linux/mmu_notifier.h>
+@@ -17,12 +17,19 @@
  #include <linux/page_idle.h>
  #include <linux/shmem_fs.h>
+ #include <linux/uaccess.h>
 +#include <linux/grsecurity.h>
  
  #include <asm/elf.h>
- #include <linux/uaccess.h>
+ #include <asm/tlb.h>
  #include <asm/tlbflush.h>
  #include "internal.h"
  
@@ -89,11 +89,10 @@ index b1517b6..b1aa804 100644
  {
  	struct mm_struct *mm = vma->vm_mm;
  	struct file *file = vma->vm_file;
-@@ -298,9 +298,8 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
+@@ -299,8 +306,8 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
  		pgoff = ((loff_t)vma->vm_pgoff) << PAGE_SHIFT;
  	}
  
--	/* We don't show the stack guard page in /proc/maps */
 -	start = vma->vm_start;
 -	end = vma->vm_end;
 +	start = restrict ? 0UL : vma->vm_start;

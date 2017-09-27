@@ -2,27 +2,14 @@ diff --git a/fs/proc/internal.h b/fs/proc/internal.h
 index 5378441..666c350 100644
 --- a/fs/proc/internal.h
 +++ b/fs/proc/internal.h
-@@ -47,9 +47,10 @@ struct proc_dir_entry {
+@@ -49,6 +49,7 @@ struct proc_dir_entry {
  	struct completion *pde_unload_completion;
  	struct list_head pde_openers;	/* who did ->open, but not ->release */
  	spinlock_t pde_unload_lock; /* proc_fops checks and pde_users bumps */
 +	u8 restricted; /* a directory in /proc/net that should be restricted via GRKERNSEC_PROC */
  	u8 namelen;
  	char name[];
--};
-+} __randomize_layout;
- 
- union proc_op {
- 	int (*proc_get_link)(struct dentry *, struct path *);
-@@ -70,7 +70,7 @@ struct proc_inode {
- 	struct list_head sysctl_inodes;
- 	const struct proc_ns_operations *ns_ops;
- 	struct inode vfs_inode;
--};
-+} __randomize_layout;
- 
- /*
-  * General functions
+ } __randomize_layout;
 @@ -155,6 +156,10 @@ extern int proc_pid_status(struct seq_file *, struct pid_namespace *,
  			   struct pid *, struct task_struct *);
  extern int proc_pid_statm(struct seq_file *, struct pid_namespace *,
@@ -46,15 +33,14 @@ index 5378441..666c350 100644
  extern int proc_readdir_de(struct proc_dir_entry *, struct file *, struct dir_context *);
  
  static inline struct proc_dir_entry *pde_get(struct proc_dir_entry *pde)
-@@ -286,9 +293,12 @@ struct proc_maps_private {
+@@ -279,9 +280,12 @@ struct proc_maps_private {
  #ifdef CONFIG_NUMA
  	struct mempolicy *task_mempolicy;
  #endif
--};
 +#ifdef CONFIG_GRKERNSEC_PROC_MEMMAP
 +	u64 ptracer_exec_id;
 +#endif
-+} __randomize_layout;
+ } __randomize_layout;
  
 -struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode);
 +struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode, u64 *ptracer_exec_id);

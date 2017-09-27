@@ -2,7 +2,7 @@ diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
 index 203287f..f1b702c 100644
 --- a/fs/cifs/cifsglob.h
 +++ b/fs/cifs/cifsglob.h
-@@ -862,35 +862,35 @@ struct cifs_tcon {
+@@ -874,34 +874,34 @@ struct cifs_tcon {
  	__u16 Flags;		/* optional support bits */
  	enum statusEnum tidStatus;
  #ifdef CONFIG_CIFS_STATS
@@ -53,15 +53,14 @@ index 203287f..f1b702c 100644
 +			atomic_unchecked_t num_acl_get;
 +			atomic_unchecked_t num_acl_set;
  		} cifs_stats;
- #ifdef CONFIG_CIFS_SMB2
  		struct {
 -			atomic_t smb2_com_sent[NUMBER_OF_SMB2_COMMANDS];
 -			atomic_t smb2_com_failed[NUMBER_OF_SMB2_COMMANDS];
 +			atomic_unchecked_t smb2_com_sent[NUMBER_OF_SMB2_COMMANDS];
 +			atomic_unchecked_t smb2_com_failed[NUMBER_OF_SMB2_COMMANDS];
  		} smb2_stats;
- #endif /* CONFIG_CIFS_SMB2 */
  	} stats;
+ #ifdef CONFIG_CIFS_STATS2
 @@ -1245,7 +1245,7 @@ convert_delimiter(char *path, char delim)
  }
  

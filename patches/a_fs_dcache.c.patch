@@ -223,9 +223,9 @@ index 4485a48..2cdeaf6 100644
  		}
  	}
  	return D_WALK_CONTINUE;
-@@ -3574,8 +3577,8 @@ static void __init dcache_init(void)
+@@ -3603,8 +3603,8 @@ static void __init dcache_init(void)
  	 * but it is probably not worth it because of the cache nature
- 	 * of the dcache. 
+ 	 * of the dcache.
  	 */
 -	dentry_cache = KMEM_CACHE(dentry,
 -		SLAB_RECLAIM_ACCOUNT|SLAB_PANIC|SLAB_MEM_SPREAD|SLAB_ACCOUNT);

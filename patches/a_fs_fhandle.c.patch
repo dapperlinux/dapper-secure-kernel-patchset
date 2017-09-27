@@ -8,8 +8,8 @@ index ca3c3dd..0c5456e 100644
  #include <linux/personality.h>
 +#include <linux/grsecurity.h>
  #include <linux/uaccess.h>
+ #include <linux/compat.h>
  #include "internal.h"
- #include "mount.h"
 @@ -67,8 +68,7 @@ static long do_sys_name_to_handle(struct path *path,
  	} else
  		retval = 0;

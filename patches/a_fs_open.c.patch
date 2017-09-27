@@ -48,10 +48,10 @@ index d3ed817..d6038021 100644
  	set_fs_pwd(current->fs, &path);
  
  dput_and_out:
-@@ -475,6 +486,13 @@ SYSCALL_DEFINE1(fchdir, unsigned int, fd)
+@@ -471,6 +471,13 @@ SYSCALL_DEFINE1(fchdir, unsigned int, fd)
  		goto out_putf;
  
- 	error = inode_permission(inode, MAY_EXEC | MAY_CHDIR);
+ 	error = inode_permission(file_inode(f.file), MAY_EXEC | MAY_CHDIR);
 +
 +	if (!error && !gr_chroot_fchdir(f.file->f_path.dentry, f.file->f_path.mnt))
 +		error = -EPERM;

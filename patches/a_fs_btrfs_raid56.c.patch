@@ -11,19 +11,19 @@ index d016d4a..0c6d6ab 100644
  	/*
  	 * these are two arrays of pointers.  We allocate the
  	 * rbio big enough to hold them both and setup their
-@@ -916,7 +916,7 @@ static void raid_write_end_io(struct bio *bio)
+@@ -910,7 +910,7 @@ static void raid_write_end_io(struct bio *bio)
  	/* OK, we have read all the stripes we need to. */
  	max_errors = (rbio->operation == BTRFS_RBIO_PARITY_SCRUB) ?
  		     0 : rbio->bbio->max_errors;
 -	if (atomic_read(&rbio->error) > max_errors)
 +	if (atomic_read_unchecked(&rbio->error) > max_errors)
- 		err = -EIO;
+ 		err = BLK_STS_IOERR;
  
  	rbio_orig_end_io(rbio, err);
-@@ -999,7 +999,7 @@ static struct btrfs_raid_bio *alloc_rbio(struct btrfs_root *root,
+@@ -994,7 +994,7 @@ static struct btrfs_raid_bio *alloc_rbio(struct btrfs_fs_info *fs_info,
  	rbio->faila = -1;
  	rbio->failb = -1;
- 	atomic_set(&rbio->refs, 1);
+ 	refcount_set(&rbio->refs, 1);
 -	atomic_set(&rbio->error, 0);
 +	atomic_set_unchecked(&rbio->error, 0);
  	atomic_set(&rbio->stripes_pending, 0);
@@ -70,13 +70,13 @@ index d016d4a..0c6d6ab 100644
  	/*
  	 * build a list of bios to read all the missing parts of this
  	 * stripe
-@@ -2012,7 +2012,7 @@ static void raid_recover_end_io(struct bio *bio)
+@@ -2004,7 +2004,7 @@ static void raid_recover_end_io(struct bio *bio)
  	if (!atomic_dec_and_test(&rbio->stripes_pending))
  		return;
  
 -	if (atomic_read(&rbio->error) > rbio->bbio->max_errors)
 +	if (atomic_read_unchecked(&rbio->error) > rbio->bbio->max_errors)
- 		rbio_orig_end_io(rbio, -EIO);
+ 		rbio_orig_end_io(rbio, BLK_STS_IOERR);
  	else
  		__raid_recover_end_io(rbio);
 @@ -2041,7 +2041,7 @@ static int __raid56_parity_recover(struct btrfs_raid_bio *rbio)
