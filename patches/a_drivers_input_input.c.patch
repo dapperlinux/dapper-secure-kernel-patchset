@@ -10,7 +10,7 @@ index d95c34e..2a6da5f 100644
 +	static atomic_unchecked_t input_no = ATOMIC_INIT(-1);
  	struct input_dev *dev;
  
- 	dev = kzalloc(sizeof(struct input_dev), GFP_KERNEL);
+ 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 @@ -1795,7 +1795,7 @@ struct input_dev *input_allocate_device(void)
  		INIT_LIST_HEAD(&dev->node);
  

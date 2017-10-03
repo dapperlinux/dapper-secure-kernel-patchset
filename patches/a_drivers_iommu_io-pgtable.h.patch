@@ -47,9 +47,9 @@ index 969d82c..1ba9b6e 100644
  
  
  /*
-@@ -161,11 +162,9 @@ struct io_pgtable {
+@@ -165,11 +165,9 @@ struct io_pgtable {
+ 	enum io_pgtable_fmt	fmt;
  	void			*cookie;
- 	bool			tlb_sync_pending;
  	struct io_pgtable_cfg	cfg;
 -	struct io_pgtable_ops	ops;
 +	const struct io_pgtable_ops	*ops;

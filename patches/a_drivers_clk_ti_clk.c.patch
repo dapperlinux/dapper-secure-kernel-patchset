@@ -2,9 +2,9 @@ diff --git a/drivers/clk/ti/clk.c b/drivers/clk/ti/clk.c
 index 5fcf247..446780a 100644
 --- a/drivers/clk/ti/clk.c
 +++ b/drivers/clk/ti/clk.c
-@@ -25,6 +25,8 @@
- #include <linux/regmap.h>
+@@ -26,6 +26,8 @@
  #include <linux/bootmem.h>
+ #include <linux/device.h>
  
 +#include <asm/pgtable.h>
 +

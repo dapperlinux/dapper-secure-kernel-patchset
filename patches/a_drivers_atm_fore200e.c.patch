@@ -2,8 +2,8 @@ diff --git a/drivers/atm/fore200e.c b/drivers/atm/fore200e.c
 index 81aaa50..84b214b 100644
 --- a/drivers/atm/fore200e.c
 +++ b/drivers/atm/fore200e.c
-@@ -932,9 +932,9 @@ fore200e_tx_irq(struct fore200e* fore200e)
- #endif
+@@ -927,9 +927,9 @@ fore200e_tx_irq(struct fore200e* fore200e)
+ 
  		/* check error condition */
  		if (*entry->status & STATUS_ERROR)
 -		    atomic_inc(&vcc->stats->tx_err);
@@ -23,7 +23,7 @@ index 81aaa50..84b214b 100644
  	return -ENOMEM;
      } 
  
-@@ -1126,14 +1126,14 @@ fore200e_push_rpd(struct fore200e* fore200e, struct atm_vcc* vcc, struct rpd* rp
+@@ -1121,12 +1121,12 @@ fore200e_push_rpd(struct fore200e* fore200e, struct atm_vcc* vcc, struct rpd* rp
  
  	dev_kfree_skb_any(skb);
  
@@ -32,14 +32,12 @@ index 81aaa50..84b214b 100644
  	return -ENOMEM;
      }
  
-     ASSERT(atomic_read(&sk_atm(vcc)->sk_wmem_alloc) >= 0);
- 
      vcc->push(vcc, skb);
 -    atomic_inc(&vcc->stats->rx);
 +    atomic_inc_unchecked(&vcc->stats->rx);
  
-     ASSERT(atomic_read(&sk_atm(vcc)->sk_wmem_alloc) >= 0);
- 
+     return 0;
+ }
 @@ -1211,7 +1211,7 @@ fore200e_rx_irq(struct fore200e* fore200e)
  		DPRINTK(2, "damaged PDU on %d.%d.%d\n",
  			fore200e->atm_dev->number,

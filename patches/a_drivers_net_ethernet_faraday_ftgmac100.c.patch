@@ -10,8 +10,8 @@ index 2625872..9f3ad72 100644
  #include <linux/module.h>
  #include <linux/netdevice.h>
  #include <linux/of.h>
-@@ -1200,7 +1201,7 @@ static int ftgmac100_stop(struct net_device *netdev)
- 	return 0;
+@@ -707,7 +707,7 @@ static bool ftgmac100_prep_tx_csum(struct sk_buff *skb, u32 *csum_vlan)
+ 	return skb_checksum_help(skb) == 0;
  }
  
 -static int ftgmac100_hard_start_xmit(struct sk_buff *skb,

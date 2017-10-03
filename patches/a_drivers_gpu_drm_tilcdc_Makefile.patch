@@ -2,8 +2,7 @@ diff --git a/drivers/gpu/drm/tilcdc/Makefile b/drivers/gpu/drm/tilcdc/Makefile
 index 6f67517..3f09073 100644
 --- a/drivers/gpu/drm/tilcdc/Makefile
 +++ b/drivers/gpu/drm/tilcdc/Makefile
-@@ -1,7 +1,7 @@
- ccflags-y := -Iinclude/drm
+@@ -1,6 +1,6 @@
 -ifeq (, $(findstring -W,$(EXTRA_CFLAGS)))
 -	ccflags-y += -Werror
 -endif

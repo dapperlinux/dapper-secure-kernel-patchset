@@ -2,24 +2,15 @@ diff --git a/drivers/md/raid10.c b/drivers/md/raid10.c
 index 4c4aab0..a552681 100644
 --- a/drivers/md/raid10.c
 +++ b/drivers/md/raid10.c
-@@ -1095,7 +1095,7 @@ static void raid10_read_request(struct mddev *mddev, struct bio *bio,
- 	struct bio *read_bio;
- 	const int op = bio_op(bio);
- 	const unsigned long do_sync = (bio->bi_opf & REQ_SYNC);
--	int sectors_handled;
-+	sector_t sectors_handled;
- 	int max_sectors;
- 	sector_t sectors;
- 	struct md_rdev *rdev;
-@@ -1442,7 +1442,7 @@ static void raid10_make_request(struct mddev *mddev, struct bio *bio)
+@@ -1517,7 +1517,7 @@ static bool raid10_make_request(struct mddev *mddev, struct bio *bio)
  {
  	struct r10conf *conf = mddev->private;
  	sector_t chunk_mask = (conf->geo.chunk_mask & conf->prev.chunk_mask);
 -	int chunk_sects = chunk_mask + 1;
 +	sector_t chunk_sects = chunk_mask + 1;
+ 	int sectors = bio_sectors(bio);
  
- 	struct bio *split;
- 
+ 	if (unlikely(bio->bi_opf & REQ_PREFLUSH)) {
 @@ -1848,7 +1848,7 @@ static void end_sync_read(struct bio *bio)
  		/* The write handler will notice the lack of
  		 * R10BIO_Uptodate and record any errors etc

@@ -10,7 +10,7 @@ index 98af9e0..1089416 100644
  #include <video/edid.h>
  #include <video/uvesafb.h>
  #ifdef CONFIG_X86
-@@ -565,10 +566,32 @@ static int uvesafb_vbe_getpmi(struct uvesafb_ktask *task,
+@@ -562,10 +562,32 @@ static int uvesafb_vbe_getpmi(struct uvesafb_ktask *task,
  	if ((task->t.regs.eax & 0xffff) != 0x4f || task->t.regs.es < 0xc000) {
  		par->pmi_setpal = par->ypan = 0;
  	} else {
@@ -40,18 +40,17 @@ index 98af9e0..1089416 100644
  		par->pmi_pal = (u8 *)par->pmi_base + par->pmi_base[2];
 +#endif
 +
- 		printk(KERN_INFO "uvesafb: protected mode interface info at "
- 				 "%04x:%04x\n",
- 				 (u16)task->t.regs.es, (u16)task->t.regs.edi);
-@@ -813,13 +836,14 @@ static int uvesafb_vbe_init(struct fb_info *info)
+ 		pr_info("protected mode interface info at %04x:%04x\n",
+ 			(u16)task->t.regs.es, (u16)task->t.regs.edi);
+ 		pr_info("pmi: set display start = %p, set palette = %p\n",
+@@ -800,12 +822,13 @@ static int uvesafb_vbe_init(struct fb_info *info)
  	par->ypan = ypan;
  
  	if (par->pmi_setpal || par->ypan) {
 +#if !defined(CONFIG_MODULES) || !defined(CONFIG_PAX_KERNEXEC)
  		if (__supported_pte_mask & _PAGE_NX) {
  			par->pmi_setpal = par->ypan = 0;
- 			printk(KERN_WARNING "uvesafb: NX protection is active, "
- 					    "better not use the PMI.\n");
+ 			pr_warn("NX protection is active, better not use the PMI\n");
 -		} else {
 +		} else
 +#endif

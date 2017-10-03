@@ -2,12 +2,12 @@ diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c b/drivers/infiniband/ulp/
 index 3ef7b8f..52f1d96 100644
 --- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
 +++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-@@ -1034,7 +1034,7 @@ static void unicast_arp_send(struct sk_buff *skb, struct net_device *dev,
+@@ -1048,7 +1048,7 @@ static void unicast_arp_send(struct sk_buff *skb, struct net_device *dev,
  	spin_unlock_irqrestore(&priv->lock, flags);
  }
  
 -static int ipoib_start_xmit(struct sk_buff *skb, struct net_device *dev)
 +static netdev_tx_t ipoib_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct ipoib_dev_priv *priv = netdev_priv(dev);
- 	struct ipoib_neigh *neigh;
+ 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
+ 	struct rdma_netdev *rn = netdev_priv(dev);

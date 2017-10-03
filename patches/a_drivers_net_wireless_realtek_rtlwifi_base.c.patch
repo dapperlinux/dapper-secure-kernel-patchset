@@ -26,9 +26,9 @@ index 4ac928b..9832ba8 100644
  
  }
  
-@@ -1559,7 +1559,7 @@ void rtl_beacon_statistic(struct ieee80211_hw *hw, struct sk_buff *skb)
+@@ -1803,7 +1803,7 @@ void rtl_collect_scan_list(struct ieee80211_hw *hw, struct sk_buff *skb)
  }
- EXPORT_SYMBOL_GPL(rtl_beacon_statistic);
+ EXPORT_SYMBOL(rtl_collect_scan_list);
  
 -void rtl_watchdog_wq_callback(void *data)
 +void rtl_watchdog_wq_callback(struct work_struct *data)

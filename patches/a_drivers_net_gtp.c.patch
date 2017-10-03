@@ -2,9 +2,9 @@ diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
 index 97e0cbc..3aec9e5 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -58,7 +58,7 @@ struct pdp_ctx {
- 	struct in_addr		ms_addr_ip4;
- 	struct in_addr		sgsn_addr_ip4;
+@@ -61,7 +61,7 @@ struct pdp_ctx {
+ 	struct sock		*sk;
+ 	struct net_device       *dev;
  
 -	atomic_t		tx_seq;
 +	atomic_unchecked_t	tx_seq;
@@ -29,9 +29,9 @@ index 97e0cbc..3aec9e5 100644
  	.kind		= "gtp",
  	.maxtype	= IFLA_GTP_MAX,
  	.policy		= gtp_policy,
-@@ -959,7 +959,7 @@ static int ipv4_pdp_add(struct net_device *dev, struct genl_info *info)
- 		return -ENOMEM;
- 
+@@ -955,7 +955,7 @@ static int ipv4_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 	pctx->sk = sk;
+ 	pctx->dev = gtp->dev;
  	ipv4_pdp_fill(pctx, info);
 -	atomic_set(&pctx->tx_seq, 0);
 +	atomic_set_unchecked(&pctx->tx_seq, 0);

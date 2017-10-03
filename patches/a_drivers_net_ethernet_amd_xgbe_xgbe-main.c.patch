@@ -30,15 +30,15 @@ index 17ac8f9..f59a5a2 100644
  
  	/* Populate the hardware features */
  	xgbe_get_all_hw_features(pdata);
-@@ -277,7 +269,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
+@@ -279,7 +279,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
  	pdata->desc_ded_period = jiffies;
  
  	/* Issue software reset to device */
--	pdata->hw_if.exit(pdata);
-+	pdata->hw_if->exit(pdata);
- 
- 	/* Set default configuration data */
- 	xgbe_default_config(pdata);
+-	ret = pdata->hw_if.exit(pdata);
++	ret = pdata->hw_if->exit(pdata);
+ 	if (ret) {
+ 		dev_err(dev, "software reset failed\n");
+ 		return ret;
 @@ -341,7 +333,7 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
  	XGMAC_SET_BITS(pdata->rss_options, MAC_RSSCR, UDP4TE, 1);
  

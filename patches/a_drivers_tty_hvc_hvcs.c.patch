@@ -46,14 +46,13 @@ index 3c4d7c2..3410b86 100644
  
  		vio_disable_interrupts(hvcsd->vdev);
  
-@@ -1241,10 +1242,10 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
+@@ -1240,9 +1240,9 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
  
  		free_irq(irq, hvcsd);
  		return;
 -	} else if (hvcsd->port.count < 0) {
 +	} else if (atomic_read(&hvcsd->port.count) < 0) {
- 		printk(KERN_ERR "HVCS: vty-server@%X open_count: %d"
- 				" is missmanaged.\n",
+ 		printk(KERN_ERR "HVCS: vty-server@%X open_count: %d is mismanaged.\n",
 -		hvcsd->vdev->unit_address, hvcsd->port.count);
 +		hvcsd->vdev->unit_address, atomic_read(&hvcsd->port.count));
  	}

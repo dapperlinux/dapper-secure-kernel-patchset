@@ -11,7 +11,7 @@ index e0c143b..3a7bc79 100644
  int radeon_mmap(struct file *filp, struct vm_area_struct *vma);
  int radeon_mode_dumb_mmap(struct drm_file *filp,
  			  struct drm_device *dev,
-@@ -534,7 +534,7 @@ static struct drm_driver kms_driver = {
+@@ -562,7 +562,7 @@ static struct drm_driver kms_driver = {
  	.driver_features =
  	    DRIVER_USE_AGP |
  	    DRIVER_HAVE_IRQ | DRIVER_IRQ_SHARED | DRIVER_GEM |
@@ -19,7 +19,7 @@ index e0c143b..3a7bc79 100644
 +	    DRIVER_PRIME | DRIVER_RENDER | DRIVER_MODESET,
  	.load = radeon_driver_load_kms,
  	.open = radeon_driver_open_kms,
- 	.preclose = radeon_driver_preclose_kms,
+ 	.postclose = radeon_driver_postclose_kms,
 @@ -606,8 +606,11 @@ static int __init radeon_init(void)
  		DRM_INFO("radeon kernel modesetting enabled.\n");
  		driver = &kms_driver;

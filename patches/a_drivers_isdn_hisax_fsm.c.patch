@@ -13,12 +13,12 @@ index c7a9471..5409bd3 100644
  #if FSM_TIMER_DEBUG
  	if (ft->fi->debug)
  		ft->fi->printdebug(ft->fi, "FsmExpireTimer %lx", (long) ft);
-@@ -98,7 +99,7 @@ void
- FsmInitTimer(struct FsmInst *fi, struct FsmTimer *ft)
- {
- 	ft->fi = fi;
--	ft->tl.function = (void *) FsmExpireTimer;
-+	ft->tl.function = FsmExpireTimer;
- 	ft->tl.data = (long) ft;
- #if FSM_TIMER_DEBUG
+@@ -102,7 +102,7 @@ FsmInitTimer(struct FsmInst *fi, struct FsmTimer *ft)
  	if (ft->fi->debug)
+ 		ft->fi->printdebug(ft->fi, "FsmInitTimer %lx", (long) ft);
+ #endif
+-	setup_timer(&ft->tl, (void *)FsmExpireTimer, (long)ft);
++	setup_timer(&ft->tl, FsmExpireTimer, (long)ft);
+ }
+ 
+ void

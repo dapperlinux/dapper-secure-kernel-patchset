@@ -11,10 +11,10 @@ index 88b71c4..31cc1ca6 100644
  
  	/*
  	 * NOTE:
-@@ -108,7 +108,7 @@ struct vhci_hcd {
+@@ -125,7 +125,7 @@ struct vhci_hcd {
  
  extern int vhci_num_controllers;
- extern struct platform_device **vhci_pdevs;
+ extern struct vhci *vhcis;
 -extern struct attribute_group vhci_attr_group;
 +extern attribute_group_no_const vhci_attr_group;
  

@@ -12,12 +12,12 @@ index 29ec2df..9c7123c 100644
  	arcofi_fsm(cs, ARCOFI_TIMEOUT, NULL);
  }
  
-@@ -125,7 +126,7 @@ clear_arcofi(struct IsdnCardState *cs) {
+@@ -125,7 +125,7 @@ clear_arcofi(struct IsdnCardState *cs) {
  
  void
  init_arcofi(struct IsdnCardState *cs) {
--	cs->dc.isac.arcofitimer.function = (void *) arcofi_timer;
-+	cs->dc.isac.arcofitimer.function = arcofi_timer;
- 	cs->dc.isac.arcofitimer.data = (long) cs;
- 	init_timer(&cs->dc.isac.arcofitimer);
+-	setup_timer(&cs->dc.isac.arcofitimer, (void *)arcofi_timer, (long)cs);
++	setup_timer(&cs->dc.isac.arcofitimer, arcofi_timer, (long)cs);
  	init_waitqueue_head(&cs->dc.isac.arcofi_wait);
+ 	test_and_set_bit(HW_ARCOFI, &cs->HW_Flags);
+ }

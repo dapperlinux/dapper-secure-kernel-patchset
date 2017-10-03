@@ -2,12 +2,14 @@ diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
 index 8453a49..aaea2ac 100644
 --- a/drivers/char/Kconfig
 +++ b/drivers/char/Kconfig
-@@ -17,6 +17,8 @@ config DEVMEM
+@@ -17,8 +17,9 @@ config DEVMEM
  
  config DEVKMEM
  	bool "/dev/kmem virtual device support"
 +	default n
-+	depends on !GRKERNSEC_KMEM
+ 	# On arm64, VMALLOC_START < PAGE_OFFSET, which confuses kmem read/write
+-	depends on !ARM64
++	depends on !ARM64 && !GRKERNSEC_KMEM
  	help
  	  Say Y here if you want to support the /dev/kmem device. The
  	  /dev/kmem device is rarely used, but can be used for certain

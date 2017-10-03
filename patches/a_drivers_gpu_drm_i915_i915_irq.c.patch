@@ -2,16 +2,14 @@ diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
 index 02908e3..8c9262d 100644
 --- a/drivers/gpu/drm/i915/i915_irq.c
 +++ b/drivers/gpu/drm/i915/i915_irq.c
-@@ -4229,15 +4229,16 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
+@@ -4231,14 +4231,15 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
  	if (INTEL_INFO(dev_priv)->gen >= 8)
- 		dev_priv->rps.pm_intr_keep |= GEN8_PMINTR_REDIRECT_TO_GUC;
+ 		dev_priv->rps.pm_intrmsk_mbz |= GEN8_PMINTR_DISABLE_REDIRECT_TO_GUC;
  
 +	pax_open_kernel();
  	if (IS_GEN2(dev_priv)) {
  		/* Gen2 doesn't have a hardware frame counter */
  		dev->max_vblank_count = 0;
--		dev->driver->get_vblank_counter = drm_vblank_no_hw_counter;
-+		const_cast(dev->driver->get_vblank_counter) = drm_vblank_no_hw_counter;
  	} else if (IS_G4X(dev_priv) || INTEL_INFO(dev_priv)->gen >= 5) {
  		dev->max_vblank_count = 0xffffffff; /* full 32 bit counter */
 -		dev->driver->get_vblank_counter = g4x_get_vblank_counter;
@@ -22,13 +20,16 @@ index 02908e3..8c9262d 100644
  		dev->max_vblank_count = 0xffffff; /* only 24 bits of frame count */
  	}
  
-@@ -4259,32 +4259,32 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
+@@ -4260,34 +4261,34 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
  	if (IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv))
  		dev_priv->display_irqs_enabled = false;
  
--	dev->driver->get_vblank_timestamp = i915_get_vblank_timestamp;
+-	dev_priv->hotplug.hpd_storm_threshold = HPD_STORM_DEFAULT_THRESHOLD;
++	const_cast(dev_priv->hotplug.hpd_storm_threshold) = HPD_STORM_DEFAULT_THRESHOLD;
+ 
+-	dev->driver->get_vblank_timestamp = drm_calc_vbltimestamp_from_scanoutpos;
 -	dev->driver->get_scanout_position = i915_get_crtc_scanoutpos;
-+	const_cast(dev->driver->get_vblank_timestamp) = i915_get_vblank_timestamp;
++	const_cast(dev->driver->get_vblank_timestamp) = drm_calc_vbltimestamp_from_scanoutpos;
 +	const_cast(dev->driver->get_scanout_position) = i915_get_crtc_scanoutpos;
  
  	if (IS_CHERRYVIEW(dev_priv)) {
@@ -76,7 +77,7 @@ index 02908e3..8c9262d 100644
 +		const_cast(dev->driver->disable_vblank) = gen8_disable_vblank;
  		if (IS_GEN9_LP(dev_priv))
  			dev_priv->display.hpd_irq_setup = bxt_hpd_irq_setup;
- 		else if (HAS_PCH_SPT(dev_priv) || HAS_PCH_KBP(dev_priv))
+ 		else if (HAS_PCH_SPT(dev_priv) || HAS_PCH_KBP(dev_priv) ||
 @@ -4292,39 +4292,40 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
  		else
  			dev_priv->display.hpd_irq_setup = ilk_hpd_irq_setup;

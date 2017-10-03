@@ -20,7 +20,7 @@ index 66f0e0a..395de9c 100644
  	     (unsigned long)padapter);
  	skb_queue_head_init(&precvpriv->rx_skb_queue);
  
-@@ -1121,7 +1121,7 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
+@@ -1119,7 +1119,7 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
  	return _SUCCESS;
  }
  
@@ -28,4 +28,4 @@ index 66f0e0a..395de9c 100644
 +static void recv_tasklet(unsigned long priv)
  {
  	struct sk_buff *pskb;
- 	struct _adapter *padapter = (struct _adapter *)priv;
+ 	struct _adapter *padapter = priv;

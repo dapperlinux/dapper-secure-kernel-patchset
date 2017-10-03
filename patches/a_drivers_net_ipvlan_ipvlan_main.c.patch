@@ -26,13 +26,18 @@ index dfbc4ef..47e795d 100644
  	return rtnl_link_register(ops);
  }
  EXPORT_SYMBOL_GPL(ipvlan_link_register);
-@@ -816,15 +816,15 @@ static int ipvlan_addr4_event(struct notifier_block *unused,
+@@ -924,23 +924,23 @@ static int ipvlan_addr4_validator_event(struct notifier_block *unused,
  	return NOTIFY_OK;
  }
  
 -static struct notifier_block ipvlan_addr4_notifier_block __read_mostly = {
 +static struct notifier_block ipvlan_addr4_notifier_block = {
  	.notifier_call = ipvlan_addr4_event,
+ };
+ 
+-static struct notifier_block ipvlan_addr4_vtor_notifier_block __read_mostly = {
++static struct notifier_block ipvlan_addr4_vtor_notifier_block = {
+ 	.notifier_call = ipvlan_addr4_validator_event,
  };
  
 -static struct notifier_block ipvlan_notifier_block __read_mostly = {
@@ -43,5 +48,10 @@ index dfbc4ef..47e795d 100644
 -static struct notifier_block ipvlan_addr6_notifier_block __read_mostly = {
 +static struct notifier_block ipvlan_addr6_notifier_block = {
  	.notifier_call = ipvlan_addr6_event,
+ };
+ 
+-static struct notifier_block ipvlan_addr6_vtor_notifier_block __read_mostly = {
++static struct notifier_block ipvlan_addr6_vtor_notifier_block = {
+ 	.notifier_call = ipvlan_addr6_validator_event,
  };
  

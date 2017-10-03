@@ -23,14 +23,6 @@ index f86e7c8..97444a3 100644
  			put_device(p);
  			component_match_add(dev, &match, compare_dev, d);
  			p = d;
-@@ -571,7 +576,6 @@ static int exynos_drm_platform_probe(struct platform_device *pdev)
- 	struct component_match *match;
- 
- 	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
--	exynos_drm_driver.num_ioctls = ARRAY_SIZE(exynos_ioctls);
- 
- 	match = exynos_drm_match_add(&pdev->dev);
- 	if (IS_ERR(match))
 @@ -609,7 +613,7 @@ static struct device *exynos_drm_get_dma_device(void)
  
  		while ((dev = bus_find_device(&platform_bus_type, NULL,

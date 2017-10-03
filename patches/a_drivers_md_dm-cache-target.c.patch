@@ -11,7 +11,7 @@ index c817627..ec8c021 100644
  
  static void dm_hook_bio(struct dm_hook_info *h, struct bio *bio,
  			bio_end_io_t *bi_end_io, void *bi_private)
-@@ -182,16 +182,16 @@ struct cache_features {
+@@ -356,17 +356,17 @@ struct cache_features {
  };
  
  struct cache_stats {
@@ -21,6 +21,7 @@ index c817627..ec8c021 100644
 -	atomic_t write_miss;
 -	atomic_t demotion;
 -	atomic_t promotion;
+-	atomic_t writeback;
 -	atomic_t copies_avoided;
 -	atomic_t cache_cell_clash;
 -	atomic_t commit_count;
@@ -31,13 +32,14 @@ index c817627..ec8c021 100644
 +	atomic_unchecked_t write_miss;
 +	atomic_unchecked_t demotion;
 +	atomic_unchecked_t promotion;
++	atomic_unchecked_t writeback;
 +	atomic_unchecked_t copies_avoided;
 +	atomic_unchecked_t cache_cell_clash;
 +	atomic_unchecked_t commit_count;
 +	atomic_unchecked_t discard_count;
  };
  
- /*
+ struct cache {
 @@ -270,8 +270,8 @@ struct cache {
  	atomic_t nr_io_migrations;
  

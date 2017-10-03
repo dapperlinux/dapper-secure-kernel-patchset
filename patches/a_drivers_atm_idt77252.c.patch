@@ -147,7 +147,7 @@ index 074616b..d6b3d5f 100644
  		dev_kfree_skb(skb);
  		return err;
  	}
-@@ -2009,7 +2009,7 @@ idt77252_send_oam(struct atm_vcc *vcc, void *cell, int flags)
+@@ -2006,7 +2006,7 @@ idt77252_send_oam(struct atm_vcc *vcc, void *cell, int flags)
  	skb = dev_alloc_skb(64);
  	if (!skb) {
  		printk("%s: Out of memory in send_oam().\n", card->name);
@@ -155,4 +155,4 @@ index 074616b..d6b3d5f 100644
 +		atomic_inc_unchecked(&vcc->stats->tx_err);
  		return -ENOMEM;
  	}
- 	atomic_add(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc);
+ 	refcount_add(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc);

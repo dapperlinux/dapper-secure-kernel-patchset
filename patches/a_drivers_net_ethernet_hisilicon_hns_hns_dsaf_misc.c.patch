@@ -2,13 +2,12 @@ diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c b/drivers/net/et
 index e13aa06..8bf73f8 100644
 --- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
 +++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-@@ -579,54 +579,52 @@ hns_mac_config_sds_loopback_acpi(struct hns_mac_cb *mac_cb, bool en)
+@@ -632,54 +632,52 @@ hns_mac_config_sds_loopback_acpi(struct hns_mac_cb *mac_cb, bool en)
  	return 0;
  }
  
 -struct dsaf_misc_op *hns_misc_op_get(struct dsaf_device *dsaf_dev)
-+const struct dsaf_misc_op *hns_misc_op_get(struct dsaf_device *dsaf_dev)
- {
+-{
 -	struct dsaf_misc_op *misc_op;
 -
 -	misc_op = devm_kzalloc(dsaf_dev->dev, sizeof(*misc_op), GFP_KERNEL);
@@ -33,8 +32,8 @@ index e13aa06..8bf73f8 100644
 -
 -		misc_op->cfg_serdes_loopback = hns_mac_config_sds_loopback;
 -	} else if (is_acpi_node(dsaf_dev->dev->fwnode)) {
--		misc_op->cpld_set_led = hns_cpld_set_led;
--		misc_op->cpld_reset_led = cpld_led_reset;
+-		misc_op->cpld_set_led = hns_cpld_set_led_acpi;
+-		misc_op->cpld_reset_led = cpld_led_reset_acpi;
 -		misc_op->cpld_set_led_id = cpld_set_led_id;
 -
 -		misc_op->dsaf_reset = hns_dsaf_rst_acpi;
@@ -53,6 +52,8 @@ index e13aa06..8bf73f8 100644
 -		devm_kfree(dsaf_dev->dev, (void *)misc_op);
 -		misc_op = NULL;
 -	}
++const struct dsaf_misc_op *hns_misc_op_get(struct dsaf_device *dsaf_dev)
++
 +	static const struct dsaf_misc_op dsaf_misc_ops = {
 +		.cpld_set_led = hns_cpld_set_led,
 +		.cpld_reset_led = cpld_led_reset,

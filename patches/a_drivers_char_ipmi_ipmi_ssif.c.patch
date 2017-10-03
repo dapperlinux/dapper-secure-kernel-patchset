@@ -33,8 +33,8 @@ index 5673fff..3ab2908 100644
  
  	if (ssif_dbg_probe) {
  		pr_info("ssif_probe: i2c_probe found device at i2c address %x\n",
-@@ -1622,7 +1622,7 @@ static int ssif_probe(struct i2c_client *client, const struct i2c_device_id *id)
- 	ssif_info->retry_timer.function = retry_timeout;
+@@ -1651,7 +1651,7 @@ static int ssif_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 		    (unsigned long)ssif_info);
  
  	for (i = 0; i < SSIF_NUM_STATS; i++)
 -		atomic_set(&ssif_info->stats[i], 0);

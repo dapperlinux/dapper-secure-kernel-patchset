@@ -2,10 +2,10 @@ diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
 index f4fbcb5..8830bbb 100644
 --- a/drivers/net/hyperv/hyperv_net.h
 +++ b/drivers/net/hyperv/hyperv_net.h
-@@ -160,7 +160,7 @@ struct rndis_device {
+@@ -165,7 +165,7 @@ struct rndis_device {
  
  	enum rndis_device_state state;
- 	bool link_state;
+ 
 -	atomic_t new_req_id;
 +	atomic_unchecked_t new_req_id;
  

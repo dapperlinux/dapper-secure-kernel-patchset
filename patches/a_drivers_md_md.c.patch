@@ -71,15 +71,15 @@ index 24925f2..1ae5ca4 100644
  }
  
  static struct md_sysfs_entry md_mismatches = __ATTR_RO(mismatch_cnt);
-@@ -5095,7 +5095,7 @@ static struct kobject *md_probe(dev_t dev, int *part, void *data)
+@@ -5329,7 +5329,7 @@ static struct kobject *md_probe(dev_t dev, int *part, void *data)
  	return NULL;
  }
  
 -static int add_named_array(const char *val, struct kernel_param *kp)
 +static int add_named_array(const char *val, const struct kernel_param *kp)
  {
- 	/* val must be "md_*" where * is not all digits.
- 	 * We allocate an array with a large free minor number, and
+ 	/*
+ 	 * val must be "md_*" or "mdNNN".
 @@ -5460,7 +5460,7 @@ static void md_clean(struct mddev *mddev)
  	mddev->new_layout = 0;
  	mddev->new_chunk_sectors = 0;

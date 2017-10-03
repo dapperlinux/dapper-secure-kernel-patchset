@@ -13,7 +13,7 @@ index a625b91..411e7d1 100644
  
  	struct mqd_manager	*mqds[KFD_MQD_TYPE_MAX];
  	struct packet_manager	packets;
-@@ -178,8 +178,8 @@ struct device_queue_manager {
+@@ -176,8 +176,8 @@ struct device_queue_manager {
  	bool			active_runlist;
  };
  
@@ -23,4 +23,4 @@ index a625b91..411e7d1 100644
 +void device_queue_manager_init_vi(struct device_queue_manager *dqm);
  void program_sh_mem_settings(struct device_queue_manager *dqm,
  					struct qcm_process_device *qpd);
- int init_pipelines(struct device_queue_manager *dqm,
+ unsigned int get_queues_num(struct device_queue_manager *dqm);

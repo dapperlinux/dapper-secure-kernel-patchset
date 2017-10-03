@@ -26,7 +26,7 @@ index f50e51c..02c0247 100644
  	int ret;
  
  	/* If no access, then nothing to do */
-@@ -593,10 +589,10 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+@@ -656,10 +656,10 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
  	return __arm_v7s_unmap(data, iova, size, lvl + 1, ptep);
  }
  
@@ -38,7 +38,7 @@ index f50e51c..02c0247 100644
 +	struct arm_v7s_io_pgtable *data = io_pgtable_to_data(iop);
  	size_t unmapped;
  
- 	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
+ 	if (WARN_ON(upper_32_bits(iova)))
 @@ -606,10 +602,10 @@ static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
  	return unmapped;
  }

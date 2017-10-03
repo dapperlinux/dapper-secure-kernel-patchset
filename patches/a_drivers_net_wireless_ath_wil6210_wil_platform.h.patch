@@ -2,10 +2,10 @@ diff --git a/drivers/net/wireless/ath/wil6210/wil_platform.h b/drivers/net/wirel
 index f8c4117..72c917e 100644
 --- a/drivers/net/wireless/ath/wil6210/wil_platform.h
 +++ b/drivers/net/wireless/ath/wil6210/wil_platform.h
-@@ -37,7 +37,7 @@ struct wil_platform_ops {
- 	int (*resume)(void *handle);
+@@ -38,7 +38,7 @@ struct wil_platform_ops {
  	void (*uninit)(void *handle);
  	int (*notify)(void *handle, enum wil_platform_event evt);
+ 	bool (*keep_radio_on_during_sleep)(void *handle);
 -};
 +} __no_const;
  

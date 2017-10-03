@@ -7,9 +7,9 @@ index e477af8..a5b1fce 100644
  	atomic_t nr_valid_paths;	/* Total number of usable paths */
  	atomic_t pg_init_in_progress;	/* Only one pg_init allowed at once */
 -	atomic_t pg_init_count;		/* Number of times pg_init called */
-+	atomic_unchecked_t pg_init_count;/* Number of times pg_init called */
++	atomic_unchecked_t pg_init_count;	/* Number of times pg_init called */
  
- 	unsigned queue_mode;
+ 	enum dm_queue_mode queue_mode;
  
 @@ -203,7 +203,7 @@ static struct multipath *alloc_multipath(struct dm_target *ti)
  		set_bit(MPATHF_QUEUE_IO, &m->flags);

@@ -92,21 +92,21 @@ index cce6057..2c080d8 100644
  			 > conf->max_nr_stripes)
  			pr_warn("md/raid:%s: Too many read errors, failing device %s.\n",
  			       mdname(conf->mddev), bdn);
-@@ -3763,7 +3771,7 @@ static void handle_parity_checks5(struct r5conf *conf, struct stripe_head *sh,
+@@ -4081,7 +4081,7 @@ static void handle_parity_checks5(struct r5conf *conf, struct stripe_head *sh,
  			 */
  			set_bit(STRIPE_INSYNC, &sh->state);
  		else {
 -			atomic64_add(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
 +			atomic64_add_unchecked(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
- 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery))
+ 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery)) {
  				/* don't try to repair!! */
  				set_bit(STRIPE_INSYNC, &sh->state);
-@@ -3915,7 +3923,7 @@ static void handle_parity_checks6(struct r5conf *conf, struct stripe_head *sh,
+@@ -4238,7 +4238,7 @@ static void handle_parity_checks6(struct r5conf *conf, struct stripe_head *sh,
  				 */
  			}
  		} else {
 -			atomic64_add(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
 +			atomic64_add_unchecked(STRIPE_SECTORS, &conf->mddev->resync_mismatches);
- 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery))
+ 			if (test_bit(MD_RECOVERY_CHECK, &conf->mddev->recovery)) {
  				/* don't try to repair!! */
  				set_bit(STRIPE_INSYNC, &sh->state);

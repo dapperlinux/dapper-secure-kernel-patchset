@@ -20,12 +20,12 @@ index 0677513..4c7ea03 100644
  	spin_lock(&lli->lli_sa_lock);
  	if (thread_is_init(sa_thread))
  		/* If someone else has changed the thread state
-@@ -1123,7 +1123,7 @@ static int ll_statahead_thread(void *arg)
+@@ -1104,7 +1104,7 @@ static int ll_statahead_thread(void *arg)
  
  		if (sa_low_hit(sai)) {
  			rc = -EFAULT;
 -			atomic_inc(&sbi->ll_sa_wrong);
 +			atomic_inc_unchecked(&sbi->ll_sa_wrong);
- 			CDEBUG(D_READA, "Statahead for dir "DFID" hit ratio too low: hit/miss %llu/%llu, sent/replied %llu/%llu, stopping statahead thread: pid %d\n",
+ 			CDEBUG(D_READA, "Statahead for dir " DFID " hit ratio too low: hit/miss %llu/%llu, sent/replied %llu/%llu, stopping statahead thread: pid %d\n",
  			       PFID(&lli->lli_fid), sai->sai_hit,
  			       sai->sai_miss, sai->sai_sent,

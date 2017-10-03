@@ -46,15 +46,6 @@ index f49c551..ad74c7e 100644
  
  	dqm->processes_count++;
  
-@@ -502,7 +502,7 @@ int init_pipelines(struct device_queue_manager *dqm,
- 
- 	memset(hpdptr, 0, CIK_HPD_EOP_BYTES * pipes_num);
- 
--	mqd = dqm->ops.get_mqd_manager(dqm, KFD_MQD_TYPE_COMPUTE);
-+	mqd = dqm->ops->get_mqd_manager(dqm, KFD_MQD_TYPE_COMPUTE);
- 	if (mqd == NULL) {
- 		kfd_gtt_sa_free(dqm->dev, dqm->pipeline_mem);
- 		return -ENOMEM;
 @@ -635,7 +635,7 @@ static int create_sdma_queue_nocpsch(struct device_queue_manager *dqm,
  	struct mqd_manager *mqd;
  	int retval;

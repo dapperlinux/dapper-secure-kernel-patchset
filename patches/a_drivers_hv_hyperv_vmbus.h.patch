@@ -2,8 +2,8 @@ diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
 index 8d7f865..86be1c8 100644
 --- a/drivers/hv/hyperv_vmbus.h
 +++ b/drivers/hv/hyperv_vmbus.h
-@@ -567,7 +567,7 @@ enum vmbus_connect_state {
- struct vmbus_connection {
+@@ -312,7 +312,7 @@ struct vmbus_connection {
+ 
  	enum vmbus_connect_state conn_state;
  
 -	atomic_t next_gpadl_handle;

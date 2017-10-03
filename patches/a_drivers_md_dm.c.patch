@@ -50,15 +50,15 @@ index e66f404..b4ad377 100644
  	INIT_LIST_HEAD(&md->uevent_list);
  	INIT_LIST_HEAD(&md->table_devices);
  	spin_lock_init(&md->uevent_lock);
-@@ -1682,7 +1686,7 @@ static void event_callback(void *context)
+@@ -1882,7 +1882,7 @@ static void event_callback(void *context)
  
  	dm_send_uevents(&uevents, &disk_to_dev(md->disk)->kobj);
  
 -	atomic_inc(&md->event_nr);
 +	atomic_inc_unchecked(&md->event_nr);
+ 	atomic_inc(&dm_global_event_nr);
  	wake_up(&md->eventq);
- }
- 
+ 	wake_up(&dm_global_eventq);
 @@ -2470,18 +2474,18 @@ int dm_kobject_uevent(struct mapped_device *md, enum kobject_action action,
  
  uint32_t dm_next_uevent_seq(struct mapped_device *md)

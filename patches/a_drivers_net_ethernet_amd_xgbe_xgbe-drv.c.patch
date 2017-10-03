@@ -60,33 +60,33 @@ index a713abd..dea1f1c 100644
  
  out:
  	/* Clear all ECC interrupts */
-@@ -440,7 +440,7 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
- static irqreturn_t xgbe_isr(int irq, void *data)
+@@ -476,7 +476,7 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
+ static void xgbe_isr_task(unsigned long data)
  {
- 	struct xgbe_prv_data *pdata = data;
+ 	struct xgbe_prv_data *pdata = (struct xgbe_prv_data *)data;
 -	struct xgbe_hw_if *hw_if = &pdata->hw_if;
 +	struct xgbe_hw_if *hw_if = pdata->hw_if;
  	struct xgbe_channel *channel;
  	unsigned int dma_isr, dma_ch_isr;
  	unsigned int mac_isr, mac_tssr, mac_mdioisr;
-@@ -542,7 +542,7 @@ static irqreturn_t xgbe_isr(int irq, void *data)
+@@ -578,7 +578,7 @@ static void xgbe_isr_task(unsigned long data)
  isr_done:
  	/* If there is not a separate AN irq, handle it here */
  	if (pdata->dev_irq == pdata->an_irq)
--		pdata->phy_if.an_isr(irq, pdata);
-+		pdata->phy_if->an_isr(irq, pdata);
+-		pdata->phy_if.an_isr(pdata);
++		pdata->phy_if->an_isr(pdata);
  
  	/* If there is not a separate ECC irq, handle it here */
  	if (pdata->vdata->ecc_support && (pdata->dev_irq == pdata->ecc_irq))
-@@ -550,7 +550,7 @@ static irqreturn_t xgbe_isr(int irq, void *data)
+@@ -586,7 +586,7 @@ static void xgbe_isr_task(unsigned long data)
  
  	/* If there is not a separate I2C irq, handle it here */
  	if (pdata->vdata->i2c_support && (pdata->dev_irq == pdata->i2c_irq))
--		pdata->i2c_if.i2c_isr(irq, pdata);
-+		pdata->i2c_if->i2c_isr(irq, pdata);
+-		pdata->i2c_if.i2c_isr(pdata);
++		pdata->i2c_if->i2c_isr(pdata);
  
- 	return IRQ_HANDLED;
- }
+ 	/* Reissue interrupt if status is not clear */
+ 	if (pdata->vdata->irq_reissue_support) {
 @@ -619,7 +619,7 @@ static void xgbe_service(struct work_struct *work)
  						   struct xgbe_prv_data,
  						   service_work);
@@ -114,24 +114,24 @@ index a713abd..dea1f1c 100644
  
  	DBGPR("-->xgbe_init_rx_coalesce\n");
  
-@@ -928,7 +928,7 @@ void xgbe_init_rx_coalesce(struct xgbe_prv_data *pdata)
+@@ -999,7 +999,7 @@ void xgbe_init_rx_coalesce(struct xgbe_prv_data *pdata)
  
  static void xgbe_free_tx_data(struct xgbe_prv_data *pdata)
  {
 -	struct xgbe_desc_if *desc_if = &pdata->desc_if;
 +	struct xgbe_desc_if *desc_if = pdata->desc_if;
- 	struct xgbe_channel *channel;
  	struct xgbe_ring *ring;
  	struct xgbe_ring_data *rdata;
-@@ -953,7 +953,7 @@ static void xgbe_free_tx_data(struct xgbe_prv_data *pdata)
+ 	unsigned int i, j;
+@@ -1022,7 +1022,7 @@ static void xgbe_free_tx_data(struct xgbe_prv_data *pdata)
  
  static void xgbe_free_rx_data(struct xgbe_prv_data *pdata)
  {
 -	struct xgbe_desc_if *desc_if = &pdata->desc_if;
 +	struct xgbe_desc_if *desc_if = pdata->desc_if;
- 	struct xgbe_channel *channel;
  	struct xgbe_ring *ring;
  	struct xgbe_ring_data *rdata;
+ 	unsigned int i, j;
 @@ -981,13 +981,13 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
  	pdata->phy_link = -1;
  	pdata->phy_speed = SPEED_UNKNOWN;

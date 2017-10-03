@@ -173,7 +173,7 @@ index 71c7c4c..f91d896 100644
  				&port->counter_group[CM_XMIT_RETRIES].
  				counter[attr_index]);
  
-@@ -3633,7 +3635,7 @@ static void cm_recv_handler(struct ib_mad_agent *mad_agent,
+@@ -3736,7 +3736,7 @@ static void cm_recv_handler(struct ib_mad_agent *mad_agent,
  	}
  
  	attr_id = be16_to_cpu(mad_recv_wc->recv_buf.mad->mad_hdr.attr_id);
@@ -181,7 +181,7 @@ index 71c7c4c..f91d896 100644
 +	atomic_long_inc_unchecked(&port->counter_group[CM_RECV].
  			counter[attr_id - CM_ATTR_ID_OFFSET]);
  
- 	work = kmalloc(sizeof *work + sizeof(struct ib_sa_path_rec) * paths,
+ 	work = kmalloc(sizeof(*work) + sizeof(struct sa_path_rec) * paths,
 @@ -3840,7 +3842,7 @@ static ssize_t cm_show_counter(struct kobject *obj, struct attribute *attr,
  	cm_attr = container_of(attr, struct cm_counter_attribute, attr);
  

@@ -29,12 +29,3 @@ index 0f3a386..1616cee 100644
  
  	error = transport_class_register(&fc_host_class);
  	if (error)
-@@ -849,7 +849,7 @@ static int fc_str_to_dev_loss(const char *buf, unsigned long *val)
- 	char *cp;
- 
- 	*val = simple_strtoul(buf, &cp, 0);
--	if ((*cp && (*cp != '\n')) || (*val < 0))
-+	if (*cp && (*cp != '\n'))
- 		return -EINVAL;
- 	/*
- 	 * Check for overflow; dev_loss_tmo is u32

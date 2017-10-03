@@ -2,15 +2,15 @@ diff --git a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/mdp/m
 index ed7143d..527b26a 100644
 --- a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c
 +++ b/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c
-@@ -735,9 +735,12 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
+@@ -689,9 +689,12 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
  	dev->mode_config.max_width = 0xffff;
  	dev->mode_config.max_height = 0xffff;
  
--	dev->driver->get_vblank_timestamp = mdp5_get_vblank_timestamp;
+-	dev->driver->get_vblank_timestamp = drm_calc_vbltimestamp_from_scanoutpos;
 -	dev->driver->get_scanout_position = mdp5_get_scanoutpos;
 -	dev->driver->get_vblank_counter = mdp5_get_vblank_counter;
 +	pax_open_kernel();
-+	const_cast(dev->driver->get_vblank_timestamp) = mdp5_get_vblank_timestamp;
++	const_cast(dev->driver->get_vblank_timestamp) = drm_calc_vbltimestamp_from_scanoutpos;
 +	const_cast(dev->driver->get_scanout_position) = mdp5_get_scanoutpos;
 +	const_cast(dev->driver->get_vblank_counter) = mdp5_get_vblank_counter;
 +	pax_close_kernel();

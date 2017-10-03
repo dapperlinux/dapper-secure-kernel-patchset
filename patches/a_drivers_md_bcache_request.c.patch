@@ -42,8 +42,8 @@ index a37c177..a4dfbfc 100644
  }
  
  static void bch_data_insert_endio(struct bio *bio)
-@@ -191,8 +193,9 @@ static void bch_data_insert_endio(struct bio *bio)
- 	bch_bbio_endio(op->c, bio, bio->bi_error, "writing data to cache");
+@@ -191,8 +191,9 @@ static void bch_data_insert_endio(struct bio *bio)
+ 	bch_bbio_endio(op->c, bio, bio->bi_status, "writing data to cache");
  }
  
 -static void bch_data_insert_start(struct closure *cl)

@@ -20,14 +20,14 @@ index 923150d..4470b43 100644
  }
  
  static const struct vga_switcheroo_client_ops i915_switcheroo_ops = {
-@@ -1179,8 +1179,11 @@ int i915_driver_load(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	struct drm_i915_private *dev_priv;
+@@ -1261,8 +1261,11 @@ int i915_driver_load(struct pci_dev *pdev, const struct pci_device_id *ent)
  	int ret;
  
--	if (i915.nuclear_pageflip)
-+	if (i915.nuclear_pageflip) {
+ 	/* Enable nuclear pageflip on ILK+ */
+-	if (!i915.nuclear_pageflip && match_info->gen < 5)
++	if (!i915.nuclear_pageflip && match_info->gen < 5) {
 +		pax_open_kernel();
- 		driver.driver_features |= DRIVER_ATOMIC;
+ 		driver.driver_features &= ~DRIVER_ATOMIC;
 +		pax_close_kernel();
 +	}
  

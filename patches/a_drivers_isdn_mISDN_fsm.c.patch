@@ -13,12 +13,12 @@ index 26477d4..4fa3876 100644
  #if FSM_TIMER_DEBUG
  	if (ft->fi->debug)
  		ft->fi->printdebug(ft->fi, "FsmExpireTimer %lx", (long) ft);
-@@ -110,7 +111,7 @@ void
- mISDN_FsmInitTimer(struct FsmInst *fi, struct FsmTimer *ft)
- {
- 	ft->fi = fi;
--	ft->tl.function = (void *) FsmExpireTimer;
-+	ft->tl.function = FsmExpireTimer;
- 	ft->tl.data = (long) ft;
- #if FSM_TIMER_DEBUG
+@@ -117,7 +117,7 @@ mISDN_FsmInitTimer(struct FsmInst *fi, struct FsmTimer *ft)
  	if (ft->fi->debug)
+ 		ft->fi->printdebug(ft->fi, "mISDN_FsmInitTimer %lx", (long) ft);
+ #endif
+-	setup_timer(&ft->tl, (void *)FsmExpireTimer, (long)ft);
++	setup_timer(&ft->tl, FsmExpireTimer, (long)ft);
+ }
+ EXPORT_SYMBOL(mISDN_FsmInitTimer);
+ 
