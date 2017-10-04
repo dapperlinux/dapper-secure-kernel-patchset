@@ -2,15 +2,6 @@ diff --git a/arch/x86/platform/uv/tlb_uv.c b/arch/x86/platform/uv/tlb_uv.c
 index 9e42842..fad7e1d 100644
 --- a/arch/x86/platform/uv/tlb_uv.c
 +++ b/arch/x86/platform/uv/tlb_uv.c
-@@ -24,7 +24,7 @@
- #include <asm/irq_vectors.h>
- #include <asm/timer.h>
- 
--static struct bau_operations ops;
-+static struct bau_operations *ops __read_only;
- 
- static struct bau_operations uv123_bau_ops = {
- 	.bau_gpa_to_offset       = uv_gpa_to_offset,
 @@ -239,7 +239,7 @@ static void reply_to_message(struct msg_desc *mdp, struct bau_control *bcp,
  	msg = mdp->msg;
  	if (!msg->canceled && do_acknowledge) {
@@ -102,21 +93,21 @@ index 9e42842..fad7e1d 100644
  
  	/* in effect, all msg_type's are set to MSG_NOOP */
  	memset(pqp, 0, sizeof(struct bau_pq_entry) * DEST_Q_SIZE);
-@@ -2166,13 +2166,13 @@ static int __init uv_bau_init(void)
+@@ -2213,13 +2213,13 @@ static int __init uv_bau_init(void)
  		return 0;
  
  	if (is_uv4_hub())
 -		ops = uv4_bau_ops;
 +		ops = &uv4_bau_ops;
  	else if (is_uv3_hub())
--		ops = uv123_bau_ops;
-+		ops = &uv123_bau_ops;
+-		ops = uv2_3_bau_ops;
++		ops = &uv2_3_bau_ops;
  	else if (is_uv2_hub())
--		ops = uv123_bau_ops;
-+		ops = &uv123_bau_ops;
+-		ops = uv2_3_bau_ops;
++		ops = &uv2_3_bau_ops;
  	else if (is_uv1_hub())
--		ops = uv123_bau_ops;
-+		ops = &uv123_bau_ops;
+-		ops = uv1_bau_ops;
++		ops = &uv1_bau_ops;
  
- 	for_each_possible_cpu(cur_cpu) {
- 		mask = &per_cpu(uv_flush_tlb_mask, cur_cpu);
+ 	nuvhubs = uv_num_possible_blades();
+ 	if (nuvhubs < 2) {

@@ -10,8 +10,8 @@ index 77b9222..ee2b836 100644
  conmakehash
  consolemap_deftbl.c*
  cpustr.h
-@@ -121,9 +122,11 @@ dnotify_test
- docproc
+@@ -120,9 +120,11 @@ devicetable-offsets.h
+ dnotify_test
  dslm
  dtc
 +dtc-lexer.lex.c

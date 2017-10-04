@@ -46,17 +46,17 @@ index f2a7faf..4cedb98 100644
  	test    %eax,%eax;			\
  	pop	SKBDATA;			\
  	pop	%r9;				\
-@@ -85,7 +86,7 @@ bpf_slow_path_word:
+@@ -82,7 +82,7 @@ bpf_slow_path_word:
  	js	bpf_error
- 	mov	- MAX_BPF_STACK + 32(%rbp),%eax
+ 	mov	32(%rbp),%eax
  	bswap	%eax
 -	ret
 +	pax_ret __bpf_call_base
  
  bpf_slow_path_half:
  	bpf_slow_path_common(2)
-@@ -93,13 +94,13 @@ bpf_slow_path_half:
- 	mov	- MAX_BPF_STACK + 32(%rbp),%ax
+@@ -90,13 +90,13 @@ bpf_slow_path_half:
+ 	mov	32(%rbp),%ax
  	rol	$8,%ax
  	movzwl	%ax,%eax
 -	ret
@@ -65,7 +65,7 @@ index f2a7faf..4cedb98 100644
  bpf_slow_path_byte:
  	bpf_slow_path_common(1)
  	js	bpf_error
- 	movzbl	- MAX_BPF_STACK + 32(%rbp),%eax
+ 	movzbl	32(%rbp),%eax
 -	ret
 +	pax_ret __bpf_call_base
  
@@ -107,9 +107,9 @@ index f2a7faf..4cedb98 100644
  
  bpf_error:
  # force a return 0 from jit handler
-@@ -153,4 +154,4 @@ bpf_error:
- 	mov	- MAX_BPF_STACK + 16(%rbp),%r14
- 	mov	- MAX_BPF_STACK + 24(%rbp),%r15
+@@ -151,4 +151,4 @@ bpf_error:
+ 	mov	24(%rbp),%r15
+ 	add	$40, %rbp
  	leaveq
 -	ret
 +	pax_ret __bpf_call_base

@@ -138,10 +138,10 @@ index 9f72ca3..a076e4a 100644
  
  			if (!ret)
  				break;
-@@ -340,6 +407,12 @@ static noinline int vmalloc_fault(unsigned long address)
+@@ -347,6 +347,12 @@ static noinline int vmalloc_fault(unsigned long address)
  	 * an interrupt in the middle of a task switch..
  	 */
- 	pgd_paddr = read_cr3();
+ 	pgd_paddr = read_cr3_pa();
 +
 +#ifdef CONFIG_PAX_PER_CPU_PGD
 +	BUG_ON(__pa(get_cpu_pgd(smp_processor_id(), kernel)) != (pgd_paddr & __PHYSICAL_MASK));
@@ -151,17 +151,17 @@ index 9f72ca3..a076e4a 100644
  	pmd_k = vmalloc_sync_one(__va(pgd_paddr), address);
  	if (!pmd_k)
  		return -1;
-@@ -439,11 +512,24 @@ static noinline int vmalloc_fault(unsigned long address)
+@@ -451,11 +457,24 @@ static noinline int vmalloc_fault(unsigned long address)
  	 * happen within a race in page table update. In the later
  	 * case just flush:
  	 */
--	pgd = (pgd_t *)__va(read_cr3()) + pgd_index(address);
+-	pgd = (pgd_t *)__va(read_cr3_pa()) + pgd_index(address);
  	pgd_ref = pgd_offset_k(address);
  	if (pgd_none(*pgd_ref))
  		return -1;
  
 +#ifdef CONFIG_PAX_PER_CPU_PGD
-+	BUG_ON(__pa(get_cpu_pgd(smp_processor_id(), kernel)) != (read_cr3() & __PHYSICAL_MASK));
++	BUG_ON(__pa(get_cpu_pgd(smp_processor_id(), kernel)) != (read_cr3_pa() & __PHYSICAL_MASK));
 +	pgd = pgd_offset_cpu(smp_processor_id(), user, address);
 +	if (pgd_none(*pgd)) {
 +		set_pgd(pgd, *pgd_ref);
@@ -171,7 +171,7 @@ index 9f72ca3..a076e4a 100644
 +	}
 +	pgd = pgd_offset_cpu(smp_processor_id(), kernel, address);
 +#else
-+	pgd = (pgd_t *)__va(read_cr3()) + pgd_index(address);
++	pgd = (pgd_t *)__va(read_cr3_pa()) + pgd_index(address);
 +#endif
 +
  	if (pgd_none(*pgd)) {

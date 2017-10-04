@@ -8,17 +8,17 @@ index 889e761..0e55866 100644
  #include <linux/bootmem.h>	/* for max_low_pfn */
 +#include <linux/tboot.h>
  
- #include <asm/cacheflush.h>
- #include <asm/e820.h>
-@@ -18,6 +19,7 @@
- #include <asm/dma.h>		/* for MAX_DMA_PFN */
+ #include <asm/set_memory.h>
+ #include <asm/e820/api.h>
+@@ -19,6 +20,7 @@
  #include <asm/microcode.h>
  #include <asm/kaslr.h>
+ #include <asm/hypervisor.h>
 +#include <asm/bios_ebda.h>
  
  /*
   * We need to define the tracepoints somewhere, and tlb.c
-@@ -633,7 +635,18 @@ void __init init_mem_mapping(void)
+@@ -634,7 +636,18 @@ void __init init_mem_mapping(void)
  	early_ioremap_page_table_range_init();
  #endif
  
@@ -36,7 +36,7 @@ index 889e761..0e55866 100644
 +
  	__flush_tlb_all();
  
- 	early_memtest(0, max_pfn_mapped << PAGE_SHIFT);
+ 	hypervisor_init_mem_mapping();
 @@ -651,8 +664,40 @@ void __init init_mem_mapping(void)
   * Access has to be given to non-kernel-ram areas as well, these contain the
   * PCI mmio resources as well as potential bios/acpi data regions.
@@ -78,7 +78,7 @@ index 889e761..0e55866 100644
  	if (page_is_ram(pagenr)) {
  		/*
  		 * For disallowed memory regions in the low 1MB range,
-@@ -718,8 +763,33 @@ void free_init_pages(char *what, unsigned long begin, unsigned long end)
+@@ -721,8 +734,33 @@ void free_init_pages(char *what, unsigned long begin, unsigned long end)
  	}
  }
  
@@ -109,6 +109,6 @@ index 889e761..0e55866 100644
  {
 +	gr_init_ebda();
 +
- 	e820_reallocate_tables();
+ 	e820__reallocate_tables();
  
  	free_init_pages("unused kernel",

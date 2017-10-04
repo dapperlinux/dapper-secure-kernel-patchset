@@ -176,7 +176,7 @@ index 3feec5a..0f77f72 100644
  		return -ENOMEM;
  	}
  
-@@ -240,43 +308,47 @@ static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[])
+@@ -248,45 +248,49 @@ static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[])
   * preallocate which never got a corresponding vma will need to be
   * freed manually.
   */
@@ -209,6 +209,7 @@ index 3feec5a..0f77f72 100644
 -static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
 +static void pgd_prepopulate_pxd(struct mm_struct *mm, pgd_t *pgd, pxd_t *pxds[])
  {
+ 	p4d_t *p4d;
 -	pud_t *pud;
 +	pyd_t *pyd;
  	int i;
@@ -217,11 +218,12 @@ index 3feec5a..0f77f72 100644
 +	if (PREALLOCATED_PXDS == 0) /* Work around gcc-3.4.x bug */
  		return;
  
--	pud = pud_offset(pgd, 0);
+ 	p4d = p4d_offset(pgd, 0);
+-	pud = pud_offset(p4d, 0);
 +#ifdef CONFIG_X86_64
 +	pyd = pyd_offset(mm, 0L);
 +#else
-+	pyd = pyd_offset(pgd, 0L);
++	pyd = pyd_offset(p4d, 0L);
 +#endif
  
 -	for (i = 0; i < PREALLOCATED_PMDS; i++, pud++) {

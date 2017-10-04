@@ -11,10 +11,10 @@ index 14b9dd7..774d517 100644
  EXPORT_SYMBOL_GPL(__supported_pte_mask);
  
  int force_personality32;
-@@ -98,7 +98,12 @@ void sync_global_pgds(unsigned long start, unsigned long end)
+@@ -99,7 +99,12 @@ void sync_global_pgds(unsigned long start, unsigned long end)
  
- 	for (address = start; address <= end; address += PGDIR_SIZE) {
- 		const pgd_t *pgd_ref = pgd_offset_k(address);
+ 	for (addr = start; addr <= end; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
+ 		const pgd_t *pgd_ref = pgd_offset_k(addr);
 +
 +#ifdef CONFIG_PAX_PER_CPU_PGD
 +		unsigned long cpu;
@@ -22,8 +22,8 @@ index 14b9dd7..774d517 100644
  		struct page *page;
 +#endif
  
- 		if (pgd_none(*pgd_ref))
- 			continue;
+ 		/* Check for overflow */
+ 		if (addr < start)
 @@ -104,6 +104,20 @@ void sync_global_pgds(unsigned long start, unsigned long end)
  			continue;
  
@@ -45,15 +45,15 @@ index 14b9dd7..774d517 100644
  		list_for_each_entry(page, &pgd_list, lru) {
  			pgd_t *pgd;
  			spinlock_t *pgt_lock;
-@@ -112,6 +126,7 @@ void sync_global_pgds(unsigned long start, unsigned long end)
+@@ -117,6 +122,7 @@ void sync_global_pgds(unsigned long start, unsigned long end)
  			/* the pgt_lock only for Xen */
  			pgt_lock = &pgd_page_get_mm(page)->page_table_lock;
  			spin_lock(pgt_lock);
 +#endif
  
  			if (!pgd_none(*pgd_ref) && !pgd_none(*pgd))
- 				BUG_ON(pgd_page_vaddr(*pgd)
-@@ -120,9 +140,14 @@ void sync_global_pgds(unsigned long start, unsigned long end)
+ 				BUG_ON(pgd_page_vaddr(*pgd) != pgd_page_vaddr(*pgd_ref));
+@@ -124,9 +130,14 @@ void sync_global_pgds(unsigned long start, unsigned long end)
  			if (pgd_none(*pgd))
  				set_pgd(pgd, *pgd_ref);
  
@@ -67,28 +67,37 @@ index 14b9dd7..774d517 100644
 +
  	}
  }
- 
-@@ -163,7 +191,7 @@ static pud_t *fill_pud(pgd_t *pgd, unsigned long vaddr)
+ #else
+@@ -202,7 +213,7 @@ static p4d_t *fill_p4d(pgd_t *pgd, unsigned long vaddr)
  {
  	if (pgd_none(*pgd)) {
- 		pud_t *pud = (pud_t *)spp_getpage();
--		pgd_populate(&init_mm, pgd, pud);
-+		pgd_populate_kernel(&init_mm, pgd, pud);
- 		if (pud != pud_offset(pgd, 0))
+ 		p4d_t *p4d = (p4d_t *)spp_getpage();
+-		pgd_populate(&init_mm, pgd, p4d);
++		pgd_populate_kernel(&init_mm, pgd, p4d);
+ 		if (p4d != p4d_offset(pgd, 0))
  			printk(KERN_ERR "PAGETABLE BUG #00! %p <-> %p\n",
- 			       pud, pud_offset(pgd, 0));
-@@ -175,7 +203,7 @@ static pmd_t *fill_pmd(pud_t *pud, unsigned long vaddr)
+ 			       p4d, p4d_offset(pgd, 0));
+@@ -214,7 +225,7 @@ static pud_t *fill_pud(p4d_t *p4d, unsigned long vaddr)
+ {
+ 	if (p4d_none(*p4d)) {
+ 		pud_t *pud = (pud_t *)spp_getpage();
+-		p4d_populate(&init_mm, p4d, pud);
++		p4d_populate_kernel(&init_mm, p4d, pud);
+ 		if (pud != pud_offset(p4d, 0))
+ 			printk(KERN_ERR "PAGETABLE BUG #01! %p <-> %p\n",
+ 			       pud, pud_offset(p4d, 0));
+@@ -226,7 +237,7 @@ static pmd_t *fill_pmd(pud_t *pud, unsigned long vaddr)
  {
  	if (pud_none(*pud)) {
  		pmd_t *pmd = (pmd_t *) spp_getpage();
 -		pud_populate(&init_mm, pud, pmd);
 +		pud_populate_kernel(&init_mm, pud, pmd);
  		if (pmd != pmd_offset(pud, 0))
- 			printk(KERN_ERR "PAGETABLE BUG #01! %p <-> %p\n",
+ 			printk(KERN_ERR "PAGETABLE BUG #02! %p <-> %p\n",
  			       pmd, pmd_offset(pud, 0));
-@@ -204,7 +232,9 @@ void set_pte_vaddr_pud(pud_t *pud_page, unsigned long vaddr, pte_t new_pte)
- 	pmd = fill_pmd(pud, vaddr);
- 	pte = fill_pte(pmd, vaddr);
+@@ -250,7 +261,9 @@ static void __set_pte_vaddr(pud_t *pud, unsigned long vaddr, pte_t new_pte)
+ 	pmd_t *pmd = fill_pmd(pud, vaddr);
+ 	pte_t *pte = fill_pte(pmd, vaddr);
  
 +	pax_open_kernel();
  	set_pte(pte, new_pte);
@@ -96,15 +105,22 @@ index 14b9dd7..774d517 100644
  
  	/*
  	 * It's enough to flush this one mapping.
-@@ -266,14 +296,12 @@ static void __init __init_extra_mapping(unsigned long phys, unsigned long size,
+@@ -331,20 +344,17 @@ static void __init __init_extra_mapping(unsigned long phys, unsigned long size,
  		pgd = pgd_offset_k((unsigned long)__va(phys));
  		if (pgd_none(*pgd)) {
- 			pud = (pud_t *) spp_getpage();
--			set_pgd(pgd, __pgd(__pa(pud) | _KERNPG_TABLE |
+ 			p4d = (p4d_t *) spp_getpage();
+-			set_pgd(pgd, __pgd(__pa(p4d) | _KERNPG_TABLE |
 -						_PAGE_USER));
-+			set_pgd(pgd, __pgd(__pa(pud) | _PAGE_TABLE));
++			set_pgd(pgd, __pgd(__pa(p4d) | _PAGE_TABLE));
  		}
- 		pud = pud_offset(pgd, (unsigned long)__va(phys));
+ 		p4d = p4d_offset(pgd, (unsigned long)__va(phys));
+ 		if (p4d_none(*p4d)) {
+ 			pud = (pud_t *) spp_getpage();
+-			set_p4d(p4d, __p4d(__pa(pud) | _KERNPG_TABLE |
+-						_PAGE_USER));
++			set_p4d(p4d, __p4d(__pa(pud) | _PAGE_TABLE));
+ 		}
+ 		pud = pud_offset(p4d, (unsigned long)__va(phys));
  		if (pud_none(*pud)) {
  			pmd = (pmd_t *) spp_getpage();
 -			set_pud(pud, __pud(__pa(pmd) | _KERNPG_TABLE |
@@ -122,12 +138,15 @@ index 14b9dd7..774d517 100644
  		spin_unlock(&init_mm.page_table_lock);
  	}
  	__flush_tlb_all();
-@@ -590,7 +618,7 @@ kernel_physical_mapping_init(unsigned long paddr_start,
- 					   page_size_mask);
+@@ -713,9 +723,9 @@ kernel_physical_mapping_init(unsigned long paddr_start,
  
  		spin_lock(&init_mm.page_table_lock);
--		pgd_populate(&init_mm, pgd, pud);
-+		pgd_populate_kernel(&init_mm, pgd, pud);
+ 		if (IS_ENABLED(CONFIG_X86_5LEVEL))
+-			pgd_populate(&init_mm, pgd, p4d);
++			pgd_populate_kernel(&init_mm, pgd, p4d);
+ 		else
+-			p4d_populate(&init_mm, p4d_offset(pgd, vaddr), (pud_t *) p4d);
++			p4d_populate_kernel(&init_mm, p4d_offset(pgd, vaddr), (pud_t *) p4d);
  		spin_unlock(&init_mm.page_table_lock);
  		pgd_changed = true;
  	}

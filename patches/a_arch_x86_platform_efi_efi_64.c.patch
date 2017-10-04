@@ -2,9 +2,9 @@ diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
 index 2f25a36..3caf893 100644
 --- a/arch/x86/platform/efi/efi_64.c
 +++ b/arch/x86/platform/efi/efi_64.c
-@@ -93,6 +93,11 @@ pgd_t * __init efi_call_phys_prolog(void)
- 		vaddress = (unsigned long)__va(pgd * PGDIR_SIZE);
- 		set_pgd(pgd_offset_k(pgd * PGDIR_SIZE), *pgd_offset_k(vaddress));
+@@ -134,6 +134,11 @@ pgd_t * __init efi_call_phys_prolog(void)
+ 			}
+ 		}
  	}
 +
 +#ifdef CONFIG_PAX_PER_CPU_PGD

@@ -59,8 +59,8 @@ index 8aa6bea..1181e44 100644
  			WARN_ONCE(1,
  				  "x86/mm: Found insecure W+X mapping at address %p/%pS\n",
  				  (void *)st->start_address,
-@@ -305,9 +324,10 @@ static void walk_pmd_level(struct seq_file *m, struct pg_state *st, pud_t addr,
- 	start = (pmd_t *) pud_page_vaddr(addr);
+@@ -313,9 +313,10 @@ static void walk_pmd_level(struct seq_file *m, struct pg_state *st, pud_t addr,
+ 	start = (pmd_t *)pud_page_vaddr(addr);
  	for (i = 0; i < PTRS_PER_PMD; i++) {
  		st->current_address = normalize_addr(P + i * PMD_LEVEL_MULT);
 +		prot = pmd_flags(*start);
@@ -84,7 +84,7 @@ index 8aa6bea..1181e44 100644
  				note_page(m, st, __pgprot(prot), 2);
  			} else {
  				walk_pmd_level(m, st, *start,
-@@ -396,9 +417,10 @@ static void ptdump_walk_pgd_level_core(struct seq_file *m, pgd_t *pgd,
+@@ -450,9 +451,10 @@ static void ptdump_walk_pgd_level_core(struct seq_file *m, pgd_t *pgd,
  
  	for (i = 0; i < PTRS_PER_PGD; i++) {
  		st.current_address = normalize_addr(i * PGD_LEVEL_MULT);
@@ -95,4 +95,4 @@ index 8aa6bea..1181e44 100644
 -				prot = pgd_flags(*start);
  				note_page(m, &st, __pgprot(prot), 1);
  			} else {
- 				walk_pud_level(m, &st, *start,
+ 				walk_p4d_level(m, &st, *start,

@@ -43,7 +43,7 @@ index e3353c9..2a8fbe5 100644
  	prot = __pgprot(pgprot_val(prot) & ~pgprot_val(forbidden));
  
  	return prot;
-@@ -457,23 +464,37 @@ EXPORT_SYMBOL_GPL(slow_virt_to_phys);
+@@ -491,18 +491,31 @@ EXPORT_SYMBOL_GPL(slow_virt_to_phys);
  static void __set_pmd_pte(pte_t *kpte, unsigned long address, pte_t pte)
  {
  	/* change init_mm */
@@ -68,14 +68,16 @@ index e3353c9..2a8fbe5 100644
 +			pgd_t *pgd = (pgd_t *)page_address(page);
 +#endif
 +
+ 			p4d_t *p4d;
  			pud_t *pud;
  			pmd_t *pmd;
  
 -			pgd = (pgd_t *)page_address(page) + pgd_index(address);
 +			pgd += pgd_index(address);
- 			pud = pud_offset(pgd, address);
+ 			p4d = p4d_offset(pgd, address);
+ 			pud = pud_offset(p4d, address);
  			pmd = pmd_offset(pud, address);
- 			set_pte_atomic((pte_t *)pmd, pte);
+@@ -510,6 +523,7 @@ static void __set_pmd_pte(pte_t *kpte, unsigned long address, pte_t pte)
  		}
  	}
  #endif

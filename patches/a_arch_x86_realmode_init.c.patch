@@ -17,12 +17,12 @@ index 5db706f1..267f907 100644
  	trampoline_header->gdt_limit = __BOOT_DS + 7;
  	trampoline_header->gdt_base = __pa_symbol(boot_gdt);
  #else
-@@ -101,7 +107,7 @@ static void __init setup_real_mode(void)
+@@ -101,7 +101,7 @@ static void __init setup_real_mode(void)
  	*trampoline_cr4_features = mmu_cr4_features;
  
  	trampoline_pgd = (u64 *) __va(real_mode_header->trampoline_pgd);
 -	trampoline_pgd[0] = trampoline_pgd_entry.pgd;
 +	trampoline_pgd[0] = trampoline_pgd_entry.pgd & ~_PAGE_NX;
- 	trampoline_pgd[511] = init_level4_pgt[511].pgd;
+ 	trampoline_pgd[511] = init_top_pgt[511].pgd;
  #endif
  }
