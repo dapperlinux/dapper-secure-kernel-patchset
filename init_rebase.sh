@@ -1,5 +1,5 @@
 KERNEL_MAJOR_VERSION=4.13
-KERNEL_VERSION=4.13.4
+KERNEL_VERSION=4.13.5
 
 echo "Setting up rebase directory..."
 mkdir rebase
