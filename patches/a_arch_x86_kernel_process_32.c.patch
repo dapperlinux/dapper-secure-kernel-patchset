@@ -2,7 +2,7 @@ diff --git a/arch/x86/kernel/process_32.c b/arch/x86/kernel/process_32.c
 index bd7be8e..631798b 100644
 --- a/arch/x86/kernel/process_32.c
 +++ b/arch/x86/kernel/process_32.c
-@@ -67,16 +67,15 @@ void __show_regs(struct pt_regs *regs, int all)
+@@ -69,12 +69,11 @@ void __show_regs(struct pt_regs *regs, int all)
  	if (user_mode(regs)) {
  		sp = regs->sp;
  		ss = regs->ss & 0xffff;
@@ -16,11 +16,6 @@ index bd7be8e..631798b 100644
  
  	printk(KERN_DEFAULT "EIP: %pS\n", (void *)regs->ip);
  	printk(KERN_DEFAULT "EFLAGS: %08lx CPU: %d\n", regs->flags,
--		smp_processor_id());
-+		raw_smp_processor_id());
- 
- 	printk(KERN_DEFAULT "EAX: %08lx EBX: %08lx ECX: %08lx EDX: %08lx\n",
- 		regs->ax, regs->bx, regs->cx, regs->dx);
 @@ -121,7 +120,7 @@ void release_thread(struct task_struct *dead_task)
  int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
  	unsigned long arg, struct task_struct *p, unsigned long tls)

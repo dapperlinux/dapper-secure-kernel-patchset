@@ -1,0 +1,569 @@
+diff --git a/README.md b/README.md
+index aa9f7c7..d9d0cac 100644
+--- a/README.md
++++ b/README.md
+@@ -6,7 +6,7 @@ The Dapper Secure Kernel Patchset is an effort to forward port the now discontin
+ ## Currently Released Patch:
+ | Linux Version | Dapper Secure Kernel Patch | Status                  |
+ | ------------- | -------------------------- | ----------------------- |
+-| 4.13.4        | Not availible yet          | Has merge conflicts     |
++| 4.13.5        | Not availible yet          | Has merge conflicts     |
+ 
+ ## Features
+ 
+@@ -16,7 +16,7 @@ The Dapper Secure Kernel Patchset is an effort to forward port the now discontin
+ | Task                                               | Status    |
+ | ---------------------------------------------------| --------- |
+ | Resolve Merge Conflicts to Linux 4.13              | Started   |
+-| Resolve Merge Conflicts to Minor Release (4.13.4)  | Waiting   |
++| Resolve Merge Conflicts to Minor Release (4.13.5)  | Waiting   |
+ | Resolve Merge Conflicts with Patch Fuzz Disabled   | Waiting   |
+ | Fix Compiler Errors and Resolve Merge Mistakes     | Waiting   |
+ | Run and Test Kernel, Ensuring PaX Test Passes      | Waiting   |
+diff --git a/patches/a_arch_x86_kernel_process.c.patch b/patches/a_arch_x86_kernel_process.c.patch
+index 34a284d..88c6e4a 100644
+--- a/patches/a_arch_x86_kernel_process.c.patch
++++ b/patches/a_arch_x86_kernel_process.c.patch
+@@ -111,11 +111,12 @@ index 8e10e72..fdd36da 100644
+  unsigned long arch_randomize_brk(struct mm_struct *mm)
+  {
+  	return randomize_page(mm->brk, 0x02000000);
+-@@ -583,3 +601,35 @@ unsigned long get_wchan(struct task_struct *p)
+- 	put_task_stack(p);
+- 	return ret;
++@@ -618,3 +618,36 @@ long do_arch_prctl_common(struct task_struct *task, int option,
++ 
++ 	return -EINVAL;
+  }
+ +
+++
+ +#ifdef CONFIG_PAX_RANDKSTACK
+ +void pax_randomize_kstack(struct pt_regs *regs)
+ +{
+diff --git a/patches/a_arch_x86_kernel_process_32.c.patch b/patches/a_arch_x86_kernel_process_32.c.patch
+index 1f1316f..6408afa 100644
+--- a/patches/a_arch_x86_kernel_process_32.c.patch
++++ b/patches/a_arch_x86_kernel_process_32.c.patch
+@@ -2,7 +2,7 @@ diff --git a/arch/x86/kernel/process_32.c b/arch/x86/kernel/process_32.c
+ index bd7be8e..631798b 100644
+ --- a/arch/x86/kernel/process_32.c
+ +++ b/arch/x86/kernel/process_32.c
+-@@ -67,16 +67,15 @@ void __show_regs(struct pt_regs *regs, int all)
++@@ -69,12 +69,11 @@ void __show_regs(struct pt_regs *regs, int all)
+  	if (user_mode(regs)) {
+  		sp = regs->sp;
+  		ss = regs->ss & 0xffff;
+@@ -16,11 +16,6 @@ index bd7be8e..631798b 100644
+  
+  	printk(KERN_DEFAULT "EIP: %pS\n", (void *)regs->ip);
+  	printk(KERN_DEFAULT "EFLAGS: %08lx CPU: %d\n", regs->flags,
+--		smp_processor_id());
+-+		raw_smp_processor_id());
+- 
+- 	printk(KERN_DEFAULT "EAX: %08lx EBX: %08lx ECX: %08lx EDX: %08lx\n",
+- 		regs->ax, regs->bx, regs->cx, regs->dx);
+ @@ -121,7 +120,7 @@ void release_thread(struct task_struct *dead_task)
+  int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
+  	unsigned long arg, struct task_struct *p, unsigned long tls)
+diff --git a/patches/a_arch_x86_kernel_process_64.c.patch b/patches/a_arch_x86_kernel_process_64.c.patch
+index 3d725f4..8c9ae6e 100644
+--- a/patches/a_arch_x86_kernel_process_64.c.patch
++++ b/patches/a_arch_x86_kernel_process_64.c.patch
+@@ -35,16 +35,16 @@ index b3760b3..cb95ed8 100644
+  		return 0;
+  	}
+  	frame->bx = 0;
+-@@ -270,7 +270,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
++@@ -402,7 +402,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+  	struct fpu *prev_fpu = &prev->fpu;
+  	struct fpu *next_fpu = &next->fpu;
+  	int cpu = smp_processor_id();
+ -	struct tss_struct *tss = &per_cpu(cpu_tss, cpu);
+ +	struct tss_struct *tss = cpu_tss + cpu;
+- 	unsigned prev_fsindex, prev_gsindex;
+  
+  	switch_fpu_prepare(prev_fpu, cpu);
+-@@ -314,6 +318,10 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
++ 
++@@ -450,6 +450,10 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+  	if (unlikely(next->ds | prev->ds))
+  		loadsegment(ds, next->ds);
+  
+@@ -52,9 +52,9 @@ index b3760b3..cb95ed8 100644
+ +	if (unlikely(next->ss != prev->ss))
+ +		loadsegment(ss, next->ss);
+ +
+- 	/*
+- 	 * Switch FS and GS.
+- 	 *
++ 	load_seg_legacy(prev->fsindex, prev->fsbase,
++ 			next->fsindex, next->fsbase, FS);
++ 	load_seg_legacy(prev->gsindex, prev->gsbase,
+ @@ -427,6 +435,8 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+  	/* Reload esp0 and ss1.  This changes current_thread_info(). */
+  	load_sp0(tss, next);
+@@ -64,12 +64,3 @@ index b3760b3..cb95ed8 100644
+  	/*
+  	 * Now maybe reload the debug registers and handle I/O bitmaps
+  	 */
+-@@ -612,7 +622,7 @@ long do_arch_prctl(struct task_struct *task, int code, unsigned long addr)
+- 	return ret;
+- }
+- 
+--long sys_arch_prctl(int code, unsigned long addr)
+-+SYSCALL_DEFINE2(arch_prctl, int, code, unsigned long, addr)
+- {
+- 	return do_arch_prctl(current, code, addr);
+- }
+diff --git a/patches/a_arch_x86_kernel_ptrace.c.patch b/patches/a_arch_x86_kernel_ptrace.c.patch
+index ef173af..694fde3 100644
+--- a/patches/a_arch_x86_kernel_ptrace.c.patch
++++ b/patches/a_arch_x86_kernel_ptrace.c.patch
+@@ -11,27 +11,20 @@ index 0e63c02..9ee59fb 100644
+  		return sp;
+  
+  	prev_esp = (u32 *)(context);
+-@@ -411,6 +411,20 @@ static int putreg(struct task_struct *child,
+- 		if (child->thread.gsbase != value)
+- 			return do_arch_prctl(child, ARCH_SET_GS, value);
+- 		return 0;
+-+
+-+	case offsetof(struct user_regs_struct,ip):
+-+		/*
++@@ -406,6 +406,13 @@ static int putreg(struct task_struct *child,
++ 	case offsetof(struct user_regs_struct,gs_base):
++ 		/*
++ 		 * Exactly the same here as the %fs handling above.
+++		 *
+ +		 * Protect against any attempt to set ip to an
+ +		 * impossible address.  There are dragons lurking if the
+ +		 * address is noncanonical.  (This explicitly allows
+ +		 * setting ip to TASK_SIZE_MAX, because user code can do
+ +		 * that all by itself by running off the end of its
+ +		 * address space.
+-+		 */
+-+		if (value > TASK_SIZE_MAX)
+-+			return -EIO;
+-+		break;
+-+
+- #endif
+- 	}
+- 
++ 		 */
++ 		if (value >= TASK_SIZE_MAX)
++ 			return -EIO;
+ @@ -533,7 +547,7 @@ static void ptrace_triggered(struct perf_event *bp,
+  static unsigned long ptrace_get_dr7(struct perf_event *bp[])
+  {
+diff --git a/patches/a_arch_x86_kernel_setup.c.patch b/patches/a_arch_x86_kernel_setup.c.patch
+index 1e09fdb..e0583fc 100644
+--- a/patches/a_arch_x86_kernel_setup.c.patch
++++ b/patches/a_arch_x86_kernel_setup.c.patch
+@@ -10,15 +10,15 @@ index 9c337b0..16b315a 100644
+  
+  /*
+   * max_low_pfn_mapped: highest direct mapped pfn under 4GB
+-@@ -178,7 +179,7 @@ struct cpuinfo_x86 new_cpu_data = {
+- 	.wp_works_ok = -1,
+- };
++@@ -178,7 +178,7 @@ static struct resource bss_resource = {
++ struct cpuinfo_x86 new_cpu_data;
++ 
+  /* common cpu data for all cpus */
+--struct cpuinfo_x86 boot_cpu_data __read_mostly = {
+-+struct cpuinfo_x86 boot_cpu_data __read_only = {
+- 	.wp_works_ok = -1,
+- };
++-struct cpuinfo_x86 boot_cpu_data __read_mostly;
+++struct cpuinfo_x86 boot_cpu_data __read_only;
+  EXPORT_SYMBOL(boot_cpu_data);
++ 
++ unsigned int def_to_bigsmp;
+ @@ -202,17 +203,19 @@ struct ist_info ist_info;
+  #endif
+  
+@@ -43,14 +43,14 @@ index 9c337b0..16b315a 100644
+  #endif
+  
+  /* Boot loader ID and version as integers, for the benefit of proc_dointvec */
+-@@ -761,7 +764,7 @@ static void __init trim_bios_range(void)
++@@ -738,7 +738,7 @@ static void __init trim_bios_range(void)
+  	 * area (640->1Mb) as ram even though it is not.
+  	 * take them out.
+  	 */
+--	e820_remove_range(BIOS_BEGIN, BIOS_END - BIOS_BEGIN, E820_RAM, 1);
+-+	e820_remove_range(ISA_START_ADDRESS, ISA_END_ADDRESS - ISA_START_ADDRESS, E820_RAM, 1);
++-	e820__range_remove(BIOS_BEGIN, BIOS_END - BIOS_BEGIN, E820_TYPE_RAM, 1);
+++	e820__range_remove(ISA_START_ADDRESS, ISA_END_ADDRESS - ISA_START_ADDRESS, E820_TYPE_RAM, 1);
+  
+- 	sanitize_e820_map(e820->map, ARRAY_SIZE(e820->map), &e820->nr_map);
++ 	e820__update_table(e820_table);
+  }
+ @@ -769,7 +772,7 @@ static void __init trim_bios_range(void)
+  /* called before trim_bios_range() to spare extra sanitize */
+diff --git a/patches/a_arch_x86_kernel_setup_percpu.c.patch b/patches/a_arch_x86_kernel_setup_percpu.c.patch
+index 444a104..08ccb3f 100644
+--- a/patches/a_arch_x86_kernel_setup_percpu.c.patch
++++ b/patches/a_arch_x86_kernel_setup_percpu.c.patch
+@@ -29,7 +29,7 @@ index 2bbd27f..99987a3 100644
+  
+  	for_each_possible_cpu(cpu) {
+  		int node = early_cpu_to_node(cpu);
+-@@ -155,10 +153,10 @@ static inline void setup_percpu_segment(int cpu)
++@@ -156,10 +156,10 @@ static inline void setup_percpu_segment(int cpu)
+  {
+  #ifdef CONFIG_X86_32
+  	struct desc_struct gdt;
+@@ -40,7 +40,7 @@ index 2bbd27f..99987a3 100644
+ -	gdt.s = 1;
+ +	pack_descriptor(&gdt, base, (VMALLOC_END - base - 1) >> PAGE_SHIFT,
+ +			0x83 | DESCTYPE_S, 0xC);
+- 	write_gdt_entry(get_cpu_gdt_table(cpu),
++ 	write_gdt_entry(get_cpu_gdt_rw(cpu),
+  			GDT_ENTRY_PERCPU, &gdt, DESCTYPE_S);
+  #endif
+ @@ -219,6 +217,11 @@ void __init setup_per_cpu_areas(void)
+diff --git a/patches/a_arch_x86_kernel_smpboot.c.patch b/patches/a_arch_x86_kernel_smpboot.c.patch
+index 2ba290a..746ce5f 100644
+--- a/patches/a_arch_x86_kernel_smpboot.c.patch
++++ b/patches/a_arch_x86_kernel_smpboot.c.patch
+@@ -48,17 +48,17 @@ index 36171bc..e32a454 100644
+  }
+  
+  /*
+-@@ -983,7 +983,9 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle)
++@@ -983,7 +983,9 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
+  	unsigned long timeout;
+  
+  	idle->thread.sp = (unsigned long)task_pt_regs(idle);
+ +	pax_open_kernel();
+- 	early_gdt_descr.address = (unsigned long)get_cpu_gdt_table(cpu);
++ 	early_gdt_descr.address = (unsigned long)get_cpu_gdt_rw(cpu);
+ +	pax_close_kernel();
+  	initial_code = (unsigned long)start_secondary;
+  	initial_stack  = idle->thread.sp;
+  
+-@@ -1108,6 +1111,15 @@ int native_cpu_up(unsigned int cpu, struct task_struct *tidle)
++@@ -1126,6 +1128,15 @@ int native_cpu_up(unsigned int cpu, struct task_struct *tidle)
+  
+  	common_cpu_up(cpu, tidle);
+  
+@@ -71,6 +71,6 @@ index 36171bc..e32a454 100644
+ +			KERNEL_PGD_PTRS);
+ +#endif
+ +
+- 	err = do_boot_cpu(apicid, cpu, tidle);
++ 	err = do_boot_cpu(apicid, cpu, tidle, &cpu0_nmi_registered);
+  	if (err) {
+  		pr_err("do_boot_cpu failed(%d) to wakeup CPU#%u\n", err, cpu);
+diff --git a/patches/a_arch_x86_kernel_sys_x86_64.c.patch b/patches/a_arch_x86_kernel_sys_x86_64.c.patch
+index ec1b6b7..d387920 100644
+--- a/patches/a_arch_x86_kernel_sys_x86_64.c.patch
++++ b/patches/a_arch_x86_kernel_sys_x86_64.c.patch
+@@ -2,7 +2,7 @@ diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
+ index a55ed63..665be0a 100644
+ --- a/arch/x86/kernel/sys_x86_64.c
+ +++ b/arch/x86/kernel/sys_x86_64.c
+-@@ -97,8 +97,8 @@ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
++@@ -100,8 +100,8 @@ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+  	return error;
+  }
+  
+@@ -11,17 +11,8 @@ index a55ed63..665be0a 100644
+ +static void find_start_end(struct mm_struct *mm, unsigned long flags,
+ +			   unsigned long *begin, unsigned long *end)
+  {
+- 	if (!test_thread_flag(TIF_ADDR32) && (flags & MAP_32BIT)) {
++ 	if (!in_compat_syscall() && (flags & MAP_32BIT)) {
+  		/* This is usually used needed to map code in small
+-@@ -114,7 +114,7 @@ static void find_start_end(unsigned long flags, unsigned long *begin,
+- 			*begin = randomize_page(*begin, 0x02000000);
+- 		}
+- 	} else {
+--		*begin = current->mm->mmap_legacy_base;
+-+		*begin = mm->mmap_legacy_base;
+- 		*end = TASK_SIZE;
+- 	}
+- }
+ @@ -128,20 +128,24 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+  	struct vm_area_struct *vma;
+  	struct vm_unmapped_area_info info;
+@@ -74,8 +65,8 @@ index a55ed63..665be0a 100644
+  
+  	/* requested length too big for entire address space */
+  	if (len > TASK_SIZE)
+-@@ -179,12 +183,15 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
+- 	if (!test_thread_flag(TIF_ADDR32) && (flags & MAP_32BIT))
++@@ -182,12 +182,15 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
++ 	if (!in_compat_syscall() && (flags & MAP_32BIT))
+  		goto bottomup;
+  
+ +#ifdef CONFIG_PAX_RANDMMAP
+diff --git a/patches/a_arch_x86_kernel_tboot.c.patch b/patches/a_arch_x86_kernel_tboot.c.patch
+index 2ca407d..32ebda5 100644
+--- a/patches/a_arch_x86_kernel_tboot.c.patch
++++ b/patches/a_arch_x86_kernel_tboot.c.patch
+@@ -4,7 +4,7 @@ index 8402907..b0e4a72 100644
+ +++ b/arch/x86/kernel/tboot.c
+ @@ -44,6 +44,7 @@
+  #include <asm/setup.h>
+- #include <asm/e820.h>
++ #include <asm/e820/api.h>
+  #include <asm/io.h>
+ +#include <asm/tlbflush.h>
+  
+diff --git a/patches/a_arch_x86_kernel_traps.c.patch b/patches/a_arch_x86_kernel_traps.c.patch
+index b8e6370..09f162b 100644
+--- a/patches/a_arch_x86_kernel_traps.c.patch
++++ b/patches/a_arch_x86_kernel_traps.c.patch
+@@ -29,36 +29,36 @@ index bd4e3d4..4cff0f1 100644
+  		  struct pt_regs *regs,	long error_code)
+  {
+  	if (v8086_mode(regs)) {
+-@@ -189,8 +189,30 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
+- 		if (!fixup_exception(regs, trapnr)) {
+- 			tsk->thread.error_code = error_code;
+- 			tsk->thread.trap_nr = trapnr;
++@@ -226,9 +226,30 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
++ 
++ 		tsk->thread.error_code = error_code;
++ 		tsk->thread.trap_nr = trapnr;
+ +
+ +#if defined(CONFIG_X86_32) && defined(CONFIG_PAX_KERNEXEC)
+-+			if (trapnr == X86_TRAP_SS && ((regs->cs & 0xFFFF) == __KERNEL_CS || (regs->cs & 0xFFFF) == __KERNEXEC_KERNEL_CS))
+-+				str = "PAX: suspicious stack segment fault";
+++		if (trapnr == X86_TRAP_SS && ((regs->cs & 0xFFFF) == __KERNEL_CS || (regs->cs & 0xFFFF) == __KERNEXEC_KERNEL_CS))
+++			str = "PAX: suspicious stack segment fault";
+ +#endif
+ +
+ +#ifdef CONFIG_PAX_RAP
+-+			if (trapnr == X86_RAP_CALL_VECTOR) {
+-+				str = "PAX: overwritten function pointer detected";
+-+				regs->ip -= 2; // sizeof int $xx
+-+			} else if (trapnr == X86_RAP_RET_VECTOR) {
+-+				str = "PAX: overwritten return address detected";
+-+				regs->ip -= 2; // sizeof int $xx
+-+			}
+++		if (trapnr == X86_RAP_CALL_VECTOR) {
+++			str = "PAX: overwritten function pointer detected";
+++			regs->ip -= 2; // sizeof int $xx
+++		} else if (trapnr == X86_RAP_RET_VECTOR) {
+++			str = "PAX: overwritten return address detected";
+++			regs->ip -= 2; // sizeof int $xx
+++		}
+ +#endif
+ +
+- 			die(str, regs, error_code);
+- 		}
+-+
++ 		die(str, regs, error_code);
++ 	}
++ 
+ +#ifdef CONFIG_PAX_REFCOUNT
+-+		if (trapnr == X86_REFCOUNT_VECTOR)
+-+			pax_report_refcount_error(regs, str);
+++	if (trapnr == X86_REFCOUNT_VECTOR)
+++		pax_report_refcount_error(regs, str);
+ +#endif
+ +
+- 		return 0;
+- 	}
++ 	return -1;
++ }
+  
+ @@ -229,7 +251,7 @@ static siginfo_t *fill_trap_info(struct pt_regs *regs, int signr, int trapnr,
+  }
+diff --git a/patches/a_arch_x86_kvm_i8259.c.patch b/patches/a_arch_x86_kvm_i8259.c.patch
+index e853091..aec7371 100644
+--- a/patches/a_arch_x86_kvm_i8259.c.patch
++++ b/patches/a_arch_x86_kvm_i8259.c.patch
+@@ -18,7 +18,7 @@ index 7cc2360..6ae1236 100644
+ -	__releases(&s->lock)
+  {
+  	bool wakeup = s->wakeup_needed;
+- 	struct kvm_vcpu *vcpu, *found = NULL;
++ 	struct kvm_vcpu *vcpu;
+ @@ -72,6 +72,7 @@ static void pic_unlock(struct kvm_pic *s)
+  	}
+  }
+@@ -35,12 +35,12 @@ index 7cc2360..6ae1236 100644
+  static inline void pic_intack(struct kvm_kpic_state *s, int irq)
+  {
+  	s->isr |= 1 << irq;
+-@@ -273,6 +275,7 @@ int kvm_pic_read_irq(struct kvm *kvm)
++@@ -268,6 +268,7 @@ int kvm_pic_read_irq(struct kvm *kvm)
+  	return intno;
+  }
+  
+-+void kvm_pic_reset(struct kvm_kpic_state *s) __must_hold(s);
+- void kvm_pic_reset(struct kvm_kpic_state *s)
+++static void kvm_pic_reset(struct kvm_kpic_state *s) __must_hold(s);
++ static void kvm_pic_reset(struct kvm_kpic_state *s)
+  {
+  	int irq, i;
+ @@ -307,6 +310,7 @@ void kvm_pic_reset(struct kvm_kpic_state *s)
+@@ -59,11 +59,11 @@ index 7cc2360..6ae1236 100644
+  static u32 pic_poll_read(struct kvm_kpic_state *s, u32 addr1)
+  {
+  	int ret;
+-@@ -422,6 +427,7 @@ static u32 pic_poll_read(struct kvm_kpic_state *s, u32 addr1)
++@@ -417,6 +418,7 @@ static u32 pic_poll_read(struct kvm_kpic_state *s, u32 addr1)
+  	return ret;
+  }
+  
+-+static u32 pic_ioport_read(void *opaque, u32 addr1) __must_hold(opaque);
+- static u32 pic_ioport_read(void *opaque, u32 addr1)
+++static u32 pic_ioport_read(void *opaque, u32 addr) __must_hold(opaque);
++ static u32 pic_ioport_read(void *opaque, u32 addr)
+  {
+  	struct kvm_kpic_state *s = opaque;
+diff --git a/patches/a_arch_x86_kvm_vmx.c.patch b/patches/a_arch_x86_kvm_vmx.c.patch
+index 1eb9539..feec170 100644
+--- a/patches/a_arch_x86_kvm_vmx.c.patch
++++ b/patches/a_arch_x86_kvm_vmx.c.patch
+@@ -19,9 +19,9 @@ index 43b55ef..b88294e 100644
+  {
+          BUILD_BUG_ON_MSG(__builtin_constant_p(field) && ((field) & 0x6000) == 0x2000,
+  			 "vmcs_set_bits does not support 64-bit fields");
+-@@ -2284,6 +2284,10 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
++@@ -2279,6 +2279,10 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+  			    (unsigned long)this_cpu_ptr(&cpu_tss));
+- 		vmcs_writel(HOST_GDTR_BASE, gdt->address);
++ 		vmcs_writel(HOST_GDTR_BASE, (unsigned long)gdt);   /* 22.2.4 */
+  
+ +#ifdef CONFIG_PAX_PER_CPU_PGD
+ +		vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
+@@ -39,13 +39,15 @@ index 43b55ef..b88294e 100644
+  {
+  	u64 host_tsc, tsc_offset;
+  
+-@@ -5026,7 +5026,10 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
+- 	cr0 = read_cr0();
+- 	WARN_ON(cr0 & X86_CR0_TS);
+- 	vmcs_writel(HOST_CR0, cr0);  /* 22.2.3 */
++@@ -5145,9 +5149,12 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
++ 	 * Save the most likely value for this task's CR3 in the VMCS.
++ 	 * We can't use __get_current_cr3_fast() because we're not atomic.
++ 	 */
+ +
+ +#ifndef CONFIG_PAX_PER_CPU_PGD
+- 	vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
++ 	cr3 = __read_cr3();
++ 	vmcs_writel(HOST_CR3, cr3);		/* 22.2.3  FIXME: shadow tables */
++ 	vmx->loaded_vmcs->vmcs_host_cr3 = cr3;
+ +#endif
+  
+  	/* Save the most likely value for this task's CR4 in the VMCS. */
+diff --git a/patches/a_arch_x86_kvm_x86.c.patch b/patches/a_arch_x86_kvm_x86.c.patch
+index cde2614..df39188 100644
+--- a/patches/a_arch_x86_kvm_x86.c.patch
++++ b/patches/a_arch_x86_kvm_x86.c.patch
+@@ -113,15 +113,15 @@ index e5bc139..5a1766b 100644
+  			host_xcr0 | XSTATE_COMPACTION_ENABLED;
+  
+  	/*
+-@@ -7410,7 +7414,7 @@ void kvm_load_guest_fpu(struct kvm_vcpu *vcpu)
+- 	 */
++@@ -7632,7 +7632,7 @@ void kvm_load_guest_fpu(struct kvm_vcpu *vcpu)
+  	vcpu->guest_fpu_loaded = 1;
+  	__kernel_fpu_begin();
+--	__copy_kernel_to_fpregs(&vcpu->arch.guest_fpu.state);
+-+	__copy_kernel_to_fpregs(vcpu->arch.guest_fpu.state);
++ 	/* PKRU is separately restored in kvm_x86_ops->run.  */
++-	__copy_kernel_to_fpregs(&vcpu->arch.guest_fpu.state,
+++	__copy_kernel_to_fpregs(vcpu->arch.guest_fpu.state,
++ 				~XFEATURE_MASK_PKRU);
+  	trace_kvm_fpu(1);
+  }
+- 
+ @@ -7710,6 +7714,8 @@ bool kvm_vcpu_is_bsp(struct kvm_vcpu *vcpu)
+  struct static_key kvm_no_apic_vcpu __read_mostly;
+  EXPORT_SYMBOL_GPL(kvm_no_apic_vcpu);
+diff --git a/patches/a_arch_x86_lib_copy_user_64.S.patch b/patches/a_arch_x86_lib_copy_user_64.S.patch
+index dea5154..3728800 100644
+--- a/patches/a_arch_x86_lib_copy_user_64.S.patch
++++ b/patches/a_arch_x86_lib_copy_user_64.S.patch
+@@ -97,13 +97,15 @@ index d376e4b..8e52373 100644
+  	jmp copy_user_handle_tail
+  	.previous
+  
+-@@ -220,16 +207,19 @@ EXPORT_SYMBOL(copy_user_generic_string)
++@@ -174,18 +174,21 @@ EXPORT_SYMBOL(copy_user_generic_string)
+   * eax uncopied bytes or 0 if successful.
+   */
+  ENTRY(copy_user_enhanced_fast_string)
+ -	ASM_STAC
+ +	FRAME_BEGIN
+ +	ASM_USER_ACCESS_BEGIN
++ 	cmpl $64,%edx
++ 	jb .L_copy_short_string	/* less then 64 bytes, avoid the costly 'rep' */
+  	movl %edx,%ecx
+  1:	rep
+  	movsb
+diff --git a/patches/a_arch_x86_lib_csum-copy_64.S.patch b/patches/a_arch_x86_lib_csum-copy_64.S.patch
+index 427a3ae..e9b4c37 100644
+--- a/patches/a_arch_x86_lib_csum-copy_64.S.patch
++++ b/patches/a_arch_x86_lib_csum-copy_64.S.patch
+@@ -10,7 +10,7 @@ index 7e48807..627b003 100644
+  
+  /*
+   * Checksum copy with exception handling.
+-@@ -52,7 +53,7 @@ ENTRY(csum_partial_copy_generic)
++@@ -52,7 +52,7 @@ ENTRY(csum_partial_copy_generic)
+  .Lignore:
+  	subq  $7*8, %rsp
+  	movq  %rbx, 2*8(%rsp)
+@@ -18,8 +18,8 @@ index 7e48807..627b003 100644
+ +	movq  %r15, 3*8(%rsp)
+  	movq  %r14, 4*8(%rsp)
+  	movq  %r13, 5*8(%rsp)
+- 	movq  %rbp, 6*8(%rsp)
+-@@ -64,16 +65,16 @@ ENTRY(csum_partial_copy_generic)
++ 	movq  %r15, 6*8(%rsp)
++@@ -64,16 +64,16 @@ ENTRY(csum_partial_copy_generic)
+  	movl  %edx, %ecx
+  
+  	xorl  %r9d, %r9d
+@@ -36,7 +36,7 @@ index 7e48807..627b003 100644
+  	/* r9: zero, r8: temp2, rbx: temp1, rax: sum, rcx: saved length */
+ -	/* r11:	temp3, rdx: temp4, r12 loopcnt */
+ +	/* r11:	temp3, rdx: temp4, r15 loopcnt */
+- 	/* r10:	temp5, rbp: temp6, r14 temp7, r13 temp8 */
++ 	/* r10:	temp5, r15: temp6, r14 temp7, r13 temp8 */
+  	.p2align 4
+  .Lloop:
+ @@ -107,7 +108,7 @@ ENTRY(csum_partial_copy_generic)
+@@ -48,7 +48,7 @@ index 7e48807..627b003 100644
+  
+  	dest
+  	movq %rbx, (%rsi)
+-@@ -200,12 +201,12 @@ ENTRY(csum_partial_copy_generic)
++@@ -200,12 +200,12 @@ ENTRY(csum_partial_copy_generic)
+  
+  .Lende:
+  	movq 2*8(%rsp), %rbx
+@@ -56,7 +56,7 @@ index 7e48807..627b003 100644
+ +	movq 3*8(%rsp), %r15
+  	movq 4*8(%rsp), %r14
+  	movq 5*8(%rsp), %r13
+- 	movq 6*8(%rsp), %rbp
++ 	movq 6*8(%rsp), %r15
+  	addq $7*8, %rsp
+ -	ret
+ +	pax_ret csum_partial_copy_generic
+diff --git a/patches/a_arch_x86_lib_msr-reg.S.patch b/patches/a_arch_x86_lib_msr-reg.S.patch
+index 55564c6..f94d8df 100644
+--- a/patches/a_arch_x86_lib_msr-reg.S.patch
++++ b/patches/a_arch_x86_lib_msr-reg.S.patch
+@@ -10,9 +10,9 @@ index c815564..345ff91 100644
+  
+  #ifdef CONFIG_X86_64
+  /*
+-@@ -34,7 +35,7 @@ ENTRY(\op\()_safe_regs)
++@@ -34,7 +34,7 @@ ENTRY(\op\()_safe_regs)
+  	movl    %edi, 28(%r10)
+- 	popq %rbp
++ 	popq %r12
+  	popq %rbx
+ -	ret
+ +	pax_ret \op\()_safe_regs

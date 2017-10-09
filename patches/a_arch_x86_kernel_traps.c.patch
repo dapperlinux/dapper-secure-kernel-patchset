@@ -29,36 +29,36 @@ index bd4e3d4..4cff0f1 100644
  		  struct pt_regs *regs,	long error_code)
  {
  	if (v8086_mode(regs)) {
-@@ -189,8 +189,30 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
- 		if (!fixup_exception(regs, trapnr)) {
- 			tsk->thread.error_code = error_code;
- 			tsk->thread.trap_nr = trapnr;
+@@ -226,9 +226,30 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
+ 
+ 		tsk->thread.error_code = error_code;
+ 		tsk->thread.trap_nr = trapnr;
 +
 +#if defined(CONFIG_X86_32) && defined(CONFIG_PAX_KERNEXEC)
-+			if (trapnr == X86_TRAP_SS && ((regs->cs & 0xFFFF) == __KERNEL_CS || (regs->cs & 0xFFFF) == __KERNEXEC_KERNEL_CS))
-+				str = "PAX: suspicious stack segment fault";
++		if (trapnr == X86_TRAP_SS && ((regs->cs & 0xFFFF) == __KERNEL_CS || (regs->cs & 0xFFFF) == __KERNEXEC_KERNEL_CS))
++			str = "PAX: suspicious stack segment fault";
 +#endif
 +
 +#ifdef CONFIG_PAX_RAP
-+			if (trapnr == X86_RAP_CALL_VECTOR) {
-+				str = "PAX: overwritten function pointer detected";
-+				regs->ip -= 2; // sizeof int $xx
-+			} else if (trapnr == X86_RAP_RET_VECTOR) {
-+				str = "PAX: overwritten return address detected";
-+				regs->ip -= 2; // sizeof int $xx
-+			}
++		if (trapnr == X86_RAP_CALL_VECTOR) {
++			str = "PAX: overwritten function pointer detected";
++			regs->ip -= 2; // sizeof int $xx
++		} else if (trapnr == X86_RAP_RET_VECTOR) {
++			str = "PAX: overwritten return address detected";
++			regs->ip -= 2; // sizeof int $xx
++		}
 +#endif
 +
- 			die(str, regs, error_code);
- 		}
-+
-+#ifdef CONFIG_PAX_REFCOUNT
-+		if (trapnr == X86_REFCOUNT_VECTOR)
-+			pax_report_refcount_error(regs, str);
-+#endif
-+
- 		return 0;
+ 		die(str, regs, error_code);
  	}
+ 
++#ifdef CONFIG_PAX_REFCOUNT
++	if (trapnr == X86_REFCOUNT_VECTOR)
++		pax_report_refcount_error(regs, str);
++#endif
++
+ 	return -1;
+ }
  
 @@ -229,7 +251,7 @@ static siginfo_t *fill_trap_info(struct pt_regs *regs, int signr, int trapnr,
  }

@@ -4,7 +4,7 @@ index 8402907..b0e4a72 100644
 +++ b/arch/x86/kernel/tboot.c
 @@ -44,6 +44,7 @@
  #include <asm/setup.h>
- #include <asm/e820.h>
+ #include <asm/e820/api.h>
  #include <asm/io.h>
 +#include <asm/tlbflush.h>
  

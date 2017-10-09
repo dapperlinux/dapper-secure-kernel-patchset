@@ -11,27 +11,20 @@ index 0e63c02..9ee59fb 100644
  		return sp;
  
  	prev_esp = (u32 *)(context);
-@@ -411,6 +411,20 @@ static int putreg(struct task_struct *child,
- 		if (child->thread.gsbase != value)
- 			return do_arch_prctl(child, ARCH_SET_GS, value);
- 		return 0;
-+
-+	case offsetof(struct user_regs_struct,ip):
-+		/*
+@@ -406,6 +406,13 @@ static int putreg(struct task_struct *child,
+ 	case offsetof(struct user_regs_struct,gs_base):
+ 		/*
+ 		 * Exactly the same here as the %fs handling above.
++		 *
 +		 * Protect against any attempt to set ip to an
 +		 * impossible address.  There are dragons lurking if the
 +		 * address is noncanonical.  (This explicitly allows
 +		 * setting ip to TASK_SIZE_MAX, because user code can do
 +		 * that all by itself by running off the end of its
 +		 * address space.
-+		 */
-+		if (value > TASK_SIZE_MAX)
-+			return -EIO;
-+		break;
-+
- #endif
- 	}
- 
+ 		 */
+ 		if (value >= TASK_SIZE_MAX)
+ 			return -EIO;
 @@ -533,7 +547,7 @@ static void ptrace_triggered(struct perf_event *bp,
  static unsigned long ptrace_get_dr7(struct perf_event *bp[])
  {

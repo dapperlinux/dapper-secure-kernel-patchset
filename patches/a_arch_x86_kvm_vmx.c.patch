@@ -19,9 +19,9 @@ index 43b55ef..b88294e 100644
  {
          BUILD_BUG_ON_MSG(__builtin_constant_p(field) && ((field) & 0x6000) == 0x2000,
  			 "vmcs_set_bits does not support 64-bit fields");
-@@ -2284,6 +2284,10 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+@@ -2279,6 +2279,10 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
  			    (unsigned long)this_cpu_ptr(&cpu_tss));
- 		vmcs_writel(HOST_GDTR_BASE, gdt->address);
+ 		vmcs_writel(HOST_GDTR_BASE, (unsigned long)gdt);   /* 22.2.4 */
  
 +#ifdef CONFIG_PAX_PER_CPU_PGD
 +		vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
@@ -39,13 +39,15 @@ index 43b55ef..b88294e 100644
  {
  	u64 host_tsc, tsc_offset;
  
-@@ -5026,7 +5026,10 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
- 	cr0 = read_cr0();
- 	WARN_ON(cr0 & X86_CR0_TS);
- 	vmcs_writel(HOST_CR0, cr0);  /* 22.2.3 */
+@@ -5145,9 +5149,12 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
+ 	 * Save the most likely value for this task's CR3 in the VMCS.
+ 	 * We can't use __get_current_cr3_fast() because we're not atomic.
+ 	 */
 +
 +#ifndef CONFIG_PAX_PER_CPU_PGD
- 	vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
+ 	cr3 = __read_cr3();
+ 	vmcs_writel(HOST_CR3, cr3);		/* 22.2.3  FIXME: shadow tables */
+ 	vmx->loaded_vmcs->vmcs_host_cr3 = cr3;
 +#endif
  
  	/* Save the most likely value for this task's CR4 in the VMCS. */

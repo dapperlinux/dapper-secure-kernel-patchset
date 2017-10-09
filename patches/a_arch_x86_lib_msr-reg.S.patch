@@ -10,9 +10,9 @@ index c815564..345ff91 100644
  
  #ifdef CONFIG_X86_64
  /*
-@@ -34,7 +35,7 @@ ENTRY(\op\()_safe_regs)
+@@ -34,7 +34,7 @@ ENTRY(\op\()_safe_regs)
  	movl    %edi, 28(%r10)
- 	popq %rbp
+ 	popq %r12
  	popq %rbx
 -	ret
 +	pax_ret \op\()_safe_regs

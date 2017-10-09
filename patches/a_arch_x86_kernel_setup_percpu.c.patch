@@ -29,7 +29,7 @@ index 2bbd27f..99987a3 100644
  
  	for_each_possible_cpu(cpu) {
  		int node = early_cpu_to_node(cpu);
-@@ -155,10 +153,10 @@ static inline void setup_percpu_segment(int cpu)
+@@ -156,10 +156,10 @@ static inline void setup_percpu_segment(int cpu)
  {
  #ifdef CONFIG_X86_32
  	struct desc_struct gdt;
@@ -40,7 +40,7 @@ index 2bbd27f..99987a3 100644
 -	gdt.s = 1;
 +	pack_descriptor(&gdt, base, (VMALLOC_END - base - 1) >> PAGE_SHIFT,
 +			0x83 | DESCTYPE_S, 0xC);
- 	write_gdt_entry(get_cpu_gdt_table(cpu),
+ 	write_gdt_entry(get_cpu_gdt_rw(cpu),
  			GDT_ENTRY_PERCPU, &gdt, DESCTYPE_S);
  #endif
 @@ -219,6 +217,11 @@ void __init setup_per_cpu_areas(void)

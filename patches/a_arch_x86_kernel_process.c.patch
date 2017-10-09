@@ -111,10 +111,11 @@ index 8e10e72..fdd36da 100644
  unsigned long arch_randomize_brk(struct mm_struct *mm)
  {
  	return randomize_page(mm->brk, 0x02000000);
-@@ -583,3 +601,35 @@ unsigned long get_wchan(struct task_struct *p)
- 	put_task_stack(p);
- 	return ret;
+@@ -618,3 +618,36 @@ long do_arch_prctl_common(struct task_struct *task, int option,
+ 
+ 	return -EINVAL;
  }
++
 +
 +#ifdef CONFIG_PAX_RANDKSTACK
 +void pax_randomize_kstack(struct pt_regs *regs)

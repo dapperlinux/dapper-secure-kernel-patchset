@@ -113,15 +113,15 @@ index e5bc139..5a1766b 100644
  			host_xcr0 | XSTATE_COMPACTION_ENABLED;
  
  	/*
-@@ -7410,7 +7414,7 @@ void kvm_load_guest_fpu(struct kvm_vcpu *vcpu)
- 	 */
+@@ -7632,7 +7632,7 @@ void kvm_load_guest_fpu(struct kvm_vcpu *vcpu)
  	vcpu->guest_fpu_loaded = 1;
  	__kernel_fpu_begin();
--	__copy_kernel_to_fpregs(&vcpu->arch.guest_fpu.state);
-+	__copy_kernel_to_fpregs(vcpu->arch.guest_fpu.state);
+ 	/* PKRU is separately restored in kvm_x86_ops->run.  */
+-	__copy_kernel_to_fpregs(&vcpu->arch.guest_fpu.state,
++	__copy_kernel_to_fpregs(vcpu->arch.guest_fpu.state,
+ 				~XFEATURE_MASK_PKRU);
  	trace_kvm_fpu(1);
  }
- 
 @@ -7710,6 +7714,8 @@ bool kvm_vcpu_is_bsp(struct kvm_vcpu *vcpu)
  struct static_key kvm_no_apic_vcpu __read_mostly;
  EXPORT_SYMBOL_GPL(kvm_no_apic_vcpu);
