@@ -27,7 +27,7 @@ index 6707039..cf64791 100644
 +#endif
 +
  /* context.lock is held for us, so we don't need any locking. */
- static void flush_ldt(void *current_mm)
+ static void flush_ldt(void *__mm)
  {
 @@ -109,6 +119,23 @@ int init_new_context_ldt(struct task_struct *tsk, struct mm_struct *mm)
  	struct mm_struct *old_mm;

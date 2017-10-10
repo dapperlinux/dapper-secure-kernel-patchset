@@ -339,7 +339,7 @@ index bbf3d59..904b637 100644
  struct pv_mmu_ops pv_mmu_ops __ro_after_init = {
  
  	.read_cr2 = native_read_cr2,
-@@ -401,20 +570,20 @@ struct pv_mmu_ops pv_mmu_ops __ro_after_init = {
+@@ -400,22 +400,22 @@ struct pv_mmu_ops pv_mmu_ops __ro_after_init = {
  	.flush_tlb_others = native_flush_tlb_others,
  
  	.pgd_alloc = __paravirt_pgd_alloc,
@@ -349,15 +349,19 @@ index bbf3d59..904b637 100644
 -	.alloc_pte = paravirt_nop,
 -	.alloc_pmd = paravirt_nop,
 -	.alloc_pud = paravirt_nop,
+-	.alloc_p4d = paravirt_nop,
 -	.release_pte = paravirt_nop,
 -	.release_pmd = paravirt_nop,
 -	.release_pud = paravirt_nop,
+-	.release_p4d = paravirt_nop,
 +	.alloc_pte = native_alloc_pte,
 +	.alloc_pmd = native_alloc_pmd,
 +	.alloc_pud = native_alloc_pud,
++	.alloc_p4d = native_alloc_p4d,
 +	.release_pte = native_release_pte,
 +	.release_pmd = native_release_pmd,
 +	.release_pud = native_release_pud,
++	.release_p4d = native_release_p4d,
  
  	.set_pte = native_set_pte,
  	.set_pte_at = native_set_pte_at,
@@ -368,7 +372,7 @@ index bbf3d59..904b637 100644
  
  	.ptep_modify_prot_start = __ptep_modify_prot_start,
  	.ptep_modify_prot_commit = __ptep_modify_prot_commit,
-@@ -427,26 +427,27 @@ struct pv_mmu_ops pv_mmu_ops __ro_after_init = {
+@@ -429,33 +429,33 @@ struct pv_mmu_ops pv_mmu_ops __ro_after_init = {
  	.set_pud = native_set_pud,
  	.set_pud_at = native_set_pud_at,
  
@@ -377,15 +381,24 @@ index bbf3d59..904b637 100644
 +	.pmd_val = PTE_IDENT(pmd_val, native_pmd_val),
 +	.make_pmd = PTE_IDENT(make_pmd, native_make_pmd),
  
- #if CONFIG_PGTABLE_LEVELS == 4
+ #if CONFIG_PGTABLE_LEVELS >= 4
 -	.pud_val = PTE_IDENT,
 -	.make_pud = PTE_IDENT,
 +	.pud_val = PTE_IDENT(pud_val, native_pud_val),
 +	.make_pud = PTE_IDENT(make_pud, native_make_pud),
  
- 	.set_pgd = native_set_pgd,
+ 	.set_p4d = native_set_p4d,
+ 
+ #if CONFIG_PGTABLE_LEVELS >= 5
+-	.p4d_val = PTE_IDENT,
+-	.make_p4d = PTE_IDENT,
++	.p4d_val = PTE_IDENT(p4d_val, native_p4d_val),
++	.make_p4d = PTE_IDENT(make_p4d, native_make_p4d),
+ 
+-	.set_pgd = native_set_pgd,
 +	.set_pgd_batched = native_set_pgd_batched,
- #endif
+ #endif /* CONFIG_PGTABLE_LEVELS >= 5 */
+ #endif /* CONFIG_PGTABLE_LEVELS >= 4 */
  #endif /* CONFIG_PGTABLE_LEVELS >= 3 */
  
 -	.pte_val = PTE_IDENT,

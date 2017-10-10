@@ -17,9 +17,9 @@ index 477ae80..a280c67 100644
  
  	p = __vmalloc_node_range(size, MODULE_ALIGN,
  				    MODULES_VADDR + get_module_load_offset(),
--				    MODULES_END, GFP_KERNEL | __GFP_HIGHMEM,
+-				    MODULES_END, GFP_KERNEL,
 -				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
-+				    MODULES_END, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO,
++				    MODULES_END, GFP_KERNEL | __GFP_ZERO,
 +				    prot, 0, NUMA_NO_NODE,
  				    __builtin_return_address(0));
  	if (p && (kasan_module_alloc(p, size) < 0)) {

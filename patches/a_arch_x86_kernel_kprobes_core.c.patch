@@ -16,22 +16,25 @@ index d9d8d16..139e5a0 100644
  }
  
  /* Insert a jump instruction at address 'from', which jumps to address 'to'.*/
-@@ -172,7 +172,7 @@ int can_boost(kprobe_opcode_t *opcodes, void *addr)
+@@ -173,7 +173,7 @@ int can_boost(struct insn *insn, void *addr)
+ {
  	kprobe_opcode_t opcode;
- 	kprobe_opcode_t *orig_opcodes = opcodes;
  
 -	if (search_exception_tables((unsigned long)addr))
 +	if (search_exception_tables(ktva_ktla((unsigned long)addr)))
  		return 0;	/* Page fault may occur on this address. */
  
- retry:
-@@ -263,12 +266,12 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
+ 	/* 2nd-byte opcode */
+@@ -257,7 +257,7 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
  	 * Fortunately, we know that the original code is the ideal 5-byte
  	 * long NOP.
  	 */
--	memcpy(buf, (void *)addr, MAX_INSN_SIZE * sizeof(kprobe_opcode_t));
-+	memcpy(buf, (void *)ktla_ktva(addr), MAX_INSN_SIZE * sizeof(kprobe_opcode_t));
- 	if (faddr)
+-	if (probe_kernel_read(buf, (void *)addr,
++	if (probe_kernel_read(buf, (void *)ktla_ktva(addr),
+ 		MAX_INSN_SIZE * sizeof(kprobe_opcode_t)))
+ 		return 0UL;
+ 
+@@ -265,7 +265,7 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
  		memcpy(buf, ideal_nops[NOP_ATOMIC5], 5);
  	else
  		buf[0] = kp->opcode;
@@ -40,26 +43,16 @@ index d9d8d16..139e5a0 100644
  }
  
  /*
-@@ -370,7 +373,9 @@ int __copy_instruction(u8 *dest, u8 *src)
- 	/* Another subsystem puts a breakpoint, failed to recover */
- 	if (insn.opcode.bytes[0] == BREAKPOINT_INSTRUCTION)
- 		return 0;
-+	pax_open_kernel();
- 	memcpy(dest, insn.kaddr, length);
-+	pax_close_kernel();
- 
- #ifdef CONFIG_X86_64
- 	if (insn_rip_relative(&insn)) {
-@@ -397,7 +402,9 @@ int __copy_instruction(u8 *dest, u8 *src)
+@@ -395,7 +395,9 @@ int __copy_instruction(u8 *dest, u8 *src, struct insn *insn)
  			return 0;
  		}
- 		disp = (u8 *) dest + insn_offset_displacement(&insn);
+ 		disp = (u8 *) dest + insn_offset_displacement(insn);
 +		pax_open_kernel();
  		*(s32 *) disp = (s32) newdisp;
 +		pax_close_kernel();
  	}
  #endif
- 	return length;
+ 	return insn->length;
 @@ -512,6 +519,7 @@ static nokprobe_inline void restore_btf(void)
  	}
  }
