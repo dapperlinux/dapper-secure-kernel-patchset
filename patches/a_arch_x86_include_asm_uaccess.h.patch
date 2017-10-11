@@ -2,9 +2,9 @@ diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
 index faf3687..7624c7a 100644
 --- a/arch/x86/include/asm/uaccess.h
 +++ b/arch/x86/include/asm/uaccess.h
-@@ -8,6 +8,8 @@
+@@ -6,6 +6,8 @@
+ #include <linux/compiler.h>
  #include <linux/kasan-checks.h>
- #include <linux/thread_info.h>
  #include <linux/string.h>
 +#include <linux/spinlock.h>
 +#include <linux/sched.h>
@@ -128,7 +128,7 @@ index faf3687..7624c7a 100644
  		break;							\
  	case 4:								\
  		__get_user_asm(x, ptr, retval, "l", "k", "=r", errret);	\
-@@ -363,17 +381,19 @@ do {									\
+@@ -367,17 +369,19 @@ do {									\
  } while (0)
  
  #define __get_user_asm(x, addr, err, itype, rtype, ltype, errret)	\
@@ -150,8 +150,8 @@ index faf3687..7624c7a 100644
 +		     : "m" (__m(addr)), "i" (errret), "0" (err));	\
 +} while (0)
  
- /*
-  * This doesn't do __uaccess_begin/end - the exception handling
+ #define __get_user_asm_nozero(x, addr, err, itype, rtype, ltype, errret)	\
+ 	asm volatile("\n"						\
 @@ -384,10 +404,10 @@ do {									\
  	__chk_user_ptr(ptr);						\
  	switch (size) {							\
@@ -243,7 +243,7 @@ index faf3687..7624c7a 100644
  
  /**
   * __put_user: - Write a simple value into user space, with less checking.
-@@ -516,8 +553,12 @@ struct __large_struct { unsigned long buf[100]; };
+@@ -532,8 +536,12 @@ struct __large_struct { unsigned long buf[100]; };
   * Returns zero on success, or -EFAULT on error.
   */
  
@@ -254,8 +254,8 @@ index faf3687..7624c7a 100644
  	__put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
 +#endif
  
- #define __get_user_unaligned __get_user
- #define __put_user_unaligned __put_user
+ /*
+  * {get|put}_user_try and catch
 @@ -535,7 +576,7 @@ struct __large_struct { unsigned long buf[100]; };
  #define get_user_ex(x, ptr)	do {					\
  	unsigned long __gue_val;					\

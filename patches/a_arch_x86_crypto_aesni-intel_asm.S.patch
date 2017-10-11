@@ -1,5 +1,5 @@
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
-index 383a6f8..dc7f45d 100644
+index 16627fe..365f1c4 100644
 --- a/arch/x86/crypto/aesni-intel_asm.S
 +++ b/arch/x86/crypto/aesni-intel_asm.S
 @@ -32,6 +32,7 @@
@@ -10,7 +10,7 @@ index 383a6f8..dc7f45d 100644
  
  /*
   * The following macros are used to move an (un)aligned 16 byte value to/from
-@@ -218,7 +219,7 @@ enc:        .octa 0x2
+@@ -262,7 +263,7 @@ aad_shift_arr:
  * num_initial_blocks = b mod 4
  * encrypt the initial num_initial_blocks blocks and apply ghash on
  * the ciphertext
@@ -19,7 +19,7 @@ index 383a6f8..dc7f45d 100644
  * are clobbered
  * arg1, %arg2, %arg3, %r14 are used as a pointer only, not modified
  */
-@@ -228,8 +229,8 @@ enc:        .octa 0x2
+@@ -272,8 +273,8 @@ aad_shift_arr:
  XMM2 XMM3 XMM4 XMMDst TMP6 TMP7 i i_seq operation
          MOVADQ     SHUF_MASK(%rip), %xmm14
  	mov	   arg7, %r10           # %r10 = AAD
@@ -28,31 +28,27 @@ index 383a6f8..dc7f45d 100644
 +	mov	   arg8, %r15           # %r15 = aadLen
 +	mov	   %r15, %r11
  	pxor	   %xmm\i, %xmm\i
+ 	pxor       \XMM2, \XMM2
  
- _get_AAD_loop\num_initial_blocks\operation:
-@@ -238,17 +239,17 @@ _get_AAD_loop\num_initial_blocks\operation:
- 	psrldq	   $4, %xmm\i
- 	pxor	   \TMP1, %xmm\i
- 	add	   $4, %r10
--	sub	   $4, %r12
-+	sub	   $4, %r15
- 	jne	   _get_AAD_loop\num_initial_blocks\operation
- 
+@@ -285,7 +286,7 @@ _get_AAD_blocks\num_initial_blocks\operation:
+ 	pxor	   %xmm\i, \XMM2
+ 	GHASH_MUL  \XMM2, \TMP3, \TMP1, \TMP2, \TMP4, \TMP5, \XMM1
+ 	add	   $16, %r10
+-	sub	   $16, %r12
++	sub	   $16, %r15
+ 	sub	   $16, %r11
  	cmp	   $16, %r11
- 	je	   _get_AAD_loop2_done\num_initial_blocks\operation
- 
--	mov	   $16, %r12
-+	mov	   $16, %r15
- _get_AAD_loop2\num_initial_blocks\operation:
- 	psrldq	   $4, %xmm\i
--	sub	   $4, %r12
--	cmp	   %r11, %r12
-+	sub	   $4, %r15
-+	cmp	   %r11, %r15
- 	jne	   _get_AAD_loop2\num_initial_blocks\operation
- 
- _get_AAD_loop2_done\num_initial_blocks\operation:
-@@ -443,7 +444,7 @@ _initial_blocks_done\num_initial_blocks\operation:
+ 	jge	   _get_AAD_blocks\num_initial_blocks\operation
+@@ -323,7 +324,7 @@ _get_AAD_rest0\num_initial_blocks\operation:
+ 	/* finalize: shift out the extra bytes we read, and align
+ 	left. since pslldq can only shift by an immediate, we use
+ 	vpshufb and an array of shuffle masks */
+-	movq	   %r12, %r11
++	movq	   %r15, %r11
+ 	salq	   $4, %r11
+ 	movdqu	   aad_shift_arr(%r11), \TMP1
+ 	PSHUFB_XMM \TMP1, %xmm\i
+@@ -521,7 +522,7 @@ _initial_blocks_done\num_initial_blocks\operation:
  * num_initial_blocks = b mod 4
  * encrypt the initial num_initial_blocks blocks and apply ghash on
  * the ciphertext
@@ -61,7 +57,7 @@ index 383a6f8..dc7f45d 100644
  * are clobbered
  * arg1, %arg2, %arg3, %r14 are used as a pointer only, not modified
  */
-@@ -453,8 +454,8 @@ _initial_blocks_done\num_initial_blocks\operation:
+@@ -531,8 +532,8 @@ _initial_blocks_done\num_initial_blocks\operation:
  XMM2 XMM3 XMM4 XMMDst TMP6 TMP7 i i_seq operation
          MOVADQ     SHUF_MASK(%rip), %xmm14
  	mov	   arg7, %r10           # %r10 = AAD
@@ -70,29 +66,27 @@ index 383a6f8..dc7f45d 100644
 +	mov	   arg8, %r15           # %r15 = aadLen
 +	mov	   %r15, %r11
  	pxor	   %xmm\i, %xmm\i
- _get_AAD_loop\num_initial_blocks\operation:
- 	movd	   (%r10), \TMP1
-@@ -462,15 +463,15 @@ _get_AAD_loop\num_initial_blocks\operation:
- 	psrldq	   $4, %xmm\i
- 	pxor	   \TMP1, %xmm\i
- 	add	   $4, %r10
--	sub	   $4, %r12
-+	sub	   $4, %r15
- 	jne	   _get_AAD_loop\num_initial_blocks\operation
+ 	pxor	   \XMM2, \XMM2
+ 
+@@ -544,7 +545,7 @@ _get_AAD_blocks\num_initial_blocks\operation:
+ 	pxor	   %xmm\i, \XMM2
+ 	GHASH_MUL  \XMM2, \TMP3, \TMP1, \TMP2, \TMP4, \TMP5, \XMM1
+ 	add	   $16, %r10
+-	sub	   $16, %r12
++	sub	   $16, %r15
+ 	sub	   $16, %r11
  	cmp	   $16, %r11
- 	je	   _get_AAD_loop2_done\num_initial_blocks\operation
--	mov	   $16, %r12
-+	mov	   $16, %r15
- _get_AAD_loop2\num_initial_blocks\operation:
- 	psrldq	   $4, %xmm\i
--	sub	   $4, %r12
--	cmp	   %r11, %r12
-+	sub	   $4, %r15
-+	cmp	   %r11, %r15
- 	jne	   _get_AAD_loop2\num_initial_blocks\operation
- _get_AAD_loop2_done\num_initial_blocks\operation:
- 	PSHUFB_XMM   %xmm14, %xmm\i # byte-reflect the AAD data
-@@ -1280,8 +1281,8 @@ _esb_loop_\@:
+ 	jge	   _get_AAD_blocks\num_initial_blocks\operation
+@@ -582,7 +583,7 @@ _get_AAD_rest0\num_initial_blocks\operation:
+ 	/* finalize: shift out the extra bytes we read, and align
+ 	left. since pslldq can only shift by an immediate, we use
+ 	vpshufb and an array of shuffle masks */
+-	movq	   %r12, %r11
++	movq	   %r15, %r11
+ 	salq	   $4, %r11
+ 	movdqu	   aad_shift_arr(%r11), \TMP1
+ 	PSHUFB_XMM \TMP1, %xmm\i
+@@ -1396,8 +1397,8 @@ _esb_loop_\@:
  * poly = x^128 + x^127 + x^126 + x^121 + 1
  *
  *****************************************************************************/
@@ -103,7 +97,7 @@ index 383a6f8..dc7f45d 100644
  	push	%r13
  	push	%r14
  	mov	%rsp, %r14
-@@ -1291,8 +1292,8 @@ ENTRY(aesni_gcm_dec)
+@@ -1407,8 +1408,8 @@ ENTRY(aesni_gcm_dec)
  */
  	sub	$VARIABLE_OFFSET, %rsp
  	and	$~63, %rsp                        # align rsp to 64 bytes
@@ -114,7 +108,7 @@ index 383a6f8..dc7f45d 100644
          movdqa  SHUF_MASK(%rip), %xmm2
  	PSHUFB_XMM %xmm2, %xmm13
  
-@@ -1320,10 +1321,10 @@ ENTRY(aesni_gcm_dec)
+@@ -1436,10 +1437,10 @@ ENTRY(aesni_gcm_dec)
  	movdqa %xmm13, HashKey(%rsp)           # store HashKey<<1 (mod poly)
  	mov %arg4, %r13    # save the number of bytes of plaintext/ciphertext
  	and $-16, %r13                      # %r13 = %r13 - (%r13 mod 16)
@@ -128,7 +122,7 @@ index 383a6f8..dc7f45d 100644
  	jb _initial_num_blocks_is_1_decrypt
  	je _initial_num_blocks_is_2_decrypt
  _initial_num_blocks_is_3_decrypt:
-@@ -1373,16 +1374,16 @@ _zero_cipher_left_decrypt:
+@@ -1489,16 +1490,16 @@ _zero_cipher_left_decrypt:
  	sub $16, %r11
  	add %r13, %r11
  	movdqu (%arg3,%r11,1), %xmm1   # receive the last <16 byte block
@@ -149,7 +143,7 @@ index 383a6f8..dc7f45d 100644
  	# get the appropriate mask to mask out top 16-%r13 bytes of %xmm0
  	pand %xmm1, %xmm0            # mask out top 16-%r13 bytes of %xmm0
  	pand    %xmm1, %xmm2
-@@ -1411,9 +1412,9 @@ _less_than_8_bytes_left_decrypt:
+@@ -1527,9 +1528,9 @@ _less_than_8_bytes_left_decrypt:
  	sub	$1, %r13
  	jne	_less_than_8_bytes_left_decrypt
  _multiple_of_16_bytes_decrypt:
@@ -162,7 +156,7 @@ index 383a6f8..dc7f45d 100644
  	shl	$3, %arg4		  # len(C) in bits (*128)
  	MOVQ_R64_XMM	%arg4, %xmm1
  	pslldq	$8, %xmm15		  # %xmm15 = len(A)||0x0000000000000000
-@@ -1452,8 +1453,8 @@ _return_T_done_decrypt:
+@@ -1585,8 +1586,8 @@ _return_T_done_decrypt:
  	mov	%r14, %rsp
  	pop	%r14
  	pop	%r13
@@ -173,7 +167,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_gcm_dec)
  
  
-@@ -1540,8 +1541,8 @@ ENDPROC(aesni_gcm_dec)
+@@ -1673,8 +1674,8 @@ ENDPROC(aesni_gcm_dec)
  *
  * poly = x^128 + x^127 + x^126 + x^121 + 1
  ***************************************************************************/
@@ -184,7 +178,7 @@ index 383a6f8..dc7f45d 100644
  	push	%r13
  	push	%r14
  	mov	%rsp, %r14
-@@ -1551,8 +1552,8 @@ ENTRY(aesni_gcm_enc)
+@@ -1684,8 +1685,8 @@ ENTRY(aesni_gcm_enc)
  #
  	sub	$VARIABLE_OFFSET, %rsp
  	and	$~63, %rsp
@@ -195,7 +189,7 @@ index 383a6f8..dc7f45d 100644
          movdqa  SHUF_MASK(%rip), %xmm2
  	PSHUFB_XMM %xmm2, %xmm13
  
-@@ -1576,13 +1577,13 @@ ENTRY(aesni_gcm_enc)
+@@ -1709,13 +1710,13 @@ ENTRY(aesni_gcm_enc)
  	movdqa	%xmm13, HashKey(%rsp)
  	mov	%arg4, %r13            # %xmm13 holds HashKey<<1 (mod poly)
  	and	$-16, %r13
@@ -212,7 +206,7 @@ index 383a6f8..dc7f45d 100644
  	jb	_initial_num_blocks_is_1_encrypt
  	je	_initial_num_blocks_is_2_encrypt
  _initial_num_blocks_is_3_encrypt:
-@@ -1635,14 +1636,14 @@ _zero_cipher_left_encrypt:
+@@ -1768,14 +1769,14 @@ _zero_cipher_left_encrypt:
  	sub $16, %r11
  	add %r13, %r11
  	movdqu (%arg3,%r11,1), %xmm1     # receive the last <16 byte blocks
@@ -231,7 +225,7 @@ index 383a6f8..dc7f45d 100644
  	# get the appropriate mask to mask out top 16-r13 bytes of xmm0
  	pand	%xmm1, %xmm0            # mask out top 16-r13 bytes of xmm0
          movdqa SHUF_MASK(%rip), %xmm10
-@@ -1675,9 +1676,9 @@ _less_than_8_bytes_left_encrypt:
+@@ -1808,9 +1809,9 @@ _less_than_8_bytes_left_encrypt:
  	sub $1, %r13
  	jne _less_than_8_bytes_left_encrypt
  _multiple_of_16_bytes_encrypt:
@@ -244,7 +238,7 @@ index 383a6f8..dc7f45d 100644
  	shl	$3, %arg4               # len(C) in bits (*128)
  	MOVQ_R64_XMM	%arg4, %xmm1
  	pslldq	$8, %xmm15          # %xmm15 = len(A)||0x0000000000000000
-@@ -1716,8 +1717,8 @@ _return_T_done_encrypt:
+@@ -1866,8 +1867,8 @@ _return_T_done_encrypt:
  	mov	%r14, %rsp
  	pop	%r14
  	pop	%r13
@@ -255,7 +249,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_gcm_enc)
  
  #endif
-@@ -1734,7 +1735,7 @@ _key_expansion_256a:
+@@ -1884,7 +1885,7 @@ _key_expansion_256a:
  	pxor %xmm1, %xmm0
  	movaps %xmm0, (TKEYP)
  	add $0x10, TKEYP
@@ -264,7 +258,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_key_expansion_128)
  ENDPROC(_key_expansion_256a)
  
-@@ -1760,7 +1761,7 @@ _key_expansion_192a:
+@@ -1910,7 +1911,7 @@ _key_expansion_192a:
  	shufps $0b01001110, %xmm2, %xmm1
  	movaps %xmm1, 0x10(TKEYP)
  	add $0x20, TKEYP
@@ -273,7 +267,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_key_expansion_192a)
  
  .align 4
-@@ -1780,7 +1781,7 @@ _key_expansion_192b:
+@@ -1930,7 +1931,7 @@ _key_expansion_192b:
  
  	movaps %xmm0, (TKEYP)
  	add $0x10, TKEYP
@@ -282,7 +276,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_key_expansion_192b)
  
  .align 4
-@@ -1793,7 +1794,7 @@ _key_expansion_256b:
+@@ -1943,7 +1944,7 @@ _key_expansion_256b:
  	pxor %xmm1, %xmm2
  	movaps %xmm2, (TKEYP)
  	add $0x10, TKEYP
@@ -291,7 +285,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_key_expansion_256b)
  
  /*
-@@ -1820,72 +1821,72 @@ ENTRY(aesni_set_key)
+@@ -1970,72 +1971,72 @@ ENTRY(aesni_set_key)
  	movaps %xmm2, (TKEYP)
  	add $0x10, TKEYP
  	AESKEYGENASSIST 0x1 %xmm2 %xmm1		# round 1
@@ -395,7 +389,7 @@ index 383a6f8..dc7f45d 100644
  .Ldec_key:
  	sub $0x10, TKEYP
  	movaps (KEYP), %xmm0
-@@ -1908,13 +1909,13 @@ ENTRY(aesni_set_key)
+@@ -2058,13 +2059,13 @@ ENTRY(aesni_set_key)
  	popl KEYP
  #endif
  	FRAME_END
@@ -411,7 +405,7 @@ index 383a6f8..dc7f45d 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -1925,14 +1926,14 @@ ENTRY(aesni_enc)
+@@ -2075,14 +2076,14 @@ ENTRY(aesni_enc)
  #endif
  	movl 480(KEYP), KLEN		# key length
  	movups (INP), STATE		# input
@@ -428,7 +422,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_enc)
  
  /*
-@@ -1990,7 +1991,7 @@ _aesni_enc1:
+@@ -2140,7 +2141,7 @@ _aesni_enc1:
  	AESENC KEY STATE
  	movaps 0x70(TKEYP), KEY
  	AESENCLAST KEY STATE
@@ -437,7 +431,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_aesni_enc1)
  
  /*
-@@ -2099,13 +2100,13 @@ _aesni_enc4:
+@@ -2249,13 +2250,13 @@ _aesni_enc4:
  	AESENCLAST KEY STATE2
  	AESENCLAST KEY STATE3
  	AESENCLAST KEY STATE4
@@ -453,7 +447,7 @@ index 383a6f8..dc7f45d 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2117,14 +2118,14 @@ ENTRY(aesni_dec)
+@@ -2267,14 +2268,14 @@ ENTRY(aesni_dec)
  	mov 480(KEYP), KLEN		# key length
  	add $240, KEYP
  	movups (INP), STATE		# input
@@ -470,7 +464,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_dec)
  
  /*
-@@ -2182,7 +2183,7 @@ _aesni_dec1:
+@@ -2332,7 +2333,7 @@ _aesni_dec1:
  	AESDEC KEY STATE
  	movaps 0x70(TKEYP), KEY
  	AESDECLAST KEY STATE
@@ -479,7 +473,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_aesni_dec1)
  
  /*
-@@ -2291,7 +2292,7 @@ _aesni_dec4:
+@@ -2441,7 +2442,7 @@ _aesni_dec4:
  	AESDECLAST KEY STATE2
  	AESDECLAST KEY STATE3
  	AESDECLAST KEY STATE4
@@ -488,7 +482,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_aesni_dec4)
  
  /*
-@@ -2322,7 +2323,7 @@ ENTRY(aesni_ecb_enc)
+@@ -2472,7 +2473,7 @@ ENTRY(aesni_ecb_enc)
  	movups 0x10(INP), STATE2
  	movups 0x20(INP), STATE3
  	movups 0x30(INP), STATE4
@@ -497,7 +491,7 @@ index 383a6f8..dc7f45d 100644
  	movups STATE1, (OUTP)
  	movups STATE2, 0x10(OUTP)
  	movups STATE3, 0x20(OUTP)
-@@ -2337,7 +2338,7 @@ ENTRY(aesni_ecb_enc)
+@@ -2487,7 +2488,7 @@ ENTRY(aesni_ecb_enc)
  .align 4
  .Lecb_enc_loop1:
  	movups (INP), STATE1
@@ -506,7 +500,7 @@ index 383a6f8..dc7f45d 100644
  	movups STATE1, (OUTP)
  	sub $16, LEN
  	add $16, INP
-@@ -2351,7 +2352,7 @@ ENTRY(aesni_ecb_enc)
+@@ -2501,7 +2502,7 @@ ENTRY(aesni_ecb_enc)
  	popl LEN
  #endif
  	FRAME_END
@@ -515,7 +509,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_ecb_enc)
  
  /*
-@@ -2383,7 +2384,7 @@ ENTRY(aesni_ecb_dec)
+@@ -2533,7 +2534,7 @@ ENTRY(aesni_ecb_dec)
  	movups 0x10(INP), STATE2
  	movups 0x20(INP), STATE3
  	movups 0x30(INP), STATE4
@@ -524,7 +518,7 @@ index 383a6f8..dc7f45d 100644
  	movups STATE1, (OUTP)
  	movups STATE2, 0x10(OUTP)
  	movups STATE3, 0x20(OUTP)
-@@ -2398,7 +2399,7 @@ ENTRY(aesni_ecb_dec)
+@@ -2548,7 +2549,7 @@ ENTRY(aesni_ecb_dec)
  .align 4
  .Lecb_dec_loop1:
  	movups (INP), STATE1
@@ -533,7 +527,7 @@ index 383a6f8..dc7f45d 100644
  	movups STATE1, (OUTP)
  	sub $16, LEN
  	add $16, INP
-@@ -2412,7 +2413,7 @@ ENTRY(aesni_ecb_dec)
+@@ -2562,7 +2563,7 @@ ENTRY(aesni_ecb_dec)
  	popl LEN
  #endif
  	FRAME_END
@@ -542,7 +536,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_ecb_dec)
  
  /*
-@@ -2440,7 +2441,7 @@ ENTRY(aesni_cbc_enc)
+@@ -2590,7 +2591,7 @@ ENTRY(aesni_cbc_enc)
  .Lcbc_enc_loop:
  	movups (INP), IN	# load input
  	pxor IN, STATE
@@ -551,7 +545,7 @@ index 383a6f8..dc7f45d 100644
  	movups STATE, (OUTP)	# store output
  	sub $16, LEN
  	add $16, INP
-@@ -2456,7 +2457,7 @@ ENTRY(aesni_cbc_enc)
+@@ -2606,7 +2607,7 @@ ENTRY(aesni_cbc_enc)
  	popl IVP
  #endif
  	FRAME_END
@@ -560,7 +554,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_cbc_enc)
  
  /*
-@@ -2500,7 +2501,7 @@ ENTRY(aesni_cbc_dec)
+@@ -2650,7 +2651,7 @@ ENTRY(aesni_cbc_dec)
  	movups 0x30(INP), IN2
  	movaps IN2, STATE4
  #endif
@@ -569,7 +563,7 @@ index 383a6f8..dc7f45d 100644
  	pxor IV, STATE1
  #ifdef __x86_64__
  	pxor IN1, STATE2
-@@ -2530,7 +2531,7 @@ ENTRY(aesni_cbc_dec)
+@@ -2680,7 +2681,7 @@ ENTRY(aesni_cbc_dec)
  .Lcbc_dec_loop1:
  	movups (INP), IN
  	movaps IN, STATE
@@ -578,7 +572,7 @@ index 383a6f8..dc7f45d 100644
  	pxor IV, STATE
  	movups STATE, (OUTP)
  	movaps IN, IV
-@@ -2549,7 +2550,7 @@ ENTRY(aesni_cbc_dec)
+@@ -2699,7 +2700,7 @@ ENTRY(aesni_cbc_dec)
  	popl IVP
  #endif
  	FRAME_END
@@ -587,7 +581,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_cbc_dec)
  
  #ifdef __x86_64__
-@@ -2578,7 +2579,7 @@ _aesni_inc_init:
+@@ -2728,7 +2729,7 @@ _aesni_inc_init:
  	mov $1, TCTR_LOW
  	MOVQ_R64_XMM TCTR_LOW INC
  	MOVQ_R64_XMM CTR TCTR_LOW
@@ -596,7 +590,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(_aesni_inc_init)
  
  /*
-@@ -2607,37 +2608,37 @@ _aesni_inc:
+@@ -2757,37 +2758,37 @@ _aesni_inc:
  .Linc_low:
  	movaps CTR, IV
  	PSHUFB_XMM BSWAP_MASK IV
@@ -642,7 +636,7 @@ index 383a6f8..dc7f45d 100644
  	pxor IN1, STATE1
  	movups STATE1, (OUTP)
  	pxor IN2, STATE2
-@@ -2656,9 +2657,9 @@ ENTRY(aesni_ctr_enc)
+@@ -2806,9 +2807,9 @@ ENTRY(aesni_ctr_enc)
  .align 4
  .Lctr_enc_loop1:
  	movaps IV, STATE
@@ -654,7 +648,7 @@ index 383a6f8..dc7f45d 100644
  	pxor IN, STATE
  	movups STATE, (OUTP)
  	sub $16, LEN
-@@ -2670,7 +2671,7 @@ ENTRY(aesni_ctr_enc)
+@@ -2820,7 +2821,7 @@ ENTRY(aesni_ctr_enc)
  	movups IV, (IVP)
  .Lctr_enc_just_ret:
  	FRAME_END
@@ -663,7 +657,7 @@ index 383a6f8..dc7f45d 100644
  ENDPROC(aesni_ctr_enc)
  
  /*
-@@ -2734,7 +2735,7 @@ ENTRY(aesni_xts_crypt8)
+@@ -2884,7 +2885,7 @@ ENTRY(aesni_xts_crypt8)
  	pxor INC, STATE4
  	movdqu IV, 0x30(OUTP)
  
@@ -672,7 +666,7 @@ index 383a6f8..dc7f45d 100644
  
  	movdqu 0x00(OUTP), INC
  	pxor INC, STATE1
-@@ -2779,7 +2780,7 @@ ENTRY(aesni_xts_crypt8)
+@@ -2929,7 +2930,7 @@ ENTRY(aesni_xts_crypt8)
  	_aesni_gf128mul_x_ble()
  	movups IV, (IVP)
  
@@ -681,7 +675,7 @@ index 383a6f8..dc7f45d 100644
  
  	movdqu 0x40(OUTP), INC
  	pxor INC, STATE1
-@@ -2798,7 +2799,7 @@ ENTRY(aesni_xts_crypt8)
+@@ -2948,7 +2949,7 @@ ENTRY(aesni_xts_crypt8)
  	movdqu STATE4, 0x70(OUTP)
  
  	FRAME_END

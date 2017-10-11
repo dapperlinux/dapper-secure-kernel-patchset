@@ -28,12 +28,14 @@ index efdfba2..af6d962 100644
  1:
  
  	/* Target address to relocate to for decompression */
-@@ -444,8 +444,8 @@ gdt:
+@@ -522,9 +522,9 @@ gdt:
+ 	.word	gdt_end - gdt
  	.long	gdt
  	.word	0
- 	.quad	0x0000000000000000	/* NULL descriptor */
+-	.quad	0x00cf9a000000ffff	/* __KERNEL32_CS */
 -	.quad	0x00af9a000000ffff	/* __KERNEL_CS */
 -	.quad	0x00cf92000000ffff	/* __KERNEL_DS */
++	.quad	0x00cf9b000000ffff	/* __KERNEL32_CS */
 +	.quad	0x00af9b000000ffff	/* __KERNEL_CS */
 +	.quad	0x00cf93000000ffff	/* __KERNEL_DS */
  	.quad	0x0080890000000000	/* TS descriptor */

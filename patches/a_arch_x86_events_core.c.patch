@@ -20,8 +20,8 @@ index 38623e2..7eae820 100644
  	.name = "events",
  	.attrs = events_attr,
  };
-@@ -2325,7 +2325,7 @@ static unsigned long get_segment_base(unsigned int segment)
- 		if (idx > GDT_ENTRIES)
+@@ -2348,7 +2348,7 @@ static unsigned long get_segment_base(unsigned int segment)
+ 		if (idx >= GDT_ENTRIES)
  			return 0;
  
 -		desc = raw_cpu_ptr(gdt_page.gdt) + idx;

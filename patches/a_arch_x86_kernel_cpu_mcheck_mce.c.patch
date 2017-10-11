@@ -2,10 +2,10 @@ diff --git a/arch/x86/kernel/cpu/mcheck/mce.c b/arch/x86/kernel/cpu/mcheck/mce.c
 index a7fdf45..87c1a31 100644
 --- a/arch/x86/kernel/cpu/mcheck/mce.c
 +++ b/arch/x86/kernel/cpu/mcheck/mce.c
-@@ -48,6 +48,7 @@
- #include <asm/tlbflush.h>
- #include <asm/mce.h>
+@@ -52,6 +52,7 @@
  #include <asm/msr.h>
+ #include <asm/reboot.h>
+ #include <asm/set_memory.h>
 +#include <asm/local.h>
  
  #include "mce-internal.h"
@@ -19,20 +19,23 @@ index a7fdf45..87c1a31 100644
  
  #define mce_log_get_idx_check(p) \
  ({ \
-@@ -212,11 +212,11 @@ EXPORT_SYMBOL_GPL(mce_inject_log);
- 
- static struct notifier_block mce_srao_nb;
- 
+@@ -154,14 +155,14 @@ static struct notifier_block mce_srao_nb;
+  * notifiers registered on the chain.
+  */
+ #define NUM_DEFAULT_NOTIFIERS	3
 -static atomic_t num_notifiers;
 +static atomic_unchecked_t num_notifiers;
  
  void mce_register_decode_chain(struct notifier_block *nb)
  {
+ 	if (WARN_ON(nb->priority > MCE_PRIO_MCELOG && nb->priority < MCE_PRIO_EDAC))
+ 		return;
+ 
 -	atomic_inc(&num_notifiers);
 +	atomic_inc_unchecked(&num_notifiers);
  
- 	WARN_ON(nb->priority > MCE_PRIO_LOWEST && nb->priority < MCE_PRIO_EDAC);
- 
+ 	blocking_notifier_chain_register(&x86_mce_decoder_chain, nb);
+ }
 @@ -226,7 +226,7 @@ EXPORT_SYMBOL_GPL(mce_register_decode_chain);
  
  void mce_unregister_decode_chain(struct notifier_block *nb)
@@ -149,7 +152,7 @@ index a7fdf45..87c1a31 100644
  						unexpected_machine_check;
  
  /*
-@@ -1791,7 +1793,9 @@ void mcheck_cpu_init(struct cpuinfo_x86 *c)
+@@ -1814,7 +1815,9 @@ void mcheck_cpu_init(struct cpuinfo_x86 *c)
  		return;
  	}
  
@@ -157,8 +160,8 @@ index a7fdf45..87c1a31 100644
  	machine_check_vector = do_machine_check;
 +	pax_close_kernel();
  
+ 	__mcheck_cpu_init_early(c);
  	__mcheck_cpu_init_generic();
- 	__mcheck_cpu_init_vendor(c);
 @@ -1831,7 +1835,7 @@ static int mce_chrdev_open(struct inode *inode, struct file *file)
  	spin_lock(&mce_chrdev_state_lock);
  

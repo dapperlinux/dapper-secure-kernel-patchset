@@ -2,9 +2,9 @@ diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
 index 437feb4..a4b2570 100644
 --- a/arch/x86/include/asm/pgtable.h
 +++ b/arch/x86/include/asm/pgtable.h
-@@ -54,6 +54,7 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
+@@ -53,6 +53,7 @@ extern struct mm_struct *pgd_page_get_mm(struct page *page);
  
- #ifndef __PAGETABLE_PUD_FOLDED
+ #ifndef __PAGETABLE_P4D_FOLDED
  #define set_pgd(pgdp, pgd)		native_set_pgd(pgdp, pgd)
 +#define set_pgd_batched(pgdp, pgd)	native_set_pgd_batched(pgdp, pgd)
  #define pgd_clear(pgd)			native_pgd_clear(pgd)
@@ -64,8 +64,8 @@ index 437feb4..a4b2570 100644
  static inline int pte_dirty(pte_t pte)
  {
  	return pte_flags(pte) & _PAGE_DIRTY;
-@@ -168,6 +210,11 @@ static inline unsigned long pud_pfn(pud_t pud)
- 	return (pud_val(pud) & pud_pfn_mask(pud)) >> PAGE_SHIFT;
+@@ -201,6 +202,11 @@ static inline int p4d_large(p4d_t p4d)
+ 	return 0;
  }
  
 +static inline unsigned long pgd_pfn(pgd_t pgd)
@@ -133,7 +133,7 @@ index 437feb4..a4b2570 100644
  #include <linux/mm_types.h>
  #include <linux/mmdebug.h>
  #include <linux/log2.h>
-@@ -675,7 +752,7 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
+@@ -859,7 +865,7 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
   * Currently stuck as a macro due to indirect forward reference to
   * linux/mmzone.h's __section_mem_map_addr() definition:
   */
@@ -141,7 +141,7 @@ index 437feb4..a4b2570 100644
 +#define pgd_page(pgd)		pfn_to_page((pgd_val(pgd) & PTE_PFN_MASK) >> PAGE_SHIFT)
  
  /* to find an entry in a page-table-directory. */
- static inline unsigned long pud_index(unsigned long address)
+ static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
 @@ -690,7 +767,7 @@ static inline pud_t *pud_offset(pgd_t *pgd, unsigned long address)
  
  static inline int pgd_bad(pgd_t pgd)

@@ -106,7 +106,7 @@ index 2737366..e152d4b 100644
  
  	return 0;
  }
-@@ -469,7 +472,7 @@ static inline void copy_kernel_to_fpregs(union fpregs_state *fpstate)
+@@ -474,7 +474,7 @@ static inline void copy_kernel_to_fpregs(union fpregs_state *fpstate)
  			"fnclex\n\t"
  			"emms\n\t"
  			"fildl %P[addr]"	/* set F?P to defined value */
@@ -114,7 +114,7 @@ index 2737366..e152d4b 100644
 +			: : [addr] "m" (cpu_tss[raw_smp_processor_id()].x86_tss.sp0));
  	}
  
- 	__copy_kernel_to_fpregs(fpstate);
+ 	__copy_kernel_to_fpregs(fpstate, -1);
 @@ -599,7 +599,7 @@ static inline void switch_fpu_finish(struct fpu *new_fpu, int cpu)
  
  	if (preload) {

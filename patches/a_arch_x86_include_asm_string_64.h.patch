@@ -11,8 +11,8 @@ index a164862..a902568 100644
 +extern void *memcpy(void *to, const void *from, size_t len) __nocapture(2);
 +extern void *__memcpy(void *to, const void *from, size_t len) __nocapture(2);
  
+ #ifndef CONFIG_FORTIFY_SOURCE
  #ifndef CONFIG_KMEMCHECK
- #if (__GNUC__ == 4 && __GNUC_MINOR__ < 3) || __GNUC__ < 4
 @@ -57,14 +57,14 @@ void *memset(void *s, int c, size_t n);
  void *__memset(void *s, int c, size_t n);
  

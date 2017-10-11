@@ -26,11 +26,10 @@ index 8e0a9fe..2473467 100644
  	return 0;
  }
  static inline void destroy_context_ldt(struct mm_struct *mm) {}
-@@ -99,6 +116,20 @@ static inline void load_mm_ldt(struct mm_struct *mm)
+@@ -125,6 +125,19 @@ static inline void switch_ldt(struct mm_struct *prev, struct mm_struct *next)
  
  static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
  {
-+
 +#if defined(CONFIG_X86_64) && defined(CONFIG_PAX_MEMORY_UDEREF)
 +	if (!(static_cpu_has(X86_FEATURE_PCIDUDEREF))) {
 +		unsigned int i;
@@ -44,6 +43,6 @@ index 8e0a9fe..2473467 100644
 +	}
 +#endif
 +
- #ifdef CONFIG_SMP
  	if (this_cpu_read(cpu_tlbstate.state) == TLBSTATE_OK)
  		this_cpu_write(cpu_tlbstate.state, TLBSTATE_LAZY);
+ }

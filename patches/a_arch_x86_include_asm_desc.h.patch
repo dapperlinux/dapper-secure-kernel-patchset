@@ -2,10 +2,10 @@ diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
 index 12080d8..7319a47 100644
 --- a/arch/x86/include/asm/desc.h
 +++ b/arch/x86/include/asm/desc.h
-@@ -4,6 +4,7 @@
- #include <asm/desc_defs.h>
+@@ -5,6 +5,7 @@
  #include <asm/ldt.h>
  #include <asm/mmu.h>
+ #include <asm/fixmap.h>
 +#include <asm/pgtable.h>
  
  #include <linux/smp.h>
@@ -18,30 +18,31 @@ index 12080d8..7319a47 100644
  
  	desc->s			= 1;
  	desc->dpl		= 0x3;
-@@ -35,19 +37,14 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
+@@ -36,20 +37,17 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
  }
  
  extern struct desc_ptr idt_descr;
 -extern gate_desc idt_table[];
 +extern gate_desc idt_table[IDT_ENTRIES];
  extern const struct desc_ptr debug_idt_descr;
--extern gate_desc debug_idt_table[];
--
+ extern gate_desc debug_idt_table[];
+ 
 -struct gdt_page {
 -	struct desc_struct gdt[GDT_ENTRIES];
 -} __attribute__((aligned(PAGE_SIZE)));
 -
 -DECLARE_PER_CPU_PAGE_ALIGNED(struct gdt_page, gdt_page);
 +extern gate_desc debug_idt_table[IDT_ENTRIES];
- 
 +extern struct desc_struct cpu_gdt_table[NR_CPUS][PAGE_SIZE / sizeof(struct desc_struct)];
- static inline struct desc_struct *get_cpu_gdt_table(unsigned int cpu)
+ 
+ /* Provide the original GDT */
+ static inline struct desc_struct *get_cpu_gdt_rw(unsigned int cpu)
  {
 -	return per_cpu(gdt_page, cpu).gdt;
 +	return cpu_gdt_table[cpu];
  }
  
- #ifdef CONFIG_X86_64
+ /* Provide the current original GDT */
 @@ -72,8 +69,14 @@ static inline void pack_gate(gate_desc *gate, unsigned char type,
  			     unsigned long base, unsigned dpl, unsigned flags,
  			     unsigned short seg)
@@ -86,16 +87,16 @@ index 12080d8..7319a47 100644
  }
  
  static inline void pack_descriptor(struct desc_struct *desc, unsigned long base,
-@@ -202,7 +202,9 @@ static inline void native_set_ldt(const void *addr, unsigned int entries)
- 
+@@ -284,7 +282,9 @@ static inline void native_load_tr_desc(void)
+ #else
  static inline void native_load_tr_desc(void)
  {
 +	pax_open_kernel();
  	asm volatile("ltr %w0"::"q" (GDT_ENTRY_TSS*8));
 +	pax_close_kernel();
  }
+ #endif
  
- DECLARE_PER_CPU(bool, __tss_limit_invalid);
 @@ -219,7 +219,11 @@ static inline void force_reload_TR(void)
  	 * busy.  Make it be available so that LTR will work.
  	 */

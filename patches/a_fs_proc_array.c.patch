@@ -9,7 +9,7 @@ index 81818ad..aa67630 100644
 +#include <linux/grsecurity.h>
  #include <linux/sched/mm.h>
  #include <linux/sched/numa_balancing.h>
- #include <linux/sched/task.h>
+ #include <linux/sched/task_stack.h>
 @@ -364,6 +365,21 @@ static void task_cpus_allowed(struct seq_file *m, struct task_struct *task)
  		   cpumask_pr_args(&task->cpus_allowed));
  }

@@ -11,7 +11,7 @@ index 8bef70e..1bcd60a 100644
  /*
   * This function is to be invoked early in the boot sequence after the
   * hypervisor has been detected.
-@@ -143,16 +145,12 @@ void hyperv_init(void)
+@@ -120,16 +120,12 @@ void hyperv_init(void)
  	if (ms_hyperv.features & HV_X64_MSR_REFERENCE_TSC_AVAILABLE) {
  		union hv_x64_msr_hypercall_contents tsc_msr;
  
@@ -28,4 +28,4 @@ index 8bef70e..1bcd60a 100644
 +		tsc_msr.guest_physical_address = __phys_to_pfn(slow_virt_to_phys((void *)(ktla_ktva((unsigned long)hv_hypercall_page))));
  
  		wrmsrl(HV_X64_MSR_REFERENCE_TSC, tsc_msr.as_uint64);
- 		clocksource_register_hz(&hyperv_cs_tsc, NSEC_PER_SEC/100);
+ 

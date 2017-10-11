@@ -8,8 +8,8 @@ index a916c4a..7e7b7cf 100644
  #include <asm/inst.h>
 +#include <asm/alternative-asm.h>
  
- #define CONCAT(a,b)	a##b
  #define VMOVDQ		vmovdqu
+ 
 @@ -436,7 +437,7 @@ ddq_add_8:
  
  /* main body of aes ctr load */
