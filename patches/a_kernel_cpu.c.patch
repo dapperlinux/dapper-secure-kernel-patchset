@@ -1,8 +1,8 @@
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 217fd2e..f665bfe 100644
+index a88c29a..4004098 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
-@@ -74,16 +74,8 @@ static DEFINE_PER_CPU(struct cpuhp_cpu_state, cpuhp_state);
+@@ -83,16 +83,8 @@ static struct lockdep_map cpuhp_state_lock_map =
   */
  struct cpuhp_step {
  	const char		*name;
@@ -21,7 +21,7 @@ index 217fd2e..f665bfe 100644
  	struct hlist_head	list;
  	bool			skip_onerr;
  	bool			cant_stop;
-@@ -644,7 +636,7 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
+@@ -518,7 +510,7 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
  	return st->result;
  }
  
@@ -30,7 +30,7 @@ index 217fd2e..f665bfe 100644
  	.store			= &cpuhp_state.thread,
  	.create			= &cpuhp_create,
  	.thread_should_run	= cpuhp_should_run,
-@@ -1327,8 +1327,8 @@ static int cpuhp_reserve_state(enum cpuhp_state state)
+@@ -1244,8 +1236,8 @@ static int cpuhp_reserve_state(enum cpuhp_state state)
  }
  
  static int cpuhp_store_callbacks(enum cpuhp_state state, const char *name,
@@ -41,7 +41,7 @@ index 217fd2e..f665bfe 100644
  				 bool multi_instance)
  {
  	/* (Un)Install the callbacks for further cpu hotplug operations */
-@@ -1345,17 +1345,17 @@ static int cpuhp_store_callbacks(enum cpuhp_state state, const char *name,
+@@ -1272,17 +1264,17 @@ static int cpuhp_store_callbacks(enum cpuhp_state state, const char *name,
  	if (name && sp->name)
  		return -EBUSY;
  
@@ -63,18 +63,7 @@ index 217fd2e..f665bfe 100644
  }
  
  /*
-@@ -1463,8 +1463,8 @@ EXPORT_SYMBOL(__cpuhp_setup_state_cpuslocked);
- 
- int __cpuhp_setup_state(enum cpuhp_state state,
- 			const char *name, bool invoke,
--			int (*startup)(unsigned int cpu),
--			int (*teardown)(unsigned int cpu),
-+			union cpuhp_step_startup startup,
-+			union cpuhp_step_teardown teardown,
- 			bool multi_instance)
- {
- 	int ret;
-@@ -1496,7 +1496,7 @@ int __cpuhp_setup_state(enum cpuhp_state state,
+@@ -1437,7 +1429,7 @@ int __cpuhp_setup_state_cpuslocked(enum cpuhp_state state,
  		ret = 0;
  	}
  
@@ -83,7 +72,7 @@ index 217fd2e..f665bfe 100644
  		goto out;
  
  	/*
-@@ -1629,9 +1621,12 @@ int __cpuhp_setup_state(enum cpuhp_state state,
+@@ -1453,9 +1445,12 @@ int __cpuhp_setup_state_cpuslocked(enum cpuhp_state state,
  
  		ret = cpuhp_issue_call(cpu, state, true, NULL);
  		if (ret) {
@@ -98,7 +87,18 @@ index 217fd2e..f665bfe 100644
  			goto out;
  		}
  	}
-@@ -1491,7 +1491,7 @@ int __cpuhp_state_remove_instance(enum cpuhp_state state,
+@@ -1473,8 +1468,8 @@ EXPORT_SYMBOL(__cpuhp_setup_state_cpuslocked);
+ 
+ int __cpuhp_setup_state(enum cpuhp_state state,
+ 			const char *name, bool invoke,
+-			int (*startup)(unsigned int cpu),
+-			int (*teardown)(unsigned int cpu),
++			union cpuhp_step_startup startup,
++			union cpuhp_step_teardown teardown,
+ 			bool multi_instance)
+ {
+ 	int ret;
+@@ -1501,7 +1496,7 @@ int __cpuhp_state_remove_instance(enum cpuhp_state state,
  	cpus_read_lock();
  	mutex_lock(&cpuhp_state_mutex);
  
@@ -107,7 +107,7 @@ index 217fd2e..f665bfe 100644
  		goto remove;
  	/*
  	 * Call the teardown callback for each present cpu depending
-@@ -1692,6 +1687,8 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
+@@ -1539,6 +1534,8 @@ void __cpuhp_remove_state_cpuslocked(enum cpuhp_state state, bool invoke)
  {
  	struct cpuhp_step *sp = cpuhp_get_step(state);
  	int cpu;
@@ -116,7 +116,7 @@ index 217fd2e..f665bfe 100644
  
  	BUG_ON(cpuhp_cb_check(state));
  
-@@ -1704,7 +1701,7 @@ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke)
+@@ -1552,7 +1549,7 @@ void __cpuhp_remove_state_cpuslocked(enum cpuhp_state state, bool invoke)
  		goto remove;
  	}
  
@@ -125,7 +125,7 @@ index 217fd2e..f665bfe 100644
  		goto remove;
  
  	/*
-@@ -1558,7 +1558,7 @@ void __cpuhp_remove_state_cpuslocked(enum cpuhp_state state, bool invoke)
+@@ -1568,7 +1565,7 @@ void __cpuhp_remove_state_cpuslocked(enum cpuhp_state state, bool invoke)
  			cpuhp_issue_call(cpu, state, false, NULL);
  	}
  remove:
