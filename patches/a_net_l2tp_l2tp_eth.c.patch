@@ -2,22 +2,22 @@ diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
 index 965f7e3..daa74100 100644
 --- a/net/l2tp/l2tp_eth.c
 +++ b/net/l2tp/l2tp_eth.c
-@@ -42,12 +42,12 @@ struct l2tp_eth {
+@@ -44,12 +44,12 @@ struct l2tp_eth {
+ 	struct net_device	*dev;
  	struct sock		*tunnel_sock;
  	struct l2tp_session	*session;
- 	struct list_head	list;
 -	atomic_long_t		tx_bytes;
 -	atomic_long_t		tx_packets;
 -	atomic_long_t		tx_dropped;
 -	atomic_long_t		rx_bytes;
 -	atomic_long_t		rx_packets;
 -	atomic_long_t		rx_errors;
-+	atomic_long_unchecked_t	tx_bytes;
-+	atomic_long_unchecked_t	tx_packets;
-+	atomic_long_unchecked_t	tx_dropped;
-+	atomic_long_unchecked_t	rx_bytes;
-+	atomic_long_unchecked_t	rx_packets;
-+	atomic_long_unchecked_t	rx_errors;
++	atomic_long_unchecked_t		tx_bytes;
++	atomic_long_unchecked_t		tx_packets;
++	atomic_long_unchecked_t		tx_dropped;
++	atomic_long_unchecked_t		rx_bytes;
++	atomic_long_unchecked_t		rx_packets;
++	atomic_long_unchecked_t		rx_errors;
  };
  
  /* via l2tp_session_priv() */
