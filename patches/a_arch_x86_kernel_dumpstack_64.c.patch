@@ -2,15 +2,9 @@ diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
 index 36cf1a4..f3362b0 100644
 --- a/arch/x86/kernel/dumpstack_64.c
 +++ b/arch/x86/kernel/dumpstack_64.c
-@@ -237,8 +237,41 @@ int is_valid_bugaddr(unsigned long ip)
- {
- 	unsigned short ud2;
- 
--	if (__copy_from_user(&ud2, (const void __user *) ip, sizeof(ud2)))
-+	if (probe_kernel_address((unsigned short *)ip, ud2))
- 		return 0;
- 
- 	return ud2 == 0x0b0f;
+@@ -178,3 +178,36 @@ void show_regs(struct pt_regs *regs)
+ 	}
+ 	pr_cont("\n");
  }
 +
 +#ifdef CONFIG_PAX_MEMORY_STACKLEAK

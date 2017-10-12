@@ -42,7 +42,7 @@ index 5cb272a..5b3aa20 100644
  	u8 insnbuf[MAX_PATCH_LEN];
  
  	DPRINTK("alt table %p -> %p", start, end);
-@@ -380,46 +391,81 @@ void __init_or_module apply_alternatives(struct alt_instr *start,
+@@ -386,51 +386,86 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
  	for (a = start; a < end; a++) {
  		int insnbuf_sz = 0;
  
@@ -103,9 +103,14 @@ index 5cb272a..5b3aa20 100644
 +		memcpy(insnbuf, vreplacement, a->replacementlen);
  		insnbuf_sz = a->replacementlen;
  
--		/* 0xe8 is a relative jump; fix the offset. */
-+		/* 0xe8 is a call; fix the relative offset. */
- 		if (*insnbuf == 0xe8 && a->replacementlen == 5) {
+ 		/*
+-		 * 0xe8 is a relative jump; fix the offset.
++		 * 0xe8 is a call; fix the relative offset.
+ 		 *
+ 		 * Instruction length is checked before the opcode to avoid
+ 		 * accessing uninitialized bytes for zero-length replacements.
+ 		 */
+ 		if (a->replacementlen == 5 && *insnbuf == 0xe8) {
 -			*(s32 *)(insnbuf + 1) += replacement - instr;
 +			*(s32 *)(insnbuf + 1) += vreplacement - instr;
  			DPRINTK("Fix CALL offset: 0x%x, CALL 0x%lx",

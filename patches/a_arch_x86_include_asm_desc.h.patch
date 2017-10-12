@@ -109,8 +109,8 @@ index 12080d8..7319a47 100644
  
  	load_TR_desc();
  	this_cpu_write(__tss_limit_invalid, false);
-@@ -247,8 +258,10 @@ static inline void native_load_tls(struct thread_struct *t, unsigned int cpu)
- 	struct desc_struct *gdt = get_cpu_gdt_table(cpu);
+@@ -302,8 +302,10 @@ static inline void native_load_tls(struct thread_struct *t, unsigned int cpu)
+ 	struct desc_struct *gdt = get_cpu_gdt_rw(cpu);
  	unsigned int i;
  
 +	pax_open_kernel();
@@ -119,7 +119,7 @@ index 12080d8..7319a47 100644
 +	pax_close_kernel();
  }
  
- /* This intentionally ignores lm, since 32-bit apps don't have that field. */
+ DECLARE_PER_CPU(bool, __tss_limit_invalid);
 @@ -280,7 +293,7 @@ static inline void clear_LDT(void)
  	set_ldt(NULL, 0);
  }

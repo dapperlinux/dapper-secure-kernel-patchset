@@ -235,33 +235,26 @@ index 89ed2f6..25490ad 100644
  /**
   * atomic64_add_unless - add unless the number is a given value
   * @v: pointer of type atomic64_t
-@@ -192,17 +304,25 @@ static inline long atomic64_xchg(atomic64_t *v, long new)
+@@ -198,11 +198,20 @@ static inline long atomic64_xchg(atomic64_t *v, long new)
   */
  static inline bool atomic64_add_unless(atomic64_t *v, long a, long u)
  {
--	long c, old;
-+	long c, old, new;
- 	c = atomic64_read(v);
- 	for (;;) {
--		if (unlikely(c == (u)))
-+		if (unlikely(c == u))
- 			break;
--		old = atomic64_cmpxchg((v), c, c + (a));
+-	long c = atomic64_read(v);
++	long c, d; 
++	c = atomic64_read(v);
+ 	do {
+ 		if (unlikely(c == u))
+ 			return false;
+-	} while (!atomic64_try_cmpxchg(v, &c, c + a));
 +
 +		asm volatile("addq %2,%0\n\t"
 +			     PAX_REFCOUNT_OVERFLOW(8)
-+			     : "=r" (new)
++			     : "=r" (d)
 +			     : "0" (c), "ir" (a),
 +			       [counter] "m" (v->counter)
 +			     : "cc", "cx");
 +
-+		old = atomic64_cmpxchg(v, c, new);
- 		if (likely(old == c))
- 			break;
- 		c = old;
- 	}
--	return c != (u);
-+	return c != u;
++	} while (!atomic64_try_cmpxchg(v, &c, d));
+ 	return true;
  }
  
- #define atomic64_inc_not_zero(v) atomic64_add_unless((v), 1, 0)

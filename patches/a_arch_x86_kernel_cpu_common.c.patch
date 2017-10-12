@@ -184,15 +184,15 @@ index 4eece91..9eeb03b 100644
  /*
   * Protection Keys are not available in 32-bit mode.
   */
-@@ -451,7 +504,7 @@ void switch_to_new_gdt(int cpu)
+@@ -476,7 +476,7 @@ void load_direct_gdt(int cpu)
  {
  	struct desc_ptr gdt_descr;
  
--	gdt_descr.address = (long)get_cpu_gdt_table(cpu);
-+	gdt_descr.address = (unsigned long)get_cpu_gdt_table(cpu);
+-	gdt_descr.address = (long)get_cpu_gdt_rw(cpu);
++	gdt_descr.address = (unsigned long)get_cpu_gdt_rw(cpu);
  	gdt_descr.size = GDT_SIZE - 1;
  	load_gdt(&gdt_descr);
- 	/* Reload the per-cpu base */
+ }
 @@ -973,9 +1026,11 @@ static void x86_init_cache_qos(struct cpuinfo_x86 *c)
  	 * in case CQM bits really aren't there in this CPU.
  	 */
