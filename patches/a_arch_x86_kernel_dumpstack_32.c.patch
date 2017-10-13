@@ -38,18 +38,11 @@ index 06eb322..ca545b8 100644
  				pr_cont(" <%02x>", c);
  			else
  				pr_cont(" %02x", c);
-@@ -198,6 +200,7 @@ int is_valid_bugaddr(unsigned long ip)
- {
- 	unsigned short ud2;
- 
-+	ip = ktla_ktva(ip);
- 	if (ip < PAGE_OFFSET)
- 		return 0;
- 	if (probe_kernel_address((unsigned short *)ip, ud2))
-@@ -205,3 +208,15 @@ int is_valid_bugaddr(unsigned long ip)
- 
- 	return ud2 == 0x0b0f;
+@@ -162,3 +162,16 @@ void show_regs(struct pt_regs *regs)
+ 	}
+ 	pr_cont("\n");
  }
++
 +
 +#ifdef CONFIG_PAX_MEMORY_STACKLEAK
 +void __used pax_check_alloca(unsigned long size)

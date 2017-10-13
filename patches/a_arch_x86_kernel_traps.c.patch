@@ -1,8 +1,8 @@
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index bd4e3d4..4cff0f1 100644
+index bf54309..448e196 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
-@@ -71,7 +71,7 @@
+@@ -72,7 +72,7 @@
  #include <asm/proto.h>
  
  /* No need to be aligned, but done to keep all IDTs defined the same way. */
@@ -11,7 +11,7 @@ index bd4e3d4..4cff0f1 100644
  #else
  #include <asm/processor-flags.h>
  #include <asm/setup.h>
-@@ -79,7 +79,7 @@ gate_desc debug_idt_table[NR_VECTORS] __page_aligned_bss;
+@@ -80,7 +80,7 @@ gate_desc debug_idt_table[NR_VECTORS] __page_aligned_bss;
  #endif
  
  /* Must be page-aligned because the real IDT is used in a fixmap. */
@@ -20,7 +20,15 @@ index bd4e3d4..4cff0f1 100644
  
  DECLARE_BITMAP(used_vectors, NR_VECTORS);
  EXPORT_SYMBOL_GPL(used_vectors);
-@@ -169,7 +169,7 @@ void ist_end_non_atomic(void)
+@@ -172,6 +172,7 @@ void ist_end_non_atomic(void)
+ int is_valid_bugaddr(unsigned long addr)
+ {
+ 	unsigned short ud;
++	addr = ktla_ktva(addr);
+ 
+ 	if (addr < TASK_SIZE_MAX)
+ 		return 0;
+@@ -201,7 +202,7 @@ int fixup_bug(struct pt_regs *regs, int trapnr)
  }
  
  static nokprobe_inline int
@@ -29,7 +37,7 @@ index bd4e3d4..4cff0f1 100644
  		  struct pt_regs *regs,	long error_code)
  {
  	if (v8086_mode(regs)) {
-@@ -226,9 +226,30 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
+@@ -226,9 +227,30 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
  
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = trapnr;
@@ -60,7 +68,7 @@ index bd4e3d4..4cff0f1 100644
  	return -1;
  }
  
-@@ -229,7 +251,7 @@ static siginfo_t *fill_trap_info(struct pt_regs *regs, int signr, int trapnr,
+@@ -264,7 +286,7 @@ static siginfo_t *fill_trap_info(struct pt_regs *regs, int signr, int trapnr,
  }
  
  static void
@@ -69,7 +77,7 @@ index bd4e3d4..4cff0f1 100644
  	long error_code, siginfo_t *info)
  {
  	struct task_struct *tsk = current;
-@@ -253,7 +253,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
+@@ -287,7 +309,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
  	if (show_unhandled_signals && unhandled_signal(tsk, signr) &&
  	    printk_ratelimit()) {
  		pr_info("%s[%d] trap %s ip:%lx sp:%lx error:%lx",
@@ -78,7 +86,7 @@ index bd4e3d4..4cff0f1 100644
  			regs->ip, regs->sp, error_code);
  		print_vma_addr(KERN_CONT " in ", regs->ip);
  		pr_cont("\n");
-@@ -262,7 +284,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
+@@ -297,7 +319,7 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
  }
  NOKPROBE_SYMBOL(do_trap);
  
@@ -87,7 +95,7 @@ index bd4e3d4..4cff0f1 100644
  			  unsigned long trapnr, int signr)
  {
  	siginfo_t info;
-@@ -292,7 +314,7 @@ DO_ERROR(X86_TRAP_NP,     SIGBUS,  "segment not present",	segment_not_present)
+@@ -327,7 +349,7 @@ DO_ERROR(X86_TRAP_NP,     SIGBUS,  "segment not present",	segment_not_present)
  DO_ERROR(X86_TRAP_SS,     SIGBUS,  "stack segment",		stack_segment)
  DO_ERROR(X86_TRAP_AC,     SIGBUS,  "alignment check",		alignment_check)
  
@@ -96,7 +104,7 @@ index bd4e3d4..4cff0f1 100644
  __visible void __noreturn handle_stack_overflow(const char *message,
  						struct pt_regs *regs,
  						unsigned long fault_address)
-@@ -307,13 +329,49 @@ __visible void __noreturn handle_stack_overflow(const char *message,
+@@ -342,13 +364,49 @@ __visible void __noreturn handle_stack_overflow(const char *message,
  }
  #endif
  
@@ -147,7 +155,7 @@ index bd4e3d4..4cff0f1 100644
  	unsigned long cr2;
  #endif
  
-@@ -350,7 +408,7 @@ dotraplinkage void do_double_fault(struct pt_regs *regs, long error_code)
+@@ -385,7 +443,7 @@ dotraplinkage void do_double_fault(struct pt_regs *regs, long error_code)
  	tsk->thread.error_code = error_code;
  	tsk->thread.trap_nr = X86_TRAP_DF;
  
@@ -156,7 +164,7 @@ index bd4e3d4..4cff0f1 100644
  	/*
  	 * If we overflow the stack into a guard page, the CPU will fail
  	 * to deliver #PF and will send #DF instead.  Similarly, if we
-@@ -390,8 +448,12 @@ dotraplinkage void do_double_fault(struct pt_regs *regs, long error_code)
+@@ -425,8 +483,12 @@ dotraplinkage void do_double_fault(struct pt_regs *regs, long error_code)
  	 */
  	cr2 = read_cr2();
  	if ((unsigned long)task_stack_page(tsk) - 1 - cr2 < PAGE_SIZE)
@@ -169,7 +177,7 @@ index bd4e3d4..4cff0f1 100644
  
  #ifdef CONFIG_DOUBLEFAULT
  	df_debug(regs, error_code);
-@@ -505,11 +567,35 @@ do_general_protection(struct pt_regs *regs, long error_code)
+@@ -540,11 +602,35 @@ do_general_protection(struct pt_regs *regs, long error_code)
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = X86_TRAP_GP;
  		if (notify_die(DIE_GPF, "general protection fault", regs, error_code,
@@ -206,7 +214,7 @@ index bd4e3d4..4cff0f1 100644
  	tsk->thread.error_code = error_code;
  	tsk->thread.trap_nr = X86_TRAP_GP;
  
-@@ -607,6 +693,9 @@ struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
+@@ -640,6 +726,9 @@ struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
  		container_of(task_pt_regs(current),
  			     struct bad_iret_stack, regs);
  
@@ -216,7 +224,7 @@ index bd4e3d4..4cff0f1 100644
  	/* Copy the IRET target to the new stack. */
  	memmove(&new_stack->regs.ip, (void *)s->regs.sp, 5*8);
  
-@@ -778,7 +867,7 @@ dotraplinkage void do_debug(struct pt_regs *regs, long error_code)
+@@ -808,7 +897,7 @@ dotraplinkage void do_debug(struct pt_regs *regs, long error_code)
  	 * This is the most likely code path that involves non-trivial use
  	 * of the SYSENTER stack.  Check that we haven't overrun it.
  	 */
@@ -225,7 +233,7 @@ index bd4e3d4..4cff0f1 100644
  	     "Overran or corrupted SYSENTER stack\n");
  #endif
  	ist_exit(regs);
-@@ -908,7 +997,7 @@ void __init early_trap_init(void)
+@@ -950,7 +1039,7 @@ void __init early_trap_init(void)
  	 * since we don't have trace_debug and it will be reset to
  	 * 'debug' in trap_init() by set_intr_gate_ist().
  	 */
@@ -234,7 +242,7 @@ index bd4e3d4..4cff0f1 100644
  	/* int3 can be called from all */
  	set_system_intr_gate(X86_TRAP_BP, &int3);
  #ifdef CONFIG_X86_32
-@@ -975,6 +1064,19 @@ void __init trap_init(void)
+@@ -1017,6 +1106,19 @@ void __init trap_init(void)
  	set_bit(IA32_SYSCALL_VECTOR, used_vectors);
  #endif
  
@@ -254,7 +262,7 @@ index bd4e3d4..4cff0f1 100644
  	/*
  	 * Set the IDT descriptor to a fixed read-only location, so that the
  	 * "sidt" instruction will not leak the location of the kernel, and
-@@ -993,7 +1095,7 @@ void __init trap_init(void)
+@@ -1035,7 +1137,7 @@ void __init trap_init(void)
  	 * in early_trap_init(). However, ITS works only after
  	 * cpu_init() loads TSS. See comments in early_trap_init().
  	 */
@@ -263,7 +271,7 @@ index bd4e3d4..4cff0f1 100644
  	/* int3 can be called from all */
  	set_system_intr_gate_ist(X86_TRAP_BP, &int3, DEBUG_STACK);
  
-@@ -1001,7 +1103,7 @@ void __init trap_init(void)
+@@ -1043,7 +1145,7 @@ void __init trap_init(void)
  
  #ifdef CONFIG_X86_64
  	memcpy(&debug_idt_table, &idt_table, IDT_ENTRIES * 16);

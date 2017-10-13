@@ -1,5 +1,5 @@
 diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
-index 12080d8..7319a47 100644
+index d0a21b1..57494e3 100644
 --- a/arch/x86/include/asm/desc.h
 +++ b/arch/x86/include/asm/desc.h
 @@ -5,6 +5,7 @@
@@ -10,7 +10,7 @@ index 12080d8..7319a47 100644
  
  #include <linux/smp.h>
  #include <linux/percpu.h>
-@@ -17,6 +18,7 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
+@@ -18,6 +19,7 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
  
  	desc->type		= (info->read_exec_only ^ 1) << 1;
  	desc->type	       |= info->contents << 2;
@@ -18,7 +18,7 @@ index 12080d8..7319a47 100644
  
  	desc->s			= 1;
  	desc->dpl		= 0x3;
-@@ -36,20 +37,17 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
+@@ -36,20 +38,17 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
  }
  
  extern struct desc_ptr idt_descr;
@@ -43,7 +43,7 @@ index 12080d8..7319a47 100644
  }
  
  /* Provide the current original GDT */
-@@ -72,8 +69,14 @@ static inline void pack_gate(gate_desc *gate, unsigned char type,
+@@ -105,8 +104,14 @@ static inline void pack_gate(gate_desc *gate, unsigned char type,
  			     unsigned long base, unsigned dpl, unsigned flags,
  			     unsigned short seg)
  {
@@ -60,7 +60,7 @@ index 12080d8..7319a47 100644
  }
  
  #endif
-@@ -118,12 +121,16 @@ static inline void paravirt_free_ldt(struct desc_struct *ldt, unsigned entries)
+@@ -151,12 +156,16 @@ static inline void paravirt_free_ldt(struct desc_struct *ldt, unsigned entries)
  
  static inline void native_write_idt_entry(gate_desc *idt, int entry, const gate_desc *gate)
  {
@@ -77,7 +77,7 @@ index 12080d8..7319a47 100644
  }
  
  static inline void
-@@ -137,7 +144,9 @@ native_write_gdt_entry(struct desc_struct *gdt, int entry, const void *desc, int
+@@ -170,7 +179,9 @@ native_write_gdt_entry(struct desc_struct *gdt, int entry, const void *desc, int
  	default:	size = sizeof(*gdt);		break;
  	}
  
@@ -87,7 +87,7 @@ index 12080d8..7319a47 100644
  }
  
  static inline void pack_descriptor(struct desc_struct *desc, unsigned long base,
-@@ -284,7 +282,9 @@ static inline void native_load_tr_desc(void)
+@@ -284,7 +295,9 @@ static inline void native_load_tr_desc(void)
  #else
  static inline void native_load_tr_desc(void)
  {
@@ -97,7 +97,18 @@ index 12080d8..7319a47 100644
  }
  #endif
  
-@@ -219,7 +219,11 @@ static inline void force_reload_TR(void)
+@@ -302,8 +315,10 @@ static inline void native_load_tls(struct thread_struct *t, unsigned int cpu)
+ 	struct desc_struct *gdt = get_cpu_gdt_rw(cpu);
+ 	unsigned int i;
+ 
++	pax_open_kernel();
+ 	for (i = 0; i < GDT_ENTRY_TLS_ENTRIES; i++)
+ 		gdt[GDT_ENTRY_TLS_MIN + i] = t->tls_array[i];
++	pax_close_kernel();
+ }
+ 
+ DECLARE_PER_CPU(bool, __tss_limit_invalid);
+@@ -320,7 +335,11 @@ static inline void force_reload_TR(void)
  	 * busy.  Make it be available so that LTR will work.
  	 */
  	tss.type = DESC_TSS;
@@ -109,18 +120,7 @@ index 12080d8..7319a47 100644
  
  	load_TR_desc();
  	this_cpu_write(__tss_limit_invalid, false);
-@@ -302,8 +302,10 @@ static inline void native_load_tls(struct thread_struct *t, unsigned int cpu)
- 	struct desc_struct *gdt = get_cpu_gdt_rw(cpu);
- 	unsigned int i;
- 
-+	pax_open_kernel();
- 	for (i = 0; i < GDT_ENTRY_TLS_ENTRIES; i++)
- 		gdt[GDT_ENTRY_TLS_MIN + i] = t->tls_array[i];
-+	pax_close_kernel();
- }
- 
- DECLARE_PER_CPU(bool, __tss_limit_invalid);
-@@ -280,7 +293,7 @@ static inline void clear_LDT(void)
+@@ -387,7 +406,7 @@ static inline void clear_LDT(void)
  	set_ldt(NULL, 0);
  }
  
@@ -129,7 +129,7 @@ index 12080d8..7319a47 100644
  {
  	return (unsigned)(desc->base0 | ((desc->base1) << 16) | ((desc->base2) << 24));
  }
-@@ -304,7 +317,7 @@ static inline void set_desc_limit(struct desc_struct *desc, unsigned long limit)
+@@ -411,7 +430,7 @@ static inline void set_desc_limit(struct desc_struct *desc, unsigned long limit)
  }
  
  #ifdef CONFIG_X86_64
@@ -138,7 +138,7 @@ index 12080d8..7319a47 100644
  {
  	gate_desc s;
  
-@@ -314,14 +327,14 @@ static inline void set_nmi_gate(int gate, void *addr)
+@@ -421,14 +440,14 @@ static inline void set_nmi_gate(int gate, void *addr)
  #endif
  
  #ifdef CONFIG_TRACING
@@ -156,7 +156,7 @@ index 12080d8..7319a47 100644
  				   unsigned dpl, unsigned ist, unsigned seg)
  {
  	gate_desc s;
-@@ -341,7 +354,7 @@ static inline void write_trace_idt_entry(int entry, const gate_desc *gate)
+@@ -448,7 +467,7 @@ static inline void write_trace_idt_entry(int entry, const gate_desc *gate)
  #define _trace_set_gate(gate, type, addr, dpl, ist, seg)
  #endif
  
@@ -165,7 +165,7 @@ index 12080d8..7319a47 100644
  			     unsigned dpl, unsigned ist, unsigned seg)
  {
  	gate_desc s;
-@@ -364,14 +377,14 @@ static inline void _set_gate(int gate, unsigned type, void *addr,
+@@ -471,14 +490,14 @@ static inline void _set_gate(int gate, unsigned type, void *addr,
  #define set_intr_gate_notrace(n, addr)					\
  	do {								\
  		BUG_ON((unsigned)n > 0xFF);				\
@@ -182,7 +182,7 @@ index 12080d8..7319a47 100644
  				0, 0, __KERNEL_CS);			\
  	} while (0)
  
-@@ -399,19 +412,19 @@ static inline void alloc_system_vector(int vector)
+@@ -506,19 +525,19 @@ static inline void alloc_system_vector(int vector)
  /*
   * This routine sets up an interrupt gate at directory privilege level 3.
   */
@@ -205,7 +205,7 @@ index 12080d8..7319a47 100644
  {
  	BUG_ON((unsigned)n > 0xFF);
  	_set_gate(n, GATE_TRAP, addr, 0, 0, __KERNEL_CS);
-@@ -420,16 +433,16 @@ static inline void set_trap_gate(unsigned int n, void *addr)
+@@ -527,16 +546,16 @@ static inline void set_trap_gate(unsigned int n, void *addr)
  static inline void set_task_gate(unsigned int n, unsigned int gdt_entry)
  {
  	BUG_ON((unsigned)n > 0xFF);
@@ -225,7 +225,7 @@ index 12080d8..7319a47 100644
  {
  	BUG_ON((unsigned)n > 0xFF);
  	_set_gate(n, GATE_INTERRUPT, addr, 0x3, ist, __KERNEL_CS);
-@@ -501,4 +514,17 @@ static inline void load_current_idt(void)
+@@ -608,4 +627,17 @@ static inline void load_current_idt(void)
  	else
  		load_idt((const struct desc_ptr *)&idt_descr);
  }

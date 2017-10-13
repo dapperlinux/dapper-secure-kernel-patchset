@@ -2,9 +2,9 @@ diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
 index edba860..d684e0f 100644
 --- a/arch/x86/entry/entry_32.S
 +++ b/arch/x86/entry/entry_32.S
-@@ -46,6 +46,7 @@
+@@ -43,6 +43,7 @@
+ #include <asm/asm.h>
  #include <asm/smap.h>
- #include <asm/export.h>
  #include <asm/frame.h>
 +#include <asm/current.h>
  
@@ -194,7 +194,7 @@ index edba860..d684e0f 100644
  .macro RESTORE_INT_REGS
  	popl	%ebx
  	popl	%ecx
-@@ -235,7 +389,7 @@ ENTRY(__switch_to_asm)
+@@ -249,7 +249,7 @@ ENTRY(__switch_to_asm)
  	popl	%ebp
  
  	jmp	__switch_to
@@ -202,23 +202,22 @@ index edba860..d684e0f 100644
 +ENDPROC(__switch_to_asm)
  
  /*
-  * A newly forked process directly context switches into this address.
-@@ -269,7 +278,7 @@ ENTRY(ret_from_fork)
- 	 * on the stack.
- 	 */
+  * The unwinder expects the last frame on the stack to always be at the same
+@@ -262,7 +263,7 @@ ENTRY(schedule_tail_wrapper)
+ 	FRAME_BEGIN
+ 
  	pushl	%eax
 -	call	schedule_tail
 +	pax_direct_call schedule_tail
  	popl	%eax
  
- 	testl	%ebx, %ebx
-@@ -278,13 +279,13 @@ ENTRY(ret_from_fork)
+ 	FRAME_END
+@@ -284,12 +285,12 @@ ENTRY(ret_from_fork)
  2:
  	/* When we fork, we trace the syscall return in the child, too. */
- 	leal	FRAME_OFFSET(%esp), %eax
+ 	movl    %esp, %eax
 -	call    syscall_return_slowpath
 +	pax_direct_call syscall_return_slowpath
- 	FRAME_END
  	jmp     restore_all
  
  	/* kernel thread */
@@ -602,95 +601,6 @@ index edba860..d684e0f 100644
  #endif
  	jmp	ret_from_intr
  ENDPROC(xen_hypervisor_callback)
-@@ -861,8 +1105,8 @@ BUILD_INTERRUPT3(hyperv_callback_vector, HYPERVISOR_CALLBACK_VECTOR,
- #ifdef CONFIG_DYNAMIC_FTRACE
- 
- ENTRY(mcount)
--	ret
--END(mcount)
-+	pax_ret mcount
-+ENDPROC(mcount)
- 
- ENTRY(ftrace_caller)
- 	pushl	%eax
-@@ -876,7 +1120,7 @@ ENTRY(ftrace_caller)
- 
- .globl ftrace_call
- ftrace_call:
--	call	ftrace_stub
-+	pax_direct_call ftrace_stub
- 
- 	addl	$4, %esp			/* skip NULL pointer */
- 	popl	%edx
-@@ -891,8 +1135,8 @@ ftrace_graph_call:
- 
- /* This is weak to keep gas from relaxing the jumps */
- WEAK(ftrace_stub)
--	ret
--END(ftrace_caller)
-+	pax_ret ftrace_caller
-+ENDPROC(ftrace_caller)
- 
- ENTRY(ftrace_regs_caller)
- 	pushf	/* push flags before compare (in cs location) */
-@@ -931,7 +1175,7 @@ ENTRY(ftrace_regs_caller)
- 	pushl	%esp				/* Save pt_regs as 4th parameter */
- 
- GLOBAL(ftrace_regs_call)
--	call	ftrace_stub
-+	pax_direct_call ftrace_stub
- 
- 	addl	$4, %esp			/* Skip pt_regs */
- 	movl	14*4(%esp), %eax		/* Move flags back into cs */
-@@ -1002,7 +1018,7 @@ ENTRY(mcount)
- #endif
- .globl ftrace_stub
- ftrace_stub:
--	ret
-+	pax_ret ftrace_stub
- 
- 	/* taken from glibc */
- .Ltrace:
-@@ -984,13 +1228,13 @@ trace:
- 	movl	0x4(%ebp), %edx
- 	subl	$MCOUNT_INSN_SIZE, %eax
- 
--	call	*ftrace_trace_function
-+	pax_indirect_call "ftrace_trace_function", ftrace_stub
- 
- 	popl	%edx
- 	popl	%ecx
- 	popl	%eax
- 	jmp	ftrace_stub
--END(mcount)
-+ENDPROC(mcount)
- #endif /* CONFIG_DYNAMIC_FTRACE */
- EXPORT_SYMBOL(mcount)
- #endif /* CONFIG_FUNCTION_TRACER */
-@@ -1004,19 +1248,19 @@ ENTRY(ftrace_graph_caller)
- 	lea	0x4(%ebp), %edx
- 	movl	(%ebp), %ecx
- 	subl	$MCOUNT_INSN_SIZE, %eax
--	call	prepare_ftrace_return
-+	pax_direct_call prepare_ftrace_return
- 	popl	%edx
- 	popl	%ecx
- 	popl	%eax
--	ret
--END(ftrace_graph_caller)
-+	pax_ret ftrace_graph_caller
-+ENDPROC(ftrace_graph_caller)
- 
- .globl return_to_handler
- return_to_handler:
- 	pushl	%eax
- 	pushl	%edx
- 	movl	%ebp, %eax
--	call	ftrace_return_to_handler
-+	pax_direct_call ftrace_return_to_handler
- 	movl	%eax, %ecx
- 	popl	%edx
- 	popl	%eax
 @@ -1057,7 +1083,7 @@ ENTRY(trace_page_fault)
  	ASM_CLAC
  	pushl	$trace_do_page_fault

@@ -11,9 +11,9 @@ index 51287cd..24489b3 100644
  			(unsigned long)__va(0x400UL), PAGE_SIZE - 0x400 - 1);
  
  static const char driver_version[] = "1.16ac";	/* no spaces */
-@@ -610,7 +610,10 @@ static long __apm_bios_call(void *_call)
+@@ -611,7 +611,10 @@ static long __apm_bios_call(void *_call)
  	BUG_ON(cpu != 0);
- 	gdt = get_cpu_gdt_table(cpu);
+ 	gdt = get_cpu_gdt_rw(cpu);
  	save_desc_40 = gdt[0x40 / 8];
 +
 +	pax_open_kernel();
@@ -34,9 +34,9 @@ index 51287cd..24489b3 100644
  	put_cpu();
  
  	return call->eax & 0xff;
-@@ -686,7 +693,10 @@ static long __apm_bios_call_simple(void *_call)
+@@ -687,7 +690,10 @@ static long __apm_bios_call_simple(void *_call)
  	BUG_ON(cpu != 0);
- 	gdt = get_cpu_gdt_table(cpu);
+ 	gdt = get_cpu_gdt_rw(cpu);
  	save_desc_40 = gdt[0x40 / 8];
 +
 +	pax_open_kernel();
@@ -66,10 +66,10 @@ index 51287cd..24489b3 100644
  	{
  		print_if_true,
  		KERN_WARNING "IBM T23 - BIOS 1.03b+ and controller firmware 1.02+ may be needed for Linux APM.",
-@@ -2352,12 +2366,15 @@ static int __init apm_init(void)
+@@ -2353,12 +2359,15 @@ static int __init apm_init(void)
  	 * code to that CPU.
  	 */
- 	gdt = get_cpu_gdt_table(0);
+ 	gdt = get_cpu_gdt_rw(0);
 +
 +	pax_open_kernel();
  	set_desc_base(&gdt[APM_CS >> 3],

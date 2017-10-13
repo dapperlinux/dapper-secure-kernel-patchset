@@ -2,7 +2,7 @@ diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
 index b5785c1..c60cbcf 100644
 --- a/arch/x86/kernel/head64.c
 +++ b/arch/x86/kernel/head64.c
-@@ -63,12 +63,12 @@ int __init early_make_pgtable(unsigned long address)
+@@ -168,14 +168,14 @@ int __init early_make_pgtable(unsigned long address)
  	pgd = *pgd_p;
  
  	/*
@@ -12,18 +12,29 @@ index b5785c1..c60cbcf 100644
 +	 * __va would point us back into the dynamic
  	 * range and we might end up looping forever...
  	 */
- 	if (pgd)
--		pud_p = (pudval_t *)((pgd & PTE_PFN_MASK) + __START_KERNEL_map - phys_base);
-+		pud_p = (pudval_t *)(__early_va(pgd & PTE_PFN_MASK));
+ 	if (!IS_ENABLED(CONFIG_X86_5LEVEL))
+ 		p4d_p = pgd_p;
+ 	else if (pgd)
+-		p4d_p = (p4dval_t *)((pgd & PTE_PFN_MASK) + __START_KERNEL_map - phys_base);
++		p4d_p = (p4dval_t *)(__early_va(pgd & PTE_PFN_MASK));
  	else {
  		if (next_early_pgt >= EARLY_DYNAMIC_PAGE_TABLES) {
  			reset_early_page_tables();
-@@ -77,13 +77,13 @@ int __init early_make_pgtable(unsigned long address)
+@@ -184,7 +184,7 @@ int __init early_make_pgtable(unsigned long address)
+ 
+ 		p4d_p = (p4dval_t *)early_dynamic_pgts[next_early_pgt++];
+ 		memset(p4d_p, 0, sizeof(*p4d_p) * PTRS_PER_P4D);
+-		*pgd_p = (pgdval_t)p4d_p - __START_KERNEL_map + phys_base + _KERNPG_TABLE;
++		*pgd_p = (pgdval_t)__pa(p4d_p) + _KERNPG_TABLE;
+ 	}
+ 	p4d_p += p4d_index(address);
+ 	p4d = *p4d_p;
+@@ -199,13 +199,13 @@ int __init early_make_pgtable(unsigned long address)
  
  		pud_p = (pudval_t *)early_dynamic_pgts[next_early_pgt++];
  		memset(pud_p, 0, sizeof(*pud_p) * PTRS_PER_PUD);
--		*pgd_p = (pgdval_t)pud_p - __START_KERNEL_map + phys_base + _KERNPG_TABLE;
-+		*pgd_p = (pgdval_t)__pa(pud_p) + _KERNPG_TABLE;
+-		*p4d_p = (p4dval_t)pud_p - __START_KERNEL_map + phys_base + _KERNPG_TABLE;
++		*p4d_p = (p4dval_t)__pa(pud_p) + _KERNPG_TABLE;
  	}
  	pud_p += pud_index(address);
  	pud = *pud_p;
@@ -43,11 +54,11 @@ index b5785c1..c60cbcf 100644
  	}
  	pmd = (physaddr & PMD_MASK) + early_pmd_flags;
  	pmd_p[pmd_index(address)] = pmd;
-@@ -156,8 +156,6 @@ asmlinkage __visible void __init x86_64_start_kernel(char * real_mode_data)
+@@ -278,8 +278,6 @@ asmlinkage __visible void __init x86_64_start_kernel(char * real_mode_data)
  
  	clear_bss();
  
--	clear_page(init_level4_pgt);
+-	clear_page(init_top_pgt);
 -
  	kasan_early_init();
  

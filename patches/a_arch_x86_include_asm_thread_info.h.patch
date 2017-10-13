@@ -27,7 +27,7 @@ index ad6f5eb0..1b4909d 100644
  
  /*
   * work to do in syscall_trace_enter().  Also includes TIF_NOHZ for
-@@ -129,12 +131,12 @@ struct thread_info {
+@@ -130,14 +130,14 @@ struct thread_info {
  #define _TIF_WORK_SYSCALL_ENTRY	\
  	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_EMU | _TIF_SYSCALL_AUDIT |	\
  	 _TIF_SECCOMP | _TIF_SYSCALL_TRACEPOINT |	\
@@ -36,22 +36,17 @@ index ad6f5eb0..1b4909d 100644
  
  /* work to do on any return to user space */
  #define _TIF_ALLWORK_MASK						\
- 	((0x0000FFFF & ~_TIF_SECCOMP) | _TIF_SYSCALL_TRACEPOINT |	\
--	_TIF_NOHZ)
-+	_TIF_NOHZ | _TIF_GRSEC_SETXID)
+ 	(_TIF_SYSCALL_TRACE | _TIF_NOTIFY_RESUME | _TIF_SIGPENDING |	\
+ 	 _TIF_NEED_RESCHED | _TIF_SINGLESTEP | _TIF_SYSCALL_EMU |	\
+ 	 _TIF_SYSCALL_AUDIT | _TIF_USER_RETURN_NOTIFY | _TIF_UPROBE |	\
+-	 _TIF_PATCH_PENDING | _TIF_NOHZ | _TIF_SYSCALL_TRACEPOINT)
++	 _TIF_PATCH_PENDING | _TIF_NOHZ | _TIF_SYSCALL_TRACEPOINT | _TIF_GRSEC_SETXID)
  
  /* flags to check in __switch_to() */
  #define _TIF_WORK_CTXSW							\
-@@ -168,21 +170,21 @@ static inline unsigned long current_stack_pointer(void)
-  * entirely contained by a single stack frame.
-  *
-  * Returns:
-- *		 1 if within a frame
-- *		-1 if placed across a frame boundary (or outside stack)
-- *		 0 unable to determine (no frame pointers, etc)
-+ *		 GOOD_FRAME if within a frame
-+ *		 BAD_STACK if placed across a frame boundary (or outside stack)
-+ *		 GOOD_STACK unable to determine (no frame pointers, etc)
+@@ -175,17 +175,17 @@ static inline unsigned long current_stack_pointer(void)
+  *	BAD_STACK	if placed across a frame boundary (or outside stack)
+  *	NOT_STACK	unable to determine (no frame pointers, etc)
   */
 -static inline int arch_within_stack_frames(const void * const stack,
 -					   const void * const stackend,
@@ -74,21 +69,16 @@ index ad6f5eb0..1b4909d 100644
  	/*
  	 * low ----------------------------------------------> high
  	 * [saved bp][saved ip][args][local vars][saved bp][saved ip]
-@@ -197,22 +199,16 @@ static inline int arch_within_stack_frames(const void * const stack,
- 		 * the copy as invalid.
- 		 */
- 		if (obj + len <= frame)
--			return obj >= oldframe + 2 * sizeof(void *) ? 1 : -1;
-+			return obj >= oldframe + 2 * sizeof(unsigned long) ? GOOD_FRAME : BAD_STACK;
+@@ -203,7 +203,7 @@ static inline int arch_within_stack_frames(const void * const stack,
+ 			return obj >= oldframe + 2 * sizeof(void *) ?
+ 				GOOD_FRAME : BAD_STACK;
  		oldframe = frame;
 -		frame = *(const void * const *)frame;
 +		frame = *(unsigned long *)frame;
  	}
--	return -1;
-+	return BAD_STACK;
+ 	return BAD_STACK;
  #else
--	return 0;
-+	return GOOD_STACK;
+@@ -211,12 +211,6 @@ static inline int arch_within_stack_frames(const void * const stack,
  #endif
  }
  

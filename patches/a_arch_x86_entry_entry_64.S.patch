@@ -2,9 +2,9 @@ diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
 index ef766a3..d3f0e59 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -38,6 +38,9 @@
+@@ -37,6 +37,9 @@
+ #include <asm/pgtable_types.h>
  #include <asm/export.h>
- #include <asm/frame.h>
  #include <linux/err.h>
 +#include <asm/pgtable.h>
 +#include <asm/alternative-asm.h>
@@ -466,8 +466,8 @@ index ef766a3..d3f0e59 100644
  	LOCKDEP_SYS_EXIT
  	TRACE_IRQS_ON		/* user mode is traced as IRQs on */
  	movq	RIP(%rsp), %rcx
-@@ -241,16 +643,19 @@ entry_SYSCALL_64_fastpath:
- 	ENABLE_INTERRUPTS(CLBR_NONE)
+@@ -235,16 +238,19 @@ entry_SYSCALL_64_fastpath:
+ 	ENABLE_INTERRUPTS(CLBR_ANY)
  	SAVE_EXTRA_REGS
  	movq	%rsp, %rdi
 -	call	syscall_return_slowpath	/* returns with IRQs disabled */
@@ -488,11 +488,10 @@ index ef766a3..d3f0e59 100644
  	RESTORE_EXTRA_REGS
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -275,13 +680,12 @@ return_from_SYSCALL_64:
- 	.error "virtual address width changed -- SYSRET checks need update"
- 	.endif
- 
--	/* Change top 16 bits to be the sign-extension of 47th bit */
+@@ -268,12 +274,12 @@ return_from_SYSCALL_64:
+ 	 * Change top bits to match most significant bit (47th or 56th bit
+ 	 * depending on paging mode) in the address.
+ 	 */
 -	shl	$(64 - (__VIRTUAL_MASK_SHIFT+1)), %rcx
 -	sar	$(64 - (__VIRTUAL_MASK_SHIFT+1)), %rcx
 -
@@ -548,7 +547,7 @@ index ef766a3..d3f0e59 100644
  	pushq	%r13
  	pushq	%r14
  	pushq	%r15
-@@ -394,31 +394,42 @@ ENTRY(__switch_to_asm)
+@@ -391,30 +397,41 @@ ENTRY(__switch_to_asm)
  	popq	%r15
  	popq	%r14
  	popq	%r13
@@ -578,23 +577,22 @@ index ef766a3..d3f0e59 100644
 +#else
  ENTRY(ret_from_fork)
 +#endif
- 	FRAME_BEGIN			/* help unwinder find end of stack */
  	movq	%rax, %rdi
--	call	schedule_tail		/* rdi: 'prev' task parameter */
-+	pax_direct_call schedule_tail		/* rdi: 'prev' task parameter */
+-	call	schedule_tail			/* rdi: 'prev' task parameter */
++	pax_direct_call	schedule_tail			/* rdi: 'prev' task parameter */
  
- 	testq	%rbx, %rbx		/* from kernel_thread? */
- 	jnz	1f			/* kernel threads are uncommon */
+ 	testq	%rbx, %rbx			/* from kernel_thread? */
+ 	jnz	1f				/* kernel threads are uncommon */
  
  2:
- 	leaq	FRAME_OFFSET(%rsp),%rdi	/* pt_regs pointer */
+ 	movq	%rsp, %rdi
 -	call	syscall_return_slowpath	/* returns with IRQs disabled */
 +	pax_direct_call syscall_return_slowpath	/* returns with IRQs disabled */
 +	pax_exit_kernel_user
 +	pax_erase_kstack
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	SWAPGS
- 	FRAME_END
+ 	jmp	restore_regs_and_iret
 @@ -426,8 +437,8 @@ ENTRY(ret_from_fork)
  
  1:
@@ -959,9 +957,9 @@ index ef766a3..d3f0e59 100644
  
  /*
   * "Paranoid" exit path from exception stack.  This is invoked
-@@ -1053,19 +1552,26 @@ END(paranoid_entry)
+@@ -1049,19 +1066,26 @@ END(paranoid_entry)
  ENTRY(paranoid_exit)
- 	DISABLE_INTERRUPTS(CLBR_NONE)
+ 	DISABLE_INTERRUPTS(CLBR_ANY)
  	TRACE_IRQS_OFF_DEBUG
 -	testl	%ebx, %ebx			/* swapgs needed? */
 +	testl	$1, %ebx			/* swapgs needed? */
@@ -1060,12 +1058,12 @@ index ef766a3..d3f0e59 100644
  
  
  /*
-@@ -1158,10 +1677,10 @@ ENTRY(error_exit)
- 	movl	%ebx, %eax
- 	DISABLE_INTERRUPTS(CLBR_NONE)
+@@ -1154,10 +1178,10 @@ END(error_entry)
+ ENTRY(error_exit)
+ 	DISABLE_INTERRUPTS(CLBR_ANY)
  	TRACE_IRQS_OFF
--	testl	%eax, %eax
-+	testl	$1, %eax
+-	testl	%ebx, %ebx
++	testl	$1, %ebx
  	jnz	retint_kernel
  	jmp	retint_user
 -END(error_exit)
@@ -1073,15 +1071,6 @@ index ef766a3..d3f0e59 100644
  
  /* Runs on exception stack */
  ENTRY(nmi)
-@@ -1215,6 +1734,8 @@ ENTRY(nmi)
- 	 * other IST entries.
- 	 */
- 
-+	ASM_CLAC
-+
- 	/* Use %rdx as our temp variable throughout */
- 	pushq	%rdx
- 
 @@ -1260,6 +1263,12 @@ ENTRY(nmi)
  	pushq	%r15		/* pt_regs->r15 */
  	ENCODE_FRAME_POINTER

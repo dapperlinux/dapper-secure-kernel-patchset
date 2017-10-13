@@ -271,34 +271,30 @@ index 14635c5..199ea31 100644
  #define ATOMIC_OP(op)							\
  static inline void atomic_##op(int i, atomic_t *v)			\
  {									\
-@@ -236,12 +358,20 @@ ATOMIC_OPS(xor, ^)
+@@ -238,14 +238,131 @@ ATOMIC_OPS(xor, ^)
   */
  static __always_inline int __atomic_add_unless(atomic_t *v, int a, int u)
  {
--	int c, old;
-+	int c, old, new;
- 	c = atomic_read(v);
- 	for (;;) {
--		if (unlikely(c == (u)))
-+		if (unlikely(c == u))
+-	int c = atomic_read(v);
++	int c, d;
++	c = atomic_read(v);
+ 	do {
+ 		if (unlikely(c == u))
  			break;
--		old = atomic_cmpxchg((v), c, c + (a));
+-	} while (!atomic_try_cmpxchg(v, &c, c + a));
 +
 +		asm volatile("addl %2,%0\n\t"
 +			     PAX_REFCOUNT_OVERFLOW(4)
-+			     : "=r" (new)
++			     : "=r" (d)
 +			     : "0" (c), "ir" (a),
 +			       [counter] "m" (v->counter)
 +			     : "cc", "cx");
 +
-+		old = atomic_cmpxchg(v, c, new);
- 		if (likely(old == c))
- 			break;
- 		c = old;
-@@ -250,6 +380,114 @@ static __always_inline int __atomic_add_unless(atomic_t *v, int a, int u)
++	} while (!atomic_try_cmpxchg(v, &c, d));
+ 	return c;
  }
  
- /**
++/**
 + * atomic_inc_not_zero_hint - increment if not null
 + * @v: pointer of type atomic_t
 + * @hint: probable value of the atomic before the increment
@@ -406,7 +402,6 @@ index 14635c5..199ea31 100644
 +	return dec;
 +}
 +
-+/**
-  * atomic_inc_short - increment of a short integer
-  * @v: pointer to type int
-  *
+ #ifdef CONFIG_X86_32
+ # include <asm/atomic64_32.h>
+ #else

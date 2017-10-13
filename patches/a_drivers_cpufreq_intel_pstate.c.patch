@@ -108,7 +108,7 @@ index 80fa656..fe05593 100644
  }
  
  static void intel_pstate_set_min_pstate(struct cpudata *cpu)
-@@ -1711,16 +1711,16 @@ static void intel_pstate_max_within_limits(struct cpudata *cpu)
+@@ -1545,19 +1545,19 @@ static void intel_pstate_max_within_limits(struct cpudata *cpu)
  
  static void intel_pstate_get_cpu_pstates(struct cpudata *cpu)
  {
@@ -125,6 +125,11 @@ index 80fa656..fe05593 100644
  	cpu->pstate.max_freq = cpu->pstate.max_pstate * cpu->pstate.scaling;
  	cpu->pstate.turbo_freq = cpu->pstate.turbo_pstate * cpu->pstate.scaling;
  
+-	if (pstate_funcs.get_aperf_mperf_shift)
+-		cpu->aperf_mperf_shift = pstate_funcs.get_aperf_mperf_shift();
++	if (pstate_funcs->get_aperf_mperf_shift)
++		cpu->aperf_mperf_shift = pstate_funcs->get_aperf_mperf_shift();
+ 
 -	if (pstate_funcs.get_vid)
 -		pstate_funcs.get_vid(cpu);
 +	if (pstate_funcs->get_vid)
@@ -132,7 +137,7 @@ index 80fa656..fe05593 100644
  
  	intel_pstate_set_min_pstate(cpu);
  }
-@@ -1348,7 +1348,7 @@ static inline void intel_pstate_update_pstate(struct cpudata *cpu, int pstate)
+@@ -1714,7 +1714,7 @@ static void intel_pstate_update_pstate(struct cpudata *cpu, int pstate)
  		return;
  
  	cpu->pstate.current_pstate = pstate;
@@ -140,7 +145,7 @@ index 80fa656..fe05593 100644
 +	wrmsrl(MSR_IA32_PERF_CTL, pstate_funcs->get_val(cpu, pstate));
  }
  
- static inline void intel_pstate_adjust_busy_pstate(struct cpudata *cpu)
+ static void intel_pstate_adjust_pstate(struct cpudata *cpu, int target_pstate)
 @@ -1882,7 +1882,7 @@ static inline void intel_pstate_adjust_busy_pstate(struct cpudata *cpu)
  	from = cpu->pstate.current_pstate;
  
@@ -221,7 +226,7 @@ index 80fa656..fe05593 100644
  }
  #else
  static void intel_pstate_use_acpi_profile(void)
-@@ -2491,14 +2491,7 @@ static void intel_pstate_use_acpi_profile(void)
+@@ -2402,15 +2402,7 @@ static void intel_pstate_use_acpi_profile(void)
  
  static void __init copy_cpu_funcs(struct pstate_funcs *funcs)
  {
@@ -232,19 +237,20 @@ index 80fa656..fe05593 100644
 -	pstate_funcs.get_scaling = funcs->get_scaling;
 -	pstate_funcs.get_val   = funcs->get_val;
 -	pstate_funcs.get_vid   = funcs->get_vid;
--	pstate_funcs.get_target_pstate = funcs->get_target_pstate;
+-	pstate_funcs.update_util = funcs->update_util;
+-	pstate_funcs.get_aperf_mperf_shift = funcs->get_aperf_mperf_shift;
 +	pstate_funcs = funcs;
  
  	intel_pstate_use_acpi_profile();
  }
-@@ -2647,7 +2649,9 @@ static int __init intel_pstate_init(void)
- 	if (x86_match_cpu(hwp_support_ids) && !no_hwp) {
- 		copy_cpu_funcs(&core_params.funcs);
- 		hwp_active++;
--		intel_pstate.attr = hwp_cpufreq_attrs;
+@@ -2560,7 +2552,9 @@ static int __init intel_pstate_init(void)
+ 			pstate_funcs.update_util = intel_pstate_update_util;
+ 		} else {
+ 			hwp_active++;
+-			intel_pstate.attr = hwp_cpufreq_attrs;
 +		pax_open_kernel();
 +		const_cast(intel_pstate.attr) = hwp_cpufreq_attrs;
 +		pax_close_kernel();
- 		goto hwp_cpu_matched;
- 	}
- 
+ 			goto hwp_cpu_matched;
+ 		}
+ 	} else {
