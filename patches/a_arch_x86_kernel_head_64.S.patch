@@ -11,9 +11,9 @@ index b4421cc..8326c69 100644
  #include "../entry/calling.h"
  #include <asm/export.h>
  
-@@ -42,6 +44,12 @@
- L4_PAGE_OFFSET = pgd_index(__PAGE_OFFSET_BASE)
- L4_START_KERNEL = pgd_index(__START_KERNEL_map)
+@@ -43,6 +43,12 @@
+ PGD_PAGE_OFFSET = pgd_index(__PAGE_OFFSET_BASE)
+ PGD_START_KERNEL = pgd_index(__START_KERNEL_map)
  L3_START_KERNEL = pud_index(__START_KERNEL_map)
 +L4_VMALLOC_START = pgd_index(VMALLOC_START)
 +L3_VMALLOC_START = pud_index(VMALLOC_START)
@@ -63,21 +63,21 @@ index b4421cc..8326c69 100644
  
  	/*
  	 * Set up the identity mapping for the switchover.  These
-@@ -187,11 +220,12 @@ ENTRY(secondary_startup_64)
+@@ -98,11 +104,12 @@ ENTRY(secondary_startup_64)
  	/* Sanitize CPU configuration */
  	call verify_cpu
  
 +	orq	$-1, %rbp
- 	movq	$(init_level4_pgt - __START_KERNEL_map), %rax
+ 	movq	$(init_top_pgt - __START_KERNEL_map), %rax
  1:
  
--	/* Enable PAE mode and PGE */
+-	/* Enable PAE mode, PGE and LA57 */
 -	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
 +	/* Enable PAE mode and PSE/PGE */
 +	movl	$(X86_CR4_PSE | X86_CR4_PAE | X86_CR4_PGE), %ecx
- 	movq	%rcx, %cr4
- 
- 	/* Setup early boot stage 4 level pagetables. */
+ #ifdef CONFIG_X86_5LEVEL
+ 	orl	$X86_CR4_LA57, %ecx
+ #endif
 @@ -212,10 +246,24 @@ ENTRY(secondary_startup_64)
  	movl	$MSR_EFER, %ecx
  	rdmsr
@@ -104,7 +104,7 @@ index b4421cc..8326c69 100644
  1:	wrmsr				/* Make changes effective */
  
  	/* Setup cr0 */
-@@ -300,9 +300,9 @@ ENTRY(start_cpu)
+@@ -213,9 +220,9 @@ ENTRY(secondary_startup_64)
  	 */
  	pushq	$.Lafter_lret	# put return address on stack for unwinder
  	xorq	%rbp, %rbp	# clear frame pointer
@@ -115,7 +115,7 @@ index b4421cc..8326c69 100644
 +	pushq	initial_code(%rip) # target address in negative space
  	lretq
  .Lafter_lret:
- ENDPROC(start_cpu)
+ ENDPROC(secondary_startup_64)
 @@ -382,13 +429,13 @@ early_idt_handler_common:
  	cmpq $14,%rsi		/* Page fault? */
  	jnz 10f
@@ -132,12 +132,16 @@ index b4421cc..8326c69 100644
  
  20:
  	decl early_recursion_flag(%rip)
-@@ -416,40 +463,71 @@ GLOBAL(name)
- 	__INITDATA
- NEXT_PAGE(early_level4_pgt)
+@@ -335,37 +335,65 @@ GLOBAL(name)
+ NEXT_PAGE(early_top_pgt)
  	.fill	511,8,0
+ #ifdef CONFIG_X86_5LEVEL
+-	.quad	level4_kernel_pgt - __START_KERNEL_map + _PAGE_TABLE
++	.quad	level4_kernel_pgt - __START_KERNEL_map + _KERNPG_TABLE
+ #else
 -	.quad	level3_kernel_pgt - __START_KERNEL_map + _PAGE_TABLE
 +	.quad	level3_kernel_pgt - __START_KERNEL_map + _KERNPG_TABLE
+ #endif
  
  NEXT_PAGE(early_dynamic_pgts)
  	.fill	512*EARLY_DYNAMIC_PAGE_TABLES,8,0
@@ -146,23 +150,23 @@ index b4421cc..8326c69 100644
 +	__READ_ONLY
  
 -#ifndef CONFIG_XEN
- NEXT_PAGE(init_level4_pgt)
+-NEXT_PAGE(init_top_pgt)
 -	.fill	512,8,0
 -#else
--NEXT_PAGE(init_level4_pgt)
+ NEXT_PAGE(init_top_pgt)
 -	.quad   level3_ident_pgt - __START_KERNEL_map + _KERNPG_TABLE
- 	.org    init_level4_pgt + L4_PAGE_OFFSET*8, 0
+ 	.org    init_top_pgt + PGD_PAGE_OFFSET*8, 0
  	.quad   level3_ident_pgt - __START_KERNEL_map + _KERNPG_TABLE
-+	.org	init_level4_pgt + L4_VMALLOC_START*8, 0
++	.org	init_top_pgt + L4_VMALLOC_START*8, 0
 +	.quad	level3_vmalloc_start_pgt - __START_KERNEL_map + PAGE_SIZE*0 + _KERNPG_TABLE
 +	.quad	level3_vmalloc_start_pgt - __START_KERNEL_map + PAGE_SIZE*1 + _KERNPG_TABLE
 +	.quad	level3_vmalloc_start_pgt - __START_KERNEL_map + PAGE_SIZE*2 + _KERNPG_TABLE
 +	.quad	level3_vmalloc_start_pgt - __START_KERNEL_map + PAGE_SIZE*3 + _KERNPG_TABLE
-+	.org	init_level4_pgt + L4_VMALLOC_END*8, 0
++	.org	init_top_pgt + L4_VMALLOC_END*8, 0
 +	.quad	level3_vmalloc_end_pgt - __START_KERNEL_map + _KERNPG_TABLE
-+	.org	init_level4_pgt + L4_VMEMMAP_START*8, 0
++	.org	init_top_pgt + L4_VMEMMAP_START*8, 0
 +	.quad	level3_vmemmap_pgt - __START_KERNEL_map + _KERNPG_TABLE
- 	.org    init_level4_pgt + L4_START_KERNEL*8, 0
+ 	.org    init_top_pgt + PGD_START_KERNEL*8, 0
  	/* (2^48-(2*1024*1024*1024))/(2^39) = 511 */
 -	.quad   level3_kernel_pgt - __START_KERNEL_map + _PAGE_TABLE
 +	.quad   level3_kernel_pgt - __START_KERNEL_map + _KERNPG_TABLE
@@ -204,7 +208,9 @@ index b4421cc..8326c69 100644
 -#endif
 +	PMDS(PMD_SIZE, __PAGE_KERNEL_IDENT_LARGE_EXEC, 2*PTRS_PER_PMD - 1)
  
- NEXT_PAGE(level3_kernel_pgt)
+ #ifdef CONFIG_X86_5LEVEL
+ NEXT_PAGE(level4_kernel_pgt)
+@@ -377,7 +405,10 @@ NEXT_PAGE(level3_kernel_pgt)
  	.fill	L3_START_KERNEL,8,0
  	/* (2^48-(2*1024*1024*1024)-((2^39)*511))/(2^30) = 510 */
  	.quad	level2_kernel_pgt - __START_KERNEL_map + _KERNPG_TABLE

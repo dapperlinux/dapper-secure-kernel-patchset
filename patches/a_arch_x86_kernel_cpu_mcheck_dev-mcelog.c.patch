@@ -1,0 +1,40 @@
+diff --git a/arch/x86/kernel/cpu/mcheck/dev-mcelog.c b/arch/x86/kernel/cpu/mcheck/dev-mcelog.c
+index 10cec43..018976f 100644
+--- a/arch/x86/kernel/cpu/mcheck/dev-mcelog.c
++++ b/arch/x86/kernel/cpu/mcheck/dev-mcelog.c
+@@ -142,7 +142,7 @@ DEVICE_ATTR(trigger, 0644, show_trigger, set_trigger);
+  */
+ 
+ static DEFINE_SPINLOCK(mce_chrdev_state_lock);
+-static int mce_chrdev_open_count;	/* #times opened */
++static local_t mce_chrdev_open_count;	/* #times opened */
+ static int mce_chrdev_open_exclu;	/* already open exclusive? */
+ 
+ static int mce_chrdev_open(struct inode *inode, struct file *file)
+@@ -150,7 +150,7 @@ static int mce_chrdev_open(struct inode *inode, struct file *file)
+ 	spin_lock(&mce_chrdev_state_lock);
+ 
+ 	if (mce_chrdev_open_exclu ||
+-	    (mce_chrdev_open_count && (file->f_flags & O_EXCL))) {
++	    (local_read(&mce_chrdev_open_count) && (file->f_flags & O_EXCL))) {
+ 		spin_unlock(&mce_chrdev_state_lock);
+ 
+ 		return -EBUSY;
+@@ -158,7 +158,7 @@ static int mce_chrdev_open(struct inode *inode, struct file *file)
+ 
+ 	if (file->f_flags & O_EXCL)
+ 		mce_chrdev_open_exclu = 1;
+-	mce_chrdev_open_count++;
++	local_inc(&mce_chrdev_open_count);
+ 
+ 	spin_unlock(&mce_chrdev_state_lock);
+ 
+@@ -169,7 +169,7 @@ static int mce_chrdev_release(struct inode *inode, struct file *file)
+ {
+ 	spin_lock(&mce_chrdev_state_lock);
+ 
+-	mce_chrdev_open_count--;
++	local_dec(&mce_chrdev_open_count);
+ 	mce_chrdev_open_exclu = 0;
+ 
+ 	spin_unlock(&mce_chrdev_state_lock);

@@ -2,27 +2,29 @@ diff --git a/arch/x86/lib/clear_page_64.S b/arch/x86/lib/clear_page_64.S
 index 5e2af3a..5fb2fdb 100644
 --- a/arch/x86/lib/clear_page_64.S
 +++ b/arch/x86/lib/clear_page_64.S
-@@ -22,7 +22,7 @@ ENTRY(clear_page)
+@@ -18,7 +18,7 @@ ENTRY(clear_page_rep)
  	movl $4096/8,%ecx
  	xorl %eax,%eax
  	rep stosq
 -	ret
-+	pax_ret clear_page
- ENDPROC(clear_page)
- EXPORT_SYMBOL(clear_page)
++	pax_ret clear_page_rep
+ ENDPROC(clear_page_rep)
+ EXPORT_SYMBOL_GPL(clear_page_rep)
  
-@@ -45,12 +45,12 @@ ENTRY(clear_page_orig)
+@@ -40,7 +40,7 @@ ENTRY(clear_page_orig)
  	leaq	64(%rdi),%rdi
  	jnz	.Lloop
  	nop
 -	ret
-+	pax_ret clear_page
++	pax_ret clear_page_orig
  ENDPROC(clear_page_orig)
+ EXPORT_SYMBOL_GPL(clear_page_orig)
  
- ENTRY(clear_page_c_e)
+@@ -48,6 +48,6 @@ ENTRY(clear_page_erms)
  	movl $4096,%ecx
  	xorl %eax,%eax
  	rep stosb
 -	ret
-+	pax_ret clear_page
- ENDPROC(clear_page_c_e)
++	pax_ret clear_page_erms
+ ENDPROC(clear_page_erms)
+ EXPORT_SYMBOL_GPL(clear_page_erms)

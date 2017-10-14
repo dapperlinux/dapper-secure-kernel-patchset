@@ -10,15 +10,6 @@ index a7fdf45..87c1a31 100644
  
  #include "mce-internal.h"
  
-@@ -54,7 +54,7 @@
- 
- static DEFINE_MUTEX(mce_chrdev_read_mutex);
- 
--static int mce_chrdev_open_count;	/* #times opened */
-+static local_t mce_chrdev_open_count;	/* #times opened */
- 
- #define mce_log_get_idx_check(p) \
- ({ \
 @@ -154,14 +155,14 @@ static struct notifier_block mce_srao_nb;
   * notifiers registered on the chain.
   */
@@ -103,24 +94,16 @@ index a7fdf45..87c1a31 100644
  	} else
  		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
  }
-@@ -586,7 +586,7 @@ static int mce_default_notifier(struct notifier_block *nb, unsigned long val,
- 	 * Run the default notifier if we have only the SRAO
- 	 * notifier and us registered.
- 	 */
--	if (atomic_read(&num_notifiers) > 2)
-+	if (atomic_read_unchecked(&num_notifiers) > 2)
+@@ -600,7 +600,7 @@ static int mce_default_notifier(struct notifier_block *nb, unsigned long val,
+ 	if (!m)
  		return NOTIFY_DONE;
  
- 	/* Don't print when mcelog is running */
-@@ -590,7 +590,7 @@ static int mce_default_notifier(struct notifier_block *nb, unsigned long val,
- 		return NOTIFY_DONE;
- 
- 	/* Don't print when mcelog is running */
--	if (mce_chrdev_open_count > 0)
-+	if (local_read(&mce_chrdev_open_count) > 0)
+-	if (atomic_read(&num_notifiers) > NUM_DEFAULT_NOTIFIERS)
++	if (atomic_read_unchecked(&num_notifiers) > NUM_DEFAULT_NOTIFIERS)
  		return NOTIFY_DONE;
  
  	__print_mce(m);
+
 @@ -787,7 +787,7 @@ static int mce_timed_out(u64 *t, const char *msg)
  	 * might have been modified by someone else.
  	 */
@@ -130,9 +113,9 @@ index a7fdf45..87c1a31 100644
  		wait_for_panic();
  	if (!mca_cfg.monarch_timeout)
  		goto out;
-@@ -1706,10 +1706,12 @@ static void __mcheck_cpu_init_vendor(struct cpuinfo_x86 *c)
- 		 * Install proper ops for Scalable MCA enabled processors
- 		 */
+@@ -1712,10 +1712,12 @@ static void __mcheck_cpu_init_early(struct cpuinfo_x86 *c)
+ 		mce_flags.smca		 = !!cpu_has(c, X86_FEATURE_SMCA);
+ 
  		if (mce_flags.smca) {
 +			pax_open_kernel();
  			msr_ops.ctl	= smca_ctl_reg;
@@ -141,8 +124,8 @@ index a7fdf45..87c1a31 100644
  			msr_ops.misc	= smca_misc_reg;
 +			pax_close_kernel();
  		}
- 		mce_amd_feature_init(c);
- 
+ 	}
+ }
 @@ -1762,7 +1764,7 @@ static void unexpected_machine_check(struct pt_regs *regs, long error_code)
  }
  
@@ -162,33 +145,6 @@ index a7fdf45..87c1a31 100644
  
  	__mcheck_cpu_init_early(c);
  	__mcheck_cpu_init_generic();
-@@ -1831,7 +1835,7 @@ static int mce_chrdev_open(struct inode *inode, struct file *file)
- 	spin_lock(&mce_chrdev_state_lock);
- 
- 	if (mce_chrdev_open_exclu ||
--	    (mce_chrdev_open_count && (file->f_flags & O_EXCL))) {
-+	    (local_read(&mce_chrdev_open_count) && (file->f_flags & O_EXCL))) {
- 		spin_unlock(&mce_chrdev_state_lock);
- 
- 		return -EBUSY;
-@@ -1839,7 +1843,7 @@ static int mce_chrdev_open(struct inode *inode, struct file *file)
- 
- 	if (file->f_flags & O_EXCL)
- 		mce_chrdev_open_exclu = 1;
--	mce_chrdev_open_count++;
-+	local_inc(&mce_chrdev_open_count);
- 
- 	spin_unlock(&mce_chrdev_state_lock);
- 
-@@ -1850,7 +1854,7 @@ static int mce_chrdev_release(struct inode *inode, struct file *file)
- {
- 	spin_lock(&mce_chrdev_state_lock);
- 
--	mce_chrdev_open_count--;
-+	local_dec(&mce_chrdev_open_count);
- 	mce_chrdev_open_exclu = 0;
- 
- 	spin_unlock(&mce_chrdev_state_lock);
 @@ -2545,7 +2549,7 @@ static __init void mce_init_banks(void)
  
  	for (i = 0; i < mca_cfg.banks; i++) {
