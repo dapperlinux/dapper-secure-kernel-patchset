@@ -38,7 +38,6 @@ patch -F 0 -p1 < ../../dapper-secure-kernel-patchset-test.patch >> ../../release
 
 echo "Committing Dapper Secure Kernel Patches..."
 git add *
-git add -f Makefile.orig
 git commit -m "Dapper Secure Kernel Patchset $KERNEL_VERSION" >> ../../release.log
 
 echo "Running format-patch..."
