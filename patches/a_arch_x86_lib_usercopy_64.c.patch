@@ -23,24 +23,7 @@ index 6987358..14d4769 100644
  	return size;
  }
  EXPORT_SYMBOL(__clear_user);
-@@ -54,12 +54,11 @@ unsigned long clear_user(void __user *to, unsigned long n)
- }
- EXPORT_SYMBOL(clear_user);
- 
--unsigned long copy_in_user(void __user *to, const void __user *from, unsigned len)
-+unsigned long copy_in_user(void __user *to, const void __user *from, unsigned long len)
- {
--	if (access_ok(VERIFY_WRITE, to, len) && access_ok(VERIFY_READ, from, len)) { 
--		return copy_user_generic((__force void *)to, (__force void *)from, len);
--	} 
--	return len;		
-+	if (access_ok(VERIFY_WRITE, to, len) && access_ok(VERIFY_READ, from, len))
-+		return copy_user_generic((void __force_kernel *)____m(to), (void __force_kernel *)____m(from), len);
-+	return len;
- }
- EXPORT_SYMBOL(copy_in_user);
- 
-@@ -69,20 +68,20 @@ EXPORT_SYMBOL(copy_in_user);
+@@ -61,17 +61,17 @@ EXPORT_SYMBOL(clear_user);
   * it is not necessary to optimize tail handling.
   */
  __visible unsigned long
@@ -59,11 +42,6 @@ index 6987358..14d4769 100644
  			break;
  	}
 -	clac();
- 
- 	/* If the destination is a kernel buffer, we always clear the end */
--	if (!__addr_ok(to))
--		memset(to, 0, len);
-+	if (!__addr_ok(to) && (unsigned long)to >= TASK_SIZE_MAX + pax_user_shadow_base)
-+		memset((void __force_kernel *)to, 0, len);
  	return len;
  }
+ 
