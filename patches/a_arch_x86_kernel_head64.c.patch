@@ -2,6 +2,72 @@ diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
 index b5785c1..c60cbcf 100644
 --- a/arch/x86/kernel/head64.c
 +++ b/arch/x86/kernel/head64.c
+@@ -38,6 +38,13 @@ extern pmd_t early_dynamic_pgts[EARLY_DYNAMIC_PAGE_TABLES][PTRS_PER_PMD];
+ static unsigned int __initdata next_early_pgt;
+ pmdval_t early_pmd_flags = __PAGE_KERNEL_LARGE & ~(_PAGE_GLOBAL | _PAGE_NX);
+ 
++#define L4_VMALLOC_START	pgd_index(VMALLOC_START)
++#define L3_VMALLOC_START	pud_index(VMALLOC_START)
++#define L4_VMALLOC_END		pgd_index(VMALLOC_END)
++#define L3_VMALLOC_END		pud_index(VMALLOC_END)
++#define L4_VMEMMAP_START	pgd_index(VMEMMAP_START)
++#define L3_VMEMMAP_START	pud_index(VMEMMAP_START)
++
+ #define __head	__section(.head.text)
+ 
+ static void __head *fixup_pointer(void *ptr, unsigned long physaddr)
+@@ -74,18 +81,48 @@ void __head __startup_64(unsigned long physaddr)
+ 	pgd = fixup_pointer(&early_top_pgt, physaddr);
+ 	pgd[pgd_index(__START_KERNEL_map)] += load_delta;
+ 
++	pgd = fixup_pointer(&init_level4_pgt, physaddr);
++	pgd[L4_PAGE_OFFSET] += load_delta;
++	pgd[L4_VMALLOC_START] += load_delta;
++	pgd[L4_VMALLOC_START + 1] += load_delta;
++	pgd[L4_VMALLOC_START + 2] += load_delta;
++	pgd[L4_VMALLOC_START + 3] += load_delta;
++	pgd[L4_VMALLOC_END] += load_delta;
++	pgd[L4_VMEMMAP_START] += load_delta;
++	pgd[L4_START_KERNEL] += load_delta;
++
+ 	if (IS_ENABLED(CONFIG_X86_5LEVEL)) {
+ 		p4d = fixup_pointer(&level4_kernel_pgt, physaddr);
+ 		p4d[511] += load_delta;
+ 	}
+ 
++	pud = fixup_pointer(&level3_ident_pgt, physaddr);
++	pud[0] += load_delta;
++#ifndef CONFIG_XEN
++	pud[1] += load_delta;
++#endif
++
++	pud = fixup_pointer(&level3_vmemmap_pgt, physaddr);
++	pud[L3_VMEMMAP_START] += load_delta;
++
+ 	pud = fixup_pointer(&level3_kernel_pgt, physaddr);
+-	pud[510] += load_delta;
+-	pud[511] += load_delta;
++	pud[L3_START_KERNEL] += load_delta;
++	pud[L3_START_KERNEL + 1] += load_delta;
++
++	pmd = fixup_pointer(level2_ident_pgt, physaddr);
++	pmd[0] += load_delta;
+ 
+ 	pmd = fixup_pointer(level2_fixmap_pgt, physaddr);
+-	pmd[506] += load_delta;
++	pmd[0] += load_delta;
++	pmd[1] += load_delta;
++	pmd[2] += load_delta;
++	pmd[2] += load_delta;
+ 
++	pmd[504] += load_delta;
++	pmd[505] += load_delta;
++	pmd[506] += load_delta;
++	pmd[507] += load_delta;
++ 
+ 	/*
+ 	 * Set up the identity mapping for the switchover.  These
+ 	 * entries should *NOT* have the global bit set!  This also
 @@ -168,14 +168,14 @@ int __init early_make_pgtable(unsigned long address)
  	pgd = *pgd_p;
  

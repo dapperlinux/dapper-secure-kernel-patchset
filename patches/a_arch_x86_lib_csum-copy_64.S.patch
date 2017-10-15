@@ -1,16 +1,25 @@
 diff --git a/arch/x86/lib/csum-copy_64.S b/arch/x86/lib/csum-copy_64.S
-index 7e48807..627b003 100644
+index 45a53df..45b941f 100644
 --- a/arch/x86/lib/csum-copy_64.S
 +++ b/arch/x86/lib/csum-copy_64.S
-@@ -8,6 +8,7 @@
+@@ -8,6 +8,16 @@
  #include <linux/linkage.h>
  #include <asm/errno.h>
  #include <asm/asm.h>
 +#include <asm/alternative-asm.h>
++
++/*
++ * NOTE, rbp was changed to r15 in commit 42fc6c6cb1662ba2fa727dd01c9473c63be4e3b6
++ * This is not ideal, as it can lead to crashes during interrupts.
++ * However we want to change r12 to r15 to keep CONFIG_PAX_KERNEXEC_PLUGIN_METHOD_OR
++ * happy. Every single x86_64 register is used in the file with none spare, 
++ * so we have no choice but to send r15 to rbp to free up r15 to switch for r12.
++ * This should not have too many adverse results, but this can be addressed in the future.
++ */
  
  /*
   * Checksum copy with exception handling.
-@@ -52,7 +53,7 @@ ENTRY(csum_partial_copy_generic)
+@@ -52,10 +62,10 @@ ENTRY(csum_partial_copy_generic)
  .Lignore:
  	subq  $7*8, %rsp
  	movq  %rbx, 2*8(%rsp)
@@ -18,8 +27,12 @@ index 7e48807..627b003 100644
 +	movq  %r15, 3*8(%rsp)
  	movq  %r14, 4*8(%rsp)
  	movq  %r13, 5*8(%rsp)
- 	movq  %rbp, 6*8(%rsp)
-@@ -64,16 +65,16 @@ ENTRY(csum_partial_copy_generic)
+-	movq  %r15, 6*8(%rsp)
++	movq  %rbp, 6*8(%rsp)
+ 
+ 	movq  %r8, (%rsp)
+ 	movq  %r9, 1*8(%rsp)
+@@ -64,17 +74,17 @@ ENTRY(csum_partial_copy_generic)
  	movl  %edx, %ecx
  
  	xorl  %r9d, %r9d
@@ -35,11 +48,27 @@ index 7e48807..627b003 100644
  	/* main loop. clear in 64 byte blocks */
  	/* r9: zero, r8: temp2, rbx: temp1, rax: sum, rcx: saved length */
 -	/* r11:	temp3, rdx: temp4, r12 loopcnt */
+-	/* r10:	temp5, r15: temp6, r14 temp7, r13 temp8 */
 +	/* r11:	temp3, rdx: temp4, r15 loopcnt */
- 	/* r10:	temp5, rbp: temp6, r14 temp7, r13 temp8 */
++	/* r10:	temp5, rbp: temp6, r14 temp7, r13 temp8 */
  	.p2align 4
  .Lloop:
-@@ -107,7 +108,7 @@ ENTRY(csum_partial_copy_generic)
+ 	source
+@@ -89,7 +99,7 @@ ENTRY(csum_partial_copy_generic)
+ 	source
+ 	movq  32(%rdi), %r10
+ 	source
+-	movq  40(%rdi), %r15
++	movq  40(%rdi), %rbp
+ 	source
+ 	movq  48(%rdi), %r14
+ 	source
+@@ -103,11 +113,11 @@ ENTRY(csum_partial_copy_generic)
+ 	adcq  %r11, %rax
+ 	adcq  %rdx, %rax
+ 	adcq  %r10, %rax
+-	adcq  %r15, %rax
++	adcq  %rbp, %rax
  	adcq  %r14, %rax
  	adcq  %r13, %rax
  
@@ -48,7 +77,16 @@ index 7e48807..627b003 100644
  
  	dest
  	movq %rbx, (%rsi)
-@@ -200,12 +201,12 @@ ENTRY(csum_partial_copy_generic)
+@@ -121,7 +131,7 @@ ENTRY(csum_partial_copy_generic)
+ 	dest
+ 	movq %r10, 32(%rsi)
+ 	dest
+-	movq %r15, 40(%rsi)
++	movq %rbp, 40(%rsi)
+ 	dest
+ 	movq %r14, 48(%rsi)
+ 	dest
+@@ -200,10 +210,10 @@ ENTRY(csum_partial_copy_generic)
  
  .Lende:
  	movq 2*8(%rsp), %rbx
@@ -56,10 +94,8 @@ index 7e48807..627b003 100644
 +	movq 3*8(%rsp), %r15
  	movq 4*8(%rsp), %r14
  	movq 5*8(%rsp), %r13
- 	movq 6*8(%rsp), %rbp
+-	movq 6*8(%rsp), %r15
++	movq 6*8(%rsp), %rbp
  	addq $7*8, %rsp
--	ret
-+	pax_ret csum_partial_copy_generic
+ 	ret
  
- 	/* Exception handlers. Very simple, zeroing is done in the wrappers */
- .Lbad_source:

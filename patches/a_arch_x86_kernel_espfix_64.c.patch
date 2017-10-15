@@ -23,20 +23,21 @@ index 04f89ca..43ad7de 100644
  
  static unsigned int page_random, slot_random;
  
-@@ -122,10 +125,19 @@ static void init_espfix_random(void)
- void __init init_espfix_bsp(void)
+@@ -123,11 +123,20 @@ void __init init_espfix_bsp(void)
  {
- 	pgd_t *pgd_p;
-+	pud_t *pud_p;
+ 	pgd_t *pgd;
+ 	p4d_t *p4d;
++	pud_t *pud;
 +	unsigned long index = pgd_index(ESPFIX_BASE_ADDR);
  
  	/* Install the espfix pud into the kernel page directory */
--	pgd_p = &init_level4_pgt[pgd_index(ESPFIX_BASE_ADDR)];
--	pgd_populate(&init_mm, pgd_p, (pud_t *)espfix_pud_page);
-+	pgd_p = &init_level4_pgt[index];
-+	pud_p = espfix_pud_page;
-+	paravirt_alloc_pud(&init_mm, __pa(pud_p) >> PAGE_SHIFT);
-+	set_pgd(pgd_p, __pgd(PGTABLE_PROT | __pa(pud_p)));
+-	pgd = &init_top_pgt[pgd_index(ESPFIX_BASE_ADDR)];
++	pgd = &init_top_pgt[index];
+ 	p4d = p4d_alloc(&init_mm, pgd, ESPFIX_BASE_ADDR);
+-	p4d_populate(&init_mm, p4d, espfix_pud_page);
++	pud = espfix_pud_page;
++	paravirt_alloc_pud(&init_mm, __pa(pud) >> PAGE_SHIFT);
++	set_p4d(p4d, __p4d(PGTABLE_PROT | __pa(pud)));
 +
 +#ifdef CONFIG_PAX_PER_CPU_PGD
 +	clone_pgd_range(get_cpu_pgd(0, kernel) + index, swapper_pg_dir + index, 1);
