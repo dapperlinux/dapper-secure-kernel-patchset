@@ -102,7 +102,7 @@ index 4eece91..9eeb03b 100644
 +	struct desc_struct *gdt;
 +
 +	for (cpu = 0; cpu < nr_cpu_ids; cpu++) {
-+		gdt = get_cpu_gdt_table(cpu);
++		gdt = get_cpu_gdt_rw(cpu);
 +		gdt[GDT_ENTRY_KERNEL_DS].type = 3;
 +		gdt[GDT_ENTRY_KERNEL_DS].limit = 0xf;
 +		gdt[GDT_ENTRY_DEFAULT_USER_CS].limit = 0xf;

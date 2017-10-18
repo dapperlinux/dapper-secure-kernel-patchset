@@ -20,7 +20,7 @@ index 1d97cea..f34bbf2 100644
  	local_irq_save(flags);
 -	__asm__("lcall *(%%edi); cld"
 +
-+	gdt = get_cpu_gdt_table(smp_processor_id());
++	gdt = get_cpu_gdt_rw(smp_processor_id());
 +
 +	pack_descriptor(&d, 0UL, 0xFFFFFUL, 0x9B, 0xC);
 +	write_gdt_entry(gdt, GDT_ENTRY_PCIBIOS_CS, &d, DESCTYPE_S);
@@ -75,7 +75,7 @@ index 1d97cea..f34bbf2 100644
 +		}
 +
 +		for (cpu = 0; cpu < nr_cpu_ids; cpu++) {
-+			gdt = get_cpu_gdt_table(cpu);
++			gdt = get_cpu_gdt_rw(cpu);
 +			pack_descriptor(&d, address, length, 0x9b, flags);
 +			write_gdt_entry(gdt, GDT_ENTRY_PCIBIOS_CS, &d, DESCTYPE_S);
 +			pack_descriptor(&d, address, length, 0x93, flags);

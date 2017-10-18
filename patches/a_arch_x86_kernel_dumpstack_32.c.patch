@@ -14,7 +14,7 @@ index 06eb322..ca545b8 100644
  		unsigned int code_len = code_bytes;
  		unsigned char c;
  		u8 *ip;
-+		unsigned long cs_base = get_desc_base(&get_cpu_gdt_table(0)[(0xffff & regs->cs) >> 3]);
++		unsigned long cs_base = get_desc_base(&get_cpu_gdt_rw(0)[(0xffff & regs->cs) >> 3]);
  
  		show_trace_log_lvl(current, regs, NULL, KERN_EMERG);
  

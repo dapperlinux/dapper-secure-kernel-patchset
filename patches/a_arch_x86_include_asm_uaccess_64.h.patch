@@ -2,11 +2,19 @@ diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uaccess_64
 index 673059a..0ec8310 100644
 --- a/arch/x86/include/asm/uaccess_64.h
 +++ b/arch/x86/include/asm/uaccess_64.h
-@@ -11,6 +11,7 @@
+@@ -10,6 +10,15 @@
  #include <asm/alternative.h>
  #include <asm/cpufeatures.h>
  #include <asm/page.h>
 +#include <asm/pgtable.h>
++
++extern void __compiletime_error("usercopy buffer size is too small")
++__bad_copy_user(void);
++
++static inline void copy_user_overflow(int size, unsigned long count)
++{
++	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
++}
  
  /*
   * Copy To/From Userspace

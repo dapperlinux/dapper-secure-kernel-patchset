@@ -17,7 +17,7 @@ index cf0fa5d..a7444a7 100644
  # define __must_hold(x)	__attribute__((context(x,1,1)))
  # define __acquires(x)	__attribute__((context(x,0,1)))
  # define __releases(x)	__attribute__((context(x,1,0)))
-@@ -17,33 +17,71 @@
+@@ -17,33 +17,70 @@
  # define __release(x)	__context__(x,-1)
  # define __cond_lock(x,c)	((c) ? ({ __acquire(x); 1; }) : 0)
  # define __percpu	__attribute__((noderef, address_space(3)))
@@ -74,7 +74,7 @@ index cf0fa5d..a7444a7 100644
 +#  define __acquire(x) (void)0
 +#  define __release(x) (void)0
 +#  define __cond_lock(x,c) (c)
- #  define __user
+-#  define __user
  # endif
 -# define __kernel
  # define __safe

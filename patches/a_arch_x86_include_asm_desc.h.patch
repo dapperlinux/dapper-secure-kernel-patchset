@@ -18,7 +18,7 @@ index d0a21b1..57494e3 100644
  
  	desc->s			= 1;
  	desc->dpl		= 0x3;
-@@ -36,20 +38,17 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
+@@ -36,26 +36,23 @@ static inline void fill_ldt(struct desc_struct *desc, const struct user_desc *in
  }
  
  extern struct desc_ptr idt_descr;
@@ -43,6 +43,13 @@ index d0a21b1..57494e3 100644
  }
  
  /* Provide the current original GDT */
+ static inline struct desc_struct *get_current_gdt_rw(void)
+ {
+-	return this_cpu_ptr(&gdt_page)->gdt;
++	get_cpu_gdt_rw(smp_processor_id());
+ }
+ 
+ /* Get the fixmap index for a specific processor */
 @@ -105,8 +104,14 @@ static inline void pack_gate(gate_desc *gate, unsigned char type,
  			     unsigned long base, unsigned dpl, unsigned flags,
  			     unsigned short seg)
@@ -238,7 +245,7 @@ index d0a21b1..57494e3 100644
 +	if (likely(limit))
 +		limit = (limit - 1UL) >> PAGE_SHIFT;
 +	pack_descriptor(&d, base, limit, 0xFB, 0xC);
-+	write_gdt_entry(get_cpu_gdt_table(cpu), GDT_ENTRY_DEFAULT_USER_CS, &d, DESCTYPE_S);
++	write_gdt_entry(get_cpu_gdt_rw(cpu), GDT_ENTRY_DEFAULT_USER_CS, &d, DESCTYPE_S);
 +}
 +#endif
 +

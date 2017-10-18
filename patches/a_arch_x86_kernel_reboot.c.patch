@@ -21,7 +21,7 @@ index 067f981..5486a61 100644
 -	asm volatile("jmpl *%0" : :
 +
 +#if defined(CONFIG_PAX_KERNEXEC) || defined(CONFIG_PAX_MEMORY_UDEREF)
-+	gdt = get_cpu_gdt_table(smp_processor_id());
++	gdt = get_cpu_gdt_rw(smp_processor_id());
 +	pax_open_kernel();
 +#ifdef CONFIG_PAX_MEMORY_UDEREF
 +	gdt[GDT_ENTRY_KERNEL_DS].type = 3;

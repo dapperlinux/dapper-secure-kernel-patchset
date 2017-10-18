@@ -290,9 +290,9 @@ index cf80590..de69971 100644
 +
 +	memset(__LOAD_PHYSICAL_ADDR + PAGE_OFFSET, POISON_FREE_INITMEM, PAGE_SIZE);
 +	for (cpu = 0; cpu < nr_cpu_ids; cpu++) {
-+		pack_descriptor(&d, get_desc_base(&get_cpu_gdt_table(cpu)[GDT_ENTRY_KERNEL_CS]), limit, 0x9B, 0xC);
-+		write_gdt_entry(get_cpu_gdt_table(cpu), GDT_ENTRY_KERNEL_CS, &d, DESCTYPE_S);
-+		write_gdt_entry(get_cpu_gdt_table(cpu), GDT_ENTRY_KERNEXEC_KERNEL_CS, &d, DESCTYPE_S);
++		pack_descriptor(&d, get_desc_base(&get_cpu_gdt_rw(cpu)[GDT_ENTRY_KERNEL_CS]), limit, 0x9B, 0xC);
++		write_gdt_entry(get_cpu_gdt_rw(cpu), GDT_ENTRY_KERNEL_CS, &d, DESCTYPE_S);
++		write_gdt_entry(get_cpu_gdt_rw(cpu), GDT_ENTRY_KERNEXEC_KERNEL_CS, &d, DESCTYPE_S);
 +	}
 +
 +#ifdef CONFIG_MODULES

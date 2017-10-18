@@ -2,6 +2,14 @@ diff --git a/arch/x86/include/asm/irqflags.h b/arch/x86/include/asm/irqflags.h
 index ac7692d..90e119c 100644
 --- a/arch/x86/include/asm/irqflags.h
 +++ b/arch/x86/include/asm/irqflags.h
+@@ -2,6 +2,7 @@
+ #define _X86_IRQFLAGS_H_
+ 
+ #include <asm/processor-flags.h>
++#include <asm/bug.h>
+ 
+ #ifndef __ASSEMBLY__
+ 
 @@ -12,7 +12,7 @@
   * Interrupt control:
   */
