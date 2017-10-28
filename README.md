@@ -4,9 +4,7 @@
 The Dapper Secure Kernel Patchset is an effort to forward port the now discontinued Grsecurity test patchset to newer Linux kernels. While it may not contain the latest and greatest security advancements as provided by the subscriber only Grsecurity beta patchset, the features provided by the final Grsecurity 4.9.24 patch are well worth maintaining into the future.
 
 ## Currently Released Patch:
-| Linux Version | Dapper Secure Kernel Patch | Status                  |
-| ------------- | -------------------------- | ----------------------- |
-| 4.13.9        | 4.13.9-2017-10-23          | Has compile errors.     |
+Look at the [releases](https://github.com/dapperlinux/dapper-secure-kernel-patchset/releases) page to download the latest patch and GPG signiture.
 
 ## Features
 
@@ -16,7 +14,7 @@ The Dapper Secure Kernel Patchset is an effort to forward port the now discontin
 | Task                                               | Status    |
 | ---------------------------------------------------| --------- |
 | Resolve Merge Conflicts to Linux 4.13              | Complete  |
-| Resolve Merge Conflicts to Minor Release (4.13.9)  | Complete  |
+| Resolve Merge Conflicts to Minor Release           | Complete  |
 | Resolve Merge Conflicts with Patch Fuzz Disabled   | Complete  |
 | Fix Compiler Errors and Resolve Merge Mistakes     | Started   |
 | Run and Test Kernel, Ensuring PaX Test Passes      | Waiting   |
