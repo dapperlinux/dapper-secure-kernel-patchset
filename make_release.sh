@@ -1,6 +1,6 @@
 DATE=`date +%Y-%m-%d`
-KERNEL_MAJOR_VERSION=4.13
-KERNEL_VERSION=4.13.12
+KERNEL_MAJOR_VERSION=4.14
+#KERNEL_VERSION=4.14.1
 
 echo "Setting up release directory..."
 mkdir release
@@ -9,8 +9,13 @@ cd release
 echo "Uncompressing fresh kernel..."
 tar -xf ../kernel/linux-$KERNEL_MAJOR_VERSION.tar.xz
 
+if [ -z $KERNEL_VERSION ];
+then
+echo "No minor patches being applied, skipping..."
+else
 echo "Uncompressing fresh kernel subpatches..."
 unxz -k ../kernel/patch-$KERNEL_VERSION.xz
+fi
 
 cd linux-$KERNEL_MAJOR_VERSION
 
@@ -23,12 +28,17 @@ git add *
 echo "First commit of major kernel..."
 git commit -m "baseline" >> ../../release.log
 
+if [ -z $KERNEL_VERSION ];
+then
+echo "No minor patches being applied, skipping..."
+else
 echo "Patching minor kernel version..."
 patch -F 0 -p1 < ../../kernel/patch-$KERNEL_VERSION >> ../../release.log
 
 echo "Committing minor kernel changes..."
 git add *
 git commit -m "update" >> ../../release.log
+fi
 
 echo "Creating new branch..."
 git checkout -b dappersec
@@ -46,8 +56,13 @@ git format-patch master
 echo "Moving and renaming patch..."
 mv 000* ../../dapper-secure-kernel-patchset-$KERNEL_VERSION-$DATE.patch
 
+if [ -z $KERNEL_VERSION ];
+then
+echo "No minor patches being applied, skipping..."
+else
 echo "Tidying up.."
 rm ../../kernel/patch-$KERNEL_VERSION
+fi
 
 cd ../..
 

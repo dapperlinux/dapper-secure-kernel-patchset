@@ -13,10 +13,10 @@ Look at the [releases](https://github.com/dapperlinux/dapper-secure-kernel-patch
 ### Project Status
 | Task                                               | Status    |
 | ---------------------------------------------------| --------- |
-| Resolve Merge Conflicts to Linux 4.13              | Complete  |
-| Resolve Merge Conflicts to Minor Release           | Complete  |
-| Resolve Merge Conflicts with Patch Fuzz Disabled   | Complete  |
-| Fix Compiler Errors and Resolve Merge Mistakes     | Started   |
+| Resolve Merge Conflicts to Linux 4.14              | Started   |
+| Resolve Merge Conflicts to Minor Release           | Waiting   |
+| Resolve Merge Conflicts with Patch Fuzz Disabled   | Waiting   |
+| Fix Compiler Errors and Resolve Merge Mistakes     | Waiting   |
 | Run and Test Kernel, Ensuring PaX Test Passes      | Waiting   |
 
 ### Known Issues
