@@ -74,7 +74,7 @@ index 0277d12..2d2899c 100644
  	if (atomic_dec_if_positive(&kmod_concurrent_max) < 0) {
  		pr_warn_ratelimited("request_module: kmod_concurrent_max (%u) close to 0 (max_modprobes: %u), for module %s, throttling...",
  				    atomic_read(&kmod_concurrent_max),
-@@ -194,19 +208,64 @@ int __request_module(bool wait, const char *fmt, ...)
+@@ -168,11 +168,52 @@ int __request_module(bool wait, const char *fmt, ...)
  
  	trace_module_request(module_name, wait, _RET_IP_);
  
@@ -128,86 +128,3 @@ index 0277d12..2d2899c 100644
 +}
 +
  EXPORT_SYMBOL(__request_module);
- 
- #endif /* CONFIG_MODULES */
- 
- static void call_usermodehelper_freeinfo(struct subprocess_info *info)
- {
-+#ifdef CONFIG_GRKERNSEC
-+	kfree(info->path);
-+	info->path = info->origpath;
-+#endif
- 	if (info->cleanup)
- 		(*info->cleanup)(info);
- 	kfree(info);
-@@ -228,6 +285,22 @@ static int call_usermodehelper_exec_async(void *data)
- 	 */
- 	set_user_nice(current, 0);
- 
-+#ifdef CONFIG_GRKERNSEC
-+	/* this is race-free as far as userland is concerned as we copied
-+	   out the path to be used prior to this point and are now operating
-+	   on that copy
-+	*/
-+	if ((strncmp(sub_info->path, "/sbin/", 6) && strncmp(sub_info->path, "/usr/lib/", 9) &&
-+	     strncmp(sub_info->path, "/lib/", 5) && strncmp(sub_info->path, "/lib64/", 7) &&
-+	     strncmp(sub_info->path, "/usr/libexec/", 13) && strncmp(sub_info->path, "/usr/bin/", 9) &&
-+	     strncmp(sub_info->path, "/usr/sbin/", 10) && strcmp(sub_info->path, "/bin/false") && 
-+	     strcmp(sub_info->path, "/usr/share/apport/apport")) || strstr(sub_info->path, "..")) {
-+		printk(KERN_ALERT "grsec: denied exec of usermode helper binary %.950s located outside of permitted system paths\n", sub_info->path);
-+		retval = -EPERM;
-+		goto out;
-+	}
-+#endif
-+
- 	retval = -ENOMEM;
- 	new = prepare_kernel_cred(current);
- 	if (!new)
-@@ -250,8 +323,8 @@ static int call_usermodehelper_exec_async(void *data)
- 	commit_creds(new);
- 
- 	retval = do_execve(getname_kernel(sub_info->path),
--			   (const char __user *const __user *)sub_info->argv,
--			   (const char __user *const __user *)sub_info->envp);
-+			   (const char __user *const __force_user *)sub_info->argv,
-+			   (const char __user *const __force_user *)sub_info->envp);
- out:
- 	sub_info->retval = retval;
- 	/*
-@@ -287,7 +360,7 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
- 		 *
- 		 * Thus the __user pointer cast is valid here.
- 		 */
--		sys_wait4(pid, (int __user *)&ret, 0, NULL);
-+		sys_wait4(pid, (int __force_user *)&ret, 0, NULL);
- 
- 		/*
- 		 * If ret is 0, either call_usermodehelper_exec_async failed and
-@@ -530,11 +530,15 @@ struct subprocess_info *call_usermodehelper_setup(const char *path, char **argv,
- 		goto out;
- 
- 	INIT_WORK(&sub_info->work, call_usermodehelper_exec_work);
--
--#ifdef CONFIG_STATIC_USERMODEHELPER
--	sub_info->path = CONFIG_STATIC_USERMODEHELPER_PATH;
-+#ifdef CONFIG_GRKERNSEC
-+	sub_info->origpath = path;
-+	sub_info->path = kstrdup(path, gfp_mask);
- #else
-+ #ifdef CONFIG_STATIC_USERMODEHELPER
-+	sub_info->path = CONFIG_STATIC_USERMODEHELPER_PATH;
-+ #else
- 	sub_info->path = path;
-+ #endif
- #endif
- 	sub_info->argv = argv;
- 	sub_info->envp = envp;
-@@ -630,7 +708,7 @@ EXPORT_SYMBOL(call_usermodehelper);
- static int proc_cap_handler(struct ctl_table *table, int write,
- 			 void __user *buffer, size_t *lenp, loff_t *ppos)
- {
--	struct ctl_table t;
-+	ctl_table_no_const t;
- 	unsigned long cap_array[_KERNEL_CAPABILITY_U32S];
- 	kernel_cap_t new_cap;
- 	int err, i;

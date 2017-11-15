@@ -873,7 +873,7 @@ index 0e54d5b..f9d983b 100644
  	/* Fix up syms, so that st_value is a pointer to location. */
  	err = simplify_symbols(mod, info);
  	if (err < 0)
-@@ -3654,13 +3844,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -3708,13 +3708,6 @@ static int load_module(struct load_info *info, const char __user *uargs,
  
  	flush_module_icache(mod);
  
@@ -884,12 +884,12 @@ index 0e54d5b..f9d983b 100644
 -		goto free_arch_cleanup;
 -	}
 -
- 	dynamic_debug_setup(info->debug, info->num_debug);
+ 	dynamic_debug_setup(mod, info->debug, info->num_debug);
  
  	/* Ftrace init must be called in the MODULE_STATE_UNFORMED state */
-@@ -3725,11 +3908,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
+@@ -3781,11 +3774,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
   ddebug_cleanup:
- 	dynamic_debug_remove(info->debug);
+ 	dynamic_debug_remove(mod, info->debug);
  	synchronize_sched();
 -	kfree(mod->args);
 - free_arch_cleanup:

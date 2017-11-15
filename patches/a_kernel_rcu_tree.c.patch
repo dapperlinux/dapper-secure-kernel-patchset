@@ -82,16 +82,16 @@ index 50fee76..f71f17e 100644
  }
  
  /*
-@@ -3682,7 +3682,7 @@ static void rcu_barrier_callback(struct rcu_head *rhp)
+@@ -3484,7 +3484,7 @@ static void rcu_barrier_callback(struct rcu_head *rhp)
  	struct rcu_data *rdp = container_of(rhp, struct rcu_data, barrier_head);
  	struct rcu_state *rsp = rdp->rsp;
  
 -	if (atomic_dec_and_test(&rsp->barrier_cpu_count)) {
 +	if (atomic_dec_and_test_unchecked(&rsp->barrier_cpu_count)) {
- 		_rcu_barrier_trace(rsp, "LastCB", -1, rsp->barrier_sequence);
+ 		_rcu_barrier_trace(rsp, TPS("LastCB"), -1,
+ 				   rsp->barrier_sequence);
  		complete(&rsp->barrier_completion);
- 	} else {
-@@ -3588,7 +3588,7 @@ static void rcu_barrier_func(void *type)
+@@ -3505,7 +3505,7 @@ static void rcu_barrier_func(void *type)
  	rdp->barrier_head.func = rcu_barrier_callback;
  	debug_rcu_head_queue(&rdp->barrier_head);
  	if (rcu_segcblist_entrain(&rdp->cblist, &rdp->barrier_head, 0)) {
@@ -99,7 +99,7 @@ index 50fee76..f71f17e 100644
 +		atomic_inc_unchecked(&rsp->barrier_cpu_count);
  	} else {
  		debug_rcu_head_unqueue(&rdp->barrier_head);
- 		_rcu_barrier_trace(rsp, "IRQNQ", -1, rsp->barrier_sequence);
+ 		_rcu_barrier_trace(rsp, TPS("IRQNQ"), -1,
 @@ -3737,7 +3737,7 @@ static void _rcu_barrier(struct rcu_state *rsp)
  	 * to ensure that no offline CPU has callbacks queued.
  	 */
@@ -109,8 +109,8 @@ index 50fee76..f71f17e 100644
  	get_online_cpus();
  
  	/*
-@@ -3757,7 +3757,7 @@ static void _rcu_barrier(struct rcu_state *rsp)
- 				_rcu_barrier_trace(rsp, "OnlineNoCB", cpu,
+@@ -3568,7 +3568,7 @@ static void _rcu_barrier(struct rcu_state *rsp)
+ 				_rcu_barrier_trace(rsp, TPS("OnlineNoCB"), cpu,
  						   rsp->barrier_sequence);
  				smp_mb__before_atomic();
 -				atomic_inc(&rsp->barrier_cpu_count);

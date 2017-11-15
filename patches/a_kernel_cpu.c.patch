@@ -21,8 +21,8 @@ index a88c29a..4004098 100644
  	struct hlist_head	list;
  	bool			skip_onerr;
  	bool			cant_stop;
-@@ -518,7 +510,7 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
- 	return st->result;
+@@ -659,7 +659,7 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
+ 	return ret;
  }
  
 -static struct smp_hotplug_thread cpuhp_threads = {

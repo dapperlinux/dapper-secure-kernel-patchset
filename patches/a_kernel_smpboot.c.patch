@@ -28,8 +28,8 @@ index 4a5c6e7..96ef058 100644
  	smpboot_destroy_threads(plug_thread);
  	mutex_unlock(&smpboot_threads_lock);
  	put_online_cpus();
-@@ -366,7 +367,9 @@ int smpboot_update_cpumask_percpu_thread(struct smp_hotplug_thread *plug_thread,
- 	for_each_cpu_and(cpu, tmp, cpu_online_mask)
+@@ -364,7 +364,9 @@ void smpboot_update_cpumask_percpu_thread(struct smp_hotplug_thread *plug_thread
+ 	for_each_cpu_and(cpu, &tmp, cpu_online_mask)
  		smpboot_unpark_thread(plug_thread, cpu);
  
 +	pax_open_kernel();
@@ -37,4 +37,4 @@ index 4a5c6e7..96ef058 100644
 +	pax_close_kernel();
  
  	mutex_unlock(&smpboot_threads_lock);
- 	put_online_cpus();
+ }

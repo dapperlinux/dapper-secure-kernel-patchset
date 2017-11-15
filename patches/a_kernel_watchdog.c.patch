@@ -2,8 +2,8 @@ diff --git a/kernel/watchdog.c b/kernel/watchdog.c
 index 6d1020c..ae8f990 100644
 --- a/kernel/watchdog.c
 +++ b/kernel/watchdog.c
-@@ -448,7 +448,7 @@ static void watchdog(unsigned int cpu)
- 		watchdog_nmi_disable(cpu);
+@@ -516,7 +516,7 @@ static void watchdog(unsigned int cpu)
+ 	__touch_watchdog();
  }
  
 -static struct smp_hotplug_thread watchdog_threads = {

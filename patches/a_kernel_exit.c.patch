@@ -33,9 +33,9 @@ index 3076f30..28d8eb4 100644
  					struct list_head *dead)
  {
  	struct task_struct *p, *t, *reaper;
-@@ -731,6 +736,15 @@ void __noreturn do_exit(long code)
+@@ -765,6 +765,15 @@ void __noreturn do_exit(long code)
+ 	struct task_struct *tsk = current;
  	int group_dead;
- 	TASKS_RCU(int tasks_rcu_i);
  
 +	/*
 +	 * If do_exit is called because this processes oopsed, it's possible

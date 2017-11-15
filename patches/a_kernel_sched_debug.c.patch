@@ -90,36 +90,30 @@ index fa178b6..4e6c67e 100644
  	struct sched_domain *sd;
  	int domain_num = 0, i;
  	char buf[32];
-@@ -330,11 +333,13 @@ static struct ctl_table_header *sd_sysctl_header;
+@@ -337,7 +337,7 @@ static struct ctl_table_header *sd_sysctl_header;
+ 
  void register_sched_domain_sysctl(void)
  {
- 	int i, cpu_num = num_possible_cpus();
--	struct ctl_table *entry = sd_alloc_ctl_entry(cpu_num + 1);
-+	ctl_table_no_const *entry = sd_alloc_ctl_entry(cpu_num + 1);
+-	static struct ctl_table *cpu_entries;
++	static ctl_table_no_const *cpu_entries;
+ 	static struct ctl_table **cpu_idx;
  	char buf[32];
+ 	int i;
+@@ -348,11 +348,13 @@ void register_sched_domain_sysctl(void)
+ 			return;
  
- 	WARN_ON(sd_ctl_dir[0].child);
-+	pax_open_kernel();
- 	sd_ctl_dir[0].child = entry;
-+	pax_close_kernel();
- 
- 	if (entry == NULL)
- 		return;
-@@ -356,8 +361,12 @@ void unregister_sched_domain_sysctl(void)
- {
- 	unregister_sysctl_table(sd_sysctl_header);
- 	sd_sysctl_header = NULL;
--	if (sd_ctl_dir[0].child)
--		sd_free_ctl_entry(&sd_ctl_dir[0].child);
-+	if (sd_ctl_dir[0].child) {
-+		sd_free_ctl_entry(sd_ctl_dir[0].child);
+ 		WARN_ON(sd_ctl_dir[0].child);
 +		pax_open_kernel();
-+		sd_ctl_dir[0].child = NULL;
+ 		sd_ctl_dir[0].child = cpu_entries;
 +		pax_close_kernel();
-+	}
- }
- #endif /* CONFIG_SYSCTL */
- #endif /* CONFIG_SMP */
+ 	}
+ 
+ 	if (!cpu_idx) {
+-		struct ctl_table *e = cpu_entries;
++		ctl_table_no_const *e = cpu_entries;
+ 
+ 		cpu_idx = kcalloc(nr_cpu_ids, sizeof(struct ctl_table*), GFP_KERNEL);
+ 		if (!cpu_idx)
 @@ -804,7 +813,11 @@ static int __init init_sched_debug_procfs(void)
  {
  	struct proc_dir_entry *pe;

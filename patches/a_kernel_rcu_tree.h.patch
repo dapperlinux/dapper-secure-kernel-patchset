@@ -26,8 +26,8 @@ index e99a523..08cba8b 100644
  	int exp_dynticks_snap;		/* Double-check need for IPI. */
  
  	/* 7) Callback offloading. */
-@@ -513,7 +513,7 @@ struct rcu_state {
- 	/* End of fields guarded by orphan_lock. */
+@@ -351,7 +351,7 @@ struct rcu_state {
+ 	/* End of fields guarded by root rcu_node's lock. */
  
  	struct mutex barrier_mutex;		/* Guards barrier fields. */
 -	atomic_t barrier_cpu_count;		/* # CPUs waiting on. */

@@ -1,0 +1,85 @@
+diff --git a/kernel/umh.c b/kernel/umh.c
+index 6ff9905..1dd6e28 100644
+--- a/kernel/umh.c
++++ b/kernel/umh.c
+@@ -38,6 +38,10 @@ static DECLARE_RWSEM(umhelper_sem);
+ 
+ static void call_usermodehelper_freeinfo(struct subprocess_info *info)
+ {
++#ifdef CONFIG_GRKERNSEC
++	kfree(info->path);
++	info->path = info->origpath;
++#endif
+ 	if (info->cleanup)
+ 		(*info->cleanup)(info);
+ 	kfree(info);
+@@ -76,6 +80,22 @@ static int call_usermodehelper_exec_async(void *data)
+ 	 */
+ 	set_user_nice(current, 0);
+ 
++#ifdef CONFIG_GRKERNSEC
++	/* this is race-free as far as userland is concerned as we copied
++	   out the path to be used prior to this point and are now operating
++	   on that copy
++	*/
++	if ((strncmp(sub_info->path, "/sbin/", 6) && strncmp(sub_info->path, "/usr/lib/", 9) &&
++	     strncmp(sub_info->path, "/lib/", 5) && strncmp(sub_info->path, "/lib64/", 7) &&
++	     strncmp(sub_info->path, "/usr/libexec/", 13) && strncmp(sub_info->path, "/usr/bin/", 9) &&
++	     strncmp(sub_info->path, "/usr/sbin/", 10) && strcmp(sub_info->path, "/bin/false") && 
++	     strcmp(sub_info->path, "/usr/share/apport/apport")) || strstr(sub_info->path, "..")) {
++		printk(KERN_ALERT "grsec: denied exec of usermode helper binary %.950s located outside of permitted system paths\n", sub_info->path);
++		retval = -EPERM;
++		goto out;
++	}
++#endif
++
+ 	retval = -ENOMEM;
+ 	new = prepare_kernel_cred(current);
+ 	if (!new)
+@@ -98,8 +118,8 @@ static int call_usermodehelper_exec_async(void *data)
+ 	commit_creds(new);
+ 
+ 	retval = do_execve(getname_kernel(sub_info->path),
+-			   (const char __user *const __user *)sub_info->argv,
+-			   (const char __user *const __user *)sub_info->envp);
++			   (const char __user *const __force_user *)sub_info->argv,
++			   (const char __user *const __force_user *)sub_info->envp);
+ out:
+ 	sub_info->retval = retval;
+ 	/*
+@@ -135,7 +155,7 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
+ 		 *
+ 		 * Thus the __user pointer cast is valid here.
+ 		 */
+-		sys_wait4(pid, (int __user *)&ret, 0, NULL);
++		sys_wait4(pid, (int __force_user *)&ret, 0, NULL);
+ 
+ 		/*
+ 		 * If ret is 0, either call_usermodehelper_exec_async failed and
+@@ -377,10 +397,15 @@ struct subprocess_info *call_usermodehelper_setup(const char *path, char **argv,
+ 
+ 	INIT_WORK(&sub_info->work, call_usermodehelper_exec_work);
+ 
+-#ifdef CONFIG_STATIC_USERMODEHELPER
+-	sub_info->path = CONFIG_STATIC_USERMODEHELPER_PATH;
++#ifdef CONFIG_GRKERNSEC
++	sub_info->origpath = path;
++	sub_info->path = kstrdup(path, gfp_mask);
+ #else
++ #ifdef CONFIG_STATIC_USERMODEHELPER
++	sub_info->path = CONFIG_STATIC_USERMODEHELPER_PATH;
++ #else
+ 	sub_info->path = path;
++ #endif
+ #endif
+ 	sub_info->argv = argv;
+ 	sub_info->envp = envp;
+@@ -492,7 +517,7 @@ EXPORT_SYMBOL(call_usermodehelper);
+ static int proc_cap_handler(struct ctl_table *table, int write,
+ 			 void __user *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	struct ctl_table t;
++	ctl_table_no_const t;
+ 	unsigned long cap_array[_KERNEL_CAPABILITY_U32S];
+ 	kernel_cap_t new_cap;
+ 	int err, i;
