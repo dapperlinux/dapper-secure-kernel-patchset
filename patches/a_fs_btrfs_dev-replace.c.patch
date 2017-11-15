@@ -48,7 +48,7 @@ index 05169ef..184173a 100644
  	btrfs_dev_replace_unlock(dev_replace, 1);
  
  	ret = btrfs_sysfs_add_device_link(tgt_device->fs_devices, tgt_device);
-@@ -650,9 +650,9 @@ void btrfs_dev_replace_status(struct btrfs_fs_info *fs_info,
+@@ -681,9 +681,9 @@ void btrfs_dev_replace_status(struct btrfs_fs_info *fs_info,
  	args->status.time_started = dev_replace->time_started;
  	args->status.time_stopped = dev_replace->time_stopped;
  	args->status.num_write_errors =
@@ -57,6 +57,6 @@ index 05169ef..184173a 100644
  	args->status.num_uncorrectable_read_errors =
 -		atomic64_read(&dev_replace->num_uncorrectable_read_errors);
 +		atomic64_read_unchecked(&dev_replace->num_uncorrectable_read_errors);
- 	switch (dev_replace->replace_state) {
- 	case BTRFS_IOCTL_DEV_REPLACE_STATE_NEVER_STARTED:
- 	case BTRFS_IOCTL_DEV_REPLACE_STATE_CANCELED:
+ 	args->status.progress_1000 = btrfs_dev_replace_progress(fs_info);
+ 	btrfs_dev_replace_unlock(dev_replace, 0);
+ }

@@ -509,14 +509,14 @@ index 5075fd5..d819753 100644
  	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
  	unsigned long elf_bss, elf_brk;
  	int bss_prot = 0;
-@@ -701,6 +1063,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -698,6 +698,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
  		struct elfhdr interp_elf_ex;
  	} *loc;
  	struct arch_elf_state arch_state = INIT_ARCH_ELF_STATE;
 +	unsigned long pax_task_size;
+ 	loff_t pos;
  
  	loc = kmalloc(sizeof(*loc), GFP_KERNEL);
- 	if (!loc) {
 @@ -861,6 +1224,77 @@ static int load_elf_binary(struct linux_binprm *bprm)
  	/* Do this immediately, since STACK_TOP as used in setup_arg_pages
  	   may depend on the personality.  */

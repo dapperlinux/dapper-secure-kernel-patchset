@@ -29,15 +29,6 @@ index 8dd79ec..0a56b1a 100644
  	set_fs(old_fs);
  
  	return res;
-@@ -375,7 +375,7 @@ ssize_t kernel_write(struct file *file, const char *buf, size_t count,
- 	old_fs = get_fs();
- 	set_fs(get_ds());
- 	/* The cast to a user pointer is valid due to the set_fs() */
--	res = vfs_write(file, (__force const char __user *)buf, count, &pos);
-+	res = vfs_write(file, (const char __force_user *)buf, count, &pos);
- 	set_fs(old_fs);
- 
- 	return res;
 @@ -534,7 +534,7 @@ static int splice_from_pipe_feed(struct pipe_inode_info *pipe, struct splice_des
  			pipe_buf_release(pipe, buf);
  			pipe->curbuf = (pipe->curbuf + 1) & (pipe->buffers - 1);

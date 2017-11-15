@@ -25,7 +25,7 @@ index ca651ac..a433237 100644
  #define NOD(NAME, MODE, IOP, FOP, OP) {			\
  	.name = (NAME),					\
  	.len  = sizeof(NAME) - 1,			\
-@@ -224,6 +232,11 @@ static ssize_t proc_pid_cmdline_read(struct file *file, char __user *buf,
+@@ -233,6 +233,11 @@ static ssize_t proc_pid_cmdline_read(struct file *file, char __user *buf,
  		goto out_mmput;
  	}
  
@@ -34,7 +34,7 @@ index ca651ac..a433237 100644
 +		goto out_mmput;
 +	}
 +
- 	page = (char *)__get_free_page(GFP_TEMPORARY);
+ 	page = (char *)__get_free_page(GFP_KERNEL);
  	if (!page) {
  		rv = -ENOMEM;
 @@ -400,7 +413,13 @@ static const struct file_operations proc_pid_cmdline_ops = {
@@ -226,7 +226,7 @@ index ca651ac..a433237 100644
  
  		if (write && copy_from_user(page, buf, this_len)) {
  			copied = -EFAULT;
-@@ -945,6 +1031,13 @@ static ssize_t environ_read(struct file *file, char __user *buf,
+@@ -919,6 +924,13 @@ static ssize_t environ_read(struct file *file, char __user *buf,
  	if (!mm || !mm->env_end)
  		return 0;
  
@@ -237,7 +237,7 @@ index ca651ac..a433237 100644
 +	}
 +#endif
 +
- 	page = (char *)__get_free_page(GFP_TEMPORARY);
+ 	page = (char *)__get_free_page(GFP_KERNEL);
  	if (!page)
  		return -ENOMEM;
 @@ -958,9 +1051,12 @@ static ssize_t environ_read(struct file *file, char __user *buf,

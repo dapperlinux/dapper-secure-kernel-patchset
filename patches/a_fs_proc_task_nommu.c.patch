@@ -23,13 +23,13 @@ index 3717562..b6237ab 100644
  }
  
  /*
-@@ -175,7 +176,7 @@ static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma,
+@@ -176,7 +176,7 @@ static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma,
  
  	if (file) {
  		seq_pad(m, ' ');
 -		seq_file_path(m, file, "");
 +		seq_file_path(m, file, "\n\\");
- 	} else if (mm && is_stack(priv, vma)) {
+ 	} else if (mm && is_stack(vma)) {
  		seq_pad(m, ' ');
  		seq_printf(m, "[stack]");
 @@ -279,7 +280,7 @@ static int maps_open(struct inode *inode, struct file *file,

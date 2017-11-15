@@ -11,9 +11,9 @@ index 5e35057..ff2d458 100644
  	spin_unlock(&old_mountpoint->d_lock);
  
  	mnt_add_count(old_parent, -1);
-@@ -1568,6 +1568,9 @@ static int do_umount(struct mount *mnt, int flags)
- 		if (!(sb->s_flags & MS_RDONLY))
- 			retval = do_remount_sb(sb, MS_RDONLY, NULL, 0);
+@@ -1595,6 +1595,9 @@ static int do_umount(struct mount *mnt, int flags)
+ 		if (!sb_rdonly(sb))
+ 			retval = do_remount_sb(sb, SB_RDONLY, NULL, 0);
  		up_write(&sb->s_umount);
 +
 +		gr_log_remount(mnt->mnt_devname, retval);
@@ -49,9 +49,9 @@ index 5e35057..ff2d458 100644
  {
  	return sys_umount(name, 0);
  }
-@@ -2796,6 +2802,16 @@ long do_mount(const char *dev_name, const char __user *dir_name,
- 		   MS_NOATIME | MS_NODIRATIME | MS_RELATIME| MS_KERNMOUNT |
- 		   MS_STRICTATIME | MS_NOREMOTELOCK | MS_SUBMOUNT);
+@@ -2828,6 +2832,16 @@ long do_mount(const char *dev_name, const char __user *dir_name,
+ 			    SB_POSIXACL |
+ 			    SB_I_VERSION);
  
 +	if (gr_handle_rofs_mount(path.dentry, path.mnt, mnt_flags)) {
 +		retval = -EPERM;
@@ -64,19 +64,17 @@ index 5e35057..ff2d458 100644
 +	}
 +
  	if (flags & MS_REMOUNT)
- 		retval = do_remount(&path, flags & ~MS_REMOUNT, mnt_flags,
+ 		retval = do_remount(&path, flags, sb_flags, mnt_flags,
  				    data_page);
-@@ -2809,7 +2825,10 @@ long do_mount(const char *dev_name, const char __user *dir_name,
- 		retval = do_new_mount(&path, type_page, flags, mnt_flags,
+@@ -2841,6 +2855,8 @@ long do_mount(const char *dev_name, const char __user *dir_name,
+ 		retval = do_new_mount(&path, type_page, sb_flags, mnt_flags,
  				      dev_name, data_page);
  dput_out:
 +	gr_log_mount(dev_name, &path, retval);
 +
  	path_put(&path);
-+
  	return retval;
  }
- 
 @@ -2838,7 +2857,7 @@ static void free_mnt_ns(struct mnt_namespace *ns)
   * number incrementing at 10Ghz will take 12,427 years to wrap which
   * is effectively never, so we can ignore the possibility.

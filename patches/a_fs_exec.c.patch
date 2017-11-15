@@ -350,21 +350,6 @@ index 67e8657..4368e21 100644
  
  out:
  	return file;
-@@ -866,10 +953,13 @@ int kernel_read(struct file *file, loff_t offset,
- 	loff_t pos = offset;
- 	int result;
- 
-+	if (count > INT_MAX)
-+		return -EINVAL;
-+
- 	old_fs = get_fs();
- 	set_fs(get_ds());
- 	/* The cast to a user pointer is valid due to the set_fs() */
--	result = vfs_read(file, (void __user *)addr, count, &pos);
-+	result = vfs_read(file, (void __force_user *)addr, count, &pos);
- 	set_fs(old_fs);
- 	return result;
- }
 @@ -1448,7 +1538,7 @@ static void check_unsafe_exec(struct linux_binprm *bprm)
  	}
  	rcu_read_unlock();
@@ -439,7 +424,7 @@ index 67e8657..4368e21 100644
  	retval = bprm_mm_init(bprm);
  	if (retval)
  		goto out_unmark;
-@@ -1747,26 +1874,72 @@ static int do_execveat_common(int fd, struct filename *filename,
+@@ -1780,26 +1780,72 @@ static int do_execveat_common(int fd, struct filename *filename,
  	if (retval < 0)
  		goto out;
  
@@ -515,7 +500,7 @@ index 67e8657..4368e21 100644
 +	increment_exec_counter();
  	current->fs->in_exec = 0;
  	current->in_execve = 0;
- 	acct_update_integrals(current);
+ 	membarrier_execve(current);
 @@ -1778,6 +1951,14 @@ static int do_execveat_common(int fd, struct filename *filename,
  		put_files_struct(displaced);
  	return retval;
