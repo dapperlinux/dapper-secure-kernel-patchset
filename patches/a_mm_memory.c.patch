@@ -504,15 +504,15 @@ index cbb1e5e..e8b4bc4 100644
  		ret = create_huge_pud(&vmf);
  		if (!(ret & VM_FAULT_FALLBACK))
  			return ret;
-@@ -3823,7 +3888,7 @@ static int __handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
- 
- 		barrier();
+@@ -4017,7 +4017,7 @@ static int __handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
+ 			return 0;
+ 		}
  		if (pmd_trans_huge(orig_pmd) || pmd_devmap(orig_pmd)) {
 -			if (pmd_protnone(orig_pmd) && vma_is_accessible(vma))
 +			if (pmd_protnone(orig_pmd) && vma_is_accessible(vmf.vma))
  				return do_huge_pmd_numa_page(&vmf, orig_pmd);
  
- 			if ((vmf.flags & FAULT_FLAG_WRITE) &&
+ 			if (dirty && !pmd_write(orig_pmd)) {
 @@ -3934,7 +3999,7 @@ int __p4d_alloc(struct mm_struct *mm, pgd_t *pgd, unsigned long address)
   * Allocate page upper directory.
   * We've already handled the fast-path in-line.

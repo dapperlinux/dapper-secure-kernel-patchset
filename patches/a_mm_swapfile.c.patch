@@ -2,15 +2,15 @@ diff --git a/mm/swapfile.c b/mm/swapfile.c
 index d76b2a1..3678da8 100644
 --- a/mm/swapfile.c
 +++ b/mm/swapfile.c
-@@ -90,7 +90,7 @@ static DEFINE_MUTEX(swapon_mutex);
+@@ -94,7 +94,7 @@ static DEFINE_MUTEX(swapon_mutex);
  
  static DECLARE_WAIT_QUEUE_HEAD(proc_poll_wait);
  /* Activity counter to indicate that a swapon or swapoff has occurred */
 -static atomic_t proc_poll_event = ATOMIC_INIT(0);
 +static atomic_unchecked_t proc_poll_event = ATOMIC_INIT(0);
  
- static inline unsigned char swap_count(unsigned char ent)
- {
+ atomic_t nr_rotate_swap = ATOMIC_INIT(0);
+ 
 @@ -1999,7 +1999,7 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
  	spin_unlock(&swap_lock);
  

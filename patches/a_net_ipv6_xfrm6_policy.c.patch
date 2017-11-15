@@ -2,15 +2,6 @@ diff --git a/net/ipv6/xfrm6_policy.c b/net/ipv6/xfrm6_policy.c
 index e0f71c0..9b71aad 100644
 --- a/net/ipv6/xfrm6_policy.c
 +++ b/net/ipv6/xfrm6_policy.c
-@@ -214,7 +214,7 @@ _decode_session6(struct sk_buff *skb, struct flowi *fl, int reverse)
- 	}
- }
- 
--static inline int xfrm6_garbage_collect(struct dst_ops *ops)
-+static int xfrm6_garbage_collect(struct dst_ops *ops)
- {
- 	struct net *net = container_of(ops, struct net, xfrm.xfrm6_dst_ops);
- 
 @@ -327,19 +327,19 @@ static struct ctl_table xfrm6_policy_table[] = {
  
  static int __net_init xfrm6_net_sysctl_init(struct net *net)

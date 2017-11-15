@@ -2,17 +2,17 @@ diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
 index 576f705..8b243be 100644
 --- a/net/ipv4/ip_gre.c
 +++ b/net/ipv4/ip_gre.c
-@@ -110,7 +110,7 @@ static bool log_ecn_error = true;
+@@ -111,7 +111,7 @@ static bool log_ecn_error = true;
  module_param(log_ecn_error, bool, 0644);
  MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
  
 -static struct rtnl_link_ops ipgre_link_ops __read_mostly;
 +static struct rtnl_link_ops ipgre_link_ops;
  static int ipgre_tunnel_init(struct net_device *dev);
- 
- static unsigned int ipgre_net_id __read_mostly;
-@@ -1105,7 +1105,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
- 	[IFLA_GRE_FWMARK]	= { .type = NLA_U32 },
+ static void erspan_build_header(struct sk_buff *skb,
+ 				__be32 id, u32 index, bool truncate);
+@@ -1447,7 +1447,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
+ 	[IFLA_GRE_ERSPAN_INDEX]	= { .type = NLA_U32 },
  };
  
 -static struct rtnl_link_ops ipgre_link_ops __read_mostly = {

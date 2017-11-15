@@ -2,10 +2,10 @@ diff --git a/mm/mmap.c b/mm/mmap.c
 index 1af87c1..72d400b 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -44,6 +44,7 @@
- #include <linux/userfaultfd_k.h>
+@@ -45,6 +45,7 @@
  #include <linux/moduleparam.h>
  #include <linux/pkeys.h>
+ #include <linux/oom.h>
 +#include <linux/random.h>
  
  #include <linux/uaccess.h>

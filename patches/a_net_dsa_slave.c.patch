@@ -11,12 +11,12 @@ index 3ff9d97..a17eb98 100644
  {
  	ops->get_sset_count = dsa_cpu_port_get_sset_count;
  	ops->get_ethtool_stats = dsa_cpu_port_get_ethtool_stats;
-@@ -1552,7 +1552,7 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 	return NOTIFY_DONE;
+@@ -1489,7 +1489,7 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
+ 	return NOTIFY_BAD;
  }
  
 -static struct notifier_block dsa_slave_nb __read_mostly = {
 +static struct notifier_block dsa_slave_nb = {
- 	.notifier_call	= dsa_slave_netdevice_event,
+ 	.notifier_call  = dsa_slave_netdevice_event,
  };
  

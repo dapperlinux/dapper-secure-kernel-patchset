@@ -2,10 +2,10 @@ diff --git a/mm/slub.c b/mm/slub.c
 index 58c7526..5566ff1 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -34,6 +34,8 @@
- #include <linux/stacktrace.h>
+@@ -36,6 +36,8 @@
  #include <linux/prefetch.h>
  #include <linux/memcontrol.h>
+ #include <linux/random.h>
 +#include <linux/vmalloc.h>
 +#include <linux/sched/task_stack.h>
  
@@ -20,52 +20,15 @@ index 58c7526..5566ff1 100644
  static int sysfs_slab_add(struct kmem_cache *);
  static int sysfs_slab_alias(struct kmem_cache *, const char *);
  static void memcg_propagate_slab_attrs(struct kmem_cache *s);
-@@ -236,30 +237,40 @@ static inline void stat(const struct kmem_cache *s, enum stat_item si)
-  * 			Core slab cache functions
-  *******************************************************************/
+@@ -263,6 +265,8 @@ static inline void *freelist_dereference(const struct kmem_cache *s,
+ 			    (unsigned long)ptr_addr);
+ }
  
 +static const unsigned long global_rand __latent_entropy;
 +
  static inline void *get_freepointer(struct kmem_cache *s, void *object)
  {
--	return *(void **)(object + s->offset);
-+	unsigned long freepointer_addr = (unsigned long)object + s->offset;
-+	return (void *)(*(unsigned long *)freepointer_addr ^ global_rand ^ freepointer_addr);
- }
- 
- static void prefetch_freepointer(const struct kmem_cache *s, void *object)
- {
--	prefetch(object + s->offset);
-+	unsigned long freepointer_addr = (unsigned long)object + s->offset;
-+	if (object) {
-+		void **freepointer_ptr = (void **)(*(unsigned long *)freepointer_addr ^ global_rand ^ freepointer_addr);
-+		prefetch(freepointer_ptr);
-+	}
- }
- 
- static inline void *get_freepointer_safe(struct kmem_cache *s, void *object)
- {
-+	unsigned long freepointer_addr;
- 	void *p;
- 
- 	if (!debug_pagealloc_enabled())
- 		return get_freepointer(s, object);
- 
--	probe_kernel_read(&p, (void **)(object + s->offset), sizeof(p));
--	return p;
-+	freepointer_addr = (unsigned long)object + s->offset;
-+	probe_kernel_read(&p, (void **)freepointer_addr, sizeof(p));
-+	return (void *)((unsigned long)p ^ global_rand ^ freepointer_addr);
- }
- 
- static inline void set_freepointer(struct kmem_cache *s, void *object, void *fp)
- {
--	*(void **)(object + s->offset) = fp;
-+	unsigned long freepointer_addr = (unsigned long)object + s->offset;
-+	*(void **)freepointer_addr = (void *)((unsigned long)fp ^ global_rand ^ freepointer_addr);
- }
- 
- /* Loop over all objects in a slab */
+ 	return freelist_dereference(s, object + s->offset);
 @@ -565,7 +576,7 @@ static void print_track(const char *s, struct track *t)
  	if (!t->addr)
  		return;

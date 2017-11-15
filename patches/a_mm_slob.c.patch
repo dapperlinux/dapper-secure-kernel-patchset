@@ -351,7 +351,7 @@ index eac04d43..73c02ba 100644
  	if (flags & SLAB_TYPESAFE_BY_RCU) {
  		/* leave room for rcu footer at the end of object */
  		c->size += sizeof(struct slob_rcu);
-@@ -534,23 +662,33 @@ int __kmem_cache_create(struct kmem_cache *c, unsigned long flags)
+@@ -536,24 +536,34 @@ int __kmem_cache_create(struct kmem_cache *c, unsigned long flags)
  
  static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
  {
@@ -360,7 +360,8 @@ index eac04d43..73c02ba 100644
  
  	flags &= gfp_allowed_mask;
  
- 	lockdep_trace_alloc(flags);
+ 	fs_reclaim_acquire(flags);
+ 	fs_reclaim_release(flags);
  
 +#ifdef CONFIG_PAX_USERCOPY
 +	b = __do_kmalloc_node_align(c->size, flags, node, _RET_IP_, c->align);

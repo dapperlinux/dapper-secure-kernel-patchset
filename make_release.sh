@@ -48,13 +48,24 @@ patch -F 0 -p1 < ../../dapper-secure-kernel-patchset-test.patch >> ../../release
 
 echo "Committing Dapper Secure Kernel Patches..."
 git add *
+if [ -z $KERNEL_VERSION ];
+then
+git commit -m "Dapper Secure Kernel Patchset $KERNEL_MAJOR_VERSION" >> ../../release.log
+else
 git commit -m "Dapper Secure Kernel Patchset $KERNEL_VERSION" >> ../../release.log
+fi
 
 echo "Running format-patch..."
 git format-patch master
 
+if [ -z $KERNEL_VERSION ];
+then
+echo "Moving and renaming patch..."
+mv 000* ../../dapper-secure-kernel-patchset-$KERNEL_MAJOR_VERSION-$DATE.patch
+else
 echo "Moving and renaming patch..."
 mv 000* ../../dapper-secure-kernel-patchset-$KERNEL_VERSION-$DATE.patch
+fi
 
 if [ -z $KERNEL_VERSION ];
 then

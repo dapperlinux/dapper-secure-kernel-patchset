@@ -2,15 +2,6 @@ diff --git a/net/ipv4/xfrm4_policy.c b/net/ipv4/xfrm4_policy.c
 index 6a7ff69..658bd4b 100644
 --- a/net/ipv4/xfrm4_policy.c
 +++ b/net/ipv4/xfrm4_policy.c
-@@ -213,7 +213,7 @@ _decode_session4(struct sk_buff *skb, struct flowi *fl, int reverse)
- 	fl4->flowi4_tos = iph->tos;
- }
- 
--static inline int xfrm4_garbage_collect(struct dst_ops *ops)
-+static int xfrm4_garbage_collect(struct dst_ops *ops)
- {
- 	struct net *net = container_of(ops, struct net, xfrm.xfrm4_dst_ops);
- 
 @@ -297,19 +297,19 @@ static struct ctl_table xfrm4_policy_table[] = {
  
  static __net_init int xfrm4_net_sysctl_init(struct net *net)

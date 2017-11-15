@@ -2,9 +2,9 @@ diff --git a/scripts/package/mkspec b/scripts/package/mkspec
 index 57673ba..c722dc4 100755
 --- a/scripts/package/mkspec
 +++ b/scripts/package/mkspec
-@@ -120,22 +120,33 @@ echo 'rm -f $RPM_BUILD_ROOT'"/lib/modules/$KERNELRELEASE/{build,source}"
+@@ -116,22 +116,33 @@ echo 'rm -f $RPM_BUILD_ROOT'"/lib/modules/$KERNELRELEASE/source"
  echo "mkdir -p "'$RPM_BUILD_ROOT'"/usr/src/kernels/$KERNELRELEASE"
- echo "EXCLUDES=\"$RCS_TAR_IGNORE --exclude .tmp_versions --exclude=*vmlinux* --exclude=*.o --exclude=*.ko --exclude=*.cmd --exclude=Documentation --exclude=firmware --exclude .config.old --exclude .missing-syscalls.d\""
+ echo "EXCLUDES=\"$RCS_TAR_IGNORE --exclude .tmp_versions --exclude=*vmlinux* --exclude=*.o --exclude=*.ko --exclude=*.cmd --exclude=Documentation --exclude .config.old --exclude .missing-syscalls.d\""
  echo "tar "'$EXCLUDES'" -cf- . | (cd "'$RPM_BUILD_ROOT'"/usr/src/kernels/$KERNELRELEASE;tar xvf -)"
 -echo 'cd $RPM_BUILD_ROOT'"/lib/modules/$KERNELRELEASE"
 -echo "ln -sf /usr/src/kernels/$KERNELRELEASE build"
@@ -45,7 +45,7 @@ index 57673ba..c722dc4 100755
  echo "fi"
  echo ""
  echo "%preun"
-@@ -149,10 +160,10 @@ echo "/sbin/update-bootloader --remove $KERNELRELEASE"
+@@ -145,10 +156,10 @@ echo "/sbin/update-bootloader --remove $KERNELRELEASE"
  echo "fi"
  echo ""
  echo "%files"
@@ -55,9 +55,9 @@ index 57673ba..c722dc4 100755
  echo "%exclude /lib/modules/$KERNELRELEASE/build"
  echo "%exclude /lib/modules/$KERNELRELEASE/source"
 +echo "/lib/modules/$KERNELRELEASE"
- echo "/lib/firmware/$KERNELRELEASE"
  echo "/boot/*"
  echo ""
+ echo "%files headers"
 @@ -162,9 +173,11 @@ echo "/usr/include"
  echo ""
  if ! $PREBUILT; then

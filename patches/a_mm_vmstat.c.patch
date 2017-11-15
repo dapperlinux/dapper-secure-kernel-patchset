@@ -10,17 +10,19 @@ index 604f26a..6e8df6a 100644
  
  #include "internal.h"
  
-@@ -86,8 +87,8 @@ void vm_events_fold_cpu(int cpu)
+@@ -88,9 +88,9 @@ void vm_events_fold_cpu(int cpu)
   *
   * vm_stat contains the global counters
   */
 -atomic_long_t vm_zone_stat[NR_VM_ZONE_STAT_ITEMS] __cacheline_aligned_in_smp;
+-atomic_long_t vm_numa_stat[NR_VM_NUMA_STAT_ITEMS] __cacheline_aligned_in_smp;
 -atomic_long_t vm_node_stat[NR_VM_NODE_STAT_ITEMS] __cacheline_aligned_in_smp;
 +atomic_long_unchecked_t vm_zone_stat[NR_VM_ZONE_STAT_ITEMS] __cacheline_aligned_in_smp;
++atomic_long_unchecked_t vm_numa_stat[NR_VM_NUMA_STAT_ITEMS] __cacheline_aligned_in_smp;
 +atomic_long_unchecked_t vm_node_stat[NR_VM_NODE_STAT_ITEMS] __cacheline_aligned_in_smp;
  EXPORT_SYMBOL(vm_zone_stat);
+ EXPORT_SYMBOL(vm_numa_stat);
  EXPORT_SYMBOL(vm_node_stat);
- 
 @@ -611,13 +612,13 @@ static int fold_diff(int *zone_diff, int *node_diff)
  
  	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
@@ -37,7 +39,7 @@ index 604f26a..6e8df6a 100644
  			changes++;
  	}
  	return changes;
-@@ -657,7 +658,7 @@ static int refresh_cpu_vm_stats(bool do_pagesets)
+@@ -691,7 +691,7 @@ static int refresh_cpu_vm_stats(bool do_pagesets)
  			v = this_cpu_xchg(p->vm_stat_diff[i], 0);
  			if (v) {
  
@@ -55,7 +57,7 @@ index 604f26a..6e8df6a 100644
  				global_node_diff[i] += v;
  			}
  		}
-@@ -740,7 +741,7 @@ void cpu_vm_stats_fold(int cpu)
+@@ -794,7 +794,7 @@ void cpu_vm_stats_fold(int cpu)
  
  				v = p->vm_stat_diff[i];
  				p->vm_stat_diff[i] = 0;
@@ -63,7 +65,17 @@ index 604f26a..6e8df6a 100644
 +				atomic_long_add_unchecked(v, &zone->vm_stat[i]);
  				global_zone_diff[i] += v;
  			}
- 	}
+ 
+@@ -805,7 +805,7 @@ void cpu_vm_stats_fold(int cpu)
+ 
+ 				v = p->vm_numa_stat_diff[i];
+ 				p->vm_numa_stat_diff[i] = 0;
+-				atomic_long_add(v, &zone->vm_numa_stat[i]);
++				atomic_long_add_unchecked(v, &zone->vm_numa_stat[i]);
+ 				global_numa_diff[i] += v;
+ 			}
+ #endif
+
 @@ -756,7 +757,7 @@ void cpu_vm_stats_fold(int cpu)
  
  				v = p->vm_node_stat_diff[i];
@@ -73,7 +85,7 @@ index 604f26a..6e8df6a 100644
  				global_node_diff[i] += v;
  			}
  	}
-@@ -776,8 +777,8 @@ void drain_zonestat(struct zone *zone, struct per_cpu_pageset *pset)
+@@ -846,8 +846,8 @@ void drain_zonestat(struct zone *zone, struct per_cpu_pageset *pset)
  		if (pset->vm_stat_diff[i]) {
  			int v = pset->vm_stat_diff[i];
  			pset->vm_stat_diff[i] = 0;
@@ -82,8 +94,20 @@ index 604f26a..6e8df6a 100644
 +			atomic_long_add_unchecked(v, &zone->vm_stat[i]);
 +			atomic_long_add_unchecked(v, &vm_zone_stat[i]);
  		}
- }
+ 
+ #ifdef CONFIG_NUMA
+@@ -856,8 +856,8 @@ void drain_zonestat(struct zone *zone, struct per_cpu_pageset *pset)
+ 			int v = pset->vm_numa_stat_diff[i];
+ 
+ 			pset->vm_numa_stat_diff[i] = 0;
+-			atomic_long_add(v, &zone->vm_numa_stat[i]);
+-			atomic_long_add(v, &vm_numa_stat[i]);
++			atomic_long_add_unchecked(v, &zone->vm_numa_stat[i]);
++			atomic_long_add_unchecked(v, &vm_numa_stat[i]);
+ 		}
  #endif
+ }
+
 @@ -807,7 +808,7 @@ unsigned long sum_zone_node_page_state(int node,
  unsigned long node_page_state(struct pglist_data *pgdat,
  				enum node_stat_item item)
@@ -93,7 +117,7 @@ index 604f26a..6e8df6a 100644
  #ifdef CONFIG_SMP
  	if (x < 0)
  		x = 0;
-@@ -1477,10 +1478,22 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
+@@ -1627,10 +1627,22 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
  	stat_items_size += sizeof(struct vm_event_state);
  #endif
  
@@ -115,7 +139,7 @@ index 604f26a..6e8df6a 100644
 +#endif
 +
  	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
- 		v[i] = global_page_state(i);
+ 		v[i] = global_zone_page_state(i);
  	v += NR_VM_ZONE_STAT_ITEMS;
 @@ -1597,7 +1597,7 @@ int vmstat_refresh(struct ctl_table *table, int write,
  	if (err)

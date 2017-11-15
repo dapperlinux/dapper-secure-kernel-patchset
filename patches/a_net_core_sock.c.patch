@@ -125,24 +125,24 @@ index 470a204..f5adedf 100644
  		return -EFAULT;
  lenout:
  	if (put_user(len, optlen))
-@@ -1528,7 +1528,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
- 		newsk->sk_dst_pending_confirm = 0;
- 		newsk->sk_wmem_queued	= 0;
- 		newsk->sk_forward_alloc = 0;
+@@ -1681,7 +1681,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 		/* sk->sk_memcg will be populated at accept() time */
+ 		newsk->sk_memcg = NULL;
+ 
 -		atomic_set(&newsk->sk_drops, 0);
 +		atomic_set_unchecked(&newsk->sk_drops, 0);
  		newsk->sk_send_head	= NULL;
  		newsk->sk_userlocks	= sk->sk_userlocks & ~SOCK_BINDPORT_LOCK;
- 
-@@ -1558,7 +1561,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 		atomic_set(&newsk->sk_zckey, 0);
+@@ -1717,7 +1717,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
  		newsk->sk_err_soft = 0;
  		newsk->sk_priority = 0;
  		newsk->sk_incoming_cpu = raw_smp_processor_id();
 -		atomic64_set(&newsk->sk_cookie, 0);
 +		atomic64_set_unchecked(&newsk->sk_cookie, 0);
  
- 		mem_cgroup_sk_alloc(newsk);
- 		cgroup_sk_alloc(&newsk->sk_cgrp_data);
+ 		/*
+ 		 * Before updating sk_refcnt, we must commit prior changes to memory
 @@ -2688,7 +2688,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  	 */
  	smp_wmb();

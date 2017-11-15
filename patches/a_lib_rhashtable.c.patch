@@ -12,9 +12,9 @@ index 32d0ad0..7db49b5 100644
  {
  	struct rhashtable *ht = iter->ht;
  
-@@ -754,8 +754,8 @@ EXPORT_SYMBOL_GPL(rhashtable_walk_next);
-  *
-  * Finish a hash table walk.
+@@ -849,8 +849,8 @@ EXPORT_SYMBOL_GPL(rhashtable_walk_next);
+  * Finish a hash table walk.  Does not reset the iterator to the start of the
+  * hash table.
   */
 +void rhashtable_walk_stop(struct rhashtable_iter *iter) __releases(RCU);
  void rhashtable_walk_stop(struct rhashtable_iter *iter)

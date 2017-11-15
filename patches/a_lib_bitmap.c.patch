@@ -22,7 +22,7 @@ index 0b66f0e..58f3aef 100644
  }
 @@ -515,7 +515,7 @@ static int __bitmap_parselist(const char *buf, unsigned int buflen,
  	unsigned int a, b, old_a, old_b;
- 	unsigned int group_size, used_size;
+ 	unsigned int group_size, used_size, off;
  	int c, old_c, totaldigits, ndigits;
 -	const char __user __force *ubuf = (const char __user __force *)buf;
 +	const char __user *ubuf = (const char __force_user *)buf;

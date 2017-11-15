@@ -23,9 +23,9 @@ index b2e61a0..bf47484 100644
  	tcp_v6_send_reset(sk, skb);
  discard:
  	if (opt_skb)
-@@ -1408,12 +1415,20 @@ static int tcp_v6_rcv(struct sk_buff *skb)
+@@ -1436,12 +1436,20 @@ static int tcp_v6_rcv(struct sk_buff *skb)
  	sk = __inet6_lookup_skb(&tcp_hashinfo, skb, __tcp_hdrlen(th),
- 				th->source, th->dest, inet6_iif(skb),
+ 				th->source, th->dest, inet6_iif(skb), sdif,
  				&refcounted);
 -	if (!sk)
 +	if (!sk) {

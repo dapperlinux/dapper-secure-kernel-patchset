@@ -20,12 +20,3 @@ index 5d7944f..f7953fe 100644
  	.kind		= "vti",
  	.maxtype	= IFLA_VTI_MAX,
  	.policy		= vti_policy,
-@@ -593,7 +593,7 @@ static int vti_device_event(struct notifier_block *unused,
- 	return NOTIFY_DONE;
- }
- 
--static struct notifier_block vti_notifier_block __read_mostly = {
-+static notifier_block_no_const vti_notifier_block __read_only = {
- 	.notifier_call = vti_device_event,
- };
- 

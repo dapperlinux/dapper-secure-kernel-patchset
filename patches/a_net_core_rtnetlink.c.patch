@@ -2,10 +2,10 @@ diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
 index b7f9ae7..485f01c 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -61,7 +61,7 @@ struct rtnl_link {
+@@ -63,7 +63,7 @@ struct rtnl_link {
  	rtnl_doit_func		doit;
  	rtnl_dumpit_func	dumpit;
- 	rtnl_calcit_func 	calcit;
+ 	unsigned int		flags;
 -};
 +} __no_const;
  
@@ -46,8 +46,8 @@ index b7f9ae7..485f01c 100644
  	    nla_put_u8(skb, IFLA_PROTO_DOWN, dev->proto_down))
  		goto nla_put_failure;
  
-@@ -4023,7 +4026,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 		__rtnl_unlock();
+@@ -4215,7 +4215,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
  		rtnl = net->rtnl;
  		{
 -			struct netlink_dump_control c = {
