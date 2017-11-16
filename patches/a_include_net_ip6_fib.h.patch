@@ -2,7 +2,7 @@ diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
 index a74e2aa..bb6d0c4 100644
 --- a/include/net/ip6_fib.h
 +++ b/include/net/ip6_fib.h
-@@ -250,10 +250,6 @@ struct fib6_table {
+@@ -301,10 +301,6 @@ struct fib6_table {
  #define RT6_TABLE_LOCAL		RT6_TABLE_MAIN
  #endif
  
@@ -10,6 +10,6 @@ index a74e2aa..bb6d0c4 100644
 -					 struct fib6_table *,
 -					 struct flowi6 *, int);
 -
- /*
-  *	exported functions
-  */
+ struct fib6_entry_notifier_info {
+ 	struct fib_notifier_info info; /* must be first */
+ 	struct rt6_info *rt;

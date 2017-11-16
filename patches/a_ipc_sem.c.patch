@@ -2,21 +2,30 @@ diff --git a/ipc/sem.c b/ipc/sem.c
 index 10b94bc..136c0ae 100644
 --- a/ipc/sem.c
 +++ b/ipc/sem.c
-@@ -1814,7 +1814,7 @@ static int get_queue_result(struct sem_queue *q)
+@@ -2110,7 +2110,7 @@ static long do_semtimedop(int semid, struct sembuf __user *tsops,
  }
  
  SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 -		unsigned, nsops, const struct timespec __user *, timeout)
 +		long, nsops, const struct timespec __user *, timeout)
  {
- 	int error = -EINVAL;
- 	struct sem_array *sma;
-@@ -2049,7 +2049,7 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
- }
+ 	if (timeout) {
+ 		struct timespec64 ts;
+@@ -2123,7 +2123,7 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
+ 
+ #ifdef CONFIG_COMPAT
+ COMPAT_SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsems,
+-		       unsigned, nsops,
++		       compat_long_t, nsops,
+ 		       const struct compat_timespec __user *, timeout)
+ {
+ 	if (timeout) {
+@@ -2137,7 +2137,7 @@ COMPAT_SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsems,
+ #endif
  
  SYSCALL_DEFINE3(semop, int, semid, struct sembuf __user *, tsops,
 -		unsigned, nsops)
 +		long, nsops)
  {
- 	return sys_semtimedop(semid, tsops, nsops, NULL);
+ 	return do_semtimedop(semid, tsops, nsops, NULL);
  }

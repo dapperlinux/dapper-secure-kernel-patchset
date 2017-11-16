@@ -2,9 +2,9 @@ diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
 index bb9b102..1969a64 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1324,6 +1324,7 @@ struct net_device_ops {
- 	int			(*ndo_xdp)(struct net_device *dev,
- 					   struct netdev_xdp *xdp);
+@@ -1313,6 +1313,7 @@ struct net_device_ops {
+ 						struct xdp_buff *xdp);
+ 	void			(*ndo_xdp_flush)(struct net_device *dev);
  };
 +typedef struct net_device_ops __no_const net_device_ops_no_const;
  

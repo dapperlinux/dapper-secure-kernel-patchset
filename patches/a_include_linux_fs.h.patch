@@ -12,10 +12,10 @@ index dc0478c..473e4cd 100644
  
  struct inode_operations {
  	struct dentry * (*lookup) (struct inode *,struct dentry *, unsigned int);
-@@ -2456,12 +2457,12 @@ static inline void bd_unlink_disk_holder(struct block_device *bdev,
- #define CHRDEV_MAJOR_HASH_SIZE	255
- /* Marks the bottom of the first segment of free char majors */
- #define CHRDEV_MAJOR_DYN_END 234
+@@ -2504,12 +2504,12 @@ static inline void bd_unlink_disk_holder(struct block_device *bdev,
+ #define CHRDEV_MAJOR_DYN_EXT_START 511
+ #define CHRDEV_MAJOR_DYN_EXT_END 384
+ 
 -extern int alloc_chrdev_region(dev_t *, unsigned, unsigned, const char *);
 +extern __nocapture(4) int alloc_chrdev_region(dev_t *, unsigned, unsigned, const char *);
  extern int register_chrdev_region(dev_t, unsigned, const char *);

@@ -1,16 +1,16 @@
-diff --git a/include/drm/drmP.h b/include/drm/drmP.h
-index e9fb2e8..872cabe 100644
---- a/include/drm/drmP.h
-+++ b/include/drm/drmP.h
-@@ -61,6 +61,7 @@
- 
- #include <asm/mman.h>
- #include <asm/pgalloc.h>
+diff --git a/include/drm/drm_device.h b/include/drm/drm_device.h
+index e21af87..9380eb1 100644
+--- a/include/drm/drm_device.h
++++ b/include/drm/drm_device.h
+@@ -5,6 +5,7 @@
+ #include <linux/kref.h>
+ #include <linux/mutex.h>
+ #include <linux/idr.h>
 +#include <asm/local.h>
- #include <linux/uaccess.h>
  
- #include <uapi/drm/drm.h>
-@@ -793,7 +798,7 @@ struct drm_device {
+ #include <drm/drm_hashtab.h>
+ #include <drm/drm_mode_config.h>
+@@ -58,7 +59,7 @@ struct drm_device {
  
  	/** \name Usage Counters */
  	/*@{ */

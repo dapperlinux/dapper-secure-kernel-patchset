@@ -2,8 +2,8 @@ diff --git a/include/linux/iommu.h b/include/linux/iommu.h
 index 436dc21..a6796a4 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -224,7 +224,7 @@ struct iommu_ops {
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+@@ -236,7 +236,7 @@ struct iommu_ops {
+ 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
  
  	unsigned long pgsize_bitmap;
 -};

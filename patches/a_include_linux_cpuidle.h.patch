@@ -3,7 +3,7 @@ index bb31373..e85eb5f 100644
 --- a/include/linux/cpuidle.h
 +++ b/include/linux/cpuidle.h
 @@ -59,7 +59,8 @@ struct cpuidle_state {
- 	void (*enter_freeze) (struct cpuidle_device *dev,
+ 	void (*enter_s2idle) (struct cpuidle_device *dev,
  			      struct cpuidle_driver *drv,
  			      int index);
 -};

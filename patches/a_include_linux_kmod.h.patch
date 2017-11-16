@@ -11,13 +11,3 @@ index fcfd2bf..e4f5edb 100644
  #define request_module(mod...) __request_module(true, mod)
  #define request_module_nowait(mod...) __request_module(false, mod)
  #define try_then_request_module(x, mod...) \
-@@ -57,6 +57,9 @@ struct subprocess_info {
- 	struct work_struct work;
- 	struct completion *complete;
- 	const char *path;
-+#ifdef CONFIG_GRKERNSEC
-+	char *origpath;
-+#endif
- 	char **argv;
- 	char **envp;
- 	int wait;

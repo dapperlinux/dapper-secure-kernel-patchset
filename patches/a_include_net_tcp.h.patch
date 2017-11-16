@@ -22,10 +22,10 @@ index 123979f..7bd48e9 100644
  	union {
  		/* Note : tcp_tw_isn is used in input path only
  		 *	  (isn chosen by tcp_timewait_state_process())
-@@ -762,7 +762,7 @@ struct tcp_skb_cb {
- 	__u8		txstamp_ack:1,	/* Record TX timestamp for ack? */
+@@ -820,7 +820,7 @@ struct tcp_skb_cb {
  			eor:1,		/* Is skb MSG_EOR marked? */
- 			unused:6;
+ 			has_rxtstamp:1,	/* SKB has a RX timestamp	*/
+ 			unused:5;
 -	__u32		ack_seq;	/* Sequence number ACK'd	*/
 +	__u32		ack_seq __intentional_overflow(-1);	/* Sequence number ACK'd	*/
  	union {

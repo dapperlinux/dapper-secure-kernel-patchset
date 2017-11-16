@@ -10,10 +10,10 @@ index 08d947f..ceb5da6 100644
  } __randomize_layout;
  
  struct core_thread {
-@@ -502,6 +503,24 @@ struct mm_struct {
- 	atomic_long_t hugetlb_usage;
+@@ -513,6 +513,24 @@ struct mm_struct {
+ 	/* HMM needs to track a few things per mm */
+ 	struct hmm *hmm;
  #endif
- 	struct work_struct async_put_work;
 +
 +#if defined(CONFIG_PAX_NOEXEC) || defined(CONFIG_PAX_ASLR)
 +	unsigned long pax_flags;

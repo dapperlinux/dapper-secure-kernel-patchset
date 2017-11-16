@@ -11,14 +11,14 @@ index b32ad7d..05f6420 100644
  
  		if (rv < 0) {
  			if (rv == -EINTR || rv == -EAGAIN)
-@@ -107,7 +107,7 @@ static void __init free_hash(void)
+@@ -109,7 +109,7 @@ static void __init free_hash(void)
  	}
  }
  
 -static long __init do_utime(char *filename, time_t mtime)
 +static long __init do_utime(char __force_user *filename, time_t mtime)
  {
- 	struct timespec t[2];
+ 	struct timespec64 t[2];
  
 @@ -142,7 +142,7 @@ static void __init dir_utime(void)
  	struct dir_entry *de, *tmp;

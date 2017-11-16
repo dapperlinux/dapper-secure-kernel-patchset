@@ -2,7 +2,7 @@ diff --git a/include/linux/ipc.h b/include/linux/ipc.h
 index 9d84942..12d5bdf 100644
 --- a/include/linux/ipc.h
 +++ b/include/linux/ipc.h
-@@ -18,7 +18,7 @@ struct kern_ipc_perm {
+@@ -21,7 +21,7 @@ struct kern_ipc_perm {
  	kuid_t		cuid;
  	kgid_t		cgid;
  	umode_t		mode;
@@ -10,4 +10,4 @@ index 9d84942..12d5bdf 100644
 +	unsigned long	seq __intentional_overflow(-1);
  	void		*security;
  
- 	struct rcu_head rcu;
+ 	struct rhash_head khtnode;

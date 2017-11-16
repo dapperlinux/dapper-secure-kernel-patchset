@@ -23,15 +23,6 @@ index fa3b155..258dde5 100644
  					    const struct cpumask *srcp,
  					    const struct cpumask *andp)
  {
-@@ -185,7 +185,7 @@ static inline unsigned int cpumask_first(const struct cpumask *srcp)
-  *
-  * Returns >= nr_cpu_ids if no further cpus set.
-  */
--static inline unsigned int cpumask_next(int n, const struct cpumask *srcp)
-+static inline unsigned int __intentional_overflow(-1) cpumask_next(int n, const struct cpumask *srcp)
- {
- 	/* -1 is a legal arg here. */
- 	if (n != -1)
 @@ -200,7 +200,7 @@ static inline unsigned int cpumask_next(int n, const struct cpumask *srcp)
   *
   * Returns >= nr_cpu_ids if no further cpus unset.

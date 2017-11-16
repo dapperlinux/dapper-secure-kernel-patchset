@@ -14,10 +14,11 @@ index b97bf2e..f14c92d4 100644
  extern struct proc_dir_entry *proc_mkdir_mode(const char *, umode_t,
  					      struct proc_dir_entry *);
  struct proc_dir_entry *proc_create_mount_point(const char *name);
-@@ -34,6 +37,19 @@ static inline struct proc_dir_entry *proc_create(
- 	return proc_create_data(name, mode, parent, proc_fops, NULL);
- }
+@@ -30,6 +30,19 @@ extern struct proc_dir_entry *proc_create_data(const char *, umode_t,
+ 					       void *);
  
+ struct proc_dir_entry *proc_create(const char *name, umode_t mode, struct proc_dir_entry *parent, const struct file_operations *proc_fops);
++
 +static inline struct proc_dir_entry *proc_create_grsec(const char *name, umode_t mode,
 +	struct proc_dir_entry *parent, const struct file_operations *proc_fops)
 +{
@@ -29,7 +30,6 @@ index b97bf2e..f14c92d4 100644
 +	return proc_create_data(name, mode, parent, proc_fops, NULL);
 +#endif
 +}
-+
 +
  extern void proc_set_size(struct proc_dir_entry *, loff_t);
  extern void proc_set_user(struct proc_dir_entry *, kuid_t, kgid_t);

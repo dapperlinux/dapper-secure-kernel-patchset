@@ -15,11 +15,11 @@ index 5a81ab4..7b68dc7 100644
  #define __def_vmaflag_names						\
  	{VM_READ,			"read"		},		\
  	{VM_WRITE,			"write"		},		\
-@@ -159,6 +165,7 @@ IF_HAVE_PG_IDLE(PG_idle,		"idle"		)
+@@ -155,6 +155,7 @@ IF_HAVE_PG_IDLE(PG_idle,		"idle"		)
  	{VM_ACCOUNT,			"account"	},		\
  	{VM_NORESERVE,			"noreserve"	},		\
  	{VM_HUGETLB,			"hugetlb"	},		\
 +IF_HAVE_VM_PAGEEXEC(VM_PAGEEXEC,	"pageexec"	)		\
  	__VM_ARCH_SPECIFIC_1				,		\
- 	__VM_ARCH_SPECIFIC_2				,		\
+ 	{VM_WIPEONFORK,			"wipeonfork"	},		\
  	{VM_DONTDUMP,			"dontdump"	},		\

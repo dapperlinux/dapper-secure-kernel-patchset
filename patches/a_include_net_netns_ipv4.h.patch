@@ -11,8 +11,8 @@ index 7adf438..4080f91 100644
  
  #ifdef CONFIG_SYSCTL
  	unsigned long *sysctl_local_reserved_ports;
-@@ -156,6 +156,6 @@ struct netns_ipv4 {
- 
+@@ -163,6 +163,6 @@ struct netns_ipv4 {
+ 	struct fib_notifier_ops	*notifier_ops;
  	unsigned int	fib_seq;	/* protected by rtnl_mutex */
  
 -	atomic_t	rt_genid;

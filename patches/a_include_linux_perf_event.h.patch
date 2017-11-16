@@ -24,15 +24,6 @@ index 4741ecd..fd32440 100644
  
  	/*
  	 * Protect attach/detach and child_list:
-@@ -1100,7 +1100,7 @@ static inline void perf_event_task_sched_out(struct task_struct *prev,
- 
- static inline u64 __perf_event_count(struct perf_event *event)
- {
--	return local64_read(&event->count) + atomic64_read(&event->child_count);
-+	return local64_read(&event->count) + atomic64_read_unchecked(&event->child_count);
- }
- 
- extern void perf_event_mmap(struct vm_area_struct *vma);
 @@ -1151,7 +1151,7 @@ static inline int perf_callchain_store(struct perf_callchain_entry_ctx *ctx, u64
  	}
  }

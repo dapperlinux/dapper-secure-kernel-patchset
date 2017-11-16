@@ -2,12 +2,12 @@ diff --git a/include/net/sctp/sm.h b/include/net/sctp/sm.h
 index ca6c971..d4bdc27 100644
 --- a/include/net/sctp/sm.h
 +++ b/include/net/sctp/sm.h
-@@ -80,7 +80,7 @@ typedef void (sctp_timer_event_t) (unsigned long);
- typedef struct {
+@@ -76,7 +76,7 @@ typedef void (sctp_timer_event_t) (unsigned long);
+ struct sctp_sm_table_entry {
  	sctp_state_fn_t *fn;
  	const char *name;
--} sctp_sm_table_entry_t;
-+} __do_const sctp_sm_table_entry_t;
+-};
++} __do_const;
  
  /* A naming convention of "sctp_sf_xxx" applies to all the state functions
   * currently in use.

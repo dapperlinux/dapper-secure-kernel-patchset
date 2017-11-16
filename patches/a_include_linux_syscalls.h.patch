@@ -2,7 +2,7 @@ diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
 index 91a740f..a3666d4 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
-@@ -98,11 +98,28 @@ union bpf_attr;
+@@ -99,12 +99,29 @@ union bpf_attr;
  #define __MAP6(m,t,a,...) m(t,a), __MAP5(m,__VA_ARGS__)
  #define __MAP(n,...) __MAP##n(__VA_ARGS__)
  
@@ -16,9 +16,10 @@ index 91a740f..a3666d4 100644
 +#define __RAP_MAP(n,...) __RAP_MAP##n(__VA_ARGS__)
 +
  #define __SC_DECL(t, a)	t a
- #define __TYPE_IS_L(t)	(__same_type((t)0, 0L))
- #define __TYPE_IS_UL(t)	(__same_type((t)0, 0UL))
- #define __TYPE_IS_LL(t) (__same_type((t)0, 0LL) || __same_type((t)0, 0ULL))
+ #define __TYPE_AS(t, v)	__same_type((__force t)0, v)
+ #define __TYPE_IS_L(t)	(__TYPE_AS(t, 0L))
+ #define __TYPE_IS_UL(t)	(__TYPE_AS(t, 0UL))
+ #define __TYPE_IS_LL(t) (__TYPE_AS(t, 0LL) || __TYPE_AS(t, 0ULL))
 -#define __SC_LONG(t, a) __typeof(__builtin_choose_expr(__TYPE_IS_LL(t), 0LL, 0L)) a
 +#define __SC_TYPE(t) __typeof__(				\
 +	__builtin_choose_expr(					\
@@ -29,11 +30,11 @@ index 91a740f..a3666d4 100644
 +#define __SC_LONG(t, a)	__SC_TYPE(t) a
 +#define __RAP_SC_LONG(t, a)	unsigned long a
 +#define __SC_WRAP(t, a)	(__SC_TYPE(t)) a
- #define __SC_CAST(t, a)	(t) a
+ #define __SC_CAST(t, a)	(__force t) a
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
-@@ -175,8 +192,19 @@ extern struct trace_event_functions exit_syscall_print_funcs;
- #define SYSCALL_METADATA(sname, nb, ...)
+@@ -189,8 +206,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+ }
  #endif
  
 +#ifdef CONFIG_PAX_RAP
@@ -52,7 +53,7 @@ index 91a740f..a3666d4 100644
  	asmlinkage long sys_##sname(void)
  
  #define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
-@@ -191,18 +219,32 @@ extern struct trace_event_functions exit_syscall_print_funcs;
+@@ -207,18 +235,32 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
  	__SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
  
  #define __PROTECT(...) asmlinkage_protect(__VA_ARGS__)
@@ -88,7 +89,7 @@ index 91a740f..a3666d4 100644
 +	__RAP_SYSCALL_DEFINEx(x,name,__VA_ARGS__)			\
  	static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  
- asmlinkage long sys32_quotactl(unsigned int cmd, const char __user *special,
+ /*
 @@ -384,11 +426,11 @@ asmlinkage long sys_sync(void);
  asmlinkage long sys_fsync(unsigned int fd);
  asmlinkage long sys_fdatasync(unsigned int fd);

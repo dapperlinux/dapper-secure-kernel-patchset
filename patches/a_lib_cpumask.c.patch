@@ -1,0 +1,13 @@
+diff --git a/lib/cpumask.c b/lib/cpumask.c
+index 35fe142..60703b2 100644
+--- a/lib/cpumask.c
++++ b/lib/cpumask.c
+@@ -13,7 +13,7 @@
+  *
+  * Returns >= nr_cpu_ids if no further cpus set.
+  */
+-unsigned int cpumask_next(int n, const struct cpumask *srcp)
++unsigned int __intentional_overflow(-1) cpumask_next(int n, const struct cpumask *srcp)
+ {
+ 	/* -1 is a legal arg here. */
+ 	if (n != -1)

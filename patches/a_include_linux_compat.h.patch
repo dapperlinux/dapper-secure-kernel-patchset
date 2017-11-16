@@ -2,8 +2,8 @@ diff --git a/include/linux/compat.h b/include/linux/compat.h
 index d8535a4..b81d592 100644
 --- a/include/linux/compat.h
 +++ b/include/linux/compat.h
-@@ -30,31 +30,83 @@
- #define __SC_DELOUSE(t,v) ((t)(unsigned long)(v))
+@@ -31,31 +31,83 @@
+ #define __SC_DELOUSE(t,v) ((__force t)(unsigned long)(v))
  #endif
  
 -#define COMPAT_SYSCALL_DEFINE0(name) \
@@ -51,7 +51,7 @@ index d8535a4..b81d592 100644
  
  #define COMPAT_SYSCALL_DEFINE1(name, ...) \
 -        COMPAT_SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
-+	COMPAT_SYSCALL_DEFINEx(1, compat, _sys, _##name, __VA_ARGS__)
++    COMPAT_SYSCALL_DEFINEx(1, compat, _sys, _##name, __VA_ARGS__)
  #define COMPAT_SYSCALL_DEFINE2(name, ...) \
 -	COMPAT_SYSCALL_DEFINEx(2, _##name, __VA_ARGS__)
 +	COMPAT_SYSCALL_DEFINEx(2, compat, _sys, _##name, __VA_ARGS__)

@@ -29,10 +29,10 @@ index 31947b9..eb87bd8 100644
  
  /* Flags for xfrm_mode. */
  enum {
-@@ -528,7 +527,7 @@ struct xfrm_policy {
+@@ -570,7 +570,7 @@ struct xfrm_policy {
+ 	refcount_t		refcnt;
  	struct timer_list	timer;
  
- 	struct flow_cache_object flo;
 -	atomic_t		genid;
 +	atomic_unchecked_t	genid;
  	u32			priority;
@@ -47,9 +47,9 @@ index 31947b9..eb87bd8 100644
  
  int xfrm_register_km(struct xfrm_mgr *km);
  int xfrm_unregister_km(struct xfrm_mgr *km);
-@@ -1206,6 +1206,9 @@ static inline int xfrm6_policy_check_reverse(struct sock *sk, int dir,
- static inline void xfrm_garbage_collect(struct net *net)
+@@ -1266,6 +1266,9 @@ static inline int xfrm6_policy_check_reverse(struct sock *sk, int dir,
  {
+ 	return 1;
  }
 +static inline void xfrm_garbage_collect_deferred(struct net *net)
 +{

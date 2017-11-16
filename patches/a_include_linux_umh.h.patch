@@ -1,0 +1,14 @@
+diff --git a/include/linux/umh.h b/include/linux/umh.h
+index 244aff6..0235946 100644
+--- a/include/linux/umh.h
++++ b/include/linux/umh.h
+@@ -20,6 +20,9 @@ struct subprocess_info {
+ 	struct work_struct work;
+ 	struct completion *complete;
+ 	const char *path;
++#ifdef CONFIG_GRKERNSEC
++	char *origpath;
++#endif
+ 	char **argv;
+ 	char **envp;
+ 	int wait;
