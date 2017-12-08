@@ -2,8 +2,8 @@ diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
 index ff038e5..740da40 100644
 --- a/drivers/net/hyperv/netvsc_drv.c
 +++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -348,7 +348,7 @@ static u32 net_checksum_info(struct sk_buff *skb)
- 	return TRANSPORT_INFO_NOT_IP;
+@@ -448,7 +448,7 @@ static int netvsc_vf_xmit(struct net_device *net, struct net_device *vf_netdev,
+ 	return rc;
  }
  
 -static int netvsc_start_xmit(struct sk_buff *skb, struct net_device *net)

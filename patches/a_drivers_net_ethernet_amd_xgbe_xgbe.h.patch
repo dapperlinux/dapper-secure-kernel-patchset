@@ -17,8 +17,8 @@ index 5dd17dc..962ff6a 100644
  
  	/* AXI DMA settings */
  	unsigned int coherent;
-@@ -1173,6 +1173,11 @@ struct xgbe_prv_data {
- #endif
+@@ -1259,6 +1259,11 @@ struct xgbe_prv_data {
+ 	unsigned int debugfs_xi2c_reg;
  };
  
 +extern const struct xgbe_hw_if default_xgbe_hw_if;

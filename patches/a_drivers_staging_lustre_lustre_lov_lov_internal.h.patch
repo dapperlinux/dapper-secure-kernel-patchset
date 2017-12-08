@@ -2,16 +2,14 @@ diff --git a/drivers/staging/lustre/lustre/lov/lov_internal.h b/drivers/staging/
 index 774499c..ee5f594 100644
 --- a/drivers/staging/lustre/lustre/lov/lov_internal.h
 +++ b/drivers/staging/lustre/lustre/lov/lov_internal.h
-@@ -178,9 +178,9 @@ struct lov_request_set {
- 	 */
+@@ -167,8 +167,8 @@ struct lov_request_set {
+ 	struct obd_info			*set_oi;
  	struct obd_device		*set_obd;
  	int				set_count;
 -	atomic_t			set_completes;
 -	atomic_t			set_success;
--	atomic_t			set_finish_checked;
 +	atomic_unchecked_t			set_completes;
 +	atomic_unchecked_t			set_success;
-+	atomic_unchecked_t			set_finish_checked;
  	struct list_head			set_list;
- 	wait_queue_head_t			set_waitq;
  };
+ 

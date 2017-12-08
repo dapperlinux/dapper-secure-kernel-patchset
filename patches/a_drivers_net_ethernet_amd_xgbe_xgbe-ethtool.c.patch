@@ -11,8 +11,8 @@ index 920566a..ef48433 100644
  	for (i = 0; i < XGBE_STATS_COUNT; i++) {
  		stat = (u8 *)pdata + xgbe_gstring_stats[i].stat_offset;
  		*data++ = *(u64 *)stat;
-@@ -267,7 +267,7 @@ static int xgbe_set_pauseparam(struct net_device *netdev,
- 		pdata->phy.advertising ^= ADVERTISED_Asym_Pause;
+@@ -301,7 +301,7 @@ static int xgbe_set_pauseparam(struct net_device *netdev,
+ 	}
  
  	if (netif_running(netdev))
 -		ret = pdata->phy_if.phy_config_aneg(pdata);
@@ -29,8 +29,8 @@ index 920566a..ef48433 100644
  			netdev_err(netdev, "unsupported speed %u\n", speed);
  			return -EINVAL;
  		}
-@@ -357,7 +357,7 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
- 		pdata->phy.advertising &= ~ADVERTISED_Autoneg;
+@@ -393,7 +393,7 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
+ 		XGBE_CLR_ADV(lks, Autoneg);
  
  	if (netif_running(netdev))
 -		ret = pdata->phy_if.phy_config_aneg(pdata);

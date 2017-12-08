@@ -2,9 +2,9 @@ diff --git a/drivers/staging/lustre/lustre/include/lustre_swab.h b/drivers/stagi
 index 26d01c2..de64db3 100644
 --- a/drivers/staging/lustre/lustre/include/lustre_swab.h
 +++ b/drivers/staging/lustre/lustre/include/lustre_swab.h
-@@ -50,53 +50,53 @@
+@@ -50,59 +50,59 @@
  
- #include "lustre/lustre_idl.h"
+ #include <uapi/linux/lustre/lustre_idl.h>
  
 -void lustre_swab_ptlrpc_body(struct ptlrpc_body *pb);
 -void lustre_swab_connect(struct obd_connect_data *ocd);
@@ -17,7 +17,18 @@ index 26d01c2..de64db3 100644
 -void lustre_swab_ost_lvb(struct ost_lvb *lvb);
 -void lustre_swab_obd_quotactl(struct obd_quotactl *q);
 -void lustre_swab_lquota_lvb(struct lquota_lvb *lvb);
--void lustre_swab_generic_32s(__u32 *val);
++void lustre_swab_ptlrpc_body(void *pb);
++void lustre_swab_connect(void *ocd);
++void lustre_swab_hsm_user_state(void *hus);
++void lustre_swab_hsm_state_set(void *hss);
++void lustre_swab_obd_statfs(void *os);
++void lustre_swab_obd_ioobj(void *ioo);
++void lustre_swab_niobuf_remote(void *nbr);
++void lustre_swab_ost_lvb_v1(void *lvb);
++void lustre_swab_ost_lvb(void *lvb);
++void lustre_swab_obd_quotactl(void *q);
++void lustre_swab_lquota_lvb(void *lvb);
+ void lustre_swab_generic_32s(__u32 *val);
 -void lustre_swab_mdt_body(struct mdt_body *b);
 -void lustre_swab_mdt_ioepoch(struct mdt_ioepoch *b);
 -void lustre_swab_mdt_rec_setattr(struct mdt_rec_setattr *sa);
@@ -34,23 +45,6 @@ index 26d01c2..de64db3 100644
 -void lustre_swab_mgs_config_body(struct mgs_config_body *body);
 -void lustre_swab_mgs_config_res(struct mgs_config_res *body);
 -void lustre_swab_ost_body(struct ost_body *b);
--void lustre_swab_ost_last_id(__u64 *id);
--void lustre_swab_fiemap(struct fiemap *fiemap);
--void lustre_swab_lov_user_md_v1(struct lov_user_md_v1 *lum);
--void lustre_swab_lov_user_md_v3(struct lov_user_md_v3 *lum);
--void lustre_swab_lov_user_md_objects(struct lov_user_ost_data *lod,
-+void lustre_swab_ptlrpc_body(void *pb);
-+void lustre_swab_connect(void *ocd);
-+void lustre_swab_hsm_user_state(void *hus);
-+void lustre_swab_hsm_state_set(void *hss);
-+void lustre_swab_obd_statfs(void *os);
-+void lustre_swab_obd_ioobj(void *ioo);
-+void lustre_swab_niobuf_remote(void *nbr);
-+void lustre_swab_ost_lvb_v1(void *lvb);
-+void lustre_swab_ost_lvb(void *lvb);
-+void lustre_swab_obd_quotactl(void *q);
-+void lustre_swab_lquota_lvb(void *lvb);
-+void lustre_swab_generic_32s(void *val);
 +void lustre_swab_mdt_body(void *b);
 +void lustre_swab_mdt_ioepoch(void *b);
 +void lustre_swab_mdt_rec_setattr(void *sa);
@@ -67,7 +61,11 @@ index 26d01c2..de64db3 100644
 +void lustre_swab_mgs_config_body(void *body);
 +void lustre_swab_mgs_config_res(void *body);
 +void lustre_swab_ost_body(void *b);
-+void lustre_swab_ost_last_id(void *id);
+ void lustre_swab_ost_last_id(__u64 *id);
+-void lustre_swab_fiemap(struct fiemap *fiemap);
+-void lustre_swab_lov_user_md_v1(struct lov_user_md_v1 *lum);
+-void lustre_swab_lov_user_md_v3(struct lov_user_md_v3 *lum);
+-void lustre_swab_lov_user_md_objects(struct lov_user_ost_data *lod,
 +void lustre_swab_fiemap(void *fiemap);
 +void lustre_swab_lov_user_md_v1(void *lum);
 +void lustre_swab_lov_user_md_v3(void *lum);
@@ -101,5 +99,14 @@ index 26d01c2..de64db3 100644
 +void lustre_swab_swap_layouts(void *msl);
 +void lustre_swab_close_data(void *data);
 +void lustre_swab_lmv_user_md(void *lum);
+ 
+ /* Functions for dumping PTLRPC fields */
+-void dump_rniobuf(struct niobuf_remote *rnb);
+-void dump_ioo(struct obd_ioobj *nb);
+-void dump_ost_body(struct ost_body *ob);
++void dump_rniobuf(void *rnb);
++void dump_ioo(void *nb);
++void dump_ost_body(void *ob);
+ void dump_rcs(__u32 *rc);
  
  #endif

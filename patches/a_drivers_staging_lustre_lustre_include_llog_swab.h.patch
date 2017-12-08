@@ -2,8 +2,8 @@ diff --git a/drivers/staging/lustre/lustre/include/llog_swab.h b/drivers/staging
 index fd7ffb1..d8e3b20 100644
 --- a/drivers/staging/lustre/lustre/include/llog_swab.h
 +++ b/drivers/staging/lustre/lustre/include/llog_swab.h
-@@ -51,15 +51,15 @@
- #include "lustre/lustre_idl.h"
+@@ -52,15 +52,15 @@
+ 
  struct lustre_cfg;
  
 -void lustre_swab_lu_fid(struct lu_fid *fid);

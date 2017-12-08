@@ -45,13 +45,13 @@ index a1d6ab7..42c2b5e 100644
  		(h->interrupts_enabled == 0);
  }
  
-@@ -7560,7 +7560,7 @@ static int hpsa_pci_init(struct ctlr_info *h)
+@@ -7614,7 +7614,7 @@ static int hpsa_pci_init(struct ctlr_info *h)
  	if (prod_index < 0)
  		return prod_index;
  	h->product_name = products[prod_index].product_name;
 -	h->access = *(products[prod_index].access);
 +	h->access = products[prod_index].access;
- 
+ 	h->legacy_board = legacy_board;
  	pci_disable_link_state(h->pdev, PCIE_LINK_STATE_L0S |
  			       PCIE_LINK_STATE_L1 | PCIE_LINK_STATE_CLKPM);
 @@ -8448,7 +8448,7 @@ static void controller_lockup_detected(struct ctlr_info *h)

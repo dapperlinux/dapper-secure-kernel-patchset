@@ -48,12 +48,12 @@ index 17ac8f9..f59a5a2 100644
  	if (ret)
  		return ret;
  
-@@ -452,7 +444,7 @@ void xgbe_deconfig_netdev(struct xgbe_prv_data *pdata)
- 	if (IS_REACHABLE(CONFIG_PTP_1588_CLOCK))
- 		xgbe_ptp_unregister(pdata);
+@@ -447,7 +447,7 @@ void xgbe_deconfig_netdev(struct xgbe_prv_data *pdata)
+ 
+ 	unregister_netdev(netdev);
  
 -	pdata->phy_if.phy_exit(pdata);
 +	pdata->phy_if->phy_exit(pdata);
+ }
  
- 	flush_workqueue(pdata->an_workqueue);
- 	destroy_workqueue(pdata->an_workqueue);
+ static int xgbe_netdev_event(struct notifier_block *nb, unsigned long event,

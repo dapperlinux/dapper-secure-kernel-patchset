@@ -275,15 +275,15 @@ index a713abd..dea1f1c 100644
  
  	return 0;
  }
-@@ -1869,7 +1869,7 @@ static int xgbe_set_features(struct net_device *netdev,
+@@ -2290,7 +2290,7 @@ static int xgbe_set_features(struct net_device *netdev,
  			     netdev_features_t features)
  {
  	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 -	struct xgbe_hw_if *hw_if = &pdata->hw_if;
 +	struct xgbe_hw_if *hw_if = pdata->hw_if;
  	netdev_features_t rxhash, rxcsum, rxvlan, rxvlan_filter;
+ 	netdev_features_t udp_tunnel;
  	int ret = 0;
- 
 @@ -1935,8 +1935,8 @@ const struct net_device_ops *xgbe_get_netdev_ops(void)
  static void xgbe_rx_refresh(struct xgbe_channel *channel)
  {

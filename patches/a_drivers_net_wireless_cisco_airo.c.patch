@@ -503,12 +503,3 @@ index 69b826d..669a1e0 100644
  };
  
  /* Note : don't describe AIROIDIFC and AIROOLDIDIFC in here.
-@@ -7845,7 +7876,7 @@ static int writerids(struct net_device *dev, aironet_ioctl *comp) {
- 	struct airo_info *ai = dev->ml_priv;
- 	int  ridcode;
-         int  enabled;
--	static int (* writer)(struct airo_info *, u16 rid, const void *, int, int);
-+	int (* writer)(struct airo_info *, u16 rid, const void *, int, int);
- 	unsigned char *iobuf;
- 
- 	/* Only super-user can write RIDs */

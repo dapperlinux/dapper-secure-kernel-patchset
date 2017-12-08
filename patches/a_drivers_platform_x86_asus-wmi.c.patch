@@ -24,7 +24,7 @@ index 8499d3a..5e2f9e4 100644
  	err = asus_wmi_set_devstate(asus->debug.dev_id, asus->debug.ctrl_param,
  				    &retval);
  
-@@ -1940,6 +1948,10 @@ static int show_call(struct seq_file *m, void *data)
+@@ -1945,6 +1945,10 @@ static int show_call(struct seq_file *m, void *data)
  	union acpi_object *obj;
  	acpi_status status;
  
@@ -33,5 +33,5 @@ index 8499d3a..5e2f9e4 100644
 +#endif
 +
  	status = wmi_evaluate_method(ASUS_WMI_MGMT_GUID,
- 				     1, asus->debug.method_id,
+ 				     0, asus->debug.method_id,
  				     &input, &output);
