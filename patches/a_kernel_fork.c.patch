@@ -317,7 +317,7 @@ index ba8a015..37d2e1d 100644
  		}
  
  		/*
-@@ -667,6 +762,38 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+@@ -720,6 +720,38 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
  		if (retval)
  			goto out;
  	}
@@ -340,7 +340,7 @@ index ba8a015..37d2e1d 100644
 +			if (mpnt->vm_end <= SEGMEXEC_TASK_SIZE) {
 +				BUG_ON(mpnt->vm_mirror->vm_mirror != mpnt);
 +				mpnt->vm_mirror = mpnt_m;
-+			} else {
++		} else {
 +				BUG_ON(mpnt->vm_mirror->vm_mirror == mpnt || mpnt->vm_mirror->vm_mirror->vm_mm != mm);
 +				mpnt_m->vm_mirror = mpnt->vm_mirror->vm_mirror;
 +				mpnt_m->vm_mirror->vm_mirror = mpnt_m;
@@ -351,11 +351,11 @@ index ba8a015..37d2e1d 100644
 +		}
 +		BUG_ON(mpnt_m);
 +	}
-+#endif
++endif
 +
  	/* a new mm has just been created */
- 	arch_dup_mmap(oldmm, mm);
- 	retval = 0;
+ 	retval = arch_dup_mmap(oldmm, mm);
+ out:
 @@ -677,14 +804,6 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
  fail_uprobe_end:
  	uprobe_end_dup_mmap();

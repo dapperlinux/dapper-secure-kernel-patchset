@@ -20,8 +20,8 @@ index ba59eae..dbf694c 100644
  			    const char *name,
  			    umode_t mode,
  			    ssize_t (*show)(struct device *dev,
-@@ -863,7 +863,7 @@ static int pmbus_add_boolean(struct pmbus_data *data,
- 			     u16 reg, u8 mask)
+@@ -890,7 +890,7 @@ static int pmbus_add_boolean(struct pmbus_data *data,
+ 			     u16 reg, u16 mask)
  {
  	struct pmbus_boolean *boolean;
 -	struct sensor_device_attribute *a;

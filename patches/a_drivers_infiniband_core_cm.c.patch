@@ -56,15 +56,15 @@ index 71c7c4c..f91d896 100644
  				counter[CM_DREQ_COUNTER]);
  		cm_issue_drep(work->port, work->mad_recv_wc);
  		return -EINVAL;
-@@ -2324,7 +2324,7 @@ static int cm_dreq_handler(struct cm_work *work)
+@@ -2517,7 +2517,7 @@ static int cm_dreq_handler(struct cm_work *work)
  	case IB_CM_MRA_REP_RCVD:
  		break;
  	case IB_CM_TIMEWAIT:
 -		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
 +		atomic_long_inc_unchecked(&work->port->counter_group[CM_RECV_DUPLICATES].
  				counter[CM_DREQ_COUNTER]);
- 		if (cm_alloc_response_msg(work->port, work->mad_recv_wc, &msg))
- 			goto unlock;
+ 		msg = cm_alloc_response_msg_no_ah(work->port, work->mad_recv_wc);
+ 		if (IS_ERR(msg))
 @@ -2338,7 +2338,7 @@ static int cm_dreq_handler(struct cm_work *work)
  			cm_free_msg(msg);
  		goto deref;
@@ -108,15 +108,15 @@ index 71c7c4c..f91d896 100644
  				counter[CM_MRA_COUNTER]);
  		/* fall through */
  	default:
-@@ -2877,7 +2878,7 @@ static int cm_lap_handler(struct cm_work *work)
+@@ -3105,7 +3105,7 @@ static int cm_lap_handler(struct cm_work *work)
  	case IB_CM_LAP_IDLE:
  		break;
  	case IB_CM_MRA_LAP_SENT:
 -		atomic_long_inc(&work->port->counter_group[CM_RECV_DUPLICATES].
 +		atomic_long_inc_unchecked(&work->port->counter_group[CM_RECV_DUPLICATES].
  				counter[CM_LAP_COUNTER]);
- 		if (cm_alloc_response_msg(work->port, work->mad_recv_wc, &msg))
- 			goto unlock;
+ 		msg = cm_alloc_response_msg_no_ah(work->port, work->mad_recv_wc);
+ 		if (IS_ERR(msg))
 @@ -2893,7 +2894,7 @@ static int cm_lap_handler(struct cm_work *work)
  			cm_free_msg(msg);
  		goto deref;

@@ -5,7 +5,7 @@ index b46c0cf..89e322b 100644
 @@ -34,6 +34,7 @@
  #include <linux/of.h>
  #include <linux/irqdomain.h>
- #include <linux/i2c/twl.h>
+ #include <linux/mfd/twl.h>
 +#include <asm/pgtable.h>
  
  #include "twl-core.h"
