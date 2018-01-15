@@ -15,7 +15,7 @@ index 9215931..8e92a9e 100644
  		gpiochip->irqchip = NULL;
  	}
  
-@@ -1770,8 +1772,10 @@ int _gpiochip_irqchip_add(struct gpio_chip *gpiochip,
+@@ -1830,8 +1830,10 @@ int gpiochip_irqchip_add_key(struct gpio_chip *gpiochip,
  	 */
  	if (!irqchip->irq_request_resources &&
  	    !irqchip->irq_release_resources) {
@@ -27,4 +27,4 @@ index 9215931..8e92a9e 100644
 +		pax_close_kernel();
  	}
  
- 	/*
+ 	acpi_gpiochip_request_interrupts(gpiochip);

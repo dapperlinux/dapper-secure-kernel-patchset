@@ -2,7 +2,7 @@ diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c b/drivers/gp
 index e1fb40b..44ce883 100644
 --- a/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
 +++ b/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
-@@ -194,7 +194,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
+@@ -173,7 +173,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
  
  	if (list_empty(&pqm->queues)) {
  		pdd->qpd.pqm = pqm;
@@ -10,7 +10,7 @@ index e1fb40b..44ce883 100644
 +		dev->dqm->ops->register_process(dev->dqm, &pdd->qpd);
  	}
  
- 	pqn = kzalloc(sizeof(struct process_queue_node), GFP_KERNEL);
+ 	pqn = kzalloc(sizeof(*pqn), GFP_KERNEL);
 @@ -220,7 +220,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
  			goto err_create_queue;
  		pqn->q = q;

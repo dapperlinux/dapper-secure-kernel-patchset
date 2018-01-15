@@ -19,8 +19,8 @@ index 993fd31..cc15d14 100644
  };
  
  /**
-@@ -1119,7 +1122,6 @@ int acpi_dev_pm_attach(struct device *dev, bool power_on)
- 		acpi_device_wakeup(adev, ACPI_STATE_S0, false);
+@@ -1177,7 +1177,6 @@ int acpi_dev_pm_attach(struct device *dev, bool power_on)
+ 		acpi_device_wakeup_disable(adev);
  	}
  
 -	dev->pm_domain->detach = acpi_dev_pm_detach;

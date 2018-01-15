@@ -2,9 +2,9 @@ diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
 index 2237d3f..af0be90 100644
 --- a/drivers/acpi/processor_idle.c
 +++ b/drivers/acpi/processor_idle.c
-@@ -842,7 +842,7 @@ static int acpi_processor_setup_cstates(struct acpi_processor *pr)
+@@ -844,7 +844,7 @@ static int acpi_processor_setup_cstates(struct acpi_processor *pr)
  {
- 	int i, count = CPUIDLE_DRIVER_STATE_START;
+ 	int i, count;
  	struct acpi_processor_cx *cx;
 -	struct cpuidle_state *state;
 +	cpuidle_state_no_const *state;

@@ -11,8 +11,8 @@ index 3ceea9c..9fe18a5 100644
  
  	return 0;
  
-@@ -303,7 +303,10 @@ int drm_pci_init(struct drm_driver *driver, struct pci_driver *pdriver)
- 		return pci_register_driver(pdriver);
+@@ -300,7 +300,10 @@ int drm_legacy_pci_init(struct drm_driver *driver, struct pci_driver *pdriver)
+ 		return -EINVAL;
  
  	/* If not using KMS, fall back to stealth mode manual scanning. */
 -	INIT_LIST_HEAD(&driver->legacy_dev_list);

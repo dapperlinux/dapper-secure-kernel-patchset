@@ -2,7 +2,7 @@ diff --git a/drivers/gpu/drm/savage/savage_drv.c b/drivers/gpu/drm/savage/savage
 index 3b80713..472b2cd 100644
 --- a/drivers/gpu/drm/savage/savage_drv.c
 +++ b/drivers/gpu/drm/savage/savage_drv.c
-@@ -76,7 +76,10 @@ static struct pci_driver savage_pci_driver = {
+@@ -73,7 +73,10 @@ static struct pci_driver savage_pci_driver = {
  
  static int __init savage_init(void)
  {
@@ -11,6 +11,6 @@ index 3b80713..472b2cd 100644
 +	const_cast(driver.num_ioctls) = savage_max_ioctl;
 +	pax_close_kernel();
 +
- 	return drm_pci_init(&driver, &savage_pci_driver);
+ 	return drm_legacy_pci_init(&driver, &savage_pci_driver);
  }
  

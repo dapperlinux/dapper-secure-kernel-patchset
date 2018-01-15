@@ -2,15 +2,15 @@ diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
 index 02908e3..8c9262d 100644
 --- a/drivers/gpu/drm/i915/i915_irq.c
 +++ b/drivers/gpu/drm/i915/i915_irq.c
-@@ -4231,14 +4231,15 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
- 	if (INTEL_INFO(dev_priv)->gen >= 8)
+@@ -4161,14 +4161,15 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
+ 	if (INTEL_GEN(dev_priv) >= 8)
  		dev_priv->rps.pm_intrmsk_mbz |= GEN8_PMINTR_DISABLE_REDIRECT_TO_GUC;
  
 +	pax_open_kernel();
  	if (IS_GEN2(dev_priv)) {
  		/* Gen2 doesn't have a hardware frame counter */
  		dev->max_vblank_count = 0;
- 	} else if (IS_G4X(dev_priv) || INTEL_INFO(dev_priv)->gen >= 5) {
+ 	} else if (IS_G4X(dev_priv) || INTEL_GEN(dev_priv) >= 5) {
  		dev->max_vblank_count = 0xffffffff; /* full 32 bit counter */
 -		dev->driver->get_vblank_counter = g4x_get_vblank_counter;
 +		const_cast(dev->driver->get_vblank_counter) = g4x_get_vblank_counter;
@@ -20,7 +20,7 @@ index 02908e3..8c9262d 100644
  		dev->max_vblank_count = 0xffffff; /* only 24 bits of frame count */
  	}
  
-@@ -4260,34 +4261,34 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
+@@ -4190,34 +4190,34 @@ void intel_irq_init(struct drm_i915_private *dev_priv)
  	if (IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv))
  		dev_priv->display_irqs_enabled = false;
  
@@ -62,7 +62,7 @@ index 02908e3..8c9262d 100644
 +		const_cast(dev->driver->enable_vblank) = i965_enable_vblank;
 +		const_cast(dev->driver->disable_vblank) = i965_disable_vblank;
 +		const_cast(dev_priv->display.hpd_irq_setup) = i915_hpd_irq_setup;
- 	} else if (INTEL_INFO(dev_priv)->gen >= 8) {
+ 	} else if (INTEL_GEN(dev_priv) >= 8) {
 -		dev->driver->irq_handler = gen8_irq_handler;
 -		dev->driver->irq_preinstall = gen8_irq_reset;
 -		dev->driver->irq_postinstall = gen8_irq_postinstall;
